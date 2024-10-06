@@ -4,8 +4,8 @@ Donate link: https://www.buymeacoffee.com/academylms
 Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.6
-Requires PHP: 7.3
-Stable tag: 2.0.17
+Requires PHP: 7.4
+Stable tag: 2.1.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -323,6 +323,15 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.1.0 - 06/10/2024 =
+* Added - New Certificate addon.
+* Added - Course Card 4 layout style.
+* Added - Became an Instructor Hide option.
+* Added - Some new filter hook.
+* Fixed - Translation issue
+* Fixed - Review button multiple time click then give error message.
+* Fixed - Learn Page Topics Customize color issue.
 
 = 2.0.17 - 24/09/2024 =
 * Fixed - Frontend Dashboard List Table filter issue

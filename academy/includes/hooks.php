@@ -55,6 +55,7 @@ add_action( 'academy/templates/course_loop_header', 'academy_course_loop_header'
 add_action( 'academy/templates/course_loop_content', 'academy_course_loop_content', 11 );
 add_action( 'academy/templates/course_loop_footer', 'academy_course_loop_footer', 12 );
 add_action( 'academy/templates/course_loop_footer_inner', 'academy_course_loop_footer_inner_price', 11 );
+add_action( 'academy/templates/course_loop_footer_inner', 'academy_course_loop_footer_form', 12 );
 add_action( 'academy/templates/course_loop_footer_inner', 'academy_course_loop_rating', 10 );
 
 /**

@@ -2,6 +2,7 @@
 
 namespace Academy;
 
+use Academy;
 use DateInterval;
 use DateTime;
 
@@ -189,6 +190,13 @@ class Helper {
 			'title'       => __( 'Students', 'academy' ),
 			'capability'  => 'manage_options',
 		];
+		if ( self::get_addon_active_status( 'certificates' ) ) {
+			$menu[ ACADEMY_PLUGIN_SLUG . '-certificates' ]    = [
+				'parent_slug' => ACADEMY_PLUGIN_SLUG,
+				'title'       => __( 'Certificates', 'academy' ),
+				'capability'  => 'manage_options',
+			];
+		}
 		$menu[ ACADEMY_PLUGIN_SLUG . '-addons' ]      = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
 			'title'       => __( 'Add-ons', 'academy' ),
@@ -1120,12 +1128,6 @@ class Helper {
 	}
 	public static function get_frontend_dashboard_menu_items() {
 		$items = array(
-			'become-an-instructor' => array(
-				'label' => __( 'Become An Instructor', 'academy' ),
-				'icon'  => 'academy-icon academy-icon--instructor',
-				'public' => ! current_user_can( 'manage_academy_instructor' ) ? true : false,
-				'priority' => 2,
-			),
 			'index'           => array(
 				'label' => __( 'Dashboard', 'academy' ),
 				'icon'  => 'academy-icon academy-icon--grid-two',
@@ -1189,6 +1191,15 @@ class Helper {
 				'public' => true,
 			),
 		);
+
+		if ( self::get_settings( 'is_enable_apply_instructor_menu' ) ) {
+			$items['become-an-instructor'] = array(
+				'label' => __( 'Become An Instructor', 'academy' ),
+				'icon'  => 'academy-icon academy-icon--instructor',
+				'public' => ! current_user_can( 'manage_academy_instructor' ) ? true : false,
+				'priority' => 2,
+			);
+		}
 
 		if ( current_user_can( 'manage_academy_instructor' ) ) {
 			$items['courses'] = array(
@@ -1355,4 +1366,6 @@ class Helper {
 			return esc_html( 'Just now' );
 		}
 	}
+
+
 }

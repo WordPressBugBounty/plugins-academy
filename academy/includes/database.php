@@ -191,6 +191,8 @@ class Database {
 			'academy_course_materials_included'         => 'string',
 			'academy_is_enabled_course_qa'              => 'boolean',
 			'academy_is_enabled_course_announcements'   => 'boolean',
+			'academy_course_certificate_id'             => 'integer',
+			'academy_course_enable_certificate'         => 'boolean',
 		];
 
 		foreach ( $course_meta as $meta_key => $meta_value_type ) {

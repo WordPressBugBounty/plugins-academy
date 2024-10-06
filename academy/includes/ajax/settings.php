@@ -38,8 +38,13 @@ class Settings extends AbstractAjaxHandler {
 			'course_archive_filters' => 'json',
 			'course_archive_sidebar_position' => 'string',
 			'course_archive_courses_order' => 'string',
+			'course_card_style' => 'string',
 			'is_enabled_course_single_enroll_count' => 'boolean',
 			'is_opened_course_single_first_topic' => 'boolean',
+			// Course Certificate
+			'academy_primary_certificate_id' => 'integer',
+			// dashboard
+			'is_enable_apply_instructor_menu' => 'boolean',
 			// Lesson
 			'lessons_page' => 'integer',
 			'is_enabled_lessons_php_render' => 'boolean',
@@ -107,8 +112,13 @@ class Settings extends AbstractAjaxHandler {
 			'course_archive_filters' => $payload['course_archive_filters'] ?? $default['course_archive_filters'],
 			'course_archive_sidebar_position' => $payload['course_archive_sidebar_position'] ?? $default['course_archive_sidebar_position'],
 			'course_archive_courses_order' => $payload['course_archive_courses_order'] ?? $default['course_archive_courses_order'],
+			'course_card_style' => $payload['course_card_style'] ?? $default['course_card_style'],
 			'is_enabled_course_single_enroll_count' => $payload['is_enabled_course_single_enroll_count'] ?? $default['is_enabled_course_single_enroll_count'],
 			'is_opened_course_single_first_topic' => $payload['is_opened_course_single_first_topic'] ?? $default['is_opened_course_single_first_topic'],
+			// Course Certificate
+			'academy_primary_certificate_id' => $payload['academy_primary_certificate_id'] ?? $default['academy_primary_certificate_id'],
+			// Dashboard
+			'is_enable_apply_instructor_menu' => $payload['is_enable_apply_instructor_menu'] ?? $default['is_enable_apply_instructor_menu'],
 			// Lessons
 			'lessons_page' => $payload['lessons_page'] ?? $default['lessons_page'],
 			'is_enabled_lessons_php_render' => $payload['is_enabled_lessons_php_render'] ?? $default['is_enabled_lessons_php_render'],

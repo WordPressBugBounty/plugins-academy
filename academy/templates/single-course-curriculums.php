@@ -34,7 +34,7 @@ else :
 		/**
 		 * @hook - academy/templates/before_main_content
 		 */
-		do_action( 'academy/templates/before_main_content', 'single-course-curriculums.php' );
+	do_action( 'academy/templates/before_main_content', 'single-course-curriculums.php' );
 
 
 	if ( \Academy\Helper::get_settings( 'is_enabled_lessons_php_render' ) ) {

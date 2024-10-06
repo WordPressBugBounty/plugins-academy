@@ -103,17 +103,17 @@ class LearnPage extends Base implements DynamicStyleInterface {
 		$learn_page_topics_heading_border_color = $settings['learn_page_topics_heading_border_color'] ?? '';
 		$learn_page_topics_heading_color = $settings['learn_page_topics_heading_color'] ?? '';
 		if ( $learn_page_topics_heading_background ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-title  {
+			$css .= ".academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics , .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-title{
                 background: $learn_page_topics_heading_background;
             }";
 		}
 		if ( $learn_page_topics_heading_border_color ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-title {
+			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-title , .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-title {
                 border-color: $learn_page_topics_heading_border_color;
             }";
 		}
 		if ( $learn_page_topics_heading_color ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-title__text, .academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-title .academy-icon:before {
+			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-title__text, .academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-title .academy-icon:before , .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-title{
                 color: $learn_page_topics_heading_color;
             }";
 		}
@@ -125,22 +125,22 @@ class LearnPage extends Base implements DynamicStyleInterface {
 		$learn_page_topic_item_icon_color = $settings['learn_page_topic_item_icon_color'] ?? '';
 
 		if ( $learn_page_topic_item_background ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item  {
+			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item , .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item {
                 background: $learn_page_topic_item_background;
             }";
 		}
 		if ( $learn_page_topic_item_border_color ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item  {
+			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item , .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item {
                 border-top-color: $learn_page_topic_item_border_color;
             }";
 		}
 		if ( $learn_page_topic_item_color ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item span.academy-topics-lesson-item__text {
+			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item span.academy-topics-lesson-item__text, .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item a{
                 color: $learn_page_topic_item_color;
             }";
 		}
 		if ( $learn_page_topic_item_icon_color ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item__btn .academy-entry-left .academy-icon:before {
+			$css .= ".academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item__btn .academy-entry-left .academy-icon:before{
                 color: $learn_page_topic_item_icon_color;
             }";
 		}
@@ -151,23 +151,96 @@ class LearnPage extends Base implements DynamicStyleInterface {
 		$learn_page_topic_active_color = $settings['learn_page_topic_active_color'] ?? '';
 		$learn_page_topic_active_icon_color = $settings['learn_page_topic_active_icon_color'] ?? '';
 		if ( $learn_page_topic_active_background ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item--playing  {
+			$css .= ".academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item.academy-learn-page-topics-lesson-item--playing  {
                 background: $learn_page_topic_active_background;
             }";
 		}
 		if ( $learn_page_topic_active_border_color ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item--playing  {
+			$css .= ".academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item.academy-learn-page-topics-lesson-item--playing {
                 border-top-color: $learn_page_topic_active_border_color;
             }";
 		}
 		if ( $learn_page_topic_active_color ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item--playing span.academy-topics-lesson-item__text {
+			$css .= ".academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item.academy-learn-page-topics-lesson-item--playing a {
                 color: $learn_page_topic_active_color;
             }";
 		}
 		if ( $learn_page_topic_active_icon_color ) {
-			$css .= ".academy-lessons .academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item--playing .academy-topics-lesson-item__btn .academy-entry-left .academy-icon:before {
+			$css .= ".academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-item--playing .academy-learn-page-topics-lesson-item__btn .academy-entry-left .academy-icon:before{
                 color: $learn_page_topic_active_icon_color;
+            }";
+		}
+
+		// Sub Topics Style
+		$learn_page_sub_topics_heading_background = $settings['learn_page_sub_topics_heading_background'] ?? '';
+		$learn_page_sub_topics_heading_border_color = $settings['learn_page_sub_topics_heading_border_color'] ?? '';
+		$learn_page_sub_topics_heading_color = $settings['learn_page_sub_topics_heading_color'] ?? '';
+		if ( $learn_page_sub_topics_heading_background ) {
+			$css .= ".academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-title{
+		background: $learn_page_sub_topics_heading_background;
+	}";
+		}
+		if ( $learn_page_sub_topics_heading_border_color ) {
+			$css .= ".academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-title {
+		border-color: $learn_page_sub_topics_heading_border_color;
+	}";
+		}
+		if ( $learn_page_sub_topics_heading_color ) {
+			$css .= ".academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-title .academy-sub-topics-title__text{
+		color: $learn_page_sub_topics_heading_color;
+	}";
+		}
+
+		// Sub Topic Style
+		$learn_page_sub_topic_item_background = $settings['learn_page_sub_topic_item_background'] ?? '';
+		$learn_page_sub_topic_item_border_color = $settings['learn_page_sub_topic_item_border_color'] ?? '';
+		$learn_page_sub_topic_item_color = $settings['learn_page_sub_topic_item_color'] ?? '';
+		$learn_page_sub_topic_item_icon_color = $settings['learn_page_sub_topic_item_icon_color'] ?? '';
+
+		if ( $learn_page_sub_topic_item_background ) {
+			$css .= ".academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item {
+                background: $learn_page_sub_topic_item_background;
+            }";
+		}
+		if ( $learn_page_sub_topic_item_border_color ) {
+			$css .= ".academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item {
+                border-top-color: $learn_page_sub_topic_item_border_color;
+            }";
+		}
+		if ( $learn_page_sub_topic_item_color ) {
+			$css .= ".academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item a{
+                color: $learn_page_sub_topic_item_color;
+            }";
+		}
+		if ( $learn_page_sub_topic_item_icon_color ) {
+			$css .= ".academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item__btn .academy-entry-left .academy-icon:before{
+                color: $learn_page_sub_topic_item_icon_color;
+            }";
+		}
+
+		// Sub Topic Active Style
+		$learn_page_sub_topic_active_background = $settings['learn_page_sub_topic_active_background'] ?? '';
+		$learn_page_sub_topic_active_border_color = $settings['learn_page_sub_topic_active_border_color'] ?? '';
+		$learn_page_sub_topic_active_color = $settings['learn_page_sub_topic_active_color'] ?? '';
+		$learn_page_sub_topic_active_icon_color = $settings['learn_page_sub_topic_active_icon_color'] ?? '';
+		if ( $learn_page_sub_topic_active_background ) {
+			$css .= ".academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item--playing   {
+                background: $learn_page_sub_topic_active_background;
+            }";
+		}
+		if ( $learn_page_sub_topic_active_border_color ) {
+			$css .= ".academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item--playing  {
+                border-top-color: $learn_page_sub_topic_active_border_color;
+            }";
+		}
+		if ( $learn_page_sub_topic_active_color ) {
+			$css .= ".academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item--playing a {
+                color: $learn_page_sub_topic_active_color;
+            }";
+		}
+		if ( $learn_page_sub_topic_active_icon_color ) {
+			$css .= ".academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item--playing .academy-sub-topics-lesson-item__btn .academy-entry-left .academy-icon:before{
+                color: $learn_page_sub_topic_active_icon_color;
             }";
 		}
 

@@ -69,10 +69,14 @@ class Base {
 			),
 			'course_archive_courses_per_page' => 12,
 			'course_archive_courses_order' => 'DESC',
+			'course_card_style' => 'default',
 
 			// Course Single/Details
 			'is_enabled_course_single_enroll_count' => true,
 			'is_opened_course_single_first_topic' => true,
+
+			// Course Certificate
+			'academy_primary_certificate_id'    => 0,
 
 			// instructor
 			'frontend_instructor_reg_page'      => '',

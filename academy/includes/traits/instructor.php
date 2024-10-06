@@ -151,14 +151,14 @@ trait Instructor {
 				$instructor->instructor_status = get_user_meta( $instructor->ID, 'academy_instructor_status', true );
 				$instructor->total_courses     = is_array( $courseIds ) ? count( $courseIds ) : 0;
 				$instructor->permalink         = get_edit_user_link( $instructor->ID );
-				$instructor->phone             = get_user_meta( $instructor->ID, 'academy_phone_number', true );
-				$instructor->bio               = get_user_meta( $instructor->ID, 'academy_profile_bio', true );
-				$instructor->desigination      = get_user_meta( $instructor->ID, 'academy_profile_designation', true );
-				$instructor->website           = get_user_meta( $instructor->ID, 'academy_website_url', true );
-				$instructor->github            = get_user_meta( $instructor->ID, 'academy_github_url', true );
-				$instructor->facebook          = get_user_meta( $instructor->ID, 'academy_facebook_url', true );
-				$instructor->twitter           = get_user_meta( $instructor->ID, 'academy_twitter_url', true );
-				$instructor->linkedin          = get_user_meta( $instructor->ID, 'academy_linkedin_url', true );
+				$instructor->bio = get_user_meta( $instructor->ID, 'academy_profile_bio', true );
+				$instructor->desigination = get_user_meta( $instructor->ID, 'academy_profile_designation', true );
+				$instructor->website = get_user_meta( $instructor->ID, 'academy_website_url', true );
+				$instructor->phone = get_user_meta( $instructor->ID, 'academy_phone_number', true );
+				$instructor->github = get_user_meta( $instructor->ID, 'academy_github_url', true );
+				$instructor->facebook = get_user_meta( $instructor->ID, 'academy_facebook_url', true );
+				$instructor->twitter = get_user_meta( $instructor->ID, 'academy_twitter_url', true );
+				$instructor->linkedin = get_user_meta( $instructor->ID, 'academy_linkedin_url', true );
 
 				$meta = \Academy\Helper::prepare_user_meta_data( $instructor_fields, $instructor->ID );
 				if ( count( $meta ) ) {

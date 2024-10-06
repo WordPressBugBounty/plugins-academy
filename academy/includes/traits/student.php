@@ -71,17 +71,16 @@ trait Student {
 			if ( count( $meta ) ) {
 				$student->meta = $meta;
 			}
-			$student->phone         = get_user_meta( $student->ID, 'academy_phone_number', true );
-			$student->bio           = get_user_meta( $student->ID, 'academy_profile_bio', true );
-			$student->desigination  = get_user_meta( $student->ID, 'academy_profile_designation', true );
-			$student->website       = get_user_meta( $student->ID, 'academy_website_url', true );
-			$student->github        = get_user_meta( $student->ID, 'academy_github_url', true );
-			$student->facebook      = get_user_meta( $student->ID, 'academy_facebook_url', true );
-			$student->twitter       = get_user_meta( $student->ID, 'academy_twitter_url', true );
-			$student->linkedin      = get_user_meta( $student->ID, 'academy_linkedin_url', true );
-			$results[]              = $student;
+			$student->phone = get_user_meta( $student->ID, 'academy_phone_number', true );
+			$student->bio = get_user_meta( $student->ID, 'academy_profile_bio', true );
+			$student->desigination = get_user_meta( $student->ID, 'academy_profile_designation', true );
+			$student->website = get_user_meta( $student->ID, 'academy_website_url', true );
+			$student->github = get_user_meta( $student->ID, 'academy_github_url', true );
+			$student->facebook = get_user_meta( $student->ID, 'academy_facebook_url', true );
+			$student->twitter = get_user_meta( $student->ID, 'academy_twitter_url', true );
+			$student->linkedin = get_user_meta( $student->ID, 'academy_linkedin_url', true );
+			$results[] = $student;
 		}//end foreach
-
 		return $results;
 	}
 

@@ -12,7 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		 * @Hooked - academy_course_loop_footer_inner_rating - 11
 		 * @Hooked - academy_course_loop_footer_inner_price - 10
 		 */
-		do_action( 'academy/templates/course_loop_footer_inner' );
+		$card_style = Academy\Helper::get_settings( 'course_card_style' );
+		do_action( 'academy/templates/course_loop_footer_inner', $card_style );
 		do_action( 'academy/templates/after_course_loop_footer_inner' );
 	?>
 </div>

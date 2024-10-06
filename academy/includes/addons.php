@@ -12,9 +12,11 @@ class Addons {
 		$self = new self();
 		// Load all addons
 		$self->addons_loader();
-		// Addons
+		// Addons Ajax
 		add_action( 'wp_ajax_academy/addons/get_all_addons', array( $self, 'get_all_addons' ) );
 		add_action( 'wp_ajax_academy/addons/saved_addon_status', array( $self, 'saved_addon_status' ) );
+		// check requirement
+		add_action( 'academy/before_active_addon', array( $self, 'check_addon_pre_active_requirement' ), 10, 2 );
 	}
 
 	private function addons_loader() {
@@ -24,6 +26,7 @@ class Addons {
 			'quizzes'          => 'Quizzes',
 			'migration-tool'   => 'MigrationTool',
 			'webhooks'         => 'Webhooks',
+			'certificates'     => 'Certificates',
 			'easy-digital-downloads' => 'EasyDigitalDownloads',
 			'woocommerce'      => 'Woocommerce',
 		]);
@@ -65,6 +68,7 @@ class Addons {
 
 		if ( $status ) {
 			$required_plugin = ( isset( $_POST['required_plugin'] ) ? json_decode( stripslashes( $_POST['required_plugin'] ), true ) : '' );
+			do_action( 'academy/before_active_addon', $addon_slug, $required_plugin );
 			if ( $required_plugin && is_array( $required_plugin ) ) {
 				foreach ( $required_plugin as $plugin ) {
 					if ( 'Wishlist Member' === $plugin['plugin_name'] ) {
@@ -91,5 +95,10 @@ class Addons {
 		}
 		// response
 		wp_send_json_success( $saved_addons );
+	}
+	public function check_addon_pre_active_requirement( $addon_slug, $requirement ) {
+		if ( 'certificates' === $addon_slug && Helper::is_plugin_active( 'academy-certificates/academy-certificates.php' ) ) {
+			wp_send_json_error( esc_html__( 'To avoid conflicts, please first deactivate the Academy Certificate plugin.', 'academy' ) );
+		}
 	}
 }

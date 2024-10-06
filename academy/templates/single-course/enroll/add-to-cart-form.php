@@ -42,7 +42,7 @@ if ( 'woocommerce' === $monetization_engine ) {
 	$download = new EDD_Download( $download_id );
 	$purchase_link = edd_get_purchase_link( [
 		'download_id' => $download->ID,
-		'text' => esc_html( 'Add To Cart' ),
+		'text' => esc_html__( 'Add To Cart' ),
 		'price' => 'no',
 		'class' => 'academy-btn academy-btn--preset-purple',
 		'color' => '',
@@ -53,7 +53,7 @@ if ( 'woocommerce' === $monetization_engine ) {
 	<?php if ( ! is_user_logged_in() ) : ?>
 			<button type="button" class="academy-btn academy-btn--bg-purple academy-btn-popup-login">
 					<span class="academy-icon academy--shopping-cart" aria-hidden="true"></span>
-				<?php echo esc_html( 'Add To Cart' ); ?>
+				<?php echo esc_html__( 'Add To Cart' ); ?>
 			</button>
 		<?php
 	else :

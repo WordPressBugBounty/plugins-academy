@@ -86,6 +86,16 @@ class Role {
 			'publish_academy_webhooks',
 			'read_private_academy_webhooks',
 			'edit_academy_webhooks',
+			// certificate
+			'edit_academy_certificate',
+			'read_academy_certificate',
+			'delete_academy_certificate',
+			'delete_academy_certificates',
+			'edit_academy_certificates',
+			'edit_others_academy_certificates',
+			'publish_academy_certificates',
+			'read_private_academy_certificates',
+			'edit_academy_certificates',
 			// lesson
 			'publish_academy_lessons',
 			'edit_academy_lesson',

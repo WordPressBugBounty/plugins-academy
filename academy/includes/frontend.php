@@ -51,4 +51,5 @@ class Frontend {
 	public function add_react_modal_div() {
 		echo '<div id="academyFrontendModalWrap"></div>';
 	}
+
 }

@@ -178,6 +178,9 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$this->add_sidebar_topics_styling( $wp_customize );
 		$this->add_sidebar_topic_styling( $wp_customize );
 		$this->add_sidebar_topic_active_styling( $wp_customize );
+		$this->add_sidebar_sub_topics_styling( $wp_customize );
+		$this->add_sidebar_sub_topic_styling( $wp_customize );
+		$this->add_sidebar_sub_topic_active_styling( $wp_customize );
 		$this->add_qa_form_styling( $wp_customize );
 		$this->add_announcement_item_styling( $wp_customize );
 	}
@@ -501,7 +504,7 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'learn_page_topics_heading_background' ),
 			array(
-				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics',
+				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics , .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-title',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)
@@ -533,7 +536,7 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'learn_page_topics_heading_border_color' ),
 			array(
-				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-title',
+				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-title , .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-title',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)
@@ -615,7 +618,7 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'learn_page_topic_item_background' ),
 			array(
-				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item',
+				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item , .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)
@@ -647,7 +650,7 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'learn_page_topic_item_border_color' ),
 			array(
-				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item',
+				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item , .academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)
@@ -679,7 +682,7 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'learn_page_topic_item_color' ),
 			array(
-				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item a',
+				'selector'            => '.academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item__btn .academy-entry-left .academy-icon:before',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)
@@ -761,7 +764,7 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'learn_page_topic_active_background' ),
 			array(
-				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item',
+				'selector'            => '.academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item--playing',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)
@@ -793,7 +796,7 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'learn_page_topic_active_border_color' ),
 			array(
-				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item',
+				'selector'            => '.academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item--playing',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)
@@ -825,7 +828,7 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'learn_page_topic_active_color' ),
 			array(
-				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item a',
+				'selector'            => '.academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item--playing a',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)
@@ -857,7 +860,7 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'learn_page_topic_active_icon_color' ),
 			array(
-				'selector'            => '.academy-lesson-content-wrapper .academy-lesson-sidebar-content .academy-topics .academy-topics-lesson-items .academy-topics-lesson-item a',
+				'selector'            => '.academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item--playing .academy-sub-topics-lesson-item__btn .academy-entry-left .academy-icon:before',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)
@@ -876,6 +879,414 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 		);
 
 	}
+
+	public function add_sidebar_sub_topics_styling( $wp_customize ) {
+		// Sub Topics Section Style
+		$wp_customize->add_setting('learn_page_sub_topics_heading_style', array(
+			'default'           => '',
+		));
+		$wp_customize->add_control(
+			new Separator(
+				$wp_customize,
+				'learn_page_sub_topics_heading_style',
+				array(
+					'label'         => esc_html__( 'Sub Topics Heading Style', 'academy' ),
+					'settings'      => 'learn_page_sub_topics_heading_style',
+					'section'       => self::SECTION,
+				)
+			)
+		);
+
+		// Background Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topics_heading_background' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topics_heading_background' ),
+			array(
+				'selector'            => '.academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-title',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topics_heading_background' ),
+				array(
+					'label'    => __( 'Background Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topics_heading_background' ),
+				)
+			)
+		);
+
+		// border Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topics_heading_border_color' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topics_heading_border_color' ),
+			array(
+				'selector'            => '.academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-title',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topics_heading_border_color' ),
+				array(
+					'label'    => __( 'Border Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topics_heading_border_color' ),
+				)
+			)
+		);
+
+		// Text Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topics_heading_color' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topics_heading_color' ),
+			array(
+				'selector'            => '.academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-title .academy-sub-topics-title__text',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topics_heading_color' ),
+				array(
+					'label'    => __( 'Text Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topics_heading_color' ),
+				)
+			)
+		);
+
+	}
+	public function add_sidebar_sub_topic_styling( $wp_customize ) {
+		// Sub Topic Section Style
+		$wp_customize->add_setting('learn_page_sub_topic_item_style', array(
+			'default'           => '',
+		));
+		$wp_customize->add_control(
+			new Separator(
+				$wp_customize,
+				'learn_page_sub_topic_item_style',
+				array(
+					'label'         => esc_html__( 'Sub Topic item Style', 'academy' ),
+					'settings'      => 'learn_page_sub_topic_item_style',
+					'section'       => self::SECTION,
+				)
+			)
+		);
+
+		// Background Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topic_item_background' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topic_item_background' ),
+			array(
+				'selector'            => '.academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topic_item_background' ),
+				array(
+					'label'    => __( 'Background Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topic_item_background' ),
+				)
+			)
+		);
+
+		// border Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topic_item_border_color' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topic_item_border_color' ),
+			array(
+				'selector'            => '.academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topic_item_border_color' ),
+				array(
+					'label'    => __( 'Border Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topic_item_border_color' ),
+				)
+			)
+		);
+
+		// Text Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topic_item_color' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topic_item_color' ),
+			array(
+				'selector'            => '.academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item a',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topic_item_color' ),
+				array(
+					'label'    => __( 'Text Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topic_item_color' ),
+				)
+			)
+		);
+
+		// Icon Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topic_item_icon_color' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topic_item_icon_color' ),
+			array(
+				'selector'            => '.academy-lesson-content-wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-sub-topics .academy-sub-topics-lesson-items .academy-sub-topics-lesson-item__btn .academy-entry-left .academy-icon:before',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topic_item_icon_color' ),
+				array(
+					'label'    => __( 'Icon Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topic_item_icon_color' ),
+				)
+			)
+		);
+
+	}
+	public function add_sidebar_sub_topic_active_styling( $wp_customize ) {
+		// Sub Topic Section Style
+		$wp_customize->add_setting('learn_page_sub_topic_active_style', array(
+			'default'           => '',
+		));
+		$wp_customize->add_control(
+			new Separator(
+				$wp_customize,
+				'learn_page_sub_topic_active_style',
+				array(
+					'label'         => esc_html__( 'Sub Topic Active Style', 'academy' ),
+					'settings'      => 'learn_page_sub_topic_active_style',
+					'section'       => self::SECTION,
+				)
+			)
+		);
+
+		// Background Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topic_active_background' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topic_active_background' ),
+			array(
+				'selector'            => '.academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item.academy-learn-page-topics-lesson-item--playing ',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topic_active_background' ),
+				array(
+					'label'    => __( 'Background Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topic_active_background' ),
+				)
+			)
+		);
+
+		// border Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topic_active_border_color' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topic_active_border_color' ),
+			array(
+				'selector'            => '.academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item.academy-learn-page-topics-lesson-item--playing',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topic_active_border_color' ),
+				array(
+					'label'    => __( 'Border Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topic_active_border_color' ),
+				)
+			)
+		);
+
+		// Text Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topic_active_color' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topic_active_color' ),
+			array(
+				'selector'            => '.academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-items .academy-learn-page-topics-lesson-item.academy-learn-page-topics-lesson-item--playing a',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topic_active_color' ),
+				array(
+					'label'    => __( 'Text Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topic_active_color' ),
+				)
+			)
+		);
+
+		// Icon Color
+		$wp_customize->add_setting(
+			$this->get_style_settings_id( 'learn_page_sub_topic_active_icon_color' ),
+			array(
+				'default'           => '',
+				'type'              => 'option',
+				'capability'        => 'manage_options',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+
+		$wp_customize->selective_refresh->add_partial(
+			$this->get_style_settings_id( 'learn_page_sub_topic_active_icon_color' ),
+			array(
+				'selector'            => '.academy-lesson-sidebar-content--wrapper .academy-learn-page-topics .academy-learn-page-topics-lesson-item--playing .academy-learn-page-topics-lesson-item__btn .academy-entry-left .academy-icon:before',
+				'container_inclusive' => true,
+				'render_callback'     => '__return_true',
+			)
+		);
+
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$this->get_style_settings_id( 'learn_page_sub_topic_active_icon_color' ),
+				array(
+					'label'    => __( 'Icon Color', 'academy' ),
+					'section'  => self::SECTION,
+					'settings' => $this->get_style_settings_id( 'learn_page_sub_topic_active_icon_color' ),
+				)
+			)
+		);
+
+	}
+
 	public function add_qa_form_styling( $wp_customize ) {
 		// Topic Section Style
 		$wp_customize->add_setting('learn_page_qa_form_style', array(

@@ -242,7 +242,21 @@ if ( ! function_exists( 'academy_course_loop_header' ) ) {
 
 if ( ! function_exists( 'academy_course_loop_content' ) ) {
 	function academy_course_loop_content() {
-		Helper::get_template( 'loop/content.php' );
+		$card_style = \Academy\Helper::get_settings( 'course_card_style' );
+		switch ( $card_style ) {
+			case 'layout_two':
+				Helper::get_template( 'loop/content-layout-two.php' );
+				break;
+			case 'layout_three':
+				Helper::get_template( 'loop/content-layout-three.php' );
+				break;
+			case 'layout_four':
+				Helper::get_template( 'loop/content-layout-four.php' );
+				break;
+			default:
+				Helper::get_template( 'loop/content.php' );
+				break;
+		}
 	}
 }
 
@@ -253,10 +267,10 @@ if ( ! function_exists( 'academy_course_loop_footer' ) ) {
 }
 
 if ( ! function_exists( 'academy_course_loop_rating' ) ) {
-	function academy_course_loop_rating() {
+	function academy_course_loop_rating( $card_style ) {
 		$rating = Helper::get_course_rating( get_the_ID() );
 		$reviews_status = Helper::get_settings( 'is_enabled_course_review', true );
-		if ( $reviews_status ) {
+		if ( $reviews_status && 'default' === $card_style ) {
 			Helper::get_template( 'loop/rating.php', [ 'rating' => $rating ] );
 		}
 	}
@@ -269,31 +283,68 @@ if ( ! function_exists( 'academy_course_loop_enroll' ) ) {
 }
 
 if ( ! function_exists( 'academy_course_loop_footer_inner_price' ) ) {
-	function academy_course_loop_footer_inner_price() {
-		$course_id = get_the_ID();
-		$course_type   = Helper::get_course_type( $course_id );
-		$is_paid   = Helper::is_course_purchasable( $course_id );
-		$price     = '';
-		if ( Helper::is_active_woocommerce() && $is_paid ) {
-			$product_id = Academy\Helper::get_course_product_id( $course_id );
-			if ( $product_id ) {
-				$product = wc_get_product( $product_id );
-				if ( $product ) {
-					$price   = $product->get_price_html();
+	function academy_course_loop_footer_inner_price( $card_style ) {
+		if ( 'layout_two' !== $card_style ) {
+			$course_id = get_the_ID();
+			$course_type   = Helper::get_course_type( $course_id );
+			$is_paid   = Helper::is_course_purchasable( $course_id );
+			$price     = '';
+			if ( Helper::is_active_woocommerce() && $is_paid ) {
+				$product_id = Academy\Helper::get_course_product_id( $course_id );
+				if ( $product_id ) {
+					$product = wc_get_product( $product_id );
+					if ( $product ) {
+						$price   = $product->get_price_html();
+					}
 				}
 			}
-		}
-		Helper::get_template(
-			'loop/price.php',
-			apply_filters('academy/template/loop/price_args', array(
-				'price'   => $price,
-				'is_paid' => $is_paid,
-				'course_type' => $course_type,
-			), $course_id)
-		);
+			Helper::get_template(
+				'loop/price.php',
+				apply_filters('academy/template/loop/price_args', array(
+					'price'   => $price,
+					'is_paid' => $is_paid,
+					'course_type' => $course_type,
+				), $course_id )
+			);
+		}//end if
 	}
 }//end if
 
+if ( ! function_exists( 'academy_course_loop_footer_form' ) ) {
+	function academy_course_loop_footer_form( $card_style ) {
+		$course_id = get_the_ID();
+		$post_type = get_post_type( $course_id );
+		if ( 'default' !== $card_style && 'alms_course_bundle' !== $post_type ) {
+			$course_type   = Helper::get_course_type( $course_id );
+			$is_paid   = Helper::is_course_purchasable( $course_id );
+			$monetization_engine   = \Academy\Helper::monetization_engine();
+			$product_id = 0;
+			$download_id = 0;
+			if ( $is_paid ) {
+				$product_id = Academy\Helper::get_course_product_id( $course_id );
+				$download_id = get_post_meta( $course_id, 'academy_course_download_id', true );
+			}
+			if ( 'paid-memberships-pro' === $monetization_engine ) {
+				$required_levels = AcademyProPaidMembershipsPro\Helper::has_course_access( $course_id );
+				if ( is_array( $required_levels ) && count( $required_levels ) ) {
+					$pmp_levels = $required_levels;
+				}
+			}
+
+			Helper::get_template(
+				'loop/footer-form.php',
+				apply_filters('academy/template/loop/footer_form', array(
+					'is_paid'  => $is_paid,
+					'course_type' => $course_type,
+					'product_id' => $product_id,
+					'download_id' => $download_id,
+					'required_levels' => $pmp_levels ?? '',
+					'engine'          => $monetization_engine,
+				), $course_id )
+			);
+		}//end if
+	}
+}//end if
 
 if ( ! function_exists( 'academy_review_lists' ) ) {
 	function academy_review_lists( $comment, $args, $depth ) {

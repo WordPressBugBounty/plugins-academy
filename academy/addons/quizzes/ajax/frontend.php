@@ -62,6 +62,7 @@ class Frontend extends AbstractAjaxHandler {
 		$has_permission = \Academy\Helper::has_permission_to_access_curriculum( $course_id, $user_id, $quiz_id, 'quiz' );
 
 		if ( $has_permission ) {
+			do_action( 'academy_quizzes/before_render_quiz', $course_id, $quiz_id, $user_id );
 			$question_order = get_post_meta( $quiz_id, 'academy_quiz_questions_order', true );
 			$questions = \AcademyQuizzes\Classes\Query::get_questions_by_quid_id( $quiz_id, $question_order );
 			$order = get_post_meta( $quiz_id, 'academy_quiz_questions_order', true );

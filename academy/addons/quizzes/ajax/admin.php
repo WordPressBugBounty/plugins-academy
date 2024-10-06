@@ -85,7 +85,7 @@ class Admin extends AbstractAjaxHandler {
 		$attempt['earned_marks'] = $total_earned_marks;
 		$attempt['attempt_status'] = ( $earned_percentage >= $passing_grade ? 'passed' : 'failed' );
 		$attempt_info = json_decode( $attempt['attempt_info'], true );
-		$attempt_info['total_correct_answers'] = Query::get_total_quiz_attempt_correct_answers( $attempt['attempt_id'] );
+		$attempt_info = wp_json_encode( [ 'total_correct_answers' => Query::get_total_quiz_attempt_correct_answers( $attempt['attempt_id'] ) ] );
 		$attempt['attempt_info'] = wp_json_encode( $attempt_info );
 		$attempt['is_manually_reviewed'] = 1;
 		$attempt['manually_reviewed_at'] = current_time( 'mysql' );
@@ -115,6 +115,8 @@ class Admin extends AbstractAjaxHandler {
 				$attempt['_user'] = $user;
 			}
 		}
+
+		do_action( 'academy_quizzes/after_quiz_attempt_manual_review', $attempt );
 
 		wp_send_json_success( $attempt );
 	}
