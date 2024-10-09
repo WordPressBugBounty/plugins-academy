@@ -29,28 +29,63 @@ $academy_comments_count = get_comments_number();
 			\Academy\Helper::get_template( 'single-course/review-form.php' );
 		}
 
-		if ( have_comments() ) :  ?>
-		<ol class="academy-review-list">
-				<?php wp_list_comments( apply_filters( 'academy/templates/course_review_list_args', array( 'callback' => 'academy_review_lists' ) ) ); ?>
-		</ol><!-- .comment-list -->
+		if ( have_comments() ) {
+			$paged = get_query_var( 'cpage' ) ? get_query_var( 'cpage' ) : 1;
+			$comments_per_page = 5;
+
+			// Fetch approved comments for the current post.
+			$args = array(
+				'post_id' => get_the_ID(),
+				'status'  => 'approve',
+				'number'  => $comments_per_page,
+				'paged'   => $paged,
+			);
+
+			$comment_query = new WP_Comment_Query();
+			$comments = $comment_query->query( $args );
+		}
+
+		if ( $comments ) :
+			?>
+			<ol class="academy-review-list">
+				<?php
+				foreach ( $comments as $comment ) :
+					apply_filters( 'academy/templates/course_review_list_args', array( academy_review_lists( $comment, null, null ) ) );
+				endforeach;
+				?>
+			</ol>
+
 			<?php
+			// Calculate total pages for pagination.
+			$total_comments = get_comments( array(
+				'post_id' => get_the_ID(),
+				'status'  => 'approve',
+				'count'   => true,
+			));
+
+			$max_pages = ceil( (int) $total_comments / $comments_per_page );
+
+			// Display pagination if multiple pages exist.
 			the_comments_pagination(
 				array(
-					'before_page_number' => esc_html__( 'Course', 'academy' ) . ' ',
-					'mid_size'           => 0,
-					'prev_text'          => sprintf(
+					'total'     => $max_pages,
+					'current'   => $paged,
+					'mid_size'  => 1,
+					'prev_text' => sprintf(
 						'<span class="nav-prev-text">%s</span>',
-						esc_html__( 'Older comments', 'academy' )
+						esc_html__( 'Prev', 'academy' )
 					),
-					'next_text'          => sprintf(
+					'next_text' => sprintf(
 						'<span class="nav-next-text">%s</span>',
-						esc_html__( 'Newer comments', 'academy' )
+						esc_html__( 'Next', 'academy' )
 					),
 				)
 			);
 			?>
-			<?php if ( ! comments_open() ) : ?>
-			<p class="academy-no-reviews"><?php esc_html_e( 'Review are closed.', 'academy' ); ?></p>
+			<?php if ( ! comments_open() ) :
+				?>
+			<p class="academy-no-reviews"><?php esc_html_e( 'Reviews are closed.', 'academy' ); ?></p>
 		<?php endif; ?>
-		<?php endif; ?>
+	<?php endif; ?>
 </div><!-- #comments -->
+

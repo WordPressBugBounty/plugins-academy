@@ -43,6 +43,7 @@ final class Quizzes implements AddonInterface {
 		API::init();
 		Ajax::init();
 		Miscellaneous::init();
+		Hooks::init();
 	}
 
 	public function load_dependency() {

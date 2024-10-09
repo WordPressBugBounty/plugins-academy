@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 2.1.0
+Stable tag: 2.1.2
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -323,6 +323,18 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.1.2 - 09/10/2024 =
+* Fixed - Quiz Fill in the blanks question insert answer issue.
+
+= 2.1.1 - 08/10/2024 =
+* Added - Lesson Content iframe support.
+* Added - New Filter Hook for course grid ajax
+* Fixed - Unused Image Remove.
+* Fixed - Pagination not working in single Course page review Section.
+* Fixed - Quiz Fill in the blanks question insert answer issue.
+* Fixed - Quiz after fail download Certificate issue.
+* Fixed - Table data multiple time fetch issue.
 
 = 2.1.0 - 06/10/2024 =
 * Added - New Certificate addon.

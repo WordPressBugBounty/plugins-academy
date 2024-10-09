@@ -638,13 +638,26 @@ class Query {
 
 	public static function is_fill_in_the_blanks_quiz_correct_answer( $given_answer_args, $question_id = '' ) {
 		global $wpdb;
+	
 		if ( is_array( $given_answer_args ) ) {
-			$correct_answer_count = 0;
-			foreach ( $given_answer_args as $given_answer ) {
-				$correct_answer_count += $wpdb->get_var( $wpdb->prepare( "SELECT count(answer_id) FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d AND answer_content LIKE %s", $question_id, '%' . $wpdb->esc_like( $given_answer ) . '%' ) );
-			}
-			return ( count( $given_answer_args ) === $correct_answer_count ? true : false );
+			// Trim leading/trailing spaces from each answer and normalize spaces around the pipe symbol
+			$given_answer_args = array_map(function($answer) {
+				return preg_replace('/\s*\|\s*/', '|', trim($answer));
+			}, $given_answer_args);
+			
+			// Join the answers with a pipe symbol
+			$given_answer = implode('|', $given_answer_args);
+	
+			// Query for a match ignoring any spaces around the pipe symbol in both the database and given answer
+			$is_correct = $wpdb->get_var( $wpdb->prepare( 
+				"SELECT count(answer_id) FROM {$wpdb->prefix}academy_quiz_answers 
+				WHERE question_id=%d AND REPLACE(TRIM(answer_content), ' ', '') LIKE REPLACE(TRIM(%s), ' ', '')", 
+				$question_id, $given_answer 
+			));
+	
+			return (bool) $is_correct;
 		}
+	
 		return false;
 	}
 

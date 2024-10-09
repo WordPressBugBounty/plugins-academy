@@ -140,6 +140,14 @@ trait LessonSchema {
 						'method'            => true,
 						'class'             => true,
 					);
+					$allowed_tags['iframe'] = array(
+						'src'             => true,
+						'width'           => true,
+						'height'          => true,
+						'frameborder'     => true,
+						'allow'           => true,
+						'allowfullscreen' => true,
+					);
 					return wp_kses( $content, $allowed_tags );
 				},
 			],

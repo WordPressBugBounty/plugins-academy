@@ -18,11 +18,16 @@ class Admin {
 	}
 	public function dispatch_hooks() {
 		// Add a post display state for special Academy pages.
+		add_filter( 'allowed_redirect_hosts', array( $this, 'add_white_listed_redirect_hosts' ) );
 		add_filter( 'display_post_states', array( $this, 'add_display_post_states' ), 10, 2 );
 		add_action( 'admin_init', array( $this, 'flush_rewrite_rules' ) );
 		add_action( 'current_screen', array( $this, 'conditional_loaded' ) );
 		add_filter( 'plugin_action_links_' . ACADEMY_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
 		add_filter( 'plugin_row_meta', array( $this, 'add_plugin_links' ), 10, 2 );
+	}
+	public function add_white_listed_redirect_hosts( $hosts ) {
+		$hosts[] = 'academylms.net';
+		return $hosts;
 	}
 
 	/**
@@ -78,8 +83,7 @@ class Admin {
 				Admin\User::init();
 				break;
 			case 'academy-lms_page_academy-get-pro':
-				// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
-				wp_redirect( 'https://academylms.net/pricing/' );
+				wp_safe_redirect( 'https://academylms.net/pricing/' );
 				break;
 		}
 	}

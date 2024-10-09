@@ -186,4 +186,15 @@ class Helper {
 
 		return false;
 	}
+
+	public static function has_attempt_quiz( $course_id, $quiz_id, $user_id = '' ) {
+		if ( empty( $user_id ) ) {
+			$user_id = get_current_user_id();
+		}
+		return \AcademyQuizzes\Classes\Query::get_quiz_attempt_details_by_quiz_id( array(
+			'course_id' => $course_id,
+			'quiz_id' => $quiz_id,
+			'user_id' => $user_id
+		) );
+	}
 }

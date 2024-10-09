@@ -455,7 +455,7 @@ class Course extends AbstractAjaxHandler {
 		$markup = ob_get_clean();
 		wp_send_json_success(
 			[
-				'markup'      => $markup,
+				'markup'      => apply_filters( 'academy/course_filter_markup', $markup ),
 				'found_posts' => $courses_query->found_posts,
 			]
 		);
