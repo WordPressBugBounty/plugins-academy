@@ -19,6 +19,7 @@ Academy LMS is the all-rounder among all WordPress LMS plugins. A complete solut
 👉 [Documentation of Academy LMS](https://academylms.net/docs/)
 👉 [Academy LMS Pro](https://academylms.net/pricing/)
 👉 [Public Roadmap](https://trello.com/b/8bFLtVq7/academy-lms-public-roadmap)
+👉 [aBlocks + Academy LMS](https://wordpress.org/plugins/ablocks) = 🔥
 
 Introducing [Academy LMS](https://academylms.net). The WordPress LMS plugin to create online learning websites. Easy integration with any WordPress site to create and sell courses. With its intuitive interface and swift performance, create the perfect eLearning platform quickly and easily.
 
@@ -47,7 +48,7 @@ Connect with us on social media for the latest news and updates:
 Let's revolutionize e-learning together! 🚀
 
 
-** 🌟 Looking for the perfect learning management system for your website?**
+**🌟 Looking for the perfect learning management system for your website?**
 Look no further than Academy LMS, the ultimate solution to create online courses. Upgrade your website into a dynamic eLearning platform. With Academy LMS, you're unlocking the future of learning management systems.
 
 == Features 🔥 ==
@@ -85,6 +86,7 @@ Look no further than Academy LMS, the ultimate solution to create online courses
   * Academy LMS Migration Tools
   * Webhook
   * Form Builder (Student & Instructor)
+  * Gutenberg Integration
   * Advanced Quiz Builder **[PRO]**
   * Email Notification **[PRO]**
   * Content Drip **[PRO]**
@@ -136,8 +138,6 @@ More features Coming Soon!
 
 **📑 Simplified Student Registration and Instructor Registration:** Students and Instructors can register easily through forms. Registration data gets directly forwarded to the backend for admin approval before enrollment.
 
-**📑 Streamline Student Registration:** Students can conveniently register through an easy form, gaining access to enhanced benefits compared to regular subscribers upon admin approval.
-
 **⭐ Engaging Course Reviews and Ratings:** Enrolled students can provide course reviews and ratings. Helps instructors to get better understanding and create better courses for your users. Also, helps students to pick the best courses from the list.
 
 **🎴 Showcase Video Posters:** Add trailer/teaser videos to courses to enhance course appeal and engagement. User’s can easily understand what they will get in the course.
@@ -174,10 +174,6 @@ More features Coming Soon!
 
 **📜 Award Certificates:** Enhance course completion recognition with a robust certificate system, enabling easy creation and distribution of certificates to students.
 
-**🌐 Elementor Integration:** Combine Academy LMS with Elementor for effortless design customization and enhanced eLearning website creation experience.
-
-**🌎 Divi Builder Integration:** Experience the perfect combination of Academy LMS and Divi Builder for dynamic eLearning website design.
-
 **🔧 Build Engaging Quizzes:** Create interactive quizzes in various formats to make learning enjoyable and effective. Comes with support for multiple quiz types for diverse assessment options.
 
 **📢 Stay Informed with Global Announcements:** Keep all users informed with prominent announcements throughout the platform, ensuring effective communication of important updates and information.
@@ -198,8 +194,6 @@ More features Coming Soon!
 
 **📋 Customize Manual Enrolment [PRO]:** Academy LMS's manual enrolment feature gives administrators greater control over the enrolment process. With this flexible method, administrators can individually add students to courses or programs.
 
-**🛒 Sell Subscriptions with WooCommerce [PRO]:** Use WooCommerce Subscriptions to sell subscription based course materials, directly from your eLearning website.
-
 **📷 Enhance Collaboration with Meeting [PRO]:** Academy LMS integrates seamlessly with Google Meet and Zoom, offering features like live video calling, screen sharing, and video recording to facilitate collaboration between instructors and students. Conduct live online classrooms and virtual meetings effortlessly for an enhanced learning experience.
 
 **📊 Access Advanced Analytics [PRO]:** Gain insights into course performance with comprehensive statistics provided by Academy LMS. Track course details, instructor performance, student engagement, earnings, and more, empowering informed decision-making and effective course management.
@@ -208,13 +202,9 @@ More features Coming Soon!
 
 **👩‍🏫 Public Courses [PRO]:** Expand your reach by creating public courses on Academy LMS. Offer high-quality education based content to learners worldwide. Share your expertise on a range of topics within your LMS website.
 
-**🛍️ Auto WooCommerce Products Creation [PRO]:** Save time and effort by creating and managing products on your WooCommerce store directly from Academy LMS. This powerful feature streamlines your eLearning business. Academy LMS is determined to enhance efficiency and productivity for everyone.
-
 **🔧 Advanced Quiz Builder [PRO]:** With Academy LMS's advanced quiz builder, instructors can create interactive quizzes in various formats to make learning enjoyable. FromTrue/False, Single Choice, Multiple Choice, Short Answer, Image answer, and, Fill in The Blank, engage students with diverse assessment options for a dynamic learning experience.
 
 **👨‍🏫 Tutors Booking [PRO]:** The Tutor Booking addon in Academy LMS connects students with expert tutors for personalized one-on-one learning experiences. Careful instruction, flexible scheduling, and progress feedback ensure students unlock their full potential.
-
-**👨‍👦‍👦 Paid Memberships [PRO]:** Academy LMS integrates with Paid Memberships Pro to sell memberships and subscriptions on course contents.
 
 **🔒 Guide Learners with Course Prerequisites [PRO]:** Set course prerequisites in Academy LMS to ensure learners meet requirements before enrolling. Facilitate structured learning paths and seamless progression for enhanced learning outcomes.
 
@@ -238,35 +228,31 @@ More features Coming Soon!
 
 **📚 Create Course Bundles [PRO]:** Combine related courses into structured learning programs with Academy LMS course bundles. Better options to achieve learning goals and provide affordable options for students.
 
-**🌎 FluentCRM Integration [PRO]:** Automate workflows and integrations with your LMS using FluentCRM for efficient management.
-
-**🛒 SureCart Integration [PRO]:** Integrate SureCart with Academy LMS for seamless course sales and management.
-
 **🔔 Push Notification [PRO]:** Enhance your platform with custom notifications for course updates and alerts.
 
 **📊 Grade Book [PRO]:** Track and manage student grades efficiently with advanced grading features.
 
 **📅 Meeting Integration [PRO]:** Schedule and manage meetings for your eLearning platform effortlessly with this addon.
 
-**🔐 SureMembers Integration [PRO]:** Protect and manage your membership content with the SureMembers addon.
-
 **📬 MailChimp Integration [PRO]:** Integrate MailChimp to automate and manage your email marketing campaigns.
 
 **🏫 Google Classroom Integration [PRO]:** Simplify course management with seamless Google Classroom integration.
-
-**🏅 GamiPress Integration [PRO]:** Enhance learning with rewards, badges, and leaderboards using GamiPress integration.
-
-**🔒 WishList Member Integration [PRO]:** Manage memberships and provide exclusive content access with WishList Member integration.
-
-**💾 Easy Digital Download Integration [PRO]:** Sell your courses effortlessly with the Academy LMS Easy Digital Download integration.
 
 
 ##➕ Free add-ons for Academy LMS WordPress Plugin ##
 
 - [Academy Elementor Addons](https://wordpress.org/plugins/academy-elementor-addons) - Academy LMS Elementor Addons provides 23+ widgets to create an entire eLearning site.
 - [Academy Starter Templates](https://wordpress.org/plugins/academy-starter-templates/) - Academy Starter Templates is a one-click demo Importer addon for Academy LMS. Currently, there are three templates that you can choose from and create your e-Learning site with one click. But more templates are coming in this section pretty soon.
-- [Academy Certificates](https://wordpress.org/plugins/academy-certificates/) - Generate downloadable certificates for a particular course and award them to your students after finishing a course. With this addon, the whole procedure becomes remarkably quick and simple.
-- [Academy Divi Module](https://academylms.net/wp-content/uploads/2023/12/academy-divi-modules.zip) - Enhance your eLearning journey with the Academy LMS Divi Page Builder Addons! This robust WordPress plugin seamlessly integrates the Academy LMS with the versatile Divi Page Builder, empowering you to craft and personalize your course sites like never before. Unlock the ability to create bespoke layouts, incorporate stylish elements into individual courses, and elevate your presentation with captivating carousels and listings. Unleash your creativity and completely control your online learning environment with this indispensable plugin!
+- [Academy Divi Module](https://academylms.net/wp-content/uploads/2023/12/academy-divi-modules.zip) - Enhance your eLearning journey with the Academy LMS Divi Page Builder Addons!
+- [aBlocks Gutenberg Blocks](https://ablocks.pro/) - aBlocks offers a comprehensive collection of highly customizable Gutenberg blocks to elevate your WordPress website. Whether building a simple blog or a complex website, aBlocks provides the flexibility and control you need.
+
+### Unlock more possibilities with aBlocks: Fully integrated with Academy LMS
+
+Want more spice design on your WordPress eLearning site? Introducing aBlocks, a powerful Gutenberg page builder plugin developed by the team behind Academy LMS. With seamless integration, aBlocks enhances your course pages with 9 custom blocks tailored specifically for Academy LMS, allowing you to design visually engaging and functional course content effortlessly.
+
+But that's not all—with aBlocks, you can build any type of amazing website in no time and with minimal effort, making it the perfect tool for both learning platforms and any other website you can imagine.
+
+[Try aBlocks now Check Official Sites](https://ablocks.pro/)
 
 
 == Frequently Asked Questions ==
