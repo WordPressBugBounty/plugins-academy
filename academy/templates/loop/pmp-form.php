@@ -10,8 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<button type="button" class="academy-btn academy-btn--bg-purple academy-btn-popup-login">
 			<span class="academy-icon academy-icon--cart" aria-hidden="true"></span>
 			<?php echo 'layout_two' !== $card_style ? esc_html__( 'Buy Now', 'academy' ) : ''; ?>
-		</button>
-		
+		</button>	
 	<?php
 	else :
 		foreach ( $required_levels as $level ) :

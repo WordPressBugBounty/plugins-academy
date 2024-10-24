@@ -52,7 +52,7 @@ class Frontend {
 			$course_id = Helper::get_last_course_id();
 
 			if ( ! $course_id ) {
-				wp_die( __( 'Sorry, you have no course', 'academy' ) );
+				wp_die( esc_html_e( 'Sorry, you have no course', 'academy' ) );
 				exit;
 			}
 
@@ -84,7 +84,7 @@ class Frontend {
 		$course_place = get_bloginfo( 'name' ) ?? 'Course Place Missing';
 
 		$course_completed = \Academy\Helper::is_completed_course( $course_id, $student_id, true );
-		$completion_date = $course_completed ? date( 'd F Y', strtotime( $course_completed->completion_date ) ) : 'Completion Date Missing';
+		$completion_date = $course_completed ? date( 'd F Y', strtotime( $course_completed->completion_date ) ) : 'Completion Date Missing'; // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 
 		// Replace dynamic placeholders with available values or default messages
 		$certificate_template_dynamic_code_args = apply_filters( 'academy_certificates/template_dynamic_codes', [ '{{learner}}', '{{course_title}}', '{{instructor}}', '{{course_place}}', '{{completion_date}}' ] );

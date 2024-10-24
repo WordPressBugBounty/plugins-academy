@@ -72,35 +72,35 @@ if ( $attempt_id ) {
 
 			<div class="academy-quiz-table-wrapper">
 				<div class="academy-list-wrap academy-dashboard__content">
-					<div class="kzui-list-table kzui-list-table--quiz-result ">
-						<div class="kzui-list-table__container">
-							<div class="kzui-list-table__table kzui-list-table--has-slider">
-								<div class="kzui-list-table__table-head">
-									<div class="kzui-list-table__table-head-row">
-										<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+					<div class="kzui-table kzui-table--quiz-result ">
+						<div class="kzui-table__container">
+							<div class="kzui-table__table kzui-table--has-slider">
+								<div class="kzui-table__head">
+									<div class="kzui-table__head-row">
+										<div class="kzui-table__row-cell kzui-table__header-row-cell">
 											<?php echo esc_html__( 'Date', 'academy' ); ?>
 										</div>
-										<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+										<div class="kzui-table__row-cell kzui-table__header-row-cell">
 											<?php echo esc_html__( 'Questions', 'academy' ); ?>
 										</div>
-										<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+										<div class="kzui-table__row-cell kzui-table__header-row-cell">
 											<?php echo esc_html__( 'Marks', 'academy' ); ?>
 										</div>
-										<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+										<div class="kzui-table__row-cell kzui-table__header-row-cell">
 											<?php echo esc_html__( 'Answers', 'academy' ); ?>
 										</div>
-										<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+										<div class="kzui-table__row-cell kzui-table__header-row-cell">
 											<?php echo esc_html__( 'Result', 'academy' ); ?>
 										</div>
-										<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+										<div class="kzui-table__row-cell kzui-table__header-row-cell">
 											<?php echo esc_html__( 'Details', 'academy' ); ?>
 										</div>
 									</div>
 								</div>
-								<div class="kzui-list-table__table-body">
+								<div class="kzui-table__body">
 									<?php foreach ( $successful_attempts as $successful_attempt ) : ?>
-										<div class="kzui-list-table__table-body-row">
-										<div class="kzui-list-table__table-row-cell kzui-list-table__table-row-cell__quiz-date">
+										<div class="kzui-table__body-row">
+										<div class="kzui-table__row-cell kzui-table__row-cell__quiz-date">
 											<?php
 												$attempt_date = new DateTime( $successful_attempt->attempt_started_at );
 											?>
@@ -111,7 +111,7 @@ if ( $attempt_id ) {
 												<?php echo esc_html( $attempt_date->format( 'h:i:s A' ) ); ?>
 											</p>
 										</div>
-											<div class="kzui-list-table__table-row-cell">
+											<div class="kzui-table__row-cell">
 												<div>
 													<p>
 														<span><?php echo esc_html__( 'Total : ', 'academy' ); ?></span>
@@ -123,7 +123,7 @@ if ( $attempt_id ) {
 													</p>
 												</div>
 											</div>
-											<div class="kzui-list-table__table-row-cell">
+											<div class="kzui-table__row-cell">
 												<div>
 													<p>
 														<span> <?php echo esc_html__( 'Total : ', 'academy' ); ?> </span>
@@ -135,7 +135,7 @@ if ( $attempt_id ) {
 													</p>
 												</div>
 											</div>
-											<div class="kzui-list-table__table-row-cell">
+											<div class="kzui-table__row-cell">
 												<div>
 													<p>
 														<span><?php echo esc_html__( 'Correct : ', 'academy' ); ?> </span>
@@ -147,12 +147,12 @@ if ( $attempt_id ) {
 													</p>
 												</div>
 											</div>
-											<div class="kzui-list-table__table-row-cell">
+											<div class="kzui-table__row-cell">
 												<span class="academy-<?php echo esc_attr( $successful_attempt->attempt_status ); ?>">
 													<?php echo esc_html( $successful_attempt->attempt_status ); ?>
 												</span>
 											</div>
-											<div class="kzui-list-table__table-row-cell">
+											<div class="kzui-table__row-cell">
 												<a href="<?php echo esc_url( add_query_arg( array( 'attempt_id' => $successful_attempt->attempt_id ), $_SERVER['REQUEST_URI'] ) ); ?>">
 													<button type="button" class="academy-btn academy-btn--md academy-btn--preset-light-purple academy-btn--border-purple academy-btn--border-rounded">
 														<?php echo esc_html__( 'Details', 'academy' ); ?>

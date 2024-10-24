@@ -82,18 +82,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 </div>
 
 
-<div class="kzui-list-table kzui-list-table--dashboard-course">
-	<div class="kzui-list-table__container">
-		<div class="kzui-list-table__table kzui-list-table--has-slider">
-			<div class="kzui-list-table__table-head">
-				<div class="kzui-list-table__table-head-row">
-					<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell"><?php esc_html_e( 'Method', 'academy' ); ?></div>
-					<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell"><?php esc_html_e( 'Requested On', 'academy' ); ?></div>
-					<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell"><?php esc_html_e( 'Amount', 'academy' ); ?></div>
-					<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell"><?php esc_html_e( 'Status', 'academy' ); ?></div>
+<div class="kzui-table kzui-table--dashboard-course">
+	<div class="kzui-table__container">
+		<div class="kzui-table__table kzui-table--has-slider">
+			<div class="kzui-table__head">
+				<div class="kzui-table__head-row">
+					<div class="kzui-table__row-cell kzui-table__header-row-cell"><?php esc_html_e( 'Method', 'academy' ); ?></div>
+					<div class="kzui-table__row-cell kzui-table__header-row-cell"><?php esc_html_e( 'Requested On', 'academy' ); ?></div>
+					<div class="kzui-table__row-cell kzui-table__header-row-cell"><?php esc_html_e( 'Amount', 'academy' ); ?></div>
+					<div class="kzui-table__row-cell kzui-table__header-row-cell"><?php esc_html_e( 'Status', 'academy' ); ?></div>
 				</div>
 			</div>
-			<div class="kzui-list-table__table-body">
+			<div class="kzui-table__body">
 				<?php
 				if ( is_array( $withdraw_history ) && count( $withdraw_history ) ) :
 					?>
@@ -101,23 +101,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 					foreach ( $withdraw_history as $withdraw_item ) :
 						$method = is_array( $withdraw_item->method_data ) ? $withdraw_item->method_data : json_decode( $withdraw_item->method_data, true );
 						?>
-						<div class="kzui-list-table__table-body-row">
-							<div class="kzui-list-table__table-row-cell">
+						<div class="kzui-table__body-row">
+							<div class="kzui-table__row-cell">
 								<?php
 									echo esc_html( isset( $method['withdraw_method_type'] ) ? $method['withdraw_method_type'] : '' );
 								?>
 							</div>
-							<div class="kzui-list-table__table-row-cell">
+							<div class="kzui-table__row-cell">
 								<?php
 									echo esc_html( $withdraw_item->updated_at );
 								?>
 							</div>
-							<div class="kzui-list-table__table-row-cell">
+							<div class="kzui-table__row-cell">
 								<?php
 									echo esc_html( $withdraw_item->amount );
 								?>
 							</div>
-							<div class="kzui-list-table__table-row-cell">
+							<div class="kzui-list-table__table-row-cell academy-<?php echo esc_html( $withdraw_item->status ); ?>">
 								<?php
 									echo esc_html( $withdraw_item->status );
 								?>

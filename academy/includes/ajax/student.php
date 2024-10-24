@@ -29,12 +29,12 @@ class Student extends AbstractAjaxHandler {
 		wp_send_json_success( array( 'total_enrolled_students' => $total_enrolled_students ) );
 	}
 
-	public function get_all_students() {
+	public function get_all_students( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'page' => 'integer',
 			'per_page' => 'integer',
 			'search' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$page     = ( isset( $payload['page'] ) ? $payload['page'] : 1 );
 		$per_page = ( isset( $payload['per_page'] ) ? $payload['per_page'] : 10 );
@@ -53,10 +53,10 @@ class Student extends AbstractAjaxHandler {
 		wp_die();
 	}
 
-	public function remove_student() {
+	public function remove_student( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'student_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$student_id       = ( isset( $payload['student_id'] ) ? $payload['student_id'] : 0 );
 		$enrolled_courses = \Academy\Helper::get_enrolled_courses_ids_by_user( $student_id );

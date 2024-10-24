@@ -59,12 +59,7 @@ class PermalinkRewrite {
 	public function change_curriculum_url( $post_link, $id = 0 ) {
 		global $wp_query;
 
-		if ( ! empty( $wp_query->query_vars['post_type'] ) && 'academy_courses' === $wp_query->query_vars['post_type'] ) {
-			update_option( 'academy_current_course_name', $wp_query->query_vars['name'] );
-			return $post_link;
-		}
 		if ( ! (bool) Helper::get_settings( 'is_enabled_lessons_php_render' ) || empty( $wp_query->query_vars['curriculum_type'] ) ) {
-			update_option( 'academy_current_course_name', '' );
 			return $post_link;
 		}
 
@@ -73,7 +68,8 @@ class PermalinkRewrite {
 		$course_rewrite_slug = str_replace( '/', '', $permalinks['course_rewrite_slug'] );
 		$course_post_type = $course_rewrite_slug;
 
-		$course_name = get_option( 'academy_current_course_name' );
+		$course_name = get_query_var( 'course_name' );
+
 		if ( is_object( $post ) && 'academy_quiz' === $post->post_type && $course_name ) {
 			return home_url( "/{$course_post_type}/{$course_name}/quiz/{$post->post_name}/" );
 		} elseif ( is_object( $post ) && 'academy_assignments' === $post->post_type && $course_name ) {

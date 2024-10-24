@@ -24,11 +24,11 @@ class Admin extends AbstractAjaxHandler {
 		);
 	}
 
-	public function update_quiz_attempt_instructor_feedback() {
+	public function update_quiz_attempt_instructor_feedback( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'attempt_id' => 'integer',
 			'instructor_feedback' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$attempt_id = ( isset( $payload['attempt_id'] ) ? $payload['attempt_id'] : 0 );
 		$instructor_feedback = ( isset( $payload['instructor_feedback'] ) ? $payload['instructor_feedback'] : '' );
@@ -48,7 +48,7 @@ class Admin extends AbstractAjaxHandler {
 		wp_send_json_error( __( 'Sorry, Failed to update instructor feedback.', 'academy' ) );
 	}
 
-	public function quiz_answer_manual_review() {
+	public function quiz_answer_manual_review( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'answer_id' => 'integer',
 			'attempt_id' => 'integer',
@@ -57,7 +57,7 @@ class Admin extends AbstractAjaxHandler {
 			'user_id' => 'integer',
 			'user_id' => 'string',
 			'mark_as' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$answer_id = ( isset( $payload['answer_id'] ) ? $payload['answer_id'] : 0 );
 		$attempt_id = ( isset( $payload['attempt_id'] ) ? $payload['attempt_id'] : 0 );

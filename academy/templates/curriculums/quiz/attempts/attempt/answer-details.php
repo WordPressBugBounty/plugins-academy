@@ -10,51 +10,51 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="academy-list-wrap academy-dashboard__content">
 		<div class="academy-quiz-table-wrapper">
 			<div class="academy-list-wrap academy-dashboard__content">
-				<div class="kzui-list-table kzui-list-table--quiz-result-answer-details ">
-					<div class="kzui-list-table__container">
-						<div class="kzui-list-table__table kzui-list-table--has-slider">
-							<div class="kzui-list-table__table-head">
-								<div class="kzui-list-table__table-head-row">
-									<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+				<div class="kzui-table kzui-table--quiz-result-answer-details ">
+					<div class="kzui-table__container">
+						<div class="kzui-table__table kzui-table--has-slider">
+							<div class="kzui-table__head">
+								<div class="kzui-table__head-row">
+									<div class="kzui-table__row-cell kzui-table__header-row-cell">
 									<?php echo esc_html__( 'No', 'academy' ); ?>
 									</div>
-									<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+									<div class="kzui-table__row-cell kzui-table__header-row-cell">
 										<?php echo esc_html__( 'Type', 'academy' ); ?>
 									</div>
-									<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+									<div class="kzui-table__row-cell kzui-table__header-row-cell">
 										<?php echo esc_html__( 'Question', 'academy' ); ?>
 									</div>
-									<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+									<div class="kzui-table__row-cell kzui-table__header-row-cell">
 										<?php echo esc_html__( 'Correct Answer', 'academy' ); ?>
 									</div>
-									<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+									<div class="kzui-table__row-cell kzui-table__header-row-cell">
 										<?php echo esc_html__( 'Given Answer', 'academy' ); ?>
 									</div>
-									<div class="kzui-list-table__table-row-cell kzui-list-table__table-header-row-cell">
+									<div class="kzui-table__row-cell kzui-table__header-row-cell">
 										<?php echo esc_html__( 'Answer', 'academy' ); ?>
 									</div>
 								</div>
 							</div>
-							<div class="kzui-list-table__table-body">
+							<div class="kzui-table__body">
 								<?php
 								$count = 0;
 								foreach ( $attempt_answer_details as $attempt_answer_detail ) :
 									$count ++;
 									$question_type = $attempt_answer_detail->question_type;
 									?>
-									<div class="kzui-list-table__table-body-row">
-										<div class="kzui-list-table__table-row-cell">
+									<div class="kzui-table__body-row">
+										<div class="kzui-table__row-cell">
 											<?php echo esc_html( $count ); ?>
 										</div>
-										<div class="kzui-list-table__table-row-cell">
+										<div class="kzui-table__row-cell">
 											<?php
 											echo esc_html( \Academy\Helper::convert_camel_case_to_words( $question_type ) );
 											?>
 										</div>
-										<div class="kzui-list-table__table-row-cell">
+										<div class="kzui-table__row-cell">
 											<?php echo esc_html( $attempt_answer_detail->question_title ); ?>
 										</div>
-										<div class="kzui-list-table__table-row-cell">
+										<div class="kzui-table__row-cell">
 											<?php
 											foreach ( $attempt_answer_detail->correct_answer as $correct ) :
 												echo is_array( $correct ) ? esc_html( $correct['answer_title'] ) : esc_html( $correct->answer_title ?? $correct );
@@ -69,7 +69,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 												<?php endif;
 											endforeach; ?>
 										</div>
-										<div class="kzui-list-table__table-row-cell">
+										<div class="kzui-table__row-cell">
 											<?php
 											foreach ( $attempt_answer_detail->given_answer as $given ) :
 												if ( isset( $given->image_url ) ) : ?>
@@ -88,7 +88,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 											endforeach;
 											?>
 										</div>
-										<div class="kzui-list-table__table-row-cell">
+										<div class="kzui-table__row-cell">
 											<?php if ( $attempt_answer_detail->is_correct ) : ?>
 												<span class="academy-passed">
 													<?php echo esc_html( 'Correct' ); ?>

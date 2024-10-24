@@ -20,14 +20,14 @@ class Admin extends AbstractAjaxHandler {
 		);
 	}
 
-	public function fetch_products() {
+	public function fetch_products( $payload_data ) {
 		global $wpdb;
 		$post_type               = 'product';
 		$paid_course_product_ids = [];
 		$payload                 = Sanitizer::sanitize_payload( [
 			'postId'  => 'integer',
 			'keyword' => 'string',
-		], $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$postId  = isset( $payload['postId'] ) ? $payload['postId'] : 0;
 		$keyword = isset( $payload['keyword'] ) ? $payload['keyword'] : '';

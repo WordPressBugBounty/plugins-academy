@@ -30,9 +30,6 @@ class Migration {
 		// Fix Course Wishlist Issue - when all users come to v1.4.0 then it will be deleted
 		$this->migrate_1_4_0( $academy_version );
 
-		// Fix Course Announcement & QA Migration - when all users come to v1.6.0 then it will be deleted
-		$this->migrate_1_6_0( $academy_version );
-
 		// Course Announcement data to migration global announcement -  when all users come to v1.8.2 then it will be deleted
 		$this->migrate_1_8_2( $academy_version );
 
@@ -128,24 +125,6 @@ class Migration {
 			}
 			update_user_meta( $user_id, 'academy_is_user_migrate_completed_topics', true );
 		}//end if
-	}
-
-	public function migrate_1_6_0( $academy_version ) {
-		if ( version_compare( $academy_version, '1.6.0', '<' ) ) {
-			global $wpdb;
-			$courses = $wpdb->get_results(
-				$wpdb->prepare("SELECT ID 
-				FROM {$wpdb->posts} 
-				WHERE post_type = %s 
-				AND post_status = %s", 'academy_courses', 'publish')
-			);
-			if ( is_array( $courses ) ) {
-				foreach ( $courses as $course ) {
-					update_post_meta( $course->ID, 'academy_is_enabled_course_qa', true );
-					update_post_meta( $course->ID, 'academy_is_enabled_course_announcements', true );
-				}
-			}
-		}
 	}
 
 	public function migrate_1_9_14( $academy_version ) {

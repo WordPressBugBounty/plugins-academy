@@ -30,7 +30,7 @@ $academy_comments_count = get_comments_number();
 		}
 
 		if ( have_comments() ) {
-			$paged = get_query_var( 'cpage' ) ? get_query_var( 'cpage' ) : 1;
+			$paged = get_query_var( 'cpage' ) ? get_query_var( 'cpage' ) : 1; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 			$comments_per_page = 5;
 
 			// Fetch approved comments for the current post.
@@ -42,14 +42,14 @@ $academy_comments_count = get_comments_number();
 			);
 
 			$comment_query = new WP_Comment_Query();
-			$comments = $comment_query->query( $args );
+			$comments = $comment_query->query( $args ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
 
 		if ( $comments ) :
 			?>
 			<ol class="academy-review-list">
 				<?php
-				foreach ( $comments as $comment ) :
+				foreach ( $comments as $comment ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 					apply_filters( 'academy/templates/course_review_list_args', array( academy_review_lists( $comment, null, null ) ) );
 				endforeach;
 				?>

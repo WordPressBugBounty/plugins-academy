@@ -36,7 +36,7 @@ endif; ?>
 <?php elseif ( $is_enrolled ) : ?>
 	<div class="academy-widget-enroll__continue">
 		<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $continue_learning ); ?>">
-			<?php echo esc_html__( $total_completed_lessons ? 'Continue learning' : 'Start Course', 'academy' ); ?>
+			<?php echo $total_completed_lessons ? esc_html__( 'Continue learning', 'academy' ) : esc_html__( 'Start Course', 'academy' ); ?> 
 		</a>
 	</div>
 <?php elseif ( $prices ) :

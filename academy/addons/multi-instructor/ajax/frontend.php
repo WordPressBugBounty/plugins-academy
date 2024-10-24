@@ -64,7 +64,7 @@ class Frontend extends AbstractAjaxHandler {
 		wp_die();
 	}
 
-	public function set_user_withdraw_settings() {
+	public function set_user_withdraw_settings( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'withdrawMethodType' => 'string',
 			'paypalEmailAddress' => 'string',
@@ -74,7 +74,7 @@ class Frontend extends AbstractAjaxHandler {
 			'bankName' => 'string',
 			'bankIBAN' => 'string',
 			'bankSWIFTCode' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$withdraw_method_type = ( isset( $payload['withdrawMethodType'] ) ? $payload['withdrawMethodType'] : '' );
 		$paypal_email_address = ( isset( $payload['paypalEmailAddress'] ) ? $payload['paypalEmailAddress'] : '' );
@@ -107,11 +107,11 @@ class Frontend extends AbstractAjaxHandler {
 		wp_die();
 	}
 
-	public function withdraw_request_by_user() {
+	public function withdraw_request_by_user( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'withdrawAmount' => 'integer',
 			'withdrawMethodType' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$user_id = get_current_user_id();
 

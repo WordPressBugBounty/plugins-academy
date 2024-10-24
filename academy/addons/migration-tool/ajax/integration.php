@@ -5,11 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Academy;
-use Academy\Helper;
 use Academy\Classes\Sanitizer;
 use Academy\Classes\AbstractAjaxHandler;
-
 use AcademyMigrationTool\Classes\Learnpress;
 use AcademyMigrationTool\Classes\Tutor;
 use AcademyMigrationTool\Classes\Learndash;
@@ -41,11 +38,11 @@ class Integration extends AbstractAjaxHandler {
 		);
 	}
 
-	public function prepare_other_lms_to_alms_migration() {
+	public function prepare_other_lms_to_alms_migration( $payload_data ) {
 		global $wpdb;
 		$payload = Sanitizer::sanitize_payload([
 			'pluginName' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$pluginName = $payload['pluginName'];
 		if ( empty( $pluginName ) ) {
@@ -94,10 +91,10 @@ class Integration extends AbstractAjaxHandler {
 		wp_send_json_success( $courses );
 	}
 
-	public function learnpress_to_academy_migration() {
+	public function learnpress_to_academy_migration( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$LpToAlmsMigration = new Learnpress( $course_id );
@@ -106,10 +103,10 @@ class Integration extends AbstractAjaxHandler {
 		wp_send_json_success( $response );
 	}
 
-	public function tutor_to_academy_migration() {
+	public function tutor_to_academy_migration( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$TrToAlmsMigration = new Tutor( $course_id );
@@ -118,10 +115,10 @@ class Integration extends AbstractAjaxHandler {
 		wp_send_json_success( $response );
 	}
 
-	public function learndash_to_academy_migration() {
+	public function learndash_to_academy_migration( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$LDToAlmsMigration = new Learndash( $course_id );
@@ -129,10 +126,10 @@ class Integration extends AbstractAjaxHandler {
 		$response = $LDToAlmsMigration->get_logs();
 		wp_send_json_success( $response );
 	}
-	public function masterstudy_to_academy_migration() {
+	public function masterstudy_to_academy_migration( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$MasterstudyToAlmsMigration = new Masterstudy( $course_id );
@@ -141,10 +138,10 @@ class Integration extends AbstractAjaxHandler {
 		wp_send_json_success( $response );
 	}
 
-	public function lifter_to_academy_migration() {
+	public function lifter_to_academy_migration( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$LifterToAlmsMigration = new Lifterlms( $course_id );

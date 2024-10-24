@@ -5,8 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Academy;
-use Academy\Helper;
 use Academy\Classes\Sanitizer;
 use Academy\Classes\AbstractAjaxHandler;
 
@@ -27,10 +25,10 @@ class Instructor extends AbstractAjaxHandler {
 		);
 	}
 
-	public function get_instructors_by_course_id() {
+	public function get_instructors_by_course_id( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$results   = [];
@@ -55,11 +53,11 @@ class Instructor extends AbstractAjaxHandler {
 		wp_die();
 	}
 
-	public function remove_instructor_from_course() {
+	public function remove_instructor_from_course( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
 			'instructor_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id     = $payload['course_id'];
 		$instructor_id = $payload['instructor_id'];

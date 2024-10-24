@@ -3,8 +3,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-	use \Academy\Helper;
-	$user = wp_get_current_user();
+use \Academy\Helper;
+$user = wp_get_current_user();
 ?>
 <div class="academy-frontend-dashboard__sidebar" id="academy-frontend-dashboard-sidebar">
 	<div class="academy-frontend-dashboard__user">

@@ -69,11 +69,11 @@ class Miscellaneous extends AbstractAjaxHandler {
 		wp_send_json_success( $analytics->get_analytics() );
 	}
 
-	public function change_post_status() {
+	public function change_post_status( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload( [
 			'post_id' => 'integer',
 			'status'  => 'string',
-		], $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$post_id   = $payload['post_id'];
 		$status    = $payload['status'];
@@ -84,12 +84,12 @@ class Miscellaneous extends AbstractAjaxHandler {
 		wp_send_json_success( $is_update );
 	}
 
-	public function fetch_posts() {
+	public function fetch_posts( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload( [
 			'postId'   => 'integer',
 			'postType' => 'string',
 			'keyword'  => 'string',
-		], $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$post_type = ( isset( $payload['postType'] ) ? $payload['postType'] : 'page' );
 		$postId    = ( isset( $payload['postId'] ) ? $payload['postId'] : 0 );
@@ -150,12 +150,12 @@ class Miscellaneous extends AbstractAjaxHandler {
 		wp_send_json_success( $markup );
 	}
 
-	public function mark_topic_complete() {
+	public function mark_topic_complete( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload( [
 			'course_id'  => 'integer',
 			'topic_type' => 'string',
 			'topic_id'   => 'integer',
-		], $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id  = $payload['course_id'];
 		$topic_type = $payload['topic_type'];
@@ -189,7 +189,7 @@ class Miscellaneous extends AbstractAjaxHandler {
 		wp_send_json_success( $saved_topics_lists );
 	}
 
-	public function saved_user_info() {
+	public function saved_user_info( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload( [
 			'first_name'                  => 'string',
 			'last_name'                   => 'string',
@@ -203,7 +203,7 @@ class Miscellaneous extends AbstractAjaxHandler {
 			'academy_facebook_url'        => 'string',
 			'academy_twitter_url'         => 'string',
 			'academy_linkedin_url'        => 'string',
-		], $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$user_info = $payload;
 
@@ -214,12 +214,12 @@ class Miscellaneous extends AbstractAjaxHandler {
 		wp_send_json_success( $user_info );
 	}
 
-	public function reset_password() {
+	public function reset_password( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload( [
 			'current_password'     => 'string',
 			'new_password'         => 'string',
 			'confirm_new_password' => 'string',
-		], $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$current_password     = ( $payload['current_password'] ? $payload['current_password'] : '' );
 		$new_password         = ( $payload['new_password'] ? $payload['new_password'] : '' );

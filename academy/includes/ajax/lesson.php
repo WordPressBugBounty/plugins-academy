@@ -105,10 +105,14 @@ class Lesson extends AbstractAjaxHandler {
 		}//end if
 		wp_send_json_error( __( 'Failed to open the file', 'academy' ) );
 	}
-	public function render_lesson() {
+	public function render_lesson( $payload_data ) {
 		check_ajax_referer( 'academy_nonce', 'security' );
-		$course_id = (int) sanitize_text_field( $_POST['course_id'] );
-		$lesson_id = (int) sanitize_text_field( $_POST['lesson_id'] );
+		$payload = Sanitizer::sanitize_payload( array(
+			'course_id' => 'integer',
+			'lesson_id' => 'integer',
+		), $payload_data );
+		$course_id = $payload_data['course_id'];
+		$lesson_id = $payload['lesson_id'];
 		$user_id   = (int) get_current_user_id();
 
 		if ( \Academy\Helper::has_permission_to_access_lesson_curriculum( $course_id, $lesson_id, $user_id ) ) {
@@ -167,11 +171,11 @@ class Lesson extends AbstractAjaxHandler {
 		wp_send_json_error( array( 'message' => __( 'Access Denied', 'academy' ) ) );
 		wp_die();
 	}
-	public function lesson_slug_unique_check() {
+	public function lesson_slug_unique_check( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'ID' => 'integer',
 			'lesson_name' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		// Updating
 		if ( isset( $payload['ID'] ) && ! empty( $payload['ID'] ) ) {

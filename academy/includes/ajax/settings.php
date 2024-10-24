@@ -18,9 +18,9 @@ class Settings extends AbstractAjaxHandler {
 		);
 	}
 
-	public function update_base_settings() {
+	public function update_base_settings( $payload_data ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		do_action( 'academy/admin/before_save_settings', $_POST, 'base' );
+		do_action( 'academy/admin/before_save_settings', $payload_data, 'base' );
 		$payload = Sanitizer::sanitize_payload([
 			'is_enabled_academy_web_font' => 'boolean',
 			'is_enabled_academy_login' => 'boolean',
@@ -78,7 +78,7 @@ class Settings extends AbstractAjaxHandler {
 			'store_link_inside_frontend_dashboard' => 'boolean',
 			'store_link_label_inside_frontend_dashboard' => 'string',
 			'is_enabled_fd_link_inside_woo_dashboard' => 'boolean',
-			'woo_dashboard_fd_link_label' => 'boolean',
+			'woo_dashboard_fd_link_label' => 'string',
 			'is_enabled_fd_link_inside_woo_order_page' => 'boolean',
 			'woo_order_page_fd_link_label' => 'string',
 			// Withdrawal
@@ -92,7 +92,7 @@ class Settings extends AbstractAjaxHandler {
 			'fee_deduction_name' => 'string',
 			'fee_deduction_amount' => 'integer',
 			'fee_deduction_type' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$default = BaseSettings::get_default_data();
 		$is_update = BaseSettings::save_settings( [
@@ -165,8 +165,7 @@ class Settings extends AbstractAjaxHandler {
 			'is_enabled_instructor_bank_withdraw' => $payload['is_enabled_instructor_bank_withdraw'] ?? $default['is_enabled_instructor_bank_withdraw'],
 			'instructor_bank_withdraw_instruction' => $payload['instructor_bank_withdraw_instruction'] ?? $default['instructor_bank_withdraw_instruction'],
 		]);
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		do_action( 'academy/admin/after_save_settings', $is_update, 'base', $_POST );
+		do_action( 'academy/admin/after_save_settings', $is_update, 'base', $payload_data );
 		wp_send_json_success( $is_update );
 	}
 

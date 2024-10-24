@@ -10,8 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<button type="button" class="academy-btn academy-btn--bg-purple academy-btn-popup-login">
 			<span class="academy-icon academy-icon--cart" aria-hidden="true"></span>
 			<?php echo 'layout_two' !== $card_style ? esc_html__( 'Add to cart', 'academy' ) : ''; ?>
-		</button>
-		
+		</button>	
 	<?php else : ?>
 		<div class="academy-widget-enroll__add-to-cart academy-widget-enroll__add-to-cart--surecart">
 			<?php foreach ( $prices as $price ) : ?>
@@ -33,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						);
 						?>
 				">
-				<?php esc_html_e( 'Add to Cart', 'academy-pro' ); ?>
+				<?php esc_html_e( 'Add to Cart', 'academy' ); ?>
 				</a>
 			<?php endforeach; ?>
 		</div>

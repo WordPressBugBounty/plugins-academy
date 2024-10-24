@@ -51,8 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php echo esc_html( '(' . $rating->rating_count . ')' ); ?>
 					</span>
 				<?php endif; ?>
-			</div>
-			
+			</div>	
 			<div>
 				<?php
 				// Load template for price display

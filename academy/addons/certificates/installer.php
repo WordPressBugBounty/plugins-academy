@@ -70,7 +70,7 @@ class Installer {
 
 		foreach ( $certificates as $certificate ) {
 			$title = $certificate['title'];
-			 $file_path = ACADEMY_ADDONS_DIR_PATH . $certificate['file'];
+			$file_path = ACADEMY_ADDONS_DIR_PATH . $certificate['file'];
 
 			if ( file_exists( $file_path ) ) {
 				ob_start();

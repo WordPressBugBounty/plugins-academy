@@ -49,11 +49,11 @@ class Frontend extends AbstractAjaxHandler {
 		}
 	}
 
-	public function render_quiz() {
+	public function render_quiz( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
 			'quiz_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$quiz_id = $payload['quiz_id'];
@@ -79,12 +79,12 @@ class Frontend extends AbstractAjaxHandler {
 		wp_send_json_error( esc_html__( 'Access Denied', 'academy' ) );
 	}
 
-	public function render_quiz_answers() {
+	public function render_quiz_answers( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
 			'question_type' => 'string',
 			'question_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$question_id = $payload['question_id'];
@@ -104,13 +104,13 @@ class Frontend extends AbstractAjaxHandler {
 		wp_die();
 	}
 
-	public function insert_quiz_answers() {
+	public function insert_quiz_answers( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
 			'quiz_id' => 'integer',
 			'attempt_id' => 'integer',
 			'attempt_answers' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$quiz_id = $payload['quiz_id'];
@@ -127,7 +127,7 @@ class Frontend extends AbstractAjaxHandler {
 			// Check if JSON data was received
 			if ( ! empty( $attempt_answers ) ) {
 				// Decode the JSON string into a PHP array
-				$attempt_answers = json_decode( stripslashes( $attempt_answers ), true );
+				$attempt_answers = json_decode( $attempt_answers, true );
 				$results = [];
 				if ( is_array( $attempt_answers ) && count( $attempt_answers ) ) {
 					$achieved_score = 0;
@@ -203,7 +203,7 @@ class Frontend extends AbstractAjaxHandler {
 		wp_send_json_error( esc_html__( 'Access Denied', 'academy' ) );
 	}
 
-	public function insert_quiz_answer() {
+	public function insert_quiz_answer( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
 			'quiz_id' => 'integer',
@@ -212,7 +212,7 @@ class Frontend extends AbstractAjaxHandler {
 			'question_score' => 'float',
 			'question_type' => 'string',
 			'given_answer' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = $payload['course_id'];
 		$quiz_id = $payload['quiz_id'];
@@ -264,12 +264,12 @@ class Frontend extends AbstractAjaxHandler {
 		wp_die();
 	}
 
-	public function get_student_quiz_attempt_details() {
+	public function get_student_quiz_attempt_details( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
 			'attempt_id' => 'integer',
 			'user_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$attempt_id = $payload['attempt_id'];
 		$user_id = ( isset( $payload['user_id'] ) ? $payload['user_id'] : 0 );

@@ -262,7 +262,7 @@ class FontVariables
 					'useOTL' => 0xFF,
 				],
 				/* Arabic fonts */
-				"xbriyaz" => [
+				"xb_riyaz" => [
 					'R' => "XB Riyaz.ttf",
 					'B' => "XB RiyazBd.ttf",
 					'I' => "XB RiyazIt.ttf",

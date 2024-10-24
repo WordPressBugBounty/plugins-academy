@@ -27,10 +27,10 @@ class Admin extends AbstractAjaxHandler {
 		);
 	}
 
-	public function edd_get_download() {
+	public function edd_get_download( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'productId' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$downloadId = isset( $payload['productId'] ) ? $payload['productId'] : 0;
 		$download   = new \EDD_Download( $downloadId );

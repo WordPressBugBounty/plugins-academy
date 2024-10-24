@@ -44,7 +44,7 @@ class Sanitizer {
 		return $sanitized_payload;
 	}
 	public static function sanitize_json_form_data( $data, $schema = [] ) {
-		$data = is_array( $data ) ? $data : json_decode( stripslashes( $data ) );
+		$data = is_array( $data ) ? $data : json_decode( $data );
 		if ( is_array( $data ) ) {
 			$results = [];
 			$has_schema = count( $schema );
@@ -68,7 +68,7 @@ class Sanitizer {
 		return sanitize_text_field( $data );
 	}
 	public static function sanitize_array_field( $array_data ) {
-		$array_data = is_array( $array_data ) ? $array_data : json_decode( stripslashes( $array_data ) );
+		$array_data = is_array( $array_data ) ? $array_data : json_decode( $array_data );
 		$boolean = [ 'true', 'false', '1', '0' ];
 		if ( is_array( $array_data ) ) {
 			foreach ( $array_data as $key => &$value ) {

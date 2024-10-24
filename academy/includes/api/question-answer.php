@@ -19,6 +19,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 		$self->namespace = ACADEMY_PLUGIN_SLUG . '/v1';
 		$self->rest_base = 'question_answer';
 		add_action( 'rest_api_init', array( $self, 'register_routes' ) );
+		add_filter( 'rest_post_dispatch', array( $self, 'add_x_wp_total_header' ), 10, 3 );
 		add_action( 'wp_ajax_academy/insert_qa', array( $self, 'insert_qa' ) );
 		add_action( 'wp_ajax_academy/update_qa', array( $self, 'update_qa' ) );
 		add_action( 'wp_ajax_academy/delete_qa', array( $self, 'delete_qa' ) );
@@ -69,6 +70,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 			'parent' => $parent,
 			'offset' => $offset,
 			'page' => $page,
+			'number' => $per_page,
 			'type' => 'academy_qa',
 		);
 
@@ -275,4 +277,44 @@ class QuestionAnswer extends \WP_REST_Controller {
 		}
 		wp_send_json_error( __( 'Sorry, you have no permission to delete QA.', 'academy' ) );
 	}
+
+	public function add_x_wp_total_header( $response, $handler, $request ) {
+		if ( '/' . $this->namespace . '/' . $this->rest_base === $request->get_route() ) {
+			$total = 0;
+			if ( ! current_user_can( 'manage_options' ) ) {
+				$total = $this->get_total_number_of_qa( get_current_user_id() );
+			} else {
+				$total = $this->get_total_number_of_qa();
+			}
+
+			$response->header( 'x-wp-total', $total );
+		}
+		return $response;
+	}
+
+	private function get_total_number_of_qa( $user_id = 0 ) {
+		global $wpdb;
+
+		// Base query
+		$query = "SELECT COUNT(comment_ID)
+			FROM {$wpdb->comments}
+			WHERE comment_type = %s
+			AND comment_agent = %s
+			AND comment_parent = %d";
+
+		$query_params = array( 'academy_qa', 'AcademyLMS', 0 );
+
+		if ( $user_id ) {
+			$course_ids = \Academy\Helper::get_course_ids_by_instructor_id( $user_id );
+
+			if ( ! empty( $course_ids ) ) {
+				$placeholders = implode( ',', array_fill( 0, count( $course_ids ), '%d' ) );
+				$query .= " AND comment_post_ID IN ($placeholders)";
+				$query_params = array_merge( $query_params, $course_ids );
+			}
+		}
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		return $wpdb->get_var( $wpdb->prepare( $query, $query_params ) );
+	}
+
 }

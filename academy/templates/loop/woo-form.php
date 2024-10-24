@@ -28,5 +28,4 @@ if ( $force_login_before_enroll && ! is_user_logged_in() ) : ?>
 			<?php echo 'layout_two' !== $card_style ? esc_html( $product->single_add_to_cart_text() ) : ''; ?>
 		</button>
 	</form>
-	
 <?php endif; ?>

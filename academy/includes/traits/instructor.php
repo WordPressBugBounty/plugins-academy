@@ -190,6 +190,7 @@ trait Instructor {
 		update_user_meta( $user_id, 'academy_instructor_status', 'pending' );
 		delete_user_meta( $user_id, 'academy_instructor_approved' );
 		$instructor = new \WP_User( $user_id );
+		$instructor->add_role( 'academy_student' );
 		$instructor->remove_role( 'academy_instructor' );
 	}
 	public static function remove_instructor_role( $user_id ) {

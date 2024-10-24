@@ -23,13 +23,13 @@ class Instructor extends AbstractAjaxHandler {
 		);
 	}
 
-	public function get_all_instructors() {
+	public function get_all_instructors( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'page' => 'integer',
 			'per_page' => 'integer',
 			'search' => 'string',
 			'status' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$page     = ( isset( $payload['page'] ) ? $payload['page'] : 1 );
 		$per_page = ( isset( $payload['per_page'] ) && ! empty( $payload['per_page'] ) ? $payload['per_page'] : 10 );
@@ -52,11 +52,11 @@ class Instructor extends AbstractAjaxHandler {
 		wp_send_json_success( $results );
 	}
 
-	public function update_instructor_status() {
+	public function update_instructor_status( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'ID' => 'integer',
 			'status' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$ID     = $payload['ID'];
 		$status = ( isset( $payload['status'] ) ? $payload['status'] : '' );

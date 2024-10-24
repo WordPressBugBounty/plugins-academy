@@ -68,22 +68,22 @@ class Course extends AbstractAjaxHandler {
 		);
 	}
 
-	public function get_course_slug() {
+	public function get_course_slug( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'ID' => 'integer',
 			'new_title' => 'string',
 			'new_slug' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		wp_send_json_success( Helper::get_sample_permalink_args( $payload['ID'], $payload['new_title'], $payload['new_slug'] ) );
 	}
 
-	public function fetch_course_category() {
+	public function fetch_course_category( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'postId' => 'integer',
 			'keyword' => 'string',
 			'type' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$catId   = ( isset( $payload['postId'] ) ? $payload['postId'] : 0 );
 		$keyword = ( isset( $payload['keyword'] ) ? $payload['keyword'] : '' );
@@ -113,10 +113,10 @@ class Course extends AbstractAjaxHandler {
 		wp_send_json_success( $results );
 	}
 
-	public function render_enrolled_courses() {
+	public function render_enrolled_courses( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'request_type' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$request_type = ( isset( $payload['request_type'] ) ? $payload['request_type'] : 'enrolled' );
 		$user_id = get_current_user_id();
@@ -282,7 +282,7 @@ class Course extends AbstractAjaxHandler {
 	}
 
 
-	public function course_add_to_wishlist() {
+	public function course_add_to_wishlist( $payload_data ) {
 		if ( ! is_user_logged_in() ) {
 			if ( \Academy\Helper::get_settings( 'is_enabled_academy_login', true ) ) {
 				ob_start();
@@ -296,7 +296,7 @@ class Course extends AbstractAjaxHandler {
 		global $wpdb;
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id          = $payload['course_id'];
 		$user_id            = get_current_user_id();
@@ -316,11 +316,11 @@ class Course extends AbstractAjaxHandler {
 		wp_send_json_success( array( 'is_added' => true ) );
 	}
 
-	public function course_add_to_favorite() {
+	public function course_add_to_favorite( $payload_data ) {
 		global $wpdb;
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id          = $payload['course_id'];
 		$user_id            = get_current_user_id();
@@ -341,7 +341,7 @@ class Course extends AbstractAjaxHandler {
 	}
 
 
-	public function archive_course_filter() {
+	public function archive_course_filter( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'search' => 'string',
 			'category' => 'array',
@@ -357,7 +357,7 @@ class Course extends AbstractAjaxHandler {
 			'ids'   => 'string',
 			'count' => 'integer',
 			'exclude_ids' => 'array',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$search      = ( isset( $payload['search'] ) ? $payload['search'] : '' );
 		$category    = ( isset( $payload['category'] ) ? $payload['category'] : [] );
@@ -492,7 +492,7 @@ class Course extends AbstractAjaxHandler {
 	}
 
 
-	public function enroll_course() {
+	public function enroll_course( $payload_data ) {
 		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'is_required_logged_in' => true ) );
 		}
@@ -500,7 +500,7 @@ class Course extends AbstractAjaxHandler {
 		$user_id = get_current_user_id();
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$course_id = (int) $payload['course_id'];
 		$course_type = get_post_meta( $course_id, 'academy_course_type', true );
@@ -515,11 +515,11 @@ class Course extends AbstractAjaxHandler {
 		wp_send_json_error( __( 'Failed to enrolled course.', 'academy' ) );
 	}
 
-	public function complete_course() {
+	public function complete_course( $payload_data ) {
 		$user_id = get_current_user_id();
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 		$course_id = $payload['course_id'];
 		$has_incomplete_topic = false;
 		$curriculum_lists = \Academy\Helper::get_course_curriculum( $course_id );
@@ -602,12 +602,12 @@ class Course extends AbstractAjaxHandler {
 		wp_send_json_error( __( 'Failed, try again.', 'academy' ) );
 	}
 
-	public function add_course_review() {
+	public function add_course_review( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
 			'rating' => 'integer',
 			'review' => 'post',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 		$course_id = $payload['course_id'];
 		$user_id = get_current_user_id();
 		$current_user = get_userdata( $user_id );
@@ -667,11 +667,11 @@ class Course extends AbstractAjaxHandler {
 		wp_send_json_error( __( 'Sorry, Failed to add review.', 'academy' ) );
 	}
 
-	public function get_course_details() {
+	public function get_course_details( $payload_data ) {
 		$student_id = get_current_user_id();
 		$payload = Sanitizer::sanitize_payload([
 			'courseID' => 'integer',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 		$course_id = isset( $payload['courseID'] ) ? $payload['courseID'] : 0;
 		$is_administrator = current_user_can( 'administrator' );
 		$is_instructor    = \Academy\Helper::is_instructor_of_this_course( $student_id, $course_id );

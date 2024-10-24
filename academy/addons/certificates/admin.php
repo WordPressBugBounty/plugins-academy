@@ -14,9 +14,10 @@ class Admin {
 	public function dispatch_hooks() {
 		add_filter( 'admin_init', array( $this, 'redirect_academy_certificate' ) );
 	}
-	function redirect_academy_certificate() {
+	public function redirect_academy_certificate() {
 		global $pagenow;
-		if ( $pagenow == 'edit.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] === 'academy_certificate' ) {
+		$post_type = isset( $_GET['post_type'] ) ? sanitize_key( $_GET['post_type'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( 'edit.php' === $pagenow && $post_type && 'academy_certificate' === $post_type ) {
 			$new_url = admin_url( 'admin.php?page=academy-certificates' );
 			wp_safe_redirect( $new_url );
 			exit;

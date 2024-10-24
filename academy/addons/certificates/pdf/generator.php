@@ -124,7 +124,13 @@ class Generator extends FileUpload {
 	}
 
 	public function custom_default_css() {
-		$css = file_get_contents( ACADEMY_ADDONS_DIR_PATH . '/certificates/assets/css/gutenberg-styles.css' );
+		$file_path = ACADEMY_ADDONS_DIR_PATH . '/certificates/assets/css/gutenberg-styles.css';
+		$css = '';
+		if ( file_exists( $file_path ) && is_readable( $file_path ) ) {
+			$css = file_get_contents( $file_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		} else {
+			$css = esc_html__( "The File doesn't Exist", 'academy' );
+		}
 
 		return $css;
 	}

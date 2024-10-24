@@ -43,7 +43,7 @@ abstract class AbstractAjaxHandler {
 		}
 
 		if ( is_callable( $details['callback'] ) ) {
-			call_user_func( $details['callback'] );
+			call_user_func( $details['callback'], wp_unslash( $_POST ) );
 		} else {
 			wp_send_json_error( 'Invalid callback method.' );
 		}

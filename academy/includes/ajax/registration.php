@@ -7,7 +7,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Academy\Classes\Sanitizer;
 use Academy\Classes\AbstractAjaxHandler;
-use Academy\Admin\Settings\FormBuilder;
 
 class Registration extends AbstractAjaxHandler {
 	public function __construct() {
@@ -27,14 +26,14 @@ class Registration extends AbstractAjaxHandler {
 		);
 	}
 
-	public function register_student() {
+	public function register_student( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'first_name' => 'string',
 			'last_name' => 'string',
 			'username' => 'string',
 			'email' => 'string',
 			'password' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$first_name = $payload['first_name'];
 		$last_name  = $payload['last_name'];
@@ -64,14 +63,14 @@ class Registration extends AbstractAjaxHandler {
 		wp_send_json_error( $student_id );
 	}
 
-	public function register_instructor() {
+	public function register_instructor( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'first_name' => 'string',
 			'last_name' => 'string',
 			'username' => 'string',
 			'email' => 'string',
 			'password' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$first_name = $payload['first_name'];
 		$last_name  = $payload['last_name'];
@@ -101,16 +100,16 @@ class Registration extends AbstractAjaxHandler {
 	}
 
 
-	public function save_instructor_form_settings() {
+	public function save_instructor_form_settings( $payload_data ) {
 		// Retrieve the JSON data sent via AJAX
-		$json_data = isset( $_POST['form_fields'] ) ? $_POST['form_fields'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$json_data = isset( $payload_data['form_fields'] ) ? $payload_data['form_fields'] : '';
 		$form_settings = get_option( 'academy_form_builder_settings' );
 		$form_settings = json_decode( $form_settings, true );
 
 		// Check if JSON data was received
 		if ( ! empty( $json_data ) ) {
 			// Decode the JSON string into a PHP array
-			$json_data = json_decode( stripslashes( $json_data ), true );
+			$json_data = json_decode( $json_data, true );
 			if ( is_array( $json_data ) ) {
 				$settings = [];
 				foreach ( $json_data as $json_data_item ) {
@@ -146,16 +145,16 @@ class Registration extends AbstractAjaxHandler {
 		wp_send_json_success( isset( $form_settings['instructor'] ) ? $form_settings['instructor'] : [] );
 	}
 
-	public function save_student_form_settings() {
+	public function save_student_form_settings( $payload_data ) {
 		// Retrieve the JSON data sent via AJAX
-		$json_data = isset( $_POST['form_fields'] ) ? $_POST['form_fields'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$json_data = isset( $payload_data['form_fields'] ) ? $payload_data['form_fields'] : '';
 		$form_settings = get_option( 'academy_form_builder_settings' );
 		$form_settings = json_decode( $form_settings, true );
 
 		// Check if JSON data was received
 		if ( ! empty( $json_data ) ) {
 			// Decode the JSON string into a PHP array
-			$json_data = json_decode( stripslashes( $json_data ), true );
+			$json_data = json_decode( $json_data, true );
 			if ( is_array( $json_data ) ) {
 				$settings = [];
 				foreach ( $json_data as $json_data_item ) {

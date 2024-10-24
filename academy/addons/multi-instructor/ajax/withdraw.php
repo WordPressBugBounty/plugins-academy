@@ -5,8 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Academy;
-use Academy\Helper;
 use Academy\Classes\Sanitizer;
 use Academy\Classes\AbstractAjaxHandler;
 
@@ -24,12 +22,12 @@ class Withdraw extends AbstractAjaxHandler {
 		);
 	}
 
-	public function get_all_withdraw_request() {
+	public function get_all_withdraw_request( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'page' => 'integer',
 			'per_page' => 'integer',
 			'status' => 'string'
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$page = ( isset( $payload['page'] ) ? $payload['page'] : 1 );
 		$per_page = ( isset( $payload['per_page'] ) ? $payload['per_page'] : 10 );
@@ -45,11 +43,11 @@ class Withdraw extends AbstractAjaxHandler {
 		wp_die();
 	}
 
-	public function update_withdraw_status() {
+	public function update_withdraw_status( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'ID' => 'integer',
 			'statusTo' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $payload_data );
 
 		$ID = ( isset( $payload['ID'] ) ? $payload['ID'] : 0 );
 		$statusTo = ( isset( $payload['statusTo'] ) ? $payload['statusTo'] : '' );
