@@ -15,7 +15,7 @@ if ( count( $tags ) ) :
 		<label>
 			<span><?php echo esc_html( $tag_item->name ); ?></span>
 			<input class="academy-archive-course-filter" type="checkbox" name="tags"
-				value="<?php echo esc_attr( $tag_item->slug ); ?>" />
+				value="<?php echo esc_attr( urldecode( $tag_item->slug ) ); ?>" />
 			<span class="checkmark"></span>
 		</label>
 		<?php

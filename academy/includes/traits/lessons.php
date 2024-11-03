@@ -56,7 +56,7 @@ trait Lessons {
 	public static function get_lesson_slug( $ID ) {
 		global $wpdb;
 		$lesson  = $wpdb->get_results( $wpdb->prepare( "SELECT lesson_name FROM {$wpdb->prefix}academy_lessons WHERE ID=%d", $ID ), OBJECT );
-		return current( $lesson )->lesson_name;
+		return isset( $lesson[0] ) ? (string) $lesson[0]->lesson_name : '';
 	}
 	public static function get_lesson_meta_data( $ID ) {
 		global $wpdb;

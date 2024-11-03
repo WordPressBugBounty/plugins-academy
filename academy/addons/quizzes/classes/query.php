@@ -486,6 +486,12 @@ class Query {
 		return current( $attempt );
 	}
 
+	public static function get_all_quiz_attempts() {
+		global $wpdb;
+		$attempt = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}academy_quiz_attempts", OBJECT );
+		return $attempt;
+	}
+
 	public static function get_quiz_answer( $ID ) {
 		global $wpdb;
 		$answer   = $wpdb->get_results( $wpdb->prepare( "SELECT answer_id, quiz_id, answer_title, answer_content, image_id, view_format, answer_order, answer_created_at, answer_updated_at FROM {$wpdb->prefix}academy_quiz_answers WHERE answer_id=%d", $ID ), OBJECT );

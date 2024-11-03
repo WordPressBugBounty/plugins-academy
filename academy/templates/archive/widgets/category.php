@@ -15,7 +15,7 @@ if ( count( $categories ) ) :
 		<label class="parent-term">
 			<span><?php echo esc_html( $parent_category->name ); ?></span>
 			<input class="academy-archive-course-filter" type="checkbox" name="category"
-				value="<?php echo esc_attr( $parent_category->slug ); ?>" />
+				value="<?php echo esc_attr( urldecode( $parent_category->slug ) ); ?>" />
 			<span class="checkmark"></span>
 		</label>
 			<?php
@@ -25,7 +25,7 @@ if ( count( $categories ) ) :
 					<label class="child-term">
 					<span><?php echo esc_html( $child_category->name ); ?></span>
 						<input class="academy-archive-course-filter" type="checkbox" name="category"
-							value="<?php echo esc_attr( $child_category->slug ); ?>" />
+							value="<?php echo esc_attr( urldecode( $child_category->slug ) ); ?>" />
 						<span class="checkmark"></span>
 					</label>
 					<?php

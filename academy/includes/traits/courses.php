@@ -1391,11 +1391,12 @@ trait Courses {
 	public static function get_topic_play_link( $topic, $course_id = '' ) {
 		$type = isset( $topic['type'] ) ? $topic['type'] : '';
 		$id = isset( $topic['id'] ) ? $topic['id'] : '';
-		$slug = isset( $topic['slug'] ) ? $topic['slug'] : '';
+		$slug = isset( $topic['slug'] ) ? $topic['slug'] :
+			( self::get_topics_post_slug( $id, $type ) ?? '' );
 		if ( \Academy\Helper::get_settings( 'is_enabled_lessons_php_render' ) ) {
 			$permalinks = \Academy\Helper::get_permalink_structure();
 			if ( empty( $course_id ) ) {
-				$course_id = ( false === get_the_ID() ) ? \Academy\Helper::get_the_current_course_id() : get_the_ID();
+				$course_id = ( false === \Academy\Helper::get_the_current_course_id() ) ? get_the_ID() : \Academy\Helper::get_the_current_course_id();
 			}
 			$course_name = get_post( $course_id )->post_name;
 			$course_rewrite_slug = str_replace( '/', '', $permalinks['course_rewrite_slug'] );
@@ -1403,6 +1404,21 @@ trait Courses {
 			return add_query_arg( array(), $url );
 		}
 		return add_query_arg( array( 'source' => "curriculums#/$type/$id" ), get_the_permalink() );
+	}
+
+	public static function get_topics_post_slug( $id, $type ) {
+		switch ( $type ) {
+			case 'lesson':
+				return Helper::get_lesson_slug( $id );
+			case 'quiz':
+				return get_post( $id )->post_name;
+			case 'assignment':
+				return get_post( $id )->post_name;
+			case 'meeting':
+				return get_post( $id )->post_name;
+			case 'booking':
+				return get_post( $id )->post_name;
+		}
 	}
 
 	public static function get_course_curriculums_number_of_counts( $course_id ) {

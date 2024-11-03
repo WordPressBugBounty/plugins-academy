@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php
 	if ( $is_show_wishlist ) :
 		?>
-	<button class="academy-btn academy-btn--bg-white-border academy-add-to-wishlist-btn academy-btn--lg" data-course-id="<?php the_ID(); ?>" data-show-label="true">
+	<button class="academy-btn academy-btn--bg-white-border academy-course__wishlist academy-add-wishlist-btn academy-btn--lg" data-course-id="<?php the_ID(); ?>" data-show-label="true">
 		<?php if ( $is_already_in_wishlist ) : ?>
 			<i class="academy-icon academy-icon--heart" aria-hidden="true"></i>
 				<?php esc_html_e( 'WishListed', 'academy' ); ?>

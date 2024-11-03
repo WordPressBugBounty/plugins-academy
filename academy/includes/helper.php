@@ -1119,8 +1119,8 @@ class Helper {
 	public static function is_active_curriculum_content( $topic ) {
 		$topic_name = get_query_var( 'name' );
 		$topic_name = $topic_name ?? '';
-
-		if ( $topic_name === $topic['slug'] ) {
+		
+		if ( is_string( $topic_name ) && isset( $topic['slug'] ) && $topic_name === (string) $topic['slug'] ) {
 			return true;
 		}
 

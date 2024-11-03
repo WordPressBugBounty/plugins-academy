@@ -137,6 +137,7 @@ class Course extends \WP_REST_Controller {
 
 	public function taxonomy_decode_special_character( $item, $post, $request ) {
 		$item->data['name'] = html_entity_decode( $item->data['name'] );
+		$item->data['slug'] = urldecode( $item->data['slug'] );
 		$item->data['description'] = html_entity_decode( $item->data['description'] );
 		return $item;
 	}
