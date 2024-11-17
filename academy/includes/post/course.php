@@ -27,16 +27,16 @@ class Course extends AbstractPostHandler {
 		);
 	}
 
-	public function save_topic_mark_as_complete() {
+	public function save_topic_mark_as_complete( $form_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
 			'topic_id' => 'integer',
 			'topic_type' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $form_data );
 
-		$course_id = $payload['course_id'];
-		$topic_type = $payload['topic_type'];
-		$topic_id = $payload['topic_id'];
+		$course_id = isset( $payload['course_id'] ) ? $payload['course_id'] : 0;
+		$topic_type = isset( $payload['topic_type'] ) ? $payload['topic_type'] : '';
+		$topic_id = isset( $payload['topic_id'] ) ? $payload['topic_id'] : 0;
 		$user_id   = (int) get_current_user_id();
 
 		do_action( 'academy/frontend/before_mark_topic_complete', $topic_type, $course_id, $topic_id, $user_id );
@@ -57,16 +57,16 @@ class Course extends AbstractPostHandler {
 		wp_safe_redirect( $referer_url );
 	}
 
-	public function insert_question() {
+	public function insert_question( $form_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'course_id' => 'integer',
 			'parent' => 'integer',
 			'content' => 'string',
 			'status' => 'string',
 			'title' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $form_data );
 
-		$course_id = $payload['course_id'];
+		$course_id = isset( $payload['course_id'] ) ? $payload['course_id'] : 0;
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 		$current_user = wp_get_current_user();
 
@@ -95,10 +95,10 @@ class Course extends AbstractPostHandler {
 		wp_die( 'You do not have the permission to do this.' );
 	}
 
-	public function student_register_as_instructor() {
+	public function student_register_as_instructor( $form_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'action' => 'string',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $form_data );
 
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 

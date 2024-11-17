@@ -214,9 +214,9 @@ class Learndash extends Migration implements MigrationInterface {
 		$lessons_meta = get_post_meta( $lesson_id, '_sfwd-lessons', true );
 		$topics_meta = get_post_meta( $lesson_id, '_sfwd-topic', true );
 
-		if ( $lessons_meta['sfwd-lessons_lesson_materials'] ) {
+		if ( isset( $lessons_meta['sfwd-lessons_lesson_materials'] ) ) {
 			$lesson_content = $lessons_meta['sfwd-lessons_lesson_materials'];
-		} elseif ( $topics_meta['sfwd-topic_topic_materials'] ) {
+		} elseif ( isset( $topics_meta['sfwd-topic_topic_materials'] ) ) {
 			$lesson_content = $topics_meta['sfwd-topic_topic_materials'];
 		} else {
 			$lesson_content = '';
@@ -235,13 +235,13 @@ class Learndash extends Migration implements MigrationInterface {
 			'seconds' => 0,
 		);
 
-		if ( $lessons_meta['sfwd-lessons_lesson_video_url'] ) {
+		if ( isset( $lessons_meta['sfwd-lessons_lesson_video_url'] ) ) {
 			$set_video_source = $this->set_video_source( $lessons_meta['sfwd-lessons_lesson_video_url'] );
 			$source = array(
 				'type' => $set_video_source[0],
 				'url' => $set_video_source[1],
 			);
-		} elseif ( $topics_meta['sfwd-topic_lesson_video_url'] ) {
+		} elseif ( isset( $topics_meta['sfwd-topic_lesson_video_url'] ) ) {
 			$set_video_source = $this->set_video_source( $topics_meta['sfwd-topic_lesson_video_url'] );
 			$source = array(
 				'type' => $set_video_source[0],

@@ -11,8 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="academy-icon academy-icon--withdraw"></span>
 			</div>
 			<div class="academy-dashboard-withdrawal-info__content">
+				<span class="academy-cta-sub-title"><?php esc_html_e( 'Total Earning', 'academy' ); ?></span>
+				<h4 class="academy-cta-title"><?php echo esc_html( $earning->withdraw_currency_symbol . '' . ( $earning->instructor_amount ?? 0 ) ); ?></h4>
+			</div>
+			<div class="academy-dashboard-withdrawal-info__content">
 				<span class="academy-cta-sub-title"><?php esc_html_e( 'Available Balance', 'academy' ); ?></span>
-				<h4 class="academy-cta-title"><?php echo esc_html( $earning->withdraw_currency_symbol . '' . ( $earning->instructor_amount ? $earning->instructor_amount - $earning->withdraws_amount : 0 ) ); ?></h4>
+				<h4 class="academy-cta-title"><?php echo esc_html( $earning->withdraw_currency_symbol . ' ' . ( $earning->instructor_amount ? $earning->instructor_amount - $earning->withdraws_amount : 0 ) ); ?></h4>
 			</div>
 		</div>
 		<div class="academy-dashboard-withdrawal-info__action"></div>

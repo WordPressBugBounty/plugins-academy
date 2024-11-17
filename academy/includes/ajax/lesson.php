@@ -20,7 +20,7 @@ class Lesson extends AbstractAjaxHandler {
 			),
 			'lesson_slug_unique_check' => array(
 				'callback' => array( $this, 'lesson_slug_unique_check' ),
-				'manage_academy_instructor' => true
+				'capability' => 'manage_academy_instructor',
 			),
 		);
 	}

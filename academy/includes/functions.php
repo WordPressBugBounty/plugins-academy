@@ -1189,6 +1189,10 @@ function academy_frontend_dashboard_profile_page() {
 		],
 	];
 
+	$user_data = array_filter( $user_data, function( $data ) {
+		return ! empty( $data['value'] );
+	});
+
 	\Academy\Helper::get_template(
 		'frontend-dashboard/pages/my-profile.php', [
 			'user_id' => $user_id,
@@ -1356,12 +1360,16 @@ function academy_frontend_dashboard_reset_password_page() {
 }
 
 function academy_frontend_dashboard_withdrawal_page() {
-	$user_id                     = get_current_user_id();
+	$user_id             = get_current_user_id();
 	$withdraw_history    = \Academy\Helper::get_withdraw_history_by_user_id( $user_id );
-	$earning                     = (object) \Academy\Helper::get_earning_by_user_id( $user_id );
+	$earning             = (object) \Academy\Helper::get_earning_by_user_id( $user_id );
 	$earning->withdraw_currency_symbol = '$';
 	if ( \Academy\Helper::is_active_woocommerce() ) {
-		$earning->withdraw_currency_symbol = \get_woocommerce_currency_symbol( 'USD' );
+		$earning->withdraw_currency_symbol = html_entity_decode(
+			get_woocommerce_currency_symbol(),
+			ENT_HTML5,
+			'UTF-8'
+		);
 	}
 	$withdraw_method_type = get_user_meta( $user_id, 'academy_instructor_withdraw_method_type', true );
 

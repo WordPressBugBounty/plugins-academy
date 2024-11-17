@@ -92,18 +92,21 @@ trait Lessons {
 
 	public static function get_total_number_of_lessons_by_instructor( $instructor_id ) {
 		global $wpdb;
+
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(ID)
-			FROM {$wpdb->prefix}academy_lessons lessons 
-			WHERE lessons.lesson_author = %d AND lesson_status = %s
-			",
+				FROM {$wpdb->prefix}academy_lessons
+				WHERE lesson_author = %d 
+				AND lesson_status = %s",
 				$instructor_id,
 				'publish'
 			)
 		);
+
 		return (int) $count;
 	}
+
 	public static function get_total_number_of_lessons( $status = 'any', $user_id = 0 ) {
 		global $wpdb;
 		$query = "SELECT COUNT(*) FROM {$wpdb->prefix}academy_lessons";

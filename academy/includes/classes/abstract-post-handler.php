@@ -38,7 +38,7 @@ abstract class AbstractPostHandler {
 		}
 
 		if ( is_callable( $details['callback'] ) ) {
-			call_user_func( $details['callback'] );
+			call_user_func( $details['callback'], wp_unslash( $_POST ) );
 		} else {
 			wp_die( 'Invalid callback method.' );
 		}

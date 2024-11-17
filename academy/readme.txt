@@ -3,9 +3,9 @@ Contributors: kodezen, academylms, tusharimran
 Donate link: https://www.buymeacoffee.com/academylms
 Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
-Tested up to: 6.6
+Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -309,6 +309,21 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.2.2 - 17/11/2024 =
+* Fixed - Submitted Quizzes feedback save issue.
+* Fixed - All Instructors Quizzes Export issue.
+* Fixed - Lesson Database syntax error.
+* Fixed - Frontend Dashboard Instructor total earning can't show in Withdrawal.
+* Fixed - Learn Page Quiz details Answer text alignment issue.
+* Fixed - Courses table course link ui issue.
+* Fixed - Instructor Dashboard Profile all field show without data.
+* Fixed - Withdrawal currency sign not changes dynamically.
+* Fixed - Certificate Font file missing.
+* Fixed - String Translation issue.
+* Fixed - New Lesson create time get slug insufficient permission message.
+* Fixed - Click Student details then blank page.
+* Fixed - LearnDash Migration issue.
 
 = 2.2.1 - 03/11/2024 =
 * Fixed - Course Learn page first sub-curriculum topics slug issue.

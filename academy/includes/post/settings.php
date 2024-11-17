@@ -23,7 +23,7 @@ class Settings extends AbstractPostHandler {
 		);
 	}
 
-	public function save_frontend_dashboard_edit_profile_settings() {
+	public function save_frontend_dashboard_edit_profile_settings( $form_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'first_name' => 'string',
 			'last_name' => 'string',
@@ -37,7 +37,7 @@ class Settings extends AbstractPostHandler {
 			'academy_linkedin_url' => 'url',
 			'academy-cover-photo-url' => 'url',
 			'academy-profile-photo-url' => 'url',
-		], $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		], $form_data );
 
 		$user_id = get_current_user_id();
 
