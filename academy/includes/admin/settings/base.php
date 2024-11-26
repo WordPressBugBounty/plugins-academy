@@ -44,6 +44,7 @@ class Base {
 			'is_enabled_course_share' => true,
 			'is_enabled_course_wishlist' => true,
 			'is_enabled_course_review' => true,
+			'is_enabled_course_popup_review' => false,
 			'course_archive_sidebar_position' => 'right',
 			'course_archive_filters' => [
 				[

@@ -29,6 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			data-topbar-logo="<?php echo esc_attr( is_array( $topbar_logo ) ? $topbar_logo[0] : '' ); ?>"
 			data-topics-accessible="<?php echo esc_attr( $is_topics_accessible ); ?>"
 			data-enabled-academy-player="<?php echo esc_attr( \Academy\Helper::get_settings( 'is_enabled_academy_player', false ) ); ?>"
+			data-is-enabled-course-popup-review="<?php echo esc_attr( \Academy\Helper::get_settings( 'is_enabled_course_popup_review', false ) ); ?>"
 		>
 			<?php
 				$preloader = apply_filters( 'academy/preloader', academy_get_preloader_html() );

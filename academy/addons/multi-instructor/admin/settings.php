@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Settings implements SettingsExtendInterface {
 	public static function init() {
 		$self = new self();
-		add_filter( 'academy/admin/settings_default_data', array( $self, 'set_settings_default_data' ) );
+		add_filter( 'academy/admin/settings/base_default_data', array( $self, 'set_settings_default_data' ) );
 	}
 
 	public function set_settings_default_data( $default_settings ) {

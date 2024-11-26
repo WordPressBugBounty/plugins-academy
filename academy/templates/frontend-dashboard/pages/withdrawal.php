@@ -86,7 +86,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 </div>
 
 
-<div class="kzui-table kzui-table--dashboard-course">
+<div class="kzui-table kzui-table--dashboard-withdraw">
 	<div class="kzui-table__container">
 		<div class="kzui-table__table kzui-table--has-slider">
 			<div class="kzui-table__head">
@@ -121,10 +121,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 									echo esc_html( $withdraw_item->amount );
 								?>
 							</div>
-							<div class="kzui-list-table__table-row-cell academy-<?php echo esc_html( $withdraw_item->status ); ?>">
-								<?php
-									echo esc_html( $withdraw_item->status );
-								?>
+							<div class="kzui-table__row-cell">
+								<div class="academy-<?php echo esc_html( $withdraw_item->status ); ?>">
+									<?php
+										echo esc_html( $withdraw_item->status );
+									?>
+								</div>
 							</div>
 						</div>
 						<?php

@@ -313,8 +313,8 @@ trait Instructor {
 			);
 		}
 
-		$instructor_rate = \Academy\Helper::get_settings( 'instructor_commission_percentage' );
-		$admin_rate      = \Academy\Helper::get_settings( 'admin_commission_percentage' );
+		$instructor_rate = (int) \Academy\Helper::get_settings( 'instructor_commission_percentage' );
+		$admin_rate      = (int) \Academy\Helper::get_settings( 'admin_commission_percentage' );
 
 		$instructor_amount = 0;
 		if ( $instructor_rate > 0 ) {

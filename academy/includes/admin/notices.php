@@ -11,12 +11,12 @@ class Notices {
 
 	public static function init() {
 		$self = new self();
-		$self->dispatch_notices();
 		$self->dispatch_hooks();
 	}
 
 	public static function dispatch_hooks() {
 		$self = new self();
+		add_action( 'init', array( $self, 'dispatch_notices' ) );
 		add_action( 'admin_init', array( $self, 'handle_admin_request' ) );
 	}
 

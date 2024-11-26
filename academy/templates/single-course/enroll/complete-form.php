@@ -5,7 +5,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! $is_completed_course ) :
 	?>
-<form id="academy_course_complete_form" class="academy-widget-enroll__complete-form" method="post" action="#">
+<form id="academy_course_complete_form" 
+	class="academy-widget-enroll__complete-form" 
+	method="post" 
+	action="#"
+	data-is-enabled-course-popup-review="<?php echo esc_attr( \Academy\Helper::get_settings( 'is_enabled_course_popup_review', false ) ); ?>"
+>
 	<?php wp_nonce_field( 'academy_nonce', 'security' ); ?>
 	<input type="hidden" name="course_id" value="<?php echo esc_attr( get_the_ID() ); ?>">
 	<button type="submit" class="academy-btn academy-btn--preset-light-purple ">

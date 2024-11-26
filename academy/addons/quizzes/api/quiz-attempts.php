@@ -293,9 +293,16 @@ class QuizAttempts extends \WP_REST_Controller {
 		if ( isset( $schema['properties']['user_id'] ) ) {
 			$data['user_id'] = (int) $attempt->user_id;
 			$user_data = get_userdata( $attempt->user_id );
+
 			if ( $user_data ) {
-				$user = $user_data->data;
-				$user->admin_permalink = get_edit_user_link( $attempt->user_id );
+				$user = [
+					'ID'            => $user_data->ID,
+					'user_nicename' => $user_data->user_nicename,
+					'display_name'  => $user_data->display_name,
+					'user_registered' => $user_data->user_registered,
+					'admin_permalink' => get_edit_user_link( $attempt->user_id ),
+				];
+
 				$data['_user'] = $user;
 			}
 		}
