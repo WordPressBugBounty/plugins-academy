@@ -17,6 +17,7 @@ $is_paid                  = isset( $is_paid ) ? $is_paid : false;
 $card_style               = \Academy\Helper::get_settings( 'course_card_style' );
 $required_levels          = isset( $required_levels ) ? $required_levels : [];
 $course_type              = isset( $course_type ) ? $course_type : 'public';
+$prerequisite_ids         = apply_filters( 'academy/templates/single_course/footer_form', $course_id );
 $prices                   = Academy\Helper::is_plugin_active( 'surecart/surecart.php' ) && Academy\Helper::get_addon_active_status( 'surecart' ) ? ( new AcademyProSurecart\Integration() )->check_integration_and_price( array(), $course_id ) : '';
 ?>
 
@@ -26,13 +27,20 @@ $prices                   = Academy\Helper::is_plugin_active( 'surecart/surecart
 	);
 endif; ?>
 
-
 <?php if ( 'public' === $course_type && empty( $required_levels ) ) : ?>
 	<div class="academy-widget-enroll__continue">
 		<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $continue_learning ); ?>">
 			<?php echo esc_html__( 'Start Course', 'academy' ); ?>
 		</a>
 	</div>
+<?php elseif ( $prerequisite_ids ) : ?>
+	<?php \AcademyPro\Helper::get_template(
+		'course-prerequisites/form-prerequisite.php', [
+			'required_courses' => $prerequisite_ids,
+			'is_free'  => 'free' === $course_type ? true : false,
+		]
+	);
+	?>
 <?php elseif ( $is_enrolled ) : ?>
 	<div class="academy-widget-enroll__continue">
 		<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $continue_learning ); ?>">
@@ -45,7 +53,7 @@ endif; ?>
 		[
 			'is_enabled_academy_login' => $is_enabled_academy_login,
 			'card_style'   => $card_style,
-			'prices'       => $prices
+			'prices'       => $prices,
 		]
 	); ?>
 <?php elseif ( $required_levels ) :
@@ -54,7 +62,7 @@ endif; ?>
 		[
 			'is_enabled_academy_login' => $is_enabled_academy_login,
 			'card_style'               => $card_style,
-			'required_levels'          => $required_levels
+			'required_levels'          => $required_levels,
 		]
 	); ?>
 <?php elseif ( $is_paid && $product_id ) :
@@ -63,7 +71,7 @@ endif; ?>
 		[
 			'force_login_before_enroll' => $force_login_before_enroll,
 			'card_style'                => $card_style,
-			'product_id'               => $product_id
+			'product_id'               => $product_id,
 		]
 	); ?>
 <?php elseif ( $is_paid && ! empty( $download_id ) ) :
@@ -72,7 +80,7 @@ endif; ?>
 		[
 			'is_enabled_academy_login' => $is_enabled_academy_login,
 			'card_style'               => $card_style,
-			'download_id'              => $download_id
+			'download_id'              => $download_id,
 		]
 	); ?>
 <?php elseif ( 'free' === $course_type ) :

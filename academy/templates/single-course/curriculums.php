@@ -68,7 +68,7 @@ if ( empty( $curriculums ) ) {
 								<li class="academy-lesson-list__item">
 									<div class="academy-entry-content">
 										<i class="<?php echo esc_attr( \Academy\Helper::get_topic_icon_class_name( $topic['type'] ) ); ?>" aria-hidden="true"></i>
-										<h4 class="academy-entry-title"><?php echo esc_html( $topic['name'] ); ?></h4>
+										<h4 class="academy-entry-title"><?php echo esc_html( wp_strip_all_tags( $topic['name'] ) ); ?></h4>
 										<?php
 										if ( isset( $topic['duration'] ) ) : ?>
 										<span class="academy-entry-time"><?php echo esc_html( $topic['duration'] ); ?></span>

@@ -47,7 +47,8 @@ global $authordata;
 		<?php
 			Academy\Helper::get_template(
 				'loop/author.php'
-			); ?>
+			);
+			?>
 	</div>
 
 	<?php

@@ -9,7 +9,6 @@ class API {
 	public static function init() {
 		$self = new self();
 		API\Course::init();
-		API\User::init();
 		API\Settings::init();
 		API\Lessons::init();
 		API\QuestionAnswer::init();

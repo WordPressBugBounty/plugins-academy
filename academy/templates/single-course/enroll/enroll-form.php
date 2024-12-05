@@ -14,13 +14,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<button type="button" class="academy-btn academy-btn--bg-purple academy-btn-popup-login">
 			<?php esc_html_e( 'Enroll Now', 'academy' ); ?>
 		</button>
-		<?php
-			else :
-				?>
+	<?php else :
+		?>
 		<button type="submit" class="academy-btn academy-btn--bg-purple">
 				<?php esc_html_e( 'Enroll Now', 'academy' ); ?>
 		</button>
-				<?php
+		<?php
 		endif;
-			?>
+	?>
 </form>
+
+
