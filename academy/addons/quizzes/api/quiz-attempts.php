@@ -324,7 +324,7 @@ class QuizAttempts extends \WP_REST_Controller {
 		}
 
 		if ( isset( $schema['properties']['attempt_info'] ) ) {
-			$data['attempt_info'] = $attempt->attempt_info;
+			$data['attempt_info'] = json_decode( $attempt->attempt_info );
 		}
 
 		if ( isset( $schema['properties']['attempt_status'] ) ) {

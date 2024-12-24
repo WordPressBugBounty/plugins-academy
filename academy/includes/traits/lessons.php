@@ -168,4 +168,17 @@ trait Lessons {
 
 		return current( $result );
 	}
+
+	public static function get_lesson_by_title( $title ) {
+		global $wpdb;
+
+		$result = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}academy_lessons 
+                WHERE lesson_title = %s", $title
+			)
+		);
+
+		return current( $result );
+	}
 }

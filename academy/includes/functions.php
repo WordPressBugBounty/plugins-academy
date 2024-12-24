@@ -75,6 +75,7 @@ if ( ! function_exists( 'academy_single_course_curriculums' ) ) {
 			array(
 				'curriculums'                     => $curriculums,
 				'topics_first_item_open_status'  => $topics_first_item_open_status,
+				'course_id'                       => $course_id,
 			)
 		);
 	}
@@ -149,10 +150,12 @@ if ( ! function_exists( 'academy_single_course_additional_info' ) ) {
 
 if ( ! function_exists( 'academy_single_course_feedback' ) ) {
 	function academy_single_course_feedback() {
-		if ( ! (bool) Helper::get_settings( 'is_enabled_course_review', true ) ) {
+		$course_id = get_the_ID();
+		if ( ! (bool) Helper::get_settings( 'is_enabled_course_review', true ) || (bool) get_post_meta( $course_id, 'academy_is_disabled_course_review', true ) ) {
 			return;
 		}
-		$rating = Helper::get_course_rating( get_the_ID() );
+
+		$rating = Helper::get_course_rating( $course_id );
 		Helper::get_template( 'single-course/feedback.php', array( 'rating' => $rating ) );
 	}
 }
@@ -1073,6 +1076,16 @@ function academy_frontend_dashboard_content() {
 			'color' => 'quiz',
 			'icon' => 'academy-icon academy-icon--quiz-fill',
 			'link' => esc_url( \Academy\Helper::get_frontend_dashboard_endpoint_url( 'quizzes' ) )
+		);
+	}
+
+	if ( \Academy\Helper::get_addon_active_status( 'assignments', true ) && current_user_can( 'manage_academy_instructor' ) ) {
+		$data['total_assignments'] = array(
+			'label' => esc_html__( 'Total Assignments', 'academy' ),
+			'value' => \AcademyProAssignments\Classes\Query::get_total_number_of_assignments_by_instructor_id( $user_id ),
+			'color' => 'assignment',
+			'icon' => 'academy-icon academy-icon--assignment-two',
+			'link' => esc_url( \Academy\Helper::get_frontend_dashboard_endpoint_url( 'assignments' ) )
 		);
 	}
 

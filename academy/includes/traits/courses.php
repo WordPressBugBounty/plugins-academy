@@ -579,6 +579,21 @@ trait Courses {
 
 	}
 
+	public static function is_course_slug_exist( $post_title ) {
+		global $wpdb;
+
+		$course_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(ID) 
+                FROM {$wpdb->posts} 
+                WHERE post_title = %s
+				AND post_type = %s",
+				$post_title, 'academy_courses'
+			)
+		);
+		return $course_exists > 0 ? true : false;
+	}
+
 	public static function is_academy_order( $order_id ) {
 		return get_post_meta( $order_id, 'is_academy_order_for_course', true );
 	}
@@ -1226,7 +1241,7 @@ trait Courses {
 						$topic['is_accessible'] = false;
 
 						// if topic type is lesson then set duration
-						if ( 'lesson' === $topic['type'] ) {
+						if ( isset( $topic['type'] ) && 'lesson' === $topic['type'] ) {
 							$topic['slug']              = \Academy\Helper::get_lesson_slug( $topic['id'] );
 							$topic['duration']          = \Academy\Helper::get_lesson_video_duration( $topic['id'] );
 							$topic['is_accessible']     = \Academy\Helper::get_lesson_meta( $topic['id'], 'is_previewable' );

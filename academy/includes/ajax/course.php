@@ -65,6 +65,10 @@ class Course extends AbstractAjaxHandler {
 				'callback' => array( $this, 'get_course_details' ),
 				'capability'    => 'read'
 			),
+			'import_course' => array(
+				'callback'  => array( $this, 'import_all_courses' ),
+				'capability' => 'manage_academy_instructor',
+			)
 		);
 	}
 
@@ -684,6 +688,427 @@ class Course extends AbstractAjaxHandler {
 			$response['enrolled_info'][] = $analytics_data;
 		}
 		wp_send_json_success( $response );
+	}
+
+	public function import_all_courses() {
+		check_admin_referer( 'academy_nonce', 'security' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die();
+		}
+
+		if ( ! isset( $_FILES['upload_file'] ) ) {
+			wp_send_json_error( __( 'Upload File is empty.', 'academy' ) );
+		}
+
+		$file = $_FILES['upload_file'];
+		if ( 'csv' !== pathinfo( $file['name'] )['extension'] ) {
+			wp_send_json_error( __( 'Wrong File Format! Please import csv file.', 'academy' ) );
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
+		$file_open = fopen( $file['tmp_name'], 'r' );
+		if ( false !== $file_open ) {
+			$has_course = false;
+			$has_course_meta = false;
+			$has_quiz = false;
+			$has_question = false;
+			$has_answer = false;
+			$has_lesson = false;
+			$has_assignment = false;
+			$course_header = [];
+			$course_meta_header = [];
+			$lesson_header = [];
+			$assignment_header = [];
+			$quiz_header = [];
+			$new_course_id = 0;
+			$new_quiz_id = 0;
+			$new_question_id = 0;
+			$old_course_id = 0;
+			$course_ids = [];
+			$new_curr_item = [];
+			$response = [];
+			// phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+			while ( false !== ( $item = fgetcsv( $file_open ) ) ) {
+				if ( in_array( 'post_title', $item, true ) ) {
+					$course_header = array_map( 'strtolower', $item );
+					$has_course = true;
+					continue;
+				} elseif ( in_array( 'course_expire_enrollment', $item, true ) ) {
+					$course_meta_header = array_map( 'strtolower', $item );
+					$has_course_meta = true;
+					continue;
+				} elseif ( in_array( 'lesson_title', $item, true ) ) {
+					$lesson_header = array_map( 'strtolower', $item );
+					$has_lesson = true;
+					continue;
+				} elseif ( in_array( 'quiz_title', $item, true ) ) {
+					$quiz_header = array_map( 'strtolower', $item );
+					$has_quiz = true;
+					continue;
+				} elseif ( in_array( 'question_title', $item, true ) ) {
+					$question_header = array_map( 'strtolower', $item );
+					$has_question = true;
+					$has_answer = false;
+					continue;
+				} elseif ( in_array( 'answer_title', $item, true ) ) {
+					$answer_header = array_map( 'strtolower', $item );
+					$has_answer = true;
+					continue;
+				} elseif ( in_array( 'assignment_title', $item, true ) ) {
+					$assignment_header = array_map( 'strtolower', $item );
+					$has_assignment = true;
+					continue;
+				}//end if
+
+				if ( $has_course ) {
+					$has_course = false;
+					$course_item = array_combine( $course_header, $item );
+					if ( empty( $course_item['post_title'] ) ) {
+						$response[] = __( 'Empty Course data', 'academy' );
+						continue;
+					}
+
+					$slug_exist = \Academy\Helper::is_course_slug_exist( $course_item['post_title'] );
+					if ( $slug_exist ) {
+						$course = \Academy\Helper::get_page_by_title( $course_item['post_title'], 'academy_courses' );
+						$old_course_id = $course->ID;
+						$course_ids[] = $old_course_id;
+						$response[] = __( 'Failed, Already Inserted the Course', 'academy' ) . ' - ' . $course_item['post_title'];
+						continue;
+					}
+					$new_course_id = $this->course_data_set( $course_item );
+					$response[] = $new_course_id ? __( 'Successfully Inserted the Course - ', 'academy' ) . $course_item['post_title'] : __( 'Sorry, Failed to Inserted the Course - ', 'academy' ) . $course_item['post_title'];
+					$course_ids[] = $new_course_id;
+				} elseif ( $has_course_meta && ( $new_course_id || $old_course_id ) ) {
+					$has_course_meta = false;
+					$course_meta_item = array_combine( $course_meta_header, $item );
+					$new_curr_item[] = [
+						'course_id' => $new_course_id ?? $old_course_id,
+						'curriculum' => json_decode( $course_meta_item['course_curriculum'] )
+					];
+					if ( $new_course_id ) {
+						$this->insert_course_meta_value( $course_meta_item, $new_course_id );
+					}
+				} elseif ( $has_lesson ) {
+					$has_lesson = false;
+					$lesson_item = array_combine( $lesson_header, $item );
+					$exist_lesson = \Academy\Helper::get_lesson_by_title( $lesson_item['lesson_title'] );
+					if ( ! $exist_lesson ) {
+						$new_lesson_id = $this->insert_lesson_data( $lesson_item );
+					}
+					$response[] = ! empty( $new_lesson_id ) ? __( 'Successfully Inserted the Lesson - ', 'academy' ) . $lesson_item['lesson_title'] : __( 'Sorry, Already have the Lesson - ', 'academy' ) . $lesson_item['lesson_title'];
+				} elseif ( $has_quiz ) {
+					$has_quiz = false;
+					if ( ! \Academy\Helper::is_active_academy_pro() ) {
+						continue;
+					}
+					$quiz_item = array_combine( $quiz_header, $item );
+					$exist_quiz = \Academy\Helper::get_page_by_title( $quiz_item['quiz_title'], 'academy_quiz' );
+					if ( ! $exist_quiz ) {
+						$new_quiz_id = apply_filters( 'academy_pro/export-import/insert_quiz_data', $quiz_item );
+					}
+					$response[] = ! empty( $new_quiz_id ) ? __( 'Successfully Inserted the Quiz - ', 'academy' ) . $quiz_item['quiz_title'] : __( 'Sorry, Already have the Quiz - ', 'academy' ) . $quiz_item['quiz_title'];
+				} elseif ( $has_question && $new_quiz_id ) {
+					$has_question = false;
+					$question_item = array_combine( $question_header, $item );
+					$new_question_id = apply_filters( 'academy_pro/export-import/insert_question_data', $question_item, $new_quiz_id );
+					$response[] = $new_question_id ? __( 'Successfully Inserted the Question - ', 'academy' ) . $question_item['question_title'] : __( 'Sorry, Already have the Question - ', 'academy' ) . $question_item['question_title'];
+				} elseif ( $has_answer && $new_quiz_id && $new_question_id ) {
+					$answer_item = array_combine( $answer_header, $item );
+					apply_filters( 'academy_pro/export-import/insert_answer_data', $answer_item, $new_quiz_id, $new_question_id );
+				} elseif ( $has_assignment ) {
+					$has_assignment = false;
+					if ( ! \Academy\Helper::is_active_academy_pro() ) {
+						continue;
+					}
+					$assignment_item = array_combine( $assignment_header, $item );
+					$exist_assignment = \Academy\Helper::get_page_by_title( $assignment_item['assignment_title'], 'academy_assignments' );
+					if ( ! $exist_assignment ) {
+						$new_assignment_id = apply_filters( 'academy_pro/export-import/insert_assignment_data', $assignment_item );
+					}
+					$response[] = ! empty( $new_assignment_id ) ? __( 'Successfully Inserted the Assignment - ', 'academy' ) . $assignment_item['assignment_title'] : __( 'Sorry, Already have the Assignment - ', 'academy' ) . $assignment_item['assignment_title'];
+				}//end if
+			}//end while
+
+			if ( count( $new_curr_item ) ) {
+				foreach ( $new_curr_item as $item ) {
+					$this->update_course_curriculum( $item['curriculum'], $item['course_id'] );
+				}
+			}
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+			fclose( $file_open );
+
+			wp_send_json_success( $response );
+		}//end if
+		wp_send_json_error( $response );
+	}
+
+	public function course_data_set( $course_item ) {
+		if ( empty( $course_item ) ) {
+			return false;
+		}
+
+		$allowed_post_fields = [
+			'post_title'      => 'sanitize_text_field',
+			'post_author'     => 'sanitize_text_field',
+			'post_date'       => 'sanitize_text_field',
+			'post_content'    => 'sanitize_textarea_field',
+			'post_excerpt'    => 'sanitize_text_field',
+			'post_status'     => 'sanitize_key',
+			'comment_status'  => 'sanitize_key',
+			'post_name'       => 'sanitize_title',
+			'post_parent'     => 'absint',
+			'comment_count'   => 'absint'
+		];
+
+		$post_data = [];
+		foreach ( $allowed_post_fields as $key => $sanitizer ) {
+			$post_data[ $key ] = isset( $course_item[ $key ] ) ? call_user_func( $sanitizer, $course_item[ $key ] ) : '';
+		}
+		$post_data['post_type'] = 'academy_courses';
+		$course_id = wp_insert_post( $post_data );
+		$user_ids = get_users(
+			array(
+				'meta_key' => 'academy_instructor_course_id',
+				'meta_value' => $course_id,
+			)
+		);
+		foreach ( $user_ids as $user_id ) {
+			add_user_meta( $user_id->ID, 'academy_instructor_course_id', $course_id );
+		}
+		return $course_id;
+	}
+
+	public function insert_course_meta_value( $course_meta_item, $new_course_id ) {
+		$response = false;
+		$allowed_meta_fields = [
+			'course_expire_enrollment'    => 'sanitize_text_field',
+			'course_type'                 => 'sanitize_text_field',
+			'course_max_students'         => 'absint',
+			'course_language'             => 'sanitize_text_field',
+			'course_difficulty_level'     => 'sanitize_text_field',
+			'course_benefits'             => 'sanitize_textarea_field',
+			'course_requirements'         => 'sanitize_textarea_field',
+			'course_audience'             => 'sanitize_textarea_field',
+			'course_materials_included'   => 'sanitize_textarea_field',
+			'is_enabled_course_qa'        => 'sanitize_key',
+			'is_enabled_course_announcements' => 'sanitize_key',
+			'course_duration'             => 'sanitize_key',
+			'course_intro_video'          => 'sanitize_text_field',
+			'course_curriculum'           => 'sanitize_text_field',
+			'course_certificate_id'       => 'absint',
+		];
+		// update product meta
+		update_post_meta( $new_course_id, 'academy_course_download_id', 0 );
+		update_post_meta( $new_course_id, 'academy_course_product_id', 0 );
+		// product id handle
+		$product_id = $course_meta_item['course_product_id'] ?? null;
+		$download_id = $course_meta_item['course_download_id'] ?? null;
+
+		// Handle WooCommerce product creation
+		if ( $product_id && \Academy\Helper::get_addon_active_status( 'woocommerce' ) ) {
+			$product = new \WC_Product_Simple( $product_id );
+			$product->set_name( get_the_title( $new_course_id ) );
+			$product->set_slug( get_post_field( 'post_name', $new_course_id ) );
+			$product->set_regular_price( $course_meta_item['regular_price'] ?? 0 );
+
+			if ( ! empty( $course_meta_item['sale_price'] ) ) {
+				$product->set_sale_price( $course_meta_item['sale_price'] );
+			}
+
+			$product_id = $product->save();
+
+			if ( $product_id ) {
+				update_post_meta( $product_id, '_academy_product', 'yes' );
+				update_post_meta( $new_course_id, 'academy_course_product_id', $product_id );
+			}
+		}
+
+		// Handle EDD download creation
+		if ( $download_id && \Academy\Helper::get_addon_active_status( 'easy-digital-downloads' ) ) {
+			$args = [
+				'post_type'   => 'download',
+				'post_status' => 'publish',
+				'post_title'  => get_the_title( $new_course_id ),
+			];
+			$download_id = wp_insert_post( $args, true );
+
+			if ( ! is_wp_error( $download_id ) ) {
+				$download = new \EDD_Download( $download_id );
+				update_post_meta( $download_id, '_academy_course', 'yes' );
+				update_post_meta( $download_id, 'edd_price', $course_meta_item['edd_price'] ?? 0 );
+
+				update_post_meta( $new_course_id, 'academy_course_download_id', $download_id );
+			}
+		}
+
+		// Insert course meta
+		foreach ( $allowed_meta_fields as $key => $sanitizer ) {
+			if ( isset( $course_meta_item[ $key ] ) ) {
+				$data = ( 'course_intro_video' === $key || 'course_duration' === $key || 'course_curriculum' === $key )
+					? $this->maybe_unserialize( $key, $course_meta_item[ $key ] )
+					: $course_meta_item[ $key ];
+
+				update_post_meta( $new_course_id, 'academy_' . $key, call_user_func( $sanitizer, $data ) );
+				$response = true;
+			}
+		}
+
+		return $response;
+	}
+
+	private function maybe_unserialize( $key, $data ) {
+		if ( ! empty( $data ) && is_serialized( $data ) ) {
+
+			$unserialized_data = maybe_unserialize( $data );
+			if ( is_array( $unserialized_data ) ) {
+				$unserialized_data = array_map( 'sanitize_text_field', $unserialized_data );
+			} elseif ( is_string( $unserialized_data ) ) {
+				$unserialized_data = sanitize_text_field( $unserialized_data );
+			} else {
+				$unserialized_data = null;
+			}
+			if ( empty( $unserialized_data ) ) {
+				return 'course_duration' === sanitize_key( $key ) ? array( 0, 0, 0 ) : array();
+			}
+
+			return $unserialized_data;
+		}
+
+		return $data;
+	}
+
+	public function insert_lesson_data( $item ) {
+		if ( empty( $item['lesson_title'] ) ) {
+			return '';
+		}
+
+		$user                  = get_user_by( 'login', $item['lesson_author'] );
+		$allowed_tags          = wp_kses_allowed_html( 'post' );
+		$allowed_tags['input'] = array(
+			'type'  => true,
+			'name'  => true,
+			'value' => true,
+			'class' => true,
+		);
+		$allowed_tags['form']  = array(
+			'action' => true,
+			'method' => true,
+			'class'  => true,
+		);
+		$allowed_tags['iframe'] = array(
+			'src'             => true,
+			'width'           => true,
+			'height'          => true,
+			'frameborder'     => true,
+			'allow'           => true,
+			'allowfullscreen' => true,
+		);
+		$content               = wp_kses( $item['lesson_content'], $allowed_tags );
+
+		$lesson_id = \Academy\Classes\Query::lesson_insert( array(
+			'lesson_author'  => $user ? $user->ID : (int) get_current_user_id(),
+			'lesson_title'   => sanitize_text_field( $item['lesson_title'] ),
+			'lesson_name'    => \Academy\Helper::generate_unique_lesson_slug( $item['lesson_title'] ),
+			'lesson_content' => $content,
+			'lesson_status'  => $item['lesson_status'],
+		) );
+
+		if ( $lesson_id ) {
+			\Academy\Classes\Query::lesson_meta_insert( $lesson_id, array(
+				'featured_media' => 0,
+				'attachment'     => 0,
+				'is_previewable' => sanitize_text_field( $item['is_previewable'] ),
+				'video_duration' => sanitize_text_field( $item['video_duration'] ),
+				'video_source'   => wp_json_encode( array(
+					'type' => sanitize_text_field( $item['video_source_type'] ),
+					'url'  => $this->sanitize_video_source( $item['video_source_type'], $item['video_source_url'] ),
+				) ),
+			) );
+
+			return $lesson_id;
+		}
+	}
+
+	public function sanitize_video_source( $source, $url ) {
+		switch ( $source ) {
+			case 'embedded':
+				return filter_var( $url, FILTER_SANITIZE_URL );
+			case 'short_code':
+				return wp_kses_post( $url );
+			default:
+				return sanitize_text_field( $url );
+		}
+	}
+
+	public function update_course_curriculum( $curriculums, $new_course_id ) {
+		if ( is_array( $curriculums ) ) {
+			$new_curriculum = array();
+			foreach ( $curriculums as $curriculum ) {
+				$new_topics = array();
+				foreach ( $curriculum->topics as $topic ) {
+					if ( isset( $topic->type ) && 'sub-curriculum' !== $topic->type ) {
+						$new_topics[] = $this->set_topics( $topic );
+					} elseif ( ! empty( $topic ) ) {
+						$sub_topics = [
+							'name' => $topic->name,
+							'type' => $topic->type,
+							'id'   => $topic->id,
+							'topics' => [],
+						];
+						foreach ( $topic->topics as $sub_topic ) {
+							$sub_topics['topics'][] = $this->set_topics( $sub_topic );
+						}
+						$new_topics[] = $sub_topics;
+					}
+				}//end foreach
+				$new_curriculum[] = array(
+					'title' => (string) $curriculum->title ? $curriculum->title : 'Academy Topics',
+					'content' => $curriculum->content,
+					'topics' => $new_topics,
+				);
+			}//end foreach
+			if ( is_array( $new_curriculum ) ) {
+				update_post_meta( $new_course_id, 'academy_course_curriculum', $new_curriculum );
+			}
+		}//end if
+	}
+
+	private function set_topics( $topic ) {
+		$new_topics = [];
+		switch ( $topic->type ) {
+			case 'lesson':
+				$lesson_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic->name, 'lesson' );
+				if ( $lesson_id ) {
+					return array(
+						'id' => $lesson_id,
+						'name' => $topic->name,
+						'type'  => 'lesson',
+					);
+				}
+				break;
+			case 'quiz':
+				$quiz_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic->name, 'quiz' );
+				if ( $quiz_id ) {
+					return array(
+						'id' => $quiz_id,
+						'name' => $topic->name,
+						'type'  => 'quiz',
+					);
+				}
+				break;
+			case 'assignment':
+				$assignment_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic->name, 'assignment' );
+				if ( $assignment_id ) {
+					return array(
+						'id' => $assignment_id,
+						'name' => $topic->name,
+						'type'  => 'assignment',
+					);
+				}
+				break;
+		}//end switch
+		return $new_topics;
 	}
 
 }

@@ -191,6 +191,7 @@ class Database {
 			'academy_course_materials_included'         => 'string',
 			'academy_is_enabled_course_qa'              => 'boolean',
 			'academy_is_enabled_course_announcements'   => 'boolean',
+			'academy_is_disabled_course_review'         => 'boolean',
 			'academy_course_certificate_id'             => 'integer',
 			'academy_course_enable_certificate'         => 'boolean',
 		];
@@ -207,6 +208,22 @@ class Database {
 				)
 			);
 		}
+
+		register_meta( 'post',
+			'academy_rcp_membership_levels',
+			array(
+				'object_subtype' => 'academy_courses',
+				'type'           => 'array',
+				'single'         => true,
+				'show_in_rest'   => [
+					'schema' => array(
+						'items' => array(
+							'type'       => 'integer',
+						),
+					),
+				],
+			)
+		);
 
 		register_meta(
 			'post',

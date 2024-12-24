@@ -74,6 +74,14 @@ class Lesson extends AbstractAjaxHandler {
 					'method' => true,
 					'class'  => true,
 				);
+				$allowed_tags['iframe'] = array(
+					'src'             => true,
+					'width'           => true,
+					'height'          => true,
+					'frameborder'     => true,
+					'allow'           => true,
+					'allowfullscreen' => true,
+				);
 				$content               = wp_kses( $item['content'], $allowed_tags );
 
 				$lesson_id = \Academy\Classes\Query::lesson_insert( array(

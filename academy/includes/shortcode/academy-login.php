@@ -63,7 +63,7 @@ class AcademyLogin {
 			$username = sanitize_text_field( $_POST['username'] );
 			$password = sanitize_text_field( $_POST['password'] );
 			$remember = (bool) isset( $_POST['remember'] ) ? sanitize_text_field( $_POST['remember'] ) : false;
-			$login_redirect_url = ( isset( $_POST['login_redirect_url'] ) ? sanitize_text_field( $_POST['login_redirect_url'] ) : '' );
+			$login_redirect_url = ( isset( $_POST['login_redirect_url'] ) ? esc_url_raw( $_POST['login_redirect_url'] ) : '' );
 
 			do_action( 'academy/shortcode/before_login_signon' );
 			$secure_cookie = is_ssl();

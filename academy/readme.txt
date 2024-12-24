@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.2.5
+Stable tag: 2.3.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -122,6 +122,7 @@ Look no further than Academy LMS, the ultimate solution to create online courses
   * WishList Member Integration **[PRO]**
   * Social Login **[PRO]**
   * Easy Digital Download Integration **[PRO]**
+  * Restrict Content PRO **[PRO]**
 More features Coming Soon!
 
 **💻 Admin SPA Interface:** Academy LMS provides a lightning-fast interface designed with React.js. It ensures instant loading of all features and settings. Users can access settings without any delay / loading, making course creation and editing faster.
@@ -309,6 +310,18 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.3.0 - 24/12/2024 =
+* Added - Course Export-Import feature.
+* Added - Single course review disable option.
+* Fixed - Translate issue.
+* Fixed - After login redirect url issue in different languages.
+* Fixed - Quiz topic Auto complete issue in learnpage.
+* Fixed - Quiz question-answer sorting issue in Quiz-Builder.
+* Fixed - After Course complete button click then not changes button status.
+* Fixed - Frontend Dashboard Color Customization issue.
+* Fixed - Gradebook functionality show without de-active addon.
+* Fixed - lesson preview url issue in php rendering.
 
 = 2.2.5 - 05/12/2024 =
 * Fixed - User details API Endpoint security issue.

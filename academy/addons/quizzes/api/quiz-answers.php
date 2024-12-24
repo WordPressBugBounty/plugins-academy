@@ -178,7 +178,7 @@ class QuizAnswers extends \WP_REST_Controller {
 		$question_type = $request->get_param( 'question_type' );
 		$answers = (array) $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT *  FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d AND question_type=%s",
+				"SELECT *  FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d AND question_type=%s ORDER BY answer_order ASC",
 				$question_id,
 				$question_type
 			),

@@ -101,13 +101,7 @@ class Tutor  extends Migration implements MigrationInterface {
 			'post_type'   => 'topics',
 			'post_parent' => $course_id,
 		) );
-		$outer_zoom = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ID FROM {$wpdb->posts} 
-				WHERE post_parent = %d AND post_type = %s ",
-				$course_id, 'tutor_zoom_meeting'
-			)
-		);
+
 		if ( $topics ) {
 			$new_curriculums = array();
 			foreach ( $topics as $topic ) {
@@ -141,19 +135,22 @@ class Tutor  extends Migration implements MigrationInterface {
 	public function migrate_course_meta( $id ) {
 		$course_settings = get_post_meta( $id, '_tutor_course_settings', true );
 		// max students
-		update_post_meta( $id, 'academy_course_max_students', $course_settings['maximum_students'] );
+		$student = isset( $course_settings['maximum_students'] ) ? (int) $course_settings['maximum_students'] : 0;
+		update_post_meta( $id, 'academy_course_max_students', $student );
 		// course expire enrollment
-		update_post_meta( $id, 'academy_course_expire_enrollment', (int) $course_settings['enrollment_expiry'] );
+		$enrollment_expiry = isset( $course_settings['enrollment_expiry'] ) ? (int) $course_settings['enrollment_expiry'] : 0;
+		update_post_meta( $id, 'academy_course_expire_enrollment', $enrollment_expiry );
 		// content drip enabled
 		update_post_meta( $id, 'academy_course_drip_content_enabled', isset( $course_settings['enable_content_drip'] ) ? 1 : false );
 		// content drip type
-		if ( 'unlock_by_date' === $course_settings['content_drip_type'] ) {
+		$content_drip = isset( $course_settings['content_drip_type'] ) ? $course_settings['content_drip_type'] : '';
+		if ( 'unlock_by_date' === $content_drip ) {
 			$content_drip_type = 'schedule_by_date';
-		} elseif ( 'specific_days' === $course_settings['content_drip_type'] ) {
+		} elseif ( 'specific_days' === $content_drip ) {
 			$content_drip_type = 'schedule_by_enroll_date';
-		} elseif ( 'unlock_sequentially' === $course_settings['content_drip_type'] ) {
+		} elseif ( 'unlock_sequentially' === $content_drip ) {
 			$content_drip_type = 'schedule_by_sequentially';
-		} elseif ( 'after_finishing_prerequisites' === $course_settings['content_drip_type'] ) {
+		} elseif ( 'after_finishing_prerequisites' === $content_drip ) {
 			$content_drip_type = 'schedule_by_prerequisite';
 		} else {
 			$content_drip_type = 'schedule_by_date';
@@ -196,18 +193,20 @@ class Tutor  extends Migration implements MigrationInterface {
 		add_post_meta( $id, 'academy_course_language', '' );
 		// intro video
 		$source       = $this->set_video_source( get_post_meta( $id, '_video', true ) );
-		$intro_video = array(
-			$source['type'],
-			$source['url']
-		);
-		if ( 'html5' === $source['type'] ) {
+		if ( ! empty( $source ) ) {
 			$intro_video = array(
 				$source['type'],
-				$source['id'],
 				$source['url']
 			);
+			if ( 'html5' === $source['type'] ) {
+				$intro_video = array(
+					$source['type'],
+					$source['id'],
+					$source['url']
+				);
+			}
 		}
-		update_post_meta( $id, 'academy_course_intro_video', is_array( $intro_video ) ? $intro_video : array() );
+		update_post_meta( $id, 'academy_course_intro_video', ! empty( $intro_video ) ? $intro_video : array() );
 		// course prerequisite
 		add_post_meta( $id, 'academy_prerequisite_type', 'course' );
 		$course_ids           = get_post_meta( $id, '_tutor_course_prerequisites_ids', true );
@@ -274,6 +273,7 @@ class Tutor  extends Migration implements MigrationInterface {
 			'lesson_status'  => 'publish',
 			'lesson_content' => '<!-- wp:html -->' . $item->post_content . '<!-- /wp:html -->'
 		);
+
 		$lesson_id      = \Academy\Classes\Query::lesson_insert( $array );
 		$is_previewable = (bool) get_post_meta( $item->ID, '_is_preview', true );
 
@@ -284,20 +284,22 @@ class Tutor  extends Migration implements MigrationInterface {
 		);
 
 		$videos = get_post_meta( $item->ID, '_video', true );
-		if ( 'shortcode' !== $videos['source'] ) {
+		if ( ! empty( $videos ) ) {
 			$durations = (array) $videos['runtime'];
-			if ( isset( $durations['hours'] ) ) {
-				$video_durations['hours'] = (int) $durations['hours'];
-			}
-			if ( isset( $durations['minutes'] ) ) {
-				$video_durations['minutes'] = (int) $durations['minutes'];
-			}
-			if ( isset( $durations['seconds'] ) ) {
-				$video_durations['seconds'] = (int) $durations['seconds'];
+			if ( $durations && 'shortcode' !== $videos['source'] ) {
+				if ( isset( $durations['hours'] ) ) {
+					$video_durations['hours'] = (int) $durations['hours'];
+				}
+				if ( isset( $durations['minutes'] ) ) {
+					$video_durations['minutes'] = (int) $durations['minutes'];
+				}
+				if ( isset( $durations['seconds'] ) ) {
+					$video_durations['seconds'] = (int) $durations['seconds'];
+				}
 			}
 		}
 
-		$video_source       = $this->set_video_source( $videos );
+		$video_source       = $videos ? $this->set_video_source( $videos ) : array();
 		$featured     = get_post_meta( $item->ID, '_thumbnail_id', true );
 		$lesson_meta  = [
 			'featured_media' => $featured,

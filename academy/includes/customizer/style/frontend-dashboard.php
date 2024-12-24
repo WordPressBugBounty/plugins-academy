@@ -19,31 +19,25 @@ class FrontendDashboard extends Base implements DynamicStyleInterface {
 		$sidebar_menu_hover_color = ( isset( $settings['frontend_dashboard_sidebar_menu_hover_color'] ) ? $settings['frontend_dashboard_sidebar_menu_hover_color'] : '' );
 
 		if ( $sidebar_menu_bg_color ) {
-			$css .= ".academyFrontendDashWrap .academy-dashboard-sidebar {
+			$css .= ".academy-dashboard-menu , .academy-container .academy-row .academy-col-lg-12 .academy-frontend-dashboard__sidebar{
                 background: $sidebar_menu_bg_color;
             }";
 		}
 
 		if ( $sidebar_menu_color ) {
-			$css .= ".academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li a, 
-            .academyFrontendDashWrap .academy-dashboard-sidebar .academy-dashboard-user__content>span.user-profile-name, 
-            .academyFrontendDashWrap .academy-dashboard-sidebar .academy-dashboard-user__content>span.user-designation,
-            .academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li.academy-dashboard-menu__divider {
+			$css .= ".academy-dashboard-menu li a {
                 color: $sidebar_menu_color;
             }";
 		}
 
 		if ( $sidebar_icon_color ) {
-			$css .= ".academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li a span.academy-icon:before {
+			$css .= ".academy-dashboard-menu li a .academy-icon:before {
                 color: $sidebar_icon_color;
             }";
 		}
 
 		if ( $sidebar_menu_hover_color ) {
-			$css .= ".academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li a.active span.academy-icon:before, 
-            .academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li a:focus span.academy-icon:before, 
-            .academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li a:hover span.academy-icon:before,
-            .academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li a.active {
+			$css .= ".academy-dashboard-menu li a:hover , .academy-dashboard-menu li a:hover .academy-icon:before {
                 color: $sidebar_menu_hover_color;
             }";
 			$css .= ".academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li a.active, .academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li a:focus, .academyFrontendDashWrap .academy-dashboard-sidebar ul.academy-dashboard-menu li a:hover {
@@ -57,17 +51,17 @@ class FrontendDashboard extends Base implements DynamicStyleInterface {
 		$topbar_border_color = ( isset( $settings['frontend_dashboard_topbar_border_color'] ) ? $settings['frontend_dashboard_topbar_border_color'] : '' );
 		$topbar_color = ( isset( $settings['frontend_dashboard_topbar_color'] ) ? $settings['frontend_dashboard_topbar_color'] : '' );
 		if ( $topbar_bg_color ) {
-			$css .= ".academyFrontendDashWrap .academy-dashboard-entry-content .academy-topbar {
+			$css .= ".academy-frontend-dashboard .academy-topbar {
                 background-color: $topbar_bg_color;
             }";
 		}
 		if ( $topbar_border_color ) {
-			$css .= ".academyFrontendDashWrap .academy-dashboard-entry-content .academy-topbar {
+			$css .= ".academy-frontend-dashboard .academy-topbar {
                 border-color: $topbar_border_color;
             }";
 		}
 		if ( $topbar_color ) {
-			$css .= ".academyFrontendDashWrap .academy-topbar__entry-left .academy-topbar-heading {
+			$css .= ".academy-frontend-dashboard .academy-topbar__entry-left .academy-topbar-heading {
                 color: $topbar_color;
             }";
 		}
@@ -77,18 +71,17 @@ class FrontendDashboard extends Base implements DynamicStyleInterface {
 		$card_border_color = ( isset( $settings['frontend_dashboard_card_border_color'] ) ? $settings['frontend_dashboard_card_border_color'] : '' );
 		$card_color = ( isset( $settings['frontend_dashboard_card_color'] ) ? $settings['frontend_dashboard_card_color'] : '' );
 		if ( $card_bg_color ) {
-			$css .= ".academyFrontendDashWrap .academy-dashboard-entry-content .academy-dashboard-data .academy-analytics-cards--card {
+			$css .= ".academy-analytics-cards--card {
                 background: $card_bg_color;
             }";
 		}
 		if ( $card_border_color ) {
-			$css .= ".academyFrontendDashWrap .academy-dashboard-entry-content .academy-dashboard-data .academy-analytics-cards--card {
+			$css .= ".academy-analytics-cards--card{
                 border-color: $card_border_color;
             }";
 		}
 		if ( $card_color ) {
-			$css .= ".academyFrontendDashWrap .academy-dashboard-entry-content .academy-dashboard-data .academy-analytics-cards--card .academy-analytics-card--value,
-            .academyFrontendDashWrap .academy-dashboard-entry-content .academy-dashboard-data .academy-analytics-cards--card .academy-analytics-card--label {
+			$css .= ".academy-analytics-card--data h2, .academy-analytics-card--data p.academy-analytics-card--label , .academy-analytics-cards--card .academy-analytics-card--data {
                 color: $card_color;
             }";
 		}
@@ -107,17 +100,13 @@ class FrontendDashboard extends Base implements DynamicStyleInterface {
 				$table_css .= "border-color: $table_border_color !important;";
 			}
 			if ( $table_css ) {
-				$css .= ".academy-list-wrap .rdt_Table .rdt_TableHead .rdt_TableHeadRow,
-				.academy-list-wrap .rdt_Table .rdt_TableBody .rdt_TableRow,
-				.academy-list-wrap nav.rdt_Pagination {
+				$css .= ".kzui-table {
 					$table_css
 				}";
 			}
 		}
 		if ( $table_color ) {
-			$css .= ".academy-list-wrap .rdt_Table .rdt_TableHead .rdt_TableCol, 
-            .academy-list-wrap .rdt_Table .rdt_TableRow a,
-            .academy-list-wrap .rdt_Table .rdt_TableBody .rdt_TableCell {
+			$css .= ".kzui-table {
                 color: $table_color;
             }";
 		}

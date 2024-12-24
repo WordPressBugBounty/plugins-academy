@@ -39,8 +39,6 @@ class Migration {
 		// Set default value for form customization
 		$this->migrate_1_9_14( $academy_version );
 
-		$this->migrate_2_0_0( $academy_version );
-
 		// Save Version Number, flash role management and save permalink
 		if ( ACADEMY_VERSION !== $academy_version ) {
 			Settings::save_settings();
@@ -329,4 +327,5 @@ class Migration {
 			add_option( 'academy_is_migrate_lessons_slug', true );
 		}
 	}
+
 }

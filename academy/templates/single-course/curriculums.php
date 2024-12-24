@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if ( empty( $curriculums ) ) {
+if ( empty( $curriculums ) || empty( $course_id ) ) {
 	return;
 } ?>
 <div class="academy-single-course__content-item academy-single-course__content-item--curriculum">
@@ -44,7 +44,7 @@ if ( empty( $curriculums ) ) {
 												<?php
 												if ( $sub_topic['is_accessible'] ) :
 													?>
-													<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $sub_topic ) ); ?>" class="academy-btn-play academy-btn-lesson-preview">
+													<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $sub_topic, $course_id ) ); ?>" class="academy-btn-play academy-btn-lesson-preview">
 														<i class="academy-icon academy-icon--eye"></i>
 													</a>
 												<?php else : ?>
@@ -80,7 +80,7 @@ if ( empty( $curriculums ) ) {
 										<?php
 										if ( $topic['is_accessible'] ) :
 											?>
-											<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $topic ) ); ?>" class="academy-btn-play academy-btn-lesson-preview">
+											<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $topic, $course_id ) ); ?>" class="academy-btn-play academy-btn-lesson-preview">
 												<i class="academy-icon academy-icon--eye"></i>
 											</a>
 										<?php else : ?>

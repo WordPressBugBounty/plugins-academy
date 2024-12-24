@@ -132,9 +132,8 @@ class Miscellaneous extends AbstractAjaxHandler {
 		}
 
 		$payload = Sanitizer::sanitize_payload( [
-			'current_permalink' => 'string',
+			'current_permalink' => 'url',
 		], $_REQUEST ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
 		$current_permalink = Helper::sanitize_referer_url( $payload['current_permalink'] );
 		$register_url      = esc_url( add_query_arg( array(
 			'redirect_to' => $current_permalink

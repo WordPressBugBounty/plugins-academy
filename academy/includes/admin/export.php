@@ -2,6 +2,7 @@
 namespace Academy\Admin;
 
 use Academy\Classes\ExportBase;
+use Academy\Classes\CourseExport;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -12,6 +13,7 @@ class Export extends ExportBase {
 	public static function init() {
 		$self = new self();
 		add_action( 'admin_init', [ $self, 'export_lessons' ], -1 );
+		add_action( 'admin_init', [ $self, 'course_export_data' ], -1 );
 	}
 	public function export_lessons() {
 		$page = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
@@ -30,6 +32,29 @@ class Export extends ExportBase {
 		$this->array_to_csv_download(
 			$csv_data,
 			$filename
+		);
+		exit();
+	}
+
+	public function course_export_data() {
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
+		$exportType = isset( $_GET['exportType'] ) ? sanitize_text_field( $_GET['exportType'] ) : '';
+		if ( 'academy-tools' !== $page || 'course' !== $exportType || ! current_user_can( 'manage_options' ) ) {
+			return false;
+		}
+		// Verify nonce
+		check_admin_referer( 'academy_nonce', 'security' );
+		$CompletedCourseExport = new CourseExport();
+		$csv_data = $CompletedCourseExport->get_courses_for_export();
+		if ( ! count( $csv_data ) ) {
+			return false;
+		}
+		$filename = 'academy-' . $exportType;
+		$filename .= '.' . gmdate( 'Y-m-d' ) . '.csv';
+		$CompletedCourseExport->array_to_csv_download(
+			$csv_data,
+			$filename,
+			false
 		);
 		exit();
 	}

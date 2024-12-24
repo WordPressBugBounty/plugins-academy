@@ -17,7 +17,7 @@ $is_paid                  = isset( $is_paid ) ? $is_paid : false;
 $card_style               = \Academy\Helper::get_settings( 'course_card_style' );
 $required_levels          = isset( $required_levels ) ? $required_levels : [];
 $course_type              = isset( $course_type ) ? $course_type : 'public';
-$prerequisite_ids         = apply_filters( 'academy/templates/single_course/footer_form', $course_id );
+$prerequisite_courses     = apply_filters( 'academy/templates/single_course/prerequisite_courses', false, $course_id );
 $prices                   = Academy\Helper::is_plugin_active( 'surecart/surecart.php' ) && Academy\Helper::get_addon_active_status( 'surecart' ) ? ( new AcademyProSurecart\Integration() )->check_integration_and_price( array(), $course_id ) : '';
 ?>
 
@@ -33,10 +33,10 @@ endif; ?>
 			<?php echo esc_html__( 'Start Course', 'academy' ); ?>
 		</a>
 	</div>
-<?php elseif ( $prerequisite_ids ) : ?>
+<?php elseif ( $prerequisite_courses ) : ?>
 	<?php \AcademyPro\Helper::get_template(
 		'course-prerequisites/form-prerequisite.php', [
-			'required_courses' => $prerequisite_ids,
+			'required_courses' => $prerequisite_courses,
 			'is_free'  => 'free' === $course_type ? true : false,
 		]
 	);
