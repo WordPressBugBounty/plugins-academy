@@ -3,12 +3,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-	$share_config = array(
-		'title' => get_the_title(),
-		'text'  => get_the_excerpt(),
-		'image' => \Academy\Helper::get_the_course_thumbnail_url( 'post-thumbnail' ),
-	);
-	?>
+$share_config = array(
+	'title' => get_the_title(),
+	'text'  => get_the_excerpt(),
+	'image' => \Academy\Helper::get_the_course_thumbnail_url( 'post-thumbnail' ),
+);
+?>
 
 <div class="academy-widget-enroll__wishlist-and-share">
 	<?php
@@ -28,8 +28,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	if ( $is_show_course_share ) :
 		?>
-
-	<button class="academy-btn academy-btn--bg-white-border academy-share-button academy-btn--lg"><i class="academy-icon academy-icon--share"></i><?php esc_html_e( 'Share', 'academy' ); ?></button>
+	<button class="academy-btn academy-btn--bg-white-border academy-share-button academy-btn--lg">
+		<i class="academy-icon academy-icon--share"></i><?php esc_html_e( 'Share', 'academy' ); ?>
+	</button>
 	<div class="academy-share-wrap" data-social-share-config="<?php echo esc_attr( wp_json_encode( $share_config ) ); ?>">
 		<button class="academy-social-share academy_facebook"><i class="academy-icon academy-icon--facebook" aria-hidden="true"></i></button>
 		<button class="academy-social-share academy_linkedin"><i class="academy-icon academy-icon--linkedIn" aria-hidden="true"></i></button>

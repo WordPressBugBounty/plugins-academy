@@ -6,15 +6,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Academy;
+use Academy\Helper;
 
 class Loader {
 	public static function init() {
 		$self = new self();
-		add_filter( 'template_include', array( $self, 'template_loader' ) );
+		if ( Helper::is_fse_theme() ) {
+			Block::init();
+		} else {
+			add_filter( 'template_include', array( $self, 'template_loader' ) );
+			add_filter( 'body_class', array( $self, 'add_body_custom_class' ) );
+		}
 		add_filter( 'template_include', array( $self, 'load_course_curriculums_template' ), 30 );
 		add_filter( 'template_include', array( $self, 'load_author_profile_template' ) );
 		add_filter( 'comments_template', array( $self, 'load_comments_template' ) );
-		add_filter( 'body_class', array( $self, 'add_body_custom_class' ) );
 	}
 
 	public function template_loader( $template ) {

@@ -55,7 +55,7 @@ class Database {
 				) : false,
 				'query_var'             => true,
 				'delete_with_user'      => false,
-				'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'trackbacks', 'custom-fields', 'comments', 'post-formats' ),
+				'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'trackbacks', 'custom-fields', 'comments', 'post-formats', 'sticky' ),
 				'show_in_rest'          => true,
 				'rest_base'             => $post_type,
 				'rest_namespace'        => ACADEMY_PLUGIN_SLUG . '/v1',

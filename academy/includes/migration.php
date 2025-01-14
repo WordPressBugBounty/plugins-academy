@@ -39,6 +39,9 @@ class Migration {
 		// Set default value for form customization
 		$this->migrate_1_9_14( $academy_version );
 
+		// enable course preview
+		$this->migrate_2_3_1( $academy_version );
+
 		// Save Version Number, flash role management and save permalink
 		if ( ACADEMY_VERSION !== $academy_version ) {
 			Settings::save_settings();
@@ -325,6 +328,15 @@ class Migration {
 				}
 			}
 			add_option( 'academy_is_migrate_lessons_slug', true );
+		}
+	}
+
+	public function migrate_2_3_1( $academy_version ) {
+		if ( version_compare( $academy_version, '2.3.0', '<' ) ) {
+			// Enable WooCommerce Addon
+			$saved_addons = (array) json_decode( get_option( ACADEMY_ADDONS_SETTINGS_NAME ), true );
+			$saved_addons['course-preview'] = true;
+			update_option( ACADEMY_ADDONS_SETTINGS_NAME, wp_json_encode( $saved_addons ) );
 		}
 	}
 

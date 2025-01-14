@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.3.0
+Stable tag: 2.4.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -310,6 +310,13 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.4.0 - 14/01/2025 =
+* Added - Course Preview Addon.
+* Added - FSE theme integration.
+* Added - Password Protection and Scheduled Dates for Courses.
+* Added - Certificate Downloads menu in the Student Dashboard.
+* Fixed - The course Import feature is not properly setting the curriculum and course data.
 
 = 2.3.0 - 24/12/2024 =
 * Added - Course Export-Import feature.

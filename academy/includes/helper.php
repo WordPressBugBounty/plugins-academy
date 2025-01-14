@@ -190,7 +190,7 @@ class Helper {
 			'title'       => __( 'Students', 'academy' ),
 			'capability'  => 'manage_options',
 		];
-		if ( self::get_addon_active_status( 'certificates' ) ) {
+		if ( self::get_addon_active_status( 'certificates' ) && self::is_active_ablocks() ) {
 			$menu[ ACADEMY_PLUGIN_SLUG . '-certificates' ]    = [
 				'parent_slug' => ACADEMY_PLUGIN_SLUG,
 				'title'       => __( 'Certificates', 'academy' ),
@@ -243,12 +243,29 @@ class Helper {
 		return self::is_plugin_active( $academy_pro );
 	}
 
+	public static function is_active_ablocks() {
+		$ablocks = 'ablocks/ablocks.php';
+
+		return self::is_plugin_active( $ablocks );
+	}
+
 	public static function is_plugin_active( $basename ) {
 		if ( ! function_exists( 'get_plugins' ) ) {
 			include_once ABSPATH . '/wp-admin/includes/plugin.php';
 		}
 
 		return is_plugin_active( $basename );
+	}
+
+	public static function is_fse_theme() {
+		if ( function_exists( 'wp_is_block_theme' ) ) {
+			return (bool) \wp_is_block_theme();
+		}
+		if ( function_exists( 'gutenberg_is_fse_theme' ) ) {
+			return (bool) \gutenberg_is_fse_theme();
+		}
+
+		return false;
 	}
 
 	public static function monetization_engine() {
@@ -1259,6 +1276,14 @@ class Helper {
 				'icon' => 'academy-icon academy-icon--purchase',
 				'public' => true,
 				'priority' => 26,
+			);
+		}
+		if ( self::get_addon_active_status( 'certificates' ) ) {
+			$items['download-certificate'] = array(
+				'label' => __( 'Download Certificates', 'academy' ),
+				'icon' => 'academy-icon academy-icon--certificate',
+				'public' => true,
+				'priority' => 17,
 			);
 		}
 

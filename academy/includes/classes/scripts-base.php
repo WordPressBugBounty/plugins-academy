@@ -84,6 +84,7 @@ class ScriptsBase {
 			'is_enabled_course_wishlist'    => (bool) \Academy\Helper::get_settings( 'is_enabled_course_wishlist', true ),
 			'is_enabled_lessons_content_title'    => (bool) \Academy\Helper::get_settings( 'is_enabled_lessons_content_title', true ),
 			'lessons_topic_length'    => (int) \Academy\Helper::get_settings( 'lessons_topic_length', true ),
+			'is_course_single'    => is_singular( 'academy_courses' ) ? get_the_ID() : false,
 		);
 
 		return apply_filters(

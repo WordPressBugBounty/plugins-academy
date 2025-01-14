@@ -41,6 +41,9 @@ class CourseExport extends ExportBase {
 			'course_intro_video' => '',
 			'course_curriculum' => '',
 			'course_certificate_id' => '',
+			'academy_rcp_membership_levels',
+			'academy_course_enable_certificate',
+			'academy_is_disabled_course_review',
 		);
 
 		$courses = $this->get_all_courses( 'course_completed' );
@@ -54,12 +57,12 @@ class CourseExport extends ExportBase {
 				$product_id = $meta['academy_course_product_id'][0] ?? null;
 				$download_id = $meta['academy_course_download_id'][0] ?? null;
 			}
-			$curriculums = maybe_unserialize( $meta['academy_course_curriculum'][0] ?? '' );
+			$curriculums = maybe_unserialize( $meta['academy_course_curriculum'][0] ?? array() );
 			$course_array[] = $this->extract_post_data( $course );
 			$course_array[] = array_merge(
 				$this->extract_meta_data( $meta ),
 				[
-					'course_curriculum' => wp_json_encode( $curriculums ),
+					'course_curriculum' => $meta['academy_course_curriculum'][0] ?? array(),
 					'course_download_id' => $download_id,
 					'edd_price' => get_post_meta( $download_id, 'edd_price', true ),
 					'course_product_id' => $product_id,
@@ -74,7 +77,7 @@ class CourseExport extends ExportBase {
 					if ( $is_topics ) {
 						foreach ( $curriculum['topics'] as $topics ) {
 							if ( 'sub-curriculum' !== $topics['type'] ) {
-								$data = $this->topics_make_for_csv( $topics, false );
+								$data = $this->topics_make_for_csv( $topics );
 								if ( 'quiz' === $topics['type'] && $data ) {
 									foreach ( $data as $quiz ) {
 										$course_array[] = $quiz;
@@ -84,7 +87,7 @@ class CourseExport extends ExportBase {
 								}
 							} elseif ( isset( $topics['topics'] ) && ! empty( $topics['topics'] ) ) {
 								foreach ( $topics['topics'] as $topic ) {
-									$data = $this->topics_make_for_csv( $topic, true );
+									$data = $this->topics_make_for_csv( $topic );
 									if ( 'quiz' === $topic['type'] && $data ) {
 										foreach ( $data as $quiz ) {
 											$course_array[] = $quiz;
@@ -119,10 +122,10 @@ class CourseExport extends ExportBase {
 	private function extract_meta_data( $meta ) {
 		return [
 			'course_expire_enrollment' => $meta['academy_course_expire_enrollment'][0] ?? '',
-			'course_type' => $meta['academy_course_type'][0] ?? '',
-			'course_product_id' => $meta['academy_course_product_id'][0] ?? '',
-			'course_download_id' => $meta['academy_course_download_id'][0] ?? '',
-			'course_max_students' => $meta['academy_course_max_students'][0] ?? '',
+			'course_type' => $meta['academy_course_type'][0] ?? 'free',
+			'course_product_id' => $meta['academy_course_product_id'][0] ?? 0,
+			'course_download_id' => $meta['academy_course_download_id'][0] ?? 0,
+			'course_max_students' => $meta['academy_course_max_students'][0] ?? 0,
 			'course_language' => $meta['academy_course_language'][0] ?? '',
 			'course_difficulty_level' => $meta['academy_course_difficulty_level'][0] ?? '',
 			'course_benefits' => $meta['academy_course_benefits'][0] ?? '',
@@ -132,8 +135,11 @@ class CourseExport extends ExportBase {
 			'is_enabled_course_qa' => $meta['academy_is_enabled_course_qa'][0] ?? '',
 			'is_enabled_course_announcements' => $meta['academy_is_enabled_course_announcements'][0] ?? '',
 			'course_duration' => $meta['academy_course_duration'][0] ?? array(),
-			'course_intro_video' => $meta['academy_course_intro_video'][0] ?? [],
-			'course_certificate_id' => $meta['academy_course_certificate_id'][0] ?? '',
+			'course_intro_video' => $meta['academy_course_intro_video'][0] ?? array(),
+			'course_certificate_id' => $meta['academy_course_certificate_id'][0] ?? 0,
+			'is_disabled_course_review' => $meta['academy_is_disabled_course_review'][0] ?? false,
+			'rcp_membership_levels' => $meta['academy_rcp_membership_levels'][0] ?? array(),
+			'course_enable_certificate' => $meta['academy_course_enable_certificate'][0] ?? false,
 		];
 	}
 
@@ -150,18 +156,18 @@ class CourseExport extends ExportBase {
 		) );
 		return $results;
 	}
-	public function topics_make_for_csv( $topic, $is_curriculum ) {
+	public function topics_make_for_csv( $topic ) {
 		switch ( $topic['type'] ) {
 			case 'lesson':
-				return $this->get_lesson_by_topic( $topic, $is_curriculum ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
+				return $this->get_lesson_by_topic( $topic ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
 			case 'quiz':
-				return apply_filters( 'academy_pro/export-import/get_quiz_data', $topic, $is_curriculum ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
+				return apply_filters( 'academy_pro/export-import/get_quiz_data', $topic ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
 			case 'assignment':
-				return apply_filters( 'academy_pro/export-import/get_assignment_data', $topic, $is_curriculum ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
+				return apply_filters( 'academy_pro/export-import/get_assignment_data', $topic ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
 		}
 	}
 
-	public function get_lesson_by_topic( $topic, $is_curriculum ) {
+	public function get_lesson_by_topic( $topic ) {
 		$lesson = \Academy\Helper::get_lesson( $topic['id'] );
 		if ( ! empty( $lesson ) ) {
 			$meta = \Academy\Helper::get_lesson_meta_data( $topic['id'] );
@@ -175,7 +181,6 @@ class CourseExport extends ExportBase {
 				'video_duration'            => wp_json_encode( $meta['video_duration'] ),
 				'video_source_type'         => $meta['video_source']['type'],
 				'video_source_url'          => $meta['video_source']['url'],
-				'is_sub_curriculum'         => $is_curriculum,
 			];
 			return $csv_data;
 		}
@@ -195,9 +200,7 @@ class CourseExport extends ExportBase {
 		foreach ( $array as $row ) {
 			$flattenRow = $this->flatten_array( $row );
 			if ( isset( $flattenRow['post_title'] )
-			|| isset( $flattenRow['curriculum_title'] )
 			|| isset( $flattenRow['course_expire_enrollment'] )
-			|| isset( $flattenRow['sub_curriculum_title'] )
 			|| isset( $flattenRow['lesson_title'] )
 			|| isset( $flattenRow['quiz_title'] )
 			|| isset( $flattenRow['question_title'] )

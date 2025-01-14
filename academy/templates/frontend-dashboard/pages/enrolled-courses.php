@@ -39,7 +39,7 @@ if ( ! empty( $pending_enrolled_courses ) ) :
 							<?php
 							$course_title = get_the_title( $course_id );
 							$thumbnail_url = Academy\Helper::get_the_course_thumbnail_url_by_id( $course_id );
-							$course_permalink = apply_filters( 'academy/templates/start_course_url', \Academy\Helper::get_start_course_permalink( $course_id ) );
+							$course_permalink = apply_filters( 'academy/templates/start_course_url', \Academy\Helper::get_start_course_permalink( $course_id ), $course_id );
 
 							$rating                  = \Academy\Helper::get_course_rating( $course_id );
 							$total_topics           = \Academy\Helper::get_total_number_of_course_topics( $course_id );

@@ -784,7 +784,7 @@ class Course extends AbstractAjaxHandler {
 					$course_meta_item = array_combine( $course_meta_header, $item );
 					$new_curr_item[] = [
 						'course_id' => $new_course_id ?? $old_course_id,
-						'curriculum' => json_decode( $course_meta_item['course_curriculum'] )
+						'curriculum' => maybe_unserialize( $course_meta_item['course_curriculum'] )
 					];
 					if ( $new_course_id ) {
 						$this->insert_course_meta_value( $course_meta_item, $new_course_id );
@@ -814,6 +814,7 @@ class Course extends AbstractAjaxHandler {
 					$new_question_id = apply_filters( 'academy_pro/export-import/insert_question_data', $question_item, $new_quiz_id );
 					$response[] = $new_question_id ? __( 'Successfully Inserted the Question - ', 'academy' ) . $question_item['question_title'] : __( 'Sorry, Already have the Question - ', 'academy' ) . $question_item['question_title'];
 				} elseif ( $has_answer && $new_quiz_id && $new_question_id ) {
+					$has_answer = false;
 					$answer_item = array_combine( $answer_header, $item );
 					apply_filters( 'academy_pro/export-import/insert_answer_data', $answer_item, $new_quiz_id, $new_question_id );
 				} elseif ( $has_assignment ) {
@@ -879,41 +880,61 @@ class Course extends AbstractAjaxHandler {
 		return $course_id;
 	}
 
-	public function insert_course_meta_value( $course_meta_item, $new_course_id ) {
+	public function insert_course_meta_value( $course_item, $new_course_id ) {
 		$response = false;
-		$allowed_meta_fields = [
-			'course_expire_enrollment'    => 'sanitize_text_field',
-			'course_type'                 => 'sanitize_text_field',
-			'course_max_students'         => 'absint',
-			'course_language'             => 'sanitize_text_field',
-			'course_difficulty_level'     => 'sanitize_text_field',
-			'course_benefits'             => 'sanitize_textarea_field',
-			'course_requirements'         => 'sanitize_textarea_field',
-			'course_audience'             => 'sanitize_textarea_field',
-			'course_materials_included'   => 'sanitize_textarea_field',
-			'is_enabled_course_qa'        => 'sanitize_key',
-			'is_enabled_course_announcements' => 'sanitize_key',
-			'course_duration'             => 'sanitize_key',
-			'course_intro_video'          => 'sanitize_text_field',
-			'course_curriculum'           => 'sanitize_text_field',
-			'course_certificate_id'       => 'absint',
+		$expire_enrollment = isset( $course_item['course_expire_enrollment'] ) ? sanitize_text_field( $course_item['course_expire_enrollment'] ) : 0;
+		$course_type = isset( $course_item['course_type'] ) ? sanitize_text_field( $course_item['course_type'] ) : 'free';
+		$students = isset( $course_item['course_max_students'] ) ? absint( $course_item['course_max_students'] ) : 0;
+		$course_language = isset( $course_item['course_language'] ) ? sanitize_text_field( $course_item['course_language'] ) : '';
+		$difficulty_level = isset( $course_item['course_difficulty_level'] ) ? sanitize_text_field( $course_item['course_difficulty_level'] ) : 'beginner';
+		$course_benefits = isset( $course_item['course_benefits'] ) ? sanitize_text_field( $course_item['course_benefits'] ) : '';
+		$course_requirements = isset( $course_item['course_requirements'] ) ? sanitize_text_field( $course_item['course_requirements'] ) : '';
+		$course_audience = isset( $course_item['course_audience'] ) ? sanitize_text_field( $course_item['course_audience'] ) : 'beginner';
+		$course_materials = isset( $course_item['course_materials'] ) ? sanitize_text_field( $course_item['course_materials'] ) : '';
+		$course_qa = isset( $course_item['is_enabled_course_qa'] ) ? sanitize_key( $course_item['is_enabled_course_qa'] ) : false;
+		$course_announcement = isset( $course_item['is_enabled_course_announcements'] ) ? sanitize_key( $course_item['is_enabled_course_announcements'] ) : false;
+		$course_duration = isset( $course_item['course_duration'] ) ? maybe_unserialize( sanitize_text_field( $course_item['course_duration'] ) ) : array( 0, 0, 0 );
+		$intro_video = isset( $course_item['course_intro_video'] ) ? maybe_unserialize( sanitize_text_field( $course_item['course_intro_video'] ) ) : array();
+		$course_curriculum = isset( $course_item['course_curriculum'] ) ? maybe_unserialize( sanitize_text_field( $course_item['course_curriculum'] ) ) : array();
+		$certificate_id = isset( $course_item['course_certificate_id'] ) ? absint( $course_item['course_certificate_id'] ) : 0;
+		$product_id = isset( $course_item['course_product_id'] ) ? absint( $course_item['course_product_id'] ) : 0;
+		$download_id = isset( $course_item['course_download_id'] ) ? absint( $course_item['course_download_id'] ) : 0;
+		$course_review = isset( $course_item['is_disabled_course_review'] ) ? sanitize_key( $course_item['is_disabled_course_review'] ) : false;
+		$rcp_membership_levels = isset( $course_item['rcp_membership_levels'] ) ? maybe_unserialize( sanitize_text_field( $course_item['rcp_membership_levels'] ) ) : array();
+		$enable_certificate = isset( $course_item['course_enable_certificate'] ) ? sanitize_key( $course_item['course_enable_certificate'] ) : false;
+		$meta_args = [
+			'academy_course_expire_enrollment'       => $expire_enrollment,
+			'academy_course_type'                    => $course_type,
+			'academy_course_max_students'            => $students,
+			'academy_course_language'                => $course_language,
+			'academy_course_difficulty_level'        => $difficulty_level,
+			'academy_course_benefits'                => $course_benefits,
+			'academy_course_requirements'            => $course_requirements,
+			'academy_course_audience'                => $course_audience,
+			'academy_course_materials_included'      => $course_materials,
+			'academy_is_enabled_course_qa'           => $course_qa,
+			'academy_is_enabled_course_announcements' => $course_announcement,
+			'academy_course_duration'                => $course_duration,
+			'academy_course_intro_video'             => $intro_video,
+			'academy_course_curriculum'              => $course_curriculum,
+			'academy_course_certificate_id'          => $certificate_id,
+			'academy_is_disabled_course_review'      => $course_review,
+			'academy_rcp_membership_levels'          => $rcp_membership_levels,
+			'academy_course_enable_certificate'      => $enable_certificate,
 		];
-		// update product meta
-		update_post_meta( $new_course_id, 'academy_course_download_id', 0 );
-		update_post_meta( $new_course_id, 'academy_course_product_id', 0 );
-		// product id handle
-		$product_id = $course_meta_item['course_product_id'] ?? null;
-		$download_id = $course_meta_item['course_download_id'] ?? null;
+		// add default product id
+		add_post_meta( $new_course_id, 'academy_course_download_id', 0 );
+		add_post_meta( $new_course_id, 'academy_course_product_id', 0 );
 
 		// Handle WooCommerce product creation
 		if ( $product_id && \Academy\Helper::get_addon_active_status( 'woocommerce' ) ) {
 			$product = new \WC_Product_Simple( $product_id );
 			$product->set_name( get_the_title( $new_course_id ) );
 			$product->set_slug( get_post_field( 'post_name', $new_course_id ) );
-			$product->set_regular_price( $course_meta_item['regular_price'] ?? 0 );
+			$product->set_regular_price( absint( $course_item['regular_price'] ) ?? 0 );
 
-			if ( ! empty( $course_meta_item['sale_price'] ) ) {
-				$product->set_sale_price( $course_meta_item['sale_price'] );
+			if ( ! empty( $course_item['sale_price'] ) ) {
+				$product->set_sale_price( absint( $course_item['sale_price'] ) );
 			}
 
 			$product_id = $product->save();
@@ -936,46 +957,19 @@ class Course extends AbstractAjaxHandler {
 			if ( ! is_wp_error( $download_id ) ) {
 				$download = new \EDD_Download( $download_id );
 				update_post_meta( $download_id, '_academy_course', 'yes' );
-				update_post_meta( $download_id, 'edd_price', $course_meta_item['edd_price'] ?? 0 );
+				update_post_meta( $download_id, 'edd_price', absint( $course_item['edd_price'] ) ?? 0 );
 
 				update_post_meta( $new_course_id, 'academy_course_download_id', $download_id );
 			}
 		}
 
 		// Insert course meta
-		foreach ( $allowed_meta_fields as $key => $sanitizer ) {
-			if ( isset( $course_meta_item[ $key ] ) ) {
-				$data = ( 'course_intro_video' === $key || 'course_duration' === $key || 'course_curriculum' === $key )
-					? $this->maybe_unserialize( $key, $course_meta_item[ $key ] )
-					: $course_meta_item[ $key ];
-
-				update_post_meta( $new_course_id, 'academy_' . $key, call_user_func( $sanitizer, $data ) );
-				$response = true;
-			}
+		foreach ( $meta_args as $key => $value ) {
+			$response = true;
+			add_post_meta( $new_course_id, $key, $value );
 		}
 
 		return $response;
-	}
-
-	private function maybe_unserialize( $key, $data ) {
-		if ( ! empty( $data ) && is_serialized( $data ) ) {
-
-			$unserialized_data = maybe_unserialize( $data );
-			if ( is_array( $unserialized_data ) ) {
-				$unserialized_data = array_map( 'sanitize_text_field', $unserialized_data );
-			} elseif ( is_string( $unserialized_data ) ) {
-				$unserialized_data = sanitize_text_field( $unserialized_data );
-			} else {
-				$unserialized_data = null;
-			}
-			if ( empty( $unserialized_data ) ) {
-				return 'course_duration' === sanitize_key( $key ) ? array( 0, 0, 0 ) : array();
-			}
-
-			return $unserialized_data;
-		}
-
-		return $data;
 	}
 
 	public function insert_lesson_data( $item ) {
@@ -1046,25 +1040,25 @@ class Course extends AbstractAjaxHandler {
 			$new_curriculum = array();
 			foreach ( $curriculums as $curriculum ) {
 				$new_topics = array();
-				foreach ( $curriculum->topics as $topic ) {
-					if ( isset( $topic->type ) && 'sub-curriculum' !== $topic->type ) {
+				foreach ( $curriculum['topics'] as $topic ) {
+					if ( isset( $topic['type'] ) && 'sub-curriculum' !== $topic['type'] ) {
 						$new_topics[] = $this->set_topics( $topic );
 					} elseif ( ! empty( $topic ) ) {
 						$sub_topics = [
-							'name' => $topic->name,
-							'type' => $topic->type,
-							'id'   => $topic->id,
+							'name' => $topic['name'],
+							'type' => $topic['type'],
+							'id'   => $topic['id'],
 							'topics' => [],
 						];
-						foreach ( $topic->topics as $sub_topic ) {
+						foreach ( $topic['topics'] as $sub_topic ) {
 							$sub_topics['topics'][] = $this->set_topics( $sub_topic );
 						}
 						$new_topics[] = $sub_topics;
 					}
 				}//end foreach
 				$new_curriculum[] = array(
-					'title' => (string) $curriculum->title ? $curriculum->title : 'Academy Topics',
-					'content' => $curriculum->content,
+					'title' => (string) $curriculum['title'] ? $curriculum['title'] : 'Academy Topics',
+					'content' => $curriculum['content'],
 					'topics' => $new_topics,
 				);
 			}//end foreach
@@ -1075,40 +1069,38 @@ class Course extends AbstractAjaxHandler {
 	}
 
 	private function set_topics( $topic ) {
-		$new_topics = [];
-		switch ( $topic->type ) {
+		switch ( $topic['type'] ) {
 			case 'lesson':
-				$lesson_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic->name, 'lesson' );
-				if ( $lesson_id ) {
+				$lesson = \Academy\Helper::get_lesson_by_title( $topic['name'] );
+				if ( $lesson ) {
 					return array(
-						'id' => $lesson_id,
-						'name' => $topic->name,
+						'id' => $lesson->ID,
+						'name' => $topic['name'],
 						'type'  => 'lesson',
 					);
 				}
 				break;
 			case 'quiz':
-				$quiz_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic->name, 'quiz' );
+				$quiz_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic['name'], 'quiz' );
 				if ( $quiz_id ) {
 					return array(
 						'id' => $quiz_id,
-						'name' => $topic->name,
+						'name' => $topic['name'],
 						'type'  => 'quiz',
 					);
 				}
 				break;
 			case 'assignment':
-				$assignment_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic->name, 'assignment' );
+				$assignment_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic['name'], 'assignment' );
 				if ( $assignment_id ) {
 					return array(
 						'id' => $assignment_id,
-						'name' => $topic->name,
+						'name' => $topic['name'],
 						'type'  => 'assignment',
 					);
 				}
 				break;
 		}//end switch
-		return $new_topics;
 	}
 
 }

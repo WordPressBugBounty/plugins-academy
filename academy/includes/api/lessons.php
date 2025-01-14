@@ -293,10 +293,6 @@ class Lessons extends \WP_REST_Controller {
 			$data->attachment = (int) $lesson_meta['attachment'];
 		}
 
-		if ( isset( $schema['meta']['properties']['is_previewable'] ) ) {
-			$data->is_previewable = (int) $lesson_meta['is_previewable'];
-		}
-
 		if ( isset( $schema['meta']['properties']['video_duration'] ) ) {
 			$data->video_duration = $lesson_meta['video_duration'];
 		}
@@ -420,12 +416,6 @@ class Lessons extends \WP_REST_Controller {
 		if ( ! empty( $schema['meta']['properties']['attachment'] ) && isset( $request['meta']['attachment'] ) ) {
 			if ( is_numeric( $request['meta']['attachment'] ) ) {
 				$lesson_meta->attachment = $request['meta']['attachment'];
-			}
-		}
-
-		if ( ! empty( $schema['meta']['properties']['is_previewable'] ) && isset( $request['meta']['is_previewable'] ) ) {
-			if ( is_bool( $request['meta']['is_previewable'] ) || is_numeric( $request['meta']['is_previewable'] ) ) {
-				$lesson_meta->is_previewable = (int) $request['meta']['is_previewable'];
 			}
 		}
 

@@ -24,7 +24,7 @@ class Frontend {
 		}
 
 		$is_enable_certificate = get_post_meta( $post_id, 'academy_course_enable_certificate', true );
-		if ( ! $is_complete || ! $is_enable_certificate ) {
+		if ( ! $is_complete || ! $is_enable_certificate || ! $certificate_id ) {
 			return;
 		}
 
@@ -38,7 +38,11 @@ class Frontend {
 		if ( get_query_var( 'post_type' ) === 'academy_courses' && get_query_var( 'source' ) === 'certificate' ) {
 			add_filter( 'ablocks/is_allow_block_inline_assets', '__return_true' );
 			$course_id = get_the_ID();
-			$certificate_template_id = apply_filters( 'academy_certificates/certificate_template_id', Helper::get_settings( 'academy_primary_certificate_id' ), $course_id );
+			$certificate_id = get_post_meta( $course_id, 'academy_course_certificate_id', true );
+			if ( ! $certificate_id ) {
+				$certificate_id = Helper::get_settings( 'academy_primary_certificate_id' );
+			}
+			$certificate_template_id = apply_filters( 'academy_certificates/certificate_template_id', $certificate_id, $course_id );
 			$student_id = apply_filters( 'academy_certificates/certificate_student_id', get_current_user_id() );
 			$this->render_certificate( $course_id, $certificate_template_id, $student_id );
 		}

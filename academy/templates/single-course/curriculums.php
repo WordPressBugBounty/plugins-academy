@@ -42,7 +42,7 @@ if ( empty( $curriculums ) || empty( $course_id ) ) {
 											</div>
 												<div class="academy-entry-control">
 												<?php
-												if ( $sub_topic['is_accessible'] ) :
+												if ( $sub_topic['is_accessible'] && \Academy\Helper::get_addon_active_status( 'course-preview' ) ) :
 													?>
 													<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $sub_topic, $course_id ) ); ?>" class="academy-btn-play academy-btn-lesson-preview">
 														<i class="academy-icon academy-icon--eye"></i>
@@ -78,7 +78,7 @@ if ( empty( $curriculums ) || empty( $course_id ) ) {
 									</div>
 									<div class="academy-entry-control">
 										<?php
-										if ( $topic['is_accessible'] ) :
+										if ( $topic['is_accessible'] && \Academy\Helper::get_addon_active_status( 'course-preview' ) ) :
 											?>
 											<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $topic, $course_id ) ); ?>" class="academy-btn-play academy-btn-lesson-preview">
 												<i class="academy-icon academy-icon--eye"></i>

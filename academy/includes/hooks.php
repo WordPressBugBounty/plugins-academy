@@ -34,6 +34,8 @@ add_action( 'academy/templates/single_course_enroll_content', 'academy_single_co
 add_action( 'academy/templates/single_course_enroll_content', 'academy_course_enroll_form', 15 );
 add_action( 'academy/templates/single_course_enroll_content', 'academy_course_enroll_wishlist_and_share', 20 );
 
+// handle course password form
+add_filter( 'the_password_form', 'handle_academy_course_password_form' );
 
 /**
  * Archive Course Page
@@ -112,6 +114,8 @@ add_action( 'academy_frontend_dashboard_profile_endpoint', 'academy_frontend_das
 add_action( 'academy_frontend_dashboard_enrolled-courses_endpoint', 'academy_frontend_dashboard_enrolled_courses_page' );
 add_action( 'academy_frontend_dashboard_active-courses_endpoint', 'academy_frontend_dashboard_active_courses_page' );
 add_action( 'academy_frontend_dashboard_complete-courses_endpoint', 'academy_frontend_dashboard_completed_courses_page' );
+// download certificate
+add_action( 'academy_frontend_dashboard_download-certificate_endpoint', 'academy_frontend_dashboard_download_certificate_page' );
 
 add_action( 'academy_frontend_dashboard_wishlist_endpoint', 'academy_frontend_dashboard_wishlist_page' );
 // reviews

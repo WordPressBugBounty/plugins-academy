@@ -76,9 +76,6 @@ trait LessonSchema {
 						'attachment' => [
 							'type'          => 'integer',
 						],
-						'is_previewable' => [
-							'type'          => 'boolean',
-						],
 						'video_duration' => [
 							'type'   => 'object',
 						],
@@ -203,10 +200,6 @@ trait LessonSchema {
 					'attachment' => [
 						'type'          => 'integer',
 						'sanitize_callback' => 'absint',
-					],
-					'is_previewable' => [
-						'type'          => 'boolean',
-						'sanitize_callback' => 'rest_sanitize_boolean',
 					],
 					'video_duration' => [
 						'type'   => 'object',

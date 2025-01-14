@@ -29,6 +29,7 @@ class Addons {
 			'certificates'     => 'Certificates',
 			'easy-digital-downloads' => 'EasyDigitalDownloads',
 			'woocommerce'      => 'Woocommerce',
+			'course-preview'   => 'CoursePreview',
 		]);
 
 		foreach ( $addons as $addon_name => $addon_class_name ) {

@@ -57,7 +57,7 @@ if ( 'woocommerce' === $monetization_engine ) {
 			</button>
 		<?php
 	else :
-		echo esc_url( $purchase_link );
+		echo $purchase_link; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	endif; ?> 
 	</div>
 	<?php

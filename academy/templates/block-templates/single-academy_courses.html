@@ -1,0 +1,46 @@
+<!-- wp:template-part {"slug":"header"} /-->
+
+<!-- wp:group {"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group"><!-- wp:columns {"className":"is-style-academylms","style":{"spacing":{"padding":{"right":"10px","left":"10px","top":"50px","bottom":"50px"},"blockGap":{"top":"30px","left":"30px"},"margin":{"top":"0","bottom":"0"}},"typography":{"fontSize":"1rem"},"border":{"radius":"38px"}}} -->
+	<div class="wp-block-columns is-style-academylms" style="border-radius:38px;margin-top:0;margin-bottom:0;padding-top:50px;padding-right:10px;padding-bottom:50px;padding-left:10px;font-size:1rem"><!-- wp:column {"verticalAlignment":"top","width":"108%","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"blockGap":"var:preset|spacing|10"},"border":{"width":"0px","style":"none","radius":"0px"}},"layout":{"type":"default"}} -->
+		<div class="wp-block-column is-vertically-aligned-top" style="border-style:none;border-width:0px;border-radius:0px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;flex-basis:108%"><!-- wp:post-featured-image {"style":{"spacing":{"margin":{"top":"17px"}}}} /-->
+
+			<!-- wp:post-terms {"term":"academy_courses_category","className":"is-style-customcategoriesstyle"} /-->
+
+			<!-- wp:post-title /-->
+
+			<!-- wp:shortcode -->
+			[academy_course_instructors]
+			<!-- /wp:shortcode -->
+
+			<!-- wp:shortcode -->
+			[academy_single_course_description]
+			<!-- /wp:shortcode -->
+
+			<!-- wp:shortcode -->
+			[academy_single_course_addition_info]
+			<!-- /wp:shortcode -->
+
+			<!-- wp:shortcode -->
+			[academy_single_course_curriculums]
+			<!-- /wp:shortcode -->
+
+			<!-- wp:shortcode -->
+			[academy_single_course_review_rating]
+			<!-- /wp:shortcode -->
+
+			<!-- wp:shortcode -->
+			[academy_single_course_review_form]
+			<!-- /wp:shortcode --></div>
+
+		<!-- /wp:column -->
+
+		<!-- wp:column {"verticalAlignment":"top","width":"52.1%","className":"is-style-academylmssticky"} -->
+		<div class="wp-block-column is-vertically-aligned-top is-style-academylmssticky" style="flex-basis:52.1%"><!-- wp:shortcode -->
+			[academy_course_enroll_widget]
+			<!-- /wp:shortcode --></div>
+		<!-- /wp:column --></div>
+	<!-- /wp:columns --></div>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer"} /-->

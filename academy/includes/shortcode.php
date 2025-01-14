@@ -24,5 +24,8 @@ class Shortcode {
 		new Shortcode\AcademyCourseCurriculum();
 		new Shortcode\AcademyCourseLearnpage();
 		new Shortcode\AcademyTabs();
+		new Shortcode\AcademyCourseEnrollWidget();
+		new Shortcode\AcademySingleCourse();
+		new Shortcode\AcademyCourseInstructors();
 	}
 }

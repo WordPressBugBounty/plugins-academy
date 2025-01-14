@@ -11,7 +11,7 @@ class AcademyCourses {
 
 	}
 	public function academy_courses( $atts, $content = '' ) {
-
+		$courses_per_row = \Academy\Helper::get_settings( 'course_archive_courses_per_row' );
 		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 		extract(shortcode_atts(array(
 			'ids'               => '',
@@ -24,11 +24,10 @@ class AcademyCourses {
 			'price_type'        => '',
 			'orderby'           => '',
 			'order'             => '',
-			'count'             => '3',
-			'column_per_row'    => '3',
+			'count'             => (int) \Academy\Helper::get_settings( 'course_archive_courses_per_page' ) ?? 3,
+			'column_per_row'    => (int) $courses_per_row->desktop ?? 3,
 			'has_pagination'    => false
 		), $atts));
-
 		$args = [
 			'post_type'   => 'academy_courses',
 			'post_status' => 'publish',
