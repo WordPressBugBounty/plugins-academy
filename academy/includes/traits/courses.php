@@ -913,39 +913,37 @@ trait Courses {
 
 	public static function get_instructors_by_course_id( $course_id, $offset = 0, $per_page = 10 ) {
 		global $wpdb;
-		$instructors = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ID,
-					display_name,
-					get_course.meta_value AS academy_course_id,
-					academy_profile_designation.meta_value AS academy_profile_designation,
-					academy_profile_bio.meta_value AS academy_profile_bio
-			FROM	{$wpdb->users} 
-					INNER JOIN {$wpdb->usermeta} get_course 
-					    ON ID = get_course.user_id 
-						AND get_course.meta_key = %s 
-						AND get_course.meta_value = %d 
-					LEFT  JOIN {$wpdb->usermeta} academy_profile_designation 
-						    ON ID = academy_profile_designation.user_id 
-						   AND academy_profile_designation.meta_key = %s 
-					LEFT  JOIN {$wpdb->usermeta} academy_profile_bio 
-						    ON ID = academy_profile_bio.user_id 
-						   AND academy_profile_bio.meta_key = %s
-					LIMIT %d, %d
-			",
-				'academy_instructor_course_id',
-				$course_id,
-				'academy_profile_designation',
-				'academy_profile_bio',
-				$offset,
-				$per_page
-			)
+
+		$query = $wpdb->prepare(
+			"SELECT 
+				u.ID,
+				u.display_name,
+				get_course.meta_value AS academy_course_id,
+				designation_meta.meta_value AS academy_profile_designation,
+				bio_meta.meta_value AS academy_profile_bio
+			 FROM {$wpdb->users} u
+			 INNER JOIN {$wpdb->usermeta} get_course 
+				ON u.ID = get_course.user_id
+			   AND get_course.meta_key = %s
+			   AND get_course.meta_value = %d
+			 LEFT JOIN {$wpdb->usermeta} designation_meta 
+				ON u.ID = designation_meta.user_id
+			   AND designation_meta.meta_key = %s
+			 LEFT JOIN {$wpdb->usermeta} bio_meta 
+				ON u.ID = bio_meta.user_id
+			   AND bio_meta.meta_key = %s
+			 LIMIT %d, %d",
+			'academy_instructor_course_id',
+			$course_id,
+			'academy_profile_designation',
+			'academy_profile_bio',
+			$offset,
+			$per_page
 		);
 
-		if ( count( $instructors ) ) {
-			return $instructors;
-		}
-		return false;
+		$instructors = $wpdb->get_results( $query );
+
+		return ! empty( $instructors ) ? $instructors : false;
 	}
 
 	public static function get_instructor_by_author_id( $author_id ) {

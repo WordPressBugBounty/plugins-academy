@@ -28,6 +28,10 @@ class AcademySingleCourse {
 			$this,
 			'single_course_review_form'
 		]);
+		add_shortcode( 'academy_course_reviews', [
+			$this,
+			'single_course_user_display_reviews'
+		]);
 	}
 
 	public function single_course_additional_info( $attributes, $content = '' ) {
@@ -112,16 +116,140 @@ class AcademySingleCourse {
 	}
 
 	public function single_course_review_form( $attributes, $content = '' ) {
+		global $current_user;
 		ob_start();
 		$course_id = get_the_ID();
-		if ( ! (bool) \Academy\Helper::get_settings( 'is_enabled_course_review', true ) || get_post_meta( $course_id, 'academy_is_disabled_course_review', true ) ) {
+		if ( post_password_required() || ! (bool) \Academy\Helper::get_settings( 'is_enabled_course_review', true ) || get_post_meta( $course_id, 'academy_is_disabled_course_review', true ) ) {
 			return;
 		}
 
-		\Academy\Helper::get_template(
-			'single-course-reviews.php'
-		);
+		$usercomment = get_comments(array(
+			'user_id' => $current_user->ID,
+			'post_id' => $course_id,
+		));
+
+		if ( ! $usercomment && \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) ) {
+			\Academy\Helper::get_template( 'single-course/review-form.php' );
+		}
 
 		return apply_filters( 'academy/templates/shortcode/single_course_review_form', ob_get_clean() );
 	}
+
+	public function single_course_user_display_reviews( $attributes, $content = '' ) {
+		ob_start();
+
+		$course_id = get_the_ID();
+
+		if ( post_password_required() ||
+			! (bool) \Academy\Helper::get_settings( 'is_enabled_course_review', true ) ||
+			get_post_meta( $course_id, 'academy_is_disabled_course_review', true ) ) {
+			return '';
+		}
+		?>
+	
+		<div id="comments" class="academy-single-course__content-item academy-single-course__content-item--reviews">
+			<?php
+			$paged             = get_query_var( 'cpage', 1 );
+			$comments_per_page = 5;
+
+			$args = array(
+				'post_id' => $course_id,
+				'status'  => 'approve',
+				'number'  => $comments_per_page,
+				'paged'   => $paged,
+			);
+
+			$comment_query = new \WP_Comment_Query();
+			$comments      = $comment_query->query( $args );
+
+			if ( ! empty( $comments ) ) {
+				?>
+				<ol class="academy-review-list">
+					<?php foreach ( $comments as $comment ) : ?>
+						<li <?php comment_class( '', $comment->comment_ID ); ?> id="academy-review-<?php echo esc_attr( $comment->comment_ID ); ?>">
+							<div id="comment-<?php echo esc_attr( $comment->comment_ID ); ?>" class="academy-review_container">
+								<?php do_action( 'academy/templates/review_before', $comment ); ?>
+								<div class="academy-review-thumnail">
+									<?php
+									echo get_avatar( $comment->comment_author_email, apply_filters( 'academy/review_gravatar_size', '80' ) );
+
+									$rating = intval( get_comment_meta( $comment->comment_ID, 'academy_rating', true ) );
+									?>
+									<div class="academy-review__rating">
+										<?php
+										echo esc_html( $rating );
+										echo wp_kses_post( \Academy\Helper::single_star_rating_generator( $rating ) );
+										?>
+									</div>
+								</div>
+								<div class="academy-review-content">
+									<?php
+									if ( '0' === $comment->comment_approved ) {
+										?>
+										<p class="academy-review-meta">
+											<em class="academy-review-meta__awaiting-approval">
+												<?php esc_html_e( 'Your review is awaiting approval', 'academy' ); ?>
+											</em>
+										</p>
+										<?php
+									} else {
+										?>
+										<p class="academy-review-meta">
+											<strong class="academy-review-meta__author">
+												<?php echo esc_html( $comment->comment_author ); ?>
+											</strong>
+											<time class="academy-review-meta__published-date" datetime="<?php echo esc_attr( get_comment_date( 'c', $comment ) ); ?>">
+												<?php echo esc_html( get_comment_date( \Academy\Helper::get_date_format(), $comment ) ); ?>
+											</time>
+										</p>
+										<?php
+									}
+									?>
+									<div class="academy-review-description">
+										<?php comment_text( $comment ); ?>
+									</div>
+								</div>
+							</div>
+						</li>
+					<?php endforeach; ?>
+				</ol>
+				<?php
+			} else {
+				echo '<p>' . esc_html__( 'No reviews yet. Be the first to leave one!', 'academy' ) . '</p>';
+			}//end if
+
+			$total_comments = get_comments( array(
+				'post_id' => $course_id,
+				'status'  => 'approve',
+				'count'   => true,
+			) );
+
+			$max_pages = ceil( (int) $total_comments / $comments_per_page );
+
+			the_comments_pagination(
+				array(
+					'total'     => $max_pages,
+					'current'   => $paged,
+					'mid_size'  => 1,
+					'prev_text' => sprintf(
+						'<span class="nav-prev-text">%s</span>',
+						esc_html__( 'Prev', 'academy' )
+					),
+					'next_text' => sprintf(
+						'<span class="nav-next-text">%s</span>',
+						esc_html__( 'Next', 'academy' )
+					),
+				)
+			);
+
+		if ( ! comments_open( $course_id ) ) {
+			echo '<p class="academy-no-reviews">' . esc_html__( 'Reviews are closed.', 'academy' ) . '</p>';
+		}
+		?>
+		</div> <!-- End #comments -->
+	
+		<?php
+		return apply_filters( 'academy/templates/shortcode/single_course_user_rating', ob_get_clean() );
+	}
+
 }

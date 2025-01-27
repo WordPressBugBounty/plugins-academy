@@ -45,8 +45,7 @@ $academy_comments_count = get_comments_number();
 			$comment_query = new WP_Comment_Query();
 			$comments = $comment_query->query( $args ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
-
-		if ( $comments ) :
+		if ( ! empty( $comments ) ) :
 			?>
 			<ol class="academy-review-list">
 				<?php

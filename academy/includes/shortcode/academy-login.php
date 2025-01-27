@@ -24,8 +24,8 @@ class AcademyLogin {
 			'reset_password_label'      => esc_html__( 'Reset password', 'academy' ),
 			'show_logged_in_message'    => true,
 			'student_register_url'      => '',
-			'login_redirect_url'        => '',
-			'logout_redirect_url'       => '',
+			'login_redirect_url'        => esc_url( get_the_permalink() ),
+			'logout_redirect_url'       => esc_url( home_url( '/' ) ),
 		), $atts);
 
 		ob_start();
