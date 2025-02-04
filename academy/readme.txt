@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -312,6 +312,12 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.4.2 - 04/02/2025 =
+* Fixed - Issue with curriculum topic icons on the single course page.
+* Fixed - Translation issues.
+* Fixed - Instructor ID was not properly set when importing courses.
+* Fixed - Frontend AJAX call handling issue.
 
 = 2.4.1 - 27/01/2025 =
 * Fixed - User reviews for single courses were not displaying in the FSE theme.

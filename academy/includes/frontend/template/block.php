@@ -257,7 +257,7 @@ class Block {
 		$template->content = self::inject_theme_attribute_in_content( $template_content );
 		// Remove the term description block from the archive-product template
 		// as the Product Catalog/Shop page doesn't have a description.
-		if ( 'archive-docs' === $template_file->slug ) {
+		if ( 'archive-academy_courses' === $template_file->slug ) {
 			$template->content = str_replace( '<!-- wp:term-description {"align":"wide"} /-->', '', $template->content );
 		}
 		// Plugin was agreed as a valid source value despite existing inline docs at the time of creating: https://github.com/WordPress/gutenberg/issues/36597#issuecomment-976232909.
@@ -357,11 +357,11 @@ class Block {
 		$plugin_template_types = [
 			'single-course'           => [
 				'title'       => _x( 'Single Course', 'Template name', 'academy' ),
-				'description' => __( 'Template used to display the single docs.', 'academy' )
+				'description' => __( 'Template used to display the single courses.', 'academy' )
 			],
 			'archive-course'           => [
 				'title'       => _x( 'Archive Course', 'Template name', 'academy' ),
-				'description' => __( 'Template used to display the single docs.', 'academy' )
+				'description' => __( 'Template used to display the archive courses.', 'academy' )
 			]
 		];
 

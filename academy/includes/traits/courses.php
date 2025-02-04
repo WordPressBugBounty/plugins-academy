@@ -1242,7 +1242,7 @@ trait Courses {
 						if ( isset( $topic['type'] ) && 'lesson' === $topic['type'] ) {
 							$topic['slug']              = \Academy\Helper::get_lesson_slug( $topic['id'] );
 							$topic['duration']          = \Academy\Helper::get_lesson_video_duration( $topic['id'] );
-							$topic['is_accessible']     = \Academy\Helper::get_lesson_meta( $topic['id'], 'is_previewable' );
+							$topic['is_accessible']     = \Academy\Helper::get_lesson_meta( $topic['id'], 'is_previewable' ) && (bool) \Academy\Helper::get_addon_active_status( 'course-preview' );
 						} else {
 							$topic['slug'] = basename( get_permalink( $topic['id'] ) );
 						}

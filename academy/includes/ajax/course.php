@@ -851,7 +851,6 @@ class Course extends AbstractAjaxHandler {
 
 		$allowed_post_fields = [
 			'post_title'      => 'sanitize_text_field',
-			'post_author'     => 'sanitize_text_field',
 			'post_date'       => 'sanitize_text_field',
 			'post_content'    => 'sanitize_textarea_field',
 			'post_excerpt'    => 'sanitize_text_field',
@@ -866,17 +865,11 @@ class Course extends AbstractAjaxHandler {
 		foreach ( $allowed_post_fields as $key => $sanitizer ) {
 			$post_data[ $key ] = isset( $course_item[ $key ] ) ? call_user_func( $sanitizer, $course_item[ $key ] ) : '';
 		}
+		$user_id = get_current_user_id();
 		$post_data['post_type'] = 'academy_courses';
+		$post_data['post_author'] = $user_id;
 		$course_id = wp_insert_post( $post_data );
-		$user_ids = get_users(
-			array(
-				'meta_key' => 'academy_instructor_course_id',
-				'meta_value' => $course_id,
-			)
-		);
-		foreach ( $user_ids as $user_id ) {
-			add_user_meta( $user_id->ID, 'academy_instructor_course_id', $course_id );
-		}
+		add_user_meta( $user_id, 'academy_instructor_course_id', $course_id );
 		return $course_id;
 	}
 
