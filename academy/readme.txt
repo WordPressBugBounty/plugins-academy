@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.4.2
+Stable tag: 2.5.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -87,6 +87,7 @@ Look no further than Academy LMS, the ultimate solution to create online courses
   * Webhook
   * Form Builder (Student & Instructor)
   * Gutenberg Integration
+  * Course Preview
   * Advanced Quiz Builder **[PRO]**
   * Email Notification **[PRO]**
   * Content Drip **[PRO]**
@@ -125,6 +126,7 @@ Look no further than Academy LMS, the ultimate solution to create online courses
   * Restrict Content PRO **[PRO]**
   * BuddyPress **[PRO]**
   * BuddyBoss **[PRO]**
+  * Device Login Restriction **[PRO]**
 More features Coming Soon!
 
 **💻 Admin SPA Interface:** Academy LMS provides a lightning-fast interface designed with React.js. It ensures instant loading of all features and settings. Users can access settings without any delay / loading, making course creation and editing faster.
@@ -312,6 +314,9 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.5.0 - 06/02/2025 =
+* Added - New Academy Pro Device Login Restriction Addon Compatibility
 
 = 2.4.2 - 04/02/2025 =
 * Fixed - Issue with curriculum topic icons on the single course page.

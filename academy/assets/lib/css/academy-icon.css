@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'academy-icon';
-  src:  url('fonts/academy-icon.eot?9urhkt');
-  src:  url('fonts/academy-icon.eot?9urhkt#iefix') format('embedded-opentype'),
-    url('fonts/academy-icon.ttf?9urhkt') format('truetype'),
-    url('fonts/academy-icon.woff?9urhkt') format('woff'),
-    url('fonts/academy-icon.svg?9urhkt#academy-icon') format('svg');
+  src:  url('fonts/academy-icon.eot?9ix0ls');
+  src:  url('fonts/academy-icon.eot?9ix0ls#iefix') format('embedded-opentype'),
+    url('fonts/academy-icon.ttf?9ix0ls') format('truetype'),
+    url('fonts/academy-icon.woff?9ix0ls') format('woff'),
+    url('fonts/academy-icon.svg?9ix0ls#academy-icon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,20 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.academy-icon--buddy-press:before {
+  content: "\ea21";
+  color: #d84800;
+}
+.academy-icon--buddy-boss:before {
+  content: "\ea20";
+  color: #e0623d;
+}
+.academy-icon--device-restrictions:before {
+  content: "\ea1f";
+}
+.academy-icon--course-preview:before {
+  content: "\ea1e";
+}
 .academy-icon--restrict-content-pro-icon:before {
   content: "\ea1d";
 }
@@ -32,11 +46,11 @@
   content: "\e9ec";
   color: #4a8cff;
 }
-.academy-icon--Facebook-light .path1:before {
+.academy-icon--facebook-light .path1:before {
   content: "\e9fb";
   color: rgb(24, 119, 242);
 }
-.academy-icon--Facebook-light .path2:before {
+.academy-icon--facebook-light .path2:before {
   content: "\e9fc";
   margin-left: -1.0498046875em;
   color: rgb(255, 255, 255);
