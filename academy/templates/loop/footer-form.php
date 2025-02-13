@@ -54,6 +54,7 @@ endif; ?>
 			'is_enabled_academy_login' => $is_enabled_academy_login,
 			'card_style'   => $card_style,
 			'prices'       => $prices,
+			'course_permalink' => $course_permalink,
 		]
 	); ?>
 <?php elseif ( $required_levels ) :

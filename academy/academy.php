@@ -3,7 +3,7 @@
  * Plugin Name:		Academy LMS
  * Plugin URI:		http://academylms.net
  * Description:		Share your knowledge by launching an online course.
- * Version:			2.5.0
+ * Version:			2.5.1
  * Author:			Academy LMS
  * Author URI:		http://academylms.net
  * License:			GPL-3.0+
@@ -44,7 +44,7 @@ final class Academy {
 		/**
 		 * Defines CONSTANTS for Whole plugins.
 		 */
-		define( 'ACADEMY_VERSION', '2.5.0' );
+		define( 'ACADEMY_VERSION', '2.5.1' );
 		define( 'ACADEMY_DB_VERSION', '1.1' );
 		define( 'ACADEMY_SETTINGS_NAME', 'academy_settings' );
 		define( 'ACADEMY_ADDONS_SETTINGS_NAME', 'academy_addons' );
@@ -81,7 +81,6 @@ final class Academy {
 	public function init_plugin() {
 		// Init action.
 		do_action( 'academy_before_init' );
-		$this->load_textdomain();
 		$this->load_global_css();
 		$this->dispatch_hooks();
 		$this->load_addons();
@@ -113,14 +112,6 @@ final class Academy {
 
 	public function load_addons() {
 		Academy\Addons::init();
-	}
-
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			'academy',
-			false,
-			dirname( plugin_basename( __FILE__ ) ) . '/languages/'
-		);
 	}
 
 	public function set_global_settings() {
