@@ -9,8 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="academy-qa">
 	<div class="academy-qa__meta">
-		<div class="academy-qa-text-avator">
-			<?php echo esc_html( $comment->comment_author ? $comment->comment_author[0] : 'a' ); ?>
+		<div class="academy-course__author-meta">
+			<img src="<?php echo esc_url( get_avatar_url( $comment->user_id, [ 'size' => '40' ] ) ); ?>" />
 		</div>
 		<div class="academy-qa-user-info">
 			<h4 class="academy-qa-username">

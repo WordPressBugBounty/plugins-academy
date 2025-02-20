@@ -175,6 +175,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 			'parent' => (int) $comment->comment_parent,
 			'author' => (int) $comment->user_id,
 			'author_name' => $comment->comment_author,
+			'avatar_url' => esc_url( get_avatar_url( $comment->user_id, [ 'size' => '40' ] ) ),
 			'date' => $comment->comment_date,
 			'date_gmt' => $comment->comment_date_gmt,
 			'content' => [

@@ -25,7 +25,7 @@ if ( ! is_user_logged_in() ) {
 				continue;
 			}
 			?>
-			<div class="academy-qa">'
+			<div class="academy-qa">
 				<?php
 				\Academy\Helper::get_template( 'curriculums/question-answer/questions.php', array( 'qa' => $qa ) );
 				if ( array_key_exists( $qa->comment_ID, $child_comments ) ) {

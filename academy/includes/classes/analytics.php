@@ -172,7 +172,7 @@ class Analytics {
 	public function get_enrolled_info() {
 		global $wpdb;
 		$from    = gmdate( 'Y-m-d', strtotime( ' - 30 days' ) );
-		$to      = gmdate( 'Y-m-d' );
+		$to      = gmdate( 'Y-m-d', strtotime( ' + 1 days' ) );
 		$results = $wpdb->get_results(
 			$wpdb->prepare("SELECT COUNT(ID) as total, DATE(post_date)  as date_format 
             FROM {$wpdb->posts} 
