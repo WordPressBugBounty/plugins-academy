@@ -29,17 +29,22 @@ class LearnPress extends Migration implements MigrationInterface {
 
 	public function migrate_course( $course ) {
 		$course_id = $course->ID;
+		// ALMS course curriculum update
+		$this->update_academy_course_curriculum( $course_id );
 		// course update
 		wp_update_post(array(
 			'ID'         => $course_id,
 			'post_type'  => 'academy_courses',
+			'post_name'  => \Academy\Helper::generate_unique_lesson_slug( $course->post_name ),
+			'comment_status' => 'open',
+			'post_ping'    => 'open',
 			'post_content' => '<!-- wp:html -->' . $course->post_content . '<!-- /wp:html -->'
 		));
 		$this->migrate_course_author( $course->post_author, $course_id );
+		// Course meta migrate
+		$this->migrate_course_meta( $course );
 		// LP product insert in ALMS
 		$this->woo_product_insert( $course );
-		// ALMS course meta update
-		$this->migrate_course_meta( $course );
 		// Course complete status Migrate to ALMS
 		$this->migrate_course_complete( $course_id );
 		// Enrollment Migration
@@ -54,18 +59,17 @@ class LearnPress extends Migration implements MigrationInterface {
 
 	public function migrate_course_quiz( $quiz ) {
 		global $wpdb;
-		$quizzes = get_post( $quiz->id );
 		// quiz migrate
 		wp_update_post(array(
-			'ID' => $quiz->id,
+			'ID' => $quiz->ID,
 			'post_type' => 'academy_quiz',
 		));
 		// quiz meta update
-		$duration = get_post_meta( $quiz->id, '_lp_duration', true );
+		$duration = get_post_meta( $quiz->ID, '_lp_duration', true );
 		preg_match( '/(\d+)\s*(\w+)/', $duration, $matches );
 		$time = intval( $matches[1] );
 		$time_unit = strtolower( $matches[2] );
-		$attempts_allowed = get_post_meta( $quiz->id, '_lp_retake_count', true );
+		$attempts_allowed = get_post_meta( $quiz->ID, '_lp_retake_count', true );
 		$quiz_meta = array(
 			'_wp_page_template' => '',
 			'academy_quiz_drip_content' => array( '' ),
@@ -73,7 +77,7 @@ class LearnPress extends Migration implements MigrationInterface {
 			'academy_quiz_time_unit' => $time_unit . 's',
 			'academy_quiz_hide_quiz_time' => false,
 			'academy_quiz_feedback_mode' => ( $attempts_allowed > 0 ) ? 'retry' : 'default',
-			'academy_quiz_passing_grade' => (int) get_post_meta( $quiz->id, '_lp_passing_grade', true ),
+			'academy_quiz_passing_grade' => (int) get_post_meta( $quiz->ID, '_lp_passing_grade', true ),
 			'academy_quiz_max_questions_for_answer' => 0,
 			'academy_quiz_max_attempts_allowed' => (int) $attempts_allowed > 0 ? $attempts_allowed : 0,
 			'academy_quiz_auto_start' => false,
@@ -83,17 +87,18 @@ class LearnPress extends Migration implements MigrationInterface {
 			'academy_quiz_questions' => [],
 		);
 		foreach ( $quiz_meta as $key => $value ) {
-			add_post_meta( $quiz->id, $key, $value, true );
+			add_post_meta( $quiz->ID, $key, $value, true );
 		}
 		// quiz question migrate
 		$questions = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT question_id,question_order FROM {$wpdb->prefix}learnpress_quiz_questions 
 				WHERE quiz_id = %d",
-				$quiz->id
+				$quiz->ID
 			)
 		);
 		if ( $questions ) {
+			$quiz_question = [];
 			foreach ( $questions as $question ) {
 				if ( 'fill_in_blanks' === $question->question_type ) {
 					continue;
@@ -113,7 +118,7 @@ class LearnPress extends Migration implements MigrationInterface {
 				}
 				$question = get_post( $question_id );
 				$alms_question_id = \AcademyQuizzes\Classes\Query::quiz_question_insert( array(
-					'quiz_id' => (int) $quiz->id,
+					'quiz_id' => (int) $quiz->ID,
 					'question_title' => $question->post_title,
 					'question_content' => $question->post_content,
 					'question_status' => 'publish',
@@ -127,20 +132,10 @@ class LearnPress extends Migration implements MigrationInterface {
 					)),
 				) );
 				// quiz questions meta update
-				$old_quiz_questions = get_post_meta( $quiz->id, 'academy_quiz_questions', true );
-				if ( is_array( $old_quiz_questions ) ) {
-					$quiz_question = array(
-						'id' => $alms_question_id,
-						'title' => $question->post_title,
-					);
-					$academy_quiz_question[] = $quiz_question;
-				} else {
-					$academy_quiz_question = array(
-						'id' => $alms_question_id,
-						'title' => $question->post_title,
-					);
-				}
-				update_post_meta( $quiz->id, 'academy_quiz_questions', $academy_quiz_question, $old_quiz_questions );
+				$quiz_question[] = array(
+					'id' => $alms_question_id,
+					'title' => $question->post_title,
+				);
 
 				// quiz answer migrate
 				$answers = $wpdb->get_results(
@@ -153,7 +148,7 @@ class LearnPress extends Migration implements MigrationInterface {
 				foreach ( $answers as $answer ) {
 					$is_correct = 'yes' === $answer->is_true ? 1 : 0;
 					\AcademyQuizzes\Classes\Query::quiz_answer_insert( array(
-						'quiz_id' => (int) $quiz->id,
+						'quiz_id' => (int) $quiz->ID,
 						'question_id' => (int) $alms_question_id,
 						'question_type' => $question_type,
 						'answer_title' => $answer->title,
@@ -163,10 +158,11 @@ class LearnPress extends Migration implements MigrationInterface {
 					) );
 				}
 			}//end foreach
+			update_post_meta( $quiz->ID, 'academy_quiz_questions', $quiz_question );
 		}//end if
 		return array(
-			'id' => $quiz->id,
-			'name' => $quizzes->post_title,
+			'id' => $quiz->ID,
+			'name' => $quiz->post_title,
 			'type' => 'quiz',
 		);
 	}
@@ -191,30 +187,31 @@ class LearnPress extends Migration implements MigrationInterface {
 		update_post_meta( $lp_course->ID, 'academy_course_type', $course_type );
 	}
 
-	public function migrate_course_meta( $course ) {
-		$course_id = $course->ID;
-		// curriculum update
-		$curriculums = get_post_meta( $course_id, '_lp_info_extra_fast_query', true );
-		$curriculum = json_decode( $curriculums );
-		$curriculums = $curriculum->sections_items;
+	public function update_academy_course_curriculum( $course_id ) {
+		$course = learn_press_get_course( $course_id );
+		$curriculums = $course->get_curriculum();
 		$new_curriculums = [];
 		foreach ( $curriculums as $curriculum ) {
 			$topics = array();
-			foreach ( $curriculum->items as $topic_item ) {
-				if ( 'lp_lesson' === $topic_item->type ) {
-					$topics[] = $this->migrate_course_lesson( $topic_item );
-				} elseif ( 'lp_quiz' === $topic_item->type ) {
-					$topics[] = $this->migrate_course_quiz( $topic_item );
+			foreach ( $curriculum->get_items() as $topic_item ) {
+				$topic = get_post( $topic_item->get_id() );
+				if ( 'lp_lesson' === $topic->post_type ) {
+					$topics[] = $this->migrate_course_lesson( $topic );
+				} elseif ( 'lp_quiz' === $topic->post_type ) {
+					$topics[] = $this->migrate_course_quiz( $topic );
 				}
 			}
 			$new_curriculums[] = array(
-				'title' => $curriculum->title,
-				'content' => $curriculum->description,
+				'title' => $curriculum->get_title(),
+				'content' => $curriculum->get_description(),
 				'topics' => $topics,
 			);
 		}
 		update_post_meta( $course_id, 'academy_course_curriculum', $new_curriculums );
+	}
 
+	public function migrate_course_meta( $course ) {
+		$course_id = $course->ID;
 		// thumbnail id
 		$thumbnail = get_post_meta( $course_id, '_thumbnail_id', true );
 		set_post_thumbnail( $course_id, $thumbnail );
@@ -285,15 +282,27 @@ class LearnPress extends Migration implements MigrationInterface {
 		$course_prerequisites = $this->academy_course_prerequisite( $prerequisite_ids );
 		update_post_meta( $course_id, 'academy_prerequisite_courses', is_array( $course_prerequisites ) ? $course_prerequisites : array() );
 		add_post_meta( $course_id, 'academy_prerequisite_categories', array() );
+		add_post_meta( $course_id, 'academy_is_disabled_course_review', false );
+		add_post_meta( $course_id, 'academy_course_enable_certificate', true );
+		add_post_meta( $course_id, 'academy_rcp_membership_levels', array() );
+		add_post_meta( $course_id, 'academy_course_certificate_id', 0 );
+		add_post_meta( $course_id, 'academy_course_download_id', 0 );
 	}
 
-	public function migrate_course_lesson( $lesson ) {
-		$lp_lesson = get_post( $lesson->id );
+	public function migrate_course_lesson( $lp_lesson ) {
+		$existing_lesson = \Academy\Helper::get_lesson_by_title( $lp_lesson->post_title );
+		if ( $existing_lesson ) {
+			return array(
+				'id' => $existing_lesson->ID,
+				'name' => $lp_lesson->post_title,
+				'type' => 'lesson',
+			);
+		}
 		$array = array(
 			'lesson_author' => $lp_lesson->post_author,
 			'lesson_title' => $lp_lesson->post_title,
-			'lesson_name' => $lp_lesson->post_status,
-			'lesson_status' => 'publish',
+			'lesson_name' => \Academy\Helper::generate_unique_lesson_slug( $lp_lesson->post_name ),
+			'lesson_status' => $lp_lesson->post_status,
 			'lesson_content' => '<!-- wp:html -->' . $lp_lesson->post_content . '<!-- /wp:html -->'
 		);
 		$lesson_id = \Academy\Classes\Query::lesson_insert( $array );

@@ -5,9 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="academy-lesson-quiz__body question-no-<?php echo esc_html(
 	$question_count
 ); ?>">
-	<h1><?php echo esc_html(
+	<h3><?php echo esc_html(
 		$question_with_option['question']->question_title
-	); ?></h1>
+	); ?></h3>
 	<?php // load the short-answer if the question type is short-ans
 	if ( 'shortAnswer' === $question_with_option['question']->question_type ) {
 		\Academy\Helper::get_template(

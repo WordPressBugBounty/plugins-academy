@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'academy-icon';
-  src:  url('fonts/academy-icon.eot?9ix0ls');
-  src:  url('fonts/academy-icon.eot?9ix0ls#iefix') format('embedded-opentype'),
-    url('fonts/academy-icon.ttf?9ix0ls') format('truetype'),
-    url('fonts/academy-icon.woff?9ix0ls') format('woff'),
-    url('fonts/academy-icon.svg?9ix0ls#academy-icon') format('svg');
+  src:  url('fonts/academy-icon.eot?5ki7xv');
+  src:  url('fonts/academy-icon.eot?5ki7xv#iefix') format('embedded-opentype'),
+    url('fonts/academy-icon.ttf?5ki7xv') format('truetype'),
+    url('fonts/academy-icon.woff?5ki7xv') format('woff'),
+    url('fonts/academy-icon.svg?5ki7xv#academy-icon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.academy-icon--three-dot-horizontal:before {
+  content: "\ea22";
+}
 .academy-icon--buddy-press:before {
   content: "\ea21";
   color: #d84800;

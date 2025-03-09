@@ -1276,8 +1276,9 @@ trait Courses {
 
 								// if topic type is lesson then set duration
 								if ( 'lesson' === $child_topic['type'] ) {
-									$child_topic['duration']               = Helper::get_lesson_video_duration( $child_topic['id'] );
-									$child_topic['is_accessible']         = \Academy\Helper::get_lesson_meta( $child_topic['id'], 'is_previewable' );
+									$child_topic['duration']            = Helper::get_lesson_video_duration( $child_topic['id'] );
+									$child_topic['is_accessible']       = \Academy\Helper::get_lesson_meta( $child_topic['id'], 'is_previewable' );
+									$child_topic['slug']                = \Academy\Helper::get_lesson_slug( $child_topic['id'] );
 								} else {
 									$child_topic['slug'] = basename( get_permalink( $child_topic['id'] ) );
 								}

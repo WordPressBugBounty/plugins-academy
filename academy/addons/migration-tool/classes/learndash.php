@@ -4,7 +4,7 @@ namespace AcademyMigrationTool\Classes;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
+use Academy\Helper as Helper;
 use AcademyMigrationTool\Interfaces\MigrationInterface;
 
 class Learndash extends Migration implements MigrationInterface {
@@ -38,6 +38,9 @@ class Learndash extends Migration implements MigrationInterface {
 			array(
 				'ID'         => $course_id,
 				'post_type'  => 'academy_courses',
+				'post_name'  => Helper::generate_unique_lesson_slug( $ld_course->post_name ),
+				'comment_status' => 'open',
+				'post_ping'    => 'open',
 				'post_content' => $ld_course->post_content . '<!-- wp:html -->' . $post_content . '<!-- /wp:html -->',
 			)
 		);
@@ -102,7 +105,7 @@ class Learndash extends Migration implements MigrationInterface {
 		} else {
 			$quizzes = learndash_get_course_quiz_list( $course );
 			$course_steps = \LDLMS_Factory_Post::course_steps( $course_id );
-				$course_topics = $course_steps->get_steps();
+			$course_topics = $course_steps->get_steps();
 			$items = [];
 			if ( $course_topics['sfwd-lessons'] ) {
 				foreach ( $course_topics['sfwd-lessons'] as $key => $lessons ) {
@@ -176,6 +179,11 @@ class Learndash extends Migration implements MigrationInterface {
 		update_post_meta( $course_id, 'academy_course_drip_content_enabled', false );
 		update_post_meta( $course_id, 'academy_course_drip_content_type', 'schedule_by_date' );
 		update_post_meta( $course_id, 'academy_prerequisite_categories', array() );
+		add_post_meta( $course_id, 'academy_is_disabled_course_review', false );
+		add_post_meta( $course_id, 'academy_course_enable_certificate', true );
+		add_post_meta( $course_id, 'academy_rcp_membership_levels', array() );
+		add_post_meta( $course_id, 'academy_course_certificate_id', 0 );
+		add_post_meta( $course_id, 'academy_course_download_id', 0 );
 	}
 
 	public function migrate_enrollments( $course_id ) {
@@ -211,6 +219,14 @@ class Learndash extends Migration implements MigrationInterface {
 
 	public function migrate_course_lesson( $lesson_id ) {
 		$lesson = get_post( $lesson_id );
+		$existing_lesson = Helper::get_lesson_by_title( $lesson->post_title );
+		if ( $existing_lesson ) {
+			return array(
+				'id' => $existing_lesson->ID,
+				'name' => $lesson->post_title,
+				'type' => 'lesson',
+			);
+		}
 		$lessons_meta = get_post_meta( $lesson_id, '_sfwd-lessons', true );
 		$topics_meta = get_post_meta( $lesson_id, '_sfwd-topic', true );
 
@@ -224,8 +240,8 @@ class Learndash extends Migration implements MigrationInterface {
 		$array = array(
 			'lesson_author' => $lesson->post_author,
 			'lesson_title' => $lesson->post_title,
-			'lesson_name' => $lesson->post_status,
-			'lesson_status' => 'publish',
+			'lesson_name' => Helper::generate_unique_lesson_slug( $lesson->post_name ),
+			'lesson_status' => $lesson->post_status,
 			'lesson_content' => $lesson->post_content . '<!-- wp:html -->' . $lesson_content . '<!-- /wp:html -->'
 		);
 		$new_lesson_id = \Academy\Classes\Query::lesson_insert( $array );
@@ -343,6 +359,7 @@ class Learndash extends Migration implements MigrationInterface {
 						)
 					);
 				}
+				$academy_quiz_question = [];
 				foreach ( $questions as $question ) {
 					$question_type = $this->question_type( $question->answer_type );
 					if ( ! $question_type ) {
@@ -365,20 +382,10 @@ class Learndash extends Migration implements MigrationInterface {
 						),
 					);
 					$alms_question_id = \AcademyQuizzes\Classes\Query::quiz_question_insert( $question_data );
-					$old_quiz_questions = get_post_meta( $quiz_id, 'academy_quiz_questions', true );
-					if ( is_array( $old_quiz_questions ) ) {
-						$quiz_question = array(
-							'id' => $alms_question_id,
-							'title' => $question->title,
-						);
-						$academy_quiz_question[] = $quiz_question;
-					} else {
-						$academy_quiz_question = array(
-							'id' => $alms_question_id,
-							'title' => $question->title,
-						);
-					}
-					update_post_meta( $quiz_id, 'academy_quiz_questions', $academy_quiz_question );
+					$academy_quiz_question[] = array(
+						'id' => $alms_question_id,
+						'title' => $question->title,
+					);
 
 					// quiz answer migrate
 					foreach ( (array) maybe_unserialize( $question->answer_data ) as $key => $value ) {
@@ -411,10 +418,12 @@ class Learndash extends Migration implements MigrationInterface {
 							'is_correct' => (int) $value->isCorrect() ? $value->isCorrect() : 0,
 							'answer_order' => 0,
 							'view_format' => 'text',
+							'image_id' => 0,
 						);
 						\AcademyQuizzes\Classes\Query::quiz_answer_insert( $answer_data );
 					}//end foreach
 				}//end foreach
+				update_post_meta( $quiz_id, 'academy_quiz_questions', $academy_quiz_question );
 			}//end foreach
 		}//end if
 		return array(

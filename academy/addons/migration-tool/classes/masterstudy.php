@@ -34,7 +34,10 @@ class Masterstudy extends Migration implements MigrationInterface {
 		wp_update_post(array(
 			'ID' => $course_id,
 			'post_type' => 'academy_courses',
-			'post_content' => '<!-- wp:html -->' . $course->post_content . '<!-- /wp:html -->'
+			'post_name' => \Academy\Helper::generate_unique_lesson_slug( $course->post_name ),
+			'comment_status' => 'open',
+			'post_ping'    => 'open',
+			'post_content' => '<!-- wp:html -->' . wp_kses_post( $course->post_content ) . '<!-- /wp:html -->'
 		) );
 		// migrate course instructor
 		$this->migrate_course_author( $course->post_author, $course_id );
@@ -95,6 +98,11 @@ class Masterstudy extends Migration implements MigrationInterface {
 		update_post_meta( $course_id, 'academy_prerequisite_type', 'course' );
 		update_post_meta( $course_id, 'academy_prerequisite_courses', array() );
 		update_post_meta( $course_id, 'academy_prerequisite_categories', array() );
+		add_post_meta( $course_id, 'academy_is_disabled_course_review', false );
+		add_post_meta( $course_id, 'academy_course_enable_certificate', true );
+		add_post_meta( $course_id, 'academy_rcp_membership_levels', array() );
+		add_post_meta( $course_id, 'academy_course_certificate_id', 0 );
+		add_post_meta( $course_id, 'academy_course_download_id', 0 );
 	}
 
 	public function migrate_course_section( $course_id ) {
@@ -127,12 +135,21 @@ class Masterstudy extends Migration implements MigrationInterface {
 	}
 
 	public function migrate_course_lesson( $lesson ) {
+		$existing_lesson = \Academy\Helper::get_lesson_by_title( $lesson->post_title );
+		if ( $existing_lesson ) {
+			return array(
+				'id' => $existing_lesson->ID,
+				'name' => $lesson->post_title,
+				'type' => 'lesson',
+			);
+		}
 		$lesson_id = $lesson->ID;
 		$lesson_excerpt = get_post_meta( $lesson_id, 'lesson_excerpt', true );
 		$lesson_data = array(
 			'lesson_author'   => $lesson->post_author,
 			'lesson_title'    => $lesson->post_title,
-			'lesson_status'   => 'publish',
+			'lesson_name'     => \Academy\Helper::generate_unique_lesson_slug( $lesson->post_name ),
+			'lesson_status'   => $lesson->post_status,
 			'lesson_content'  => '<!-- wp:html -->' . $lesson_excerpt . $lesson->post_content . '<!-- /wp:html -->',
 		);
 		$new_lesson_id = \Academy\Classes\Query::lesson_insert( $lesson_data );
@@ -228,6 +245,7 @@ class Masterstudy extends Migration implements MigrationInterface {
 		}
 		$question_ids = get_post_meta( $quiz_id, 'questions', true );
 		if ( isset( $question_ids ) ) {
+			$quiz_questions = array();
 			$question_ids = explode( ',', $question_ids );
 			foreach ( $question_ids as $question_id ) {
 				$question = get_post( $question_id );
@@ -251,20 +269,10 @@ class Masterstudy extends Migration implements MigrationInterface {
 				);
 				$alms_question_id = \AcademyQuizzes\Classes\Query::quiz_question_insert( $array );
 				// quiz questions meta update
-				$old_quiz_questions = get_post_meta( $quiz_id, 'academy_quiz_questions', true );
-				if ( is_array( $old_quiz_questions ) ) {
-					$quiz_question = array(
-						'id' => $alms_question_id,
-						'title' => $question->post_title,
-					);
-					$academy_quiz_question[] = $quiz_question;
-				} else {
-					$academy_quiz_question = array(
-						'id' => $alms_question_id,
-						'title' => $question->post_title,
-					);
-				}
-				update_post_meta( $quiz_id, 'academy_quiz_questions', $academy_quiz_question, $old_quiz_questions );
+				$quiz_questions = array(
+					'id' => $alms_question_id,
+					'title' => $question->post_title,
+				);
 				// quiz answer migrate
 				$answers = get_post_meta( $question_id, 'answers', true );
 				if ( is_array( $answers ) ) {
@@ -298,6 +306,7 @@ class Masterstudy extends Migration implements MigrationInterface {
 					}//end foreach
 				}//end if
 			}//end foreach
+			update_post_meta( $quiz_id, 'academy_quiz_questions', $quiz_questions );
 		}//end if
 		return array(
 			'id' => $quiz_id,

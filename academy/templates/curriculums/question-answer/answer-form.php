@@ -11,9 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<input type="hidden" name="action" value="academy/insert_question">
 		<input type="hidden" name="course_id" value="<?php echo esc_attr( \Academy\Helper::get_the_current_course_id() ); ?>">
 		<input type="hidden" name="parent" value="<?php echo esc_attr( $qa->comment_ID ); ?>" >
-		<textarea name="content" id="content" placeholder="<?php echo esc_attr( 'Answer' ); ?>"></textarea>
+		<textarea name="content" id="content" placeholder="<?php esc_attr_e( 'Answer', 'academy' ); ?>"></textarea>
 		<button type="submit" class="academy-btn academy-btn--bg-purple" style="width: 120px;">
-			<?php echo esc_html( 'Submit' ); ?>
+			<?php esc_html_e( 'Submit', 'academy' ); ?>
 		</button>
 	</form>
 </div>

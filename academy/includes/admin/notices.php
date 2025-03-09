@@ -66,6 +66,16 @@ class Notices {
 				)))
 			]);
 		}//end if
+
+		// Check Academy Pro Minimum version notice
+		if ( Helper::is_active_academy_pro() && ! version_compare( implode( '.', array_slice( explode( '.', ACADEMY_VERSION ), 0, 2 ) ), implode( '.', array_slice( explode( '.', ACADEMY_PRO_REQUIRED_CORE_VERSION ), 0, 2 ) ), '=' ) ) {
+			self::add_notice('version_conflicts_academy_pro', [
+				'type'                  => 'danger',
+				'message'               => esc_html__( 'You are using an outdated version of Academy LMS Pro. Please update to the latest version to ensure compatibility and prevent conflicts.', 'academy' ),
+				'button_text'           => esc_html__( 'Update Now', 'academy' ),
+				'button_action' => esc_url( admin_url( 'options-general.php?page=academy-pro' ) ),
+			]);
+		}
 	}
 
 

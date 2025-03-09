@@ -2,6 +2,7 @@
 
 namespace AcademyMigrationTool\Classes;
 
+use Academy\Helper as Helper;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -30,12 +31,17 @@ class Tutor  extends Migration implements MigrationInterface {
 
 	public function migrate_course( $course ) {
 		$course_id = $course->ID;
-		// course update
-		wp_update_post(array(
-			'ID'        => $course_id,
-			'post_type' => 'academy_courses',
-			'post_content' => '<!-- wp:html -->' . $course->post_content . '<!-- /wp:html -->',
-		));
+		// Course update
+		wp_update_post(
+			array(
+				'ID'           => $course_id,
+				'post_type'    => 'academy_courses',
+				'post_name'    => Helper::generate_unique_lesson_slug( $course->post_name ),
+				'comment_status' => 'open',
+				'post_ping'    => 'open',
+				'post_content' => '<!-- wp:html -->' . wp_kses_post( $course->post_content ) . '<!-- /wp:html -->',
+			)
+		);
 		$this->migrate_course_author( $course->post_author, $course_id );
 		// ALMS course meta update
 		$this->migrate_course_meta( $course_id );
@@ -97,39 +103,54 @@ class Tutor  extends Migration implements MigrationInterface {
 
 	public function migrate_course_topics( $course_id ) {
 		global $wpdb;
-		$topics = get_posts( array(
-			'post_type'   => 'topics',
-			'post_parent' => $course_id,
-		) );
 
-		if ( $topics ) {
-			$new_curriculums = array();
-			foreach ( $topics as $topic ) {
-				$items = $wpdb->get_results(
-					$wpdb->prepare(
-						"SELECT * FROM {$wpdb->posts} 
-						WHERE post_parent = %d AND post_status = %s ",
-						$topic->ID, 'publish'
-					)
-				);
-				$total_items = array();
-				foreach ( $items as $item ) {
-					if ( 'lesson' === $item->post_type ) {
+		$topics = get_posts([
+			'post_type'      => 'topics',
+			'post_parent'    => $course_id,
+			'order'          => 'ASC',
+			'orderby'        => 'menu_order',
+			'posts_per_page' => -1,
+		]);
+
+		if ( empty( $topics ) ) {
+			return;
+		}
+
+		$new_curriculums = [];
+
+		foreach ( $topics as $topic ) {
+			$items = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT * FROM {$wpdb->posts} WHERE post_parent = %d AND post_status = %s",
+					$topic->ID,
+					'publish'
+				)
+			);
+
+			$total_items = [];
+
+			foreach ( $items as $item ) {
+				switch ( $item->post_type ) {
+					case 'lesson':
 						$total_items[] = $this->migrate_course_lesson( $item );
-					} elseif ( 'tutor_quiz' === $item->post_type ) {
+						break;
+					case 'tutor_quiz':
 						$total_items[] = $this->migrate_course_quiz( $item );
-					} elseif ( 'tutor_assignments' === $item->post_type ) {
+						break;
+					case 'tutor_assignments':
 						$total_items[] = $this->migrate_course_assignments( $item );
-					}
+						break;
 				}
-				$new_curriculums[] = array(
-					'title'   => $topic->post_title,
-					'content' => $topic->post_content,
-					'topics'  => $total_items,
-				);
-			}//end foreach
-			update_post_meta( $course_id, 'academy_course_curriculum', $new_curriculums );
-		}//end if
+			}
+
+			$new_curriculums[] = [
+				'title'   => sanitize_text_field( $topic->post_title ),
+				'content' => sanitize_text_field( $topic->post_content ),
+				'topics'  => $total_items,
+			];
+		}//end foreach
+
+		update_post_meta( $course_id, 'academy_course_curriculum', $new_curriculums );
 	}
 
 	public function migrate_course_meta( $id ) {
@@ -158,13 +179,12 @@ class Tutor  extends Migration implements MigrationInterface {
 		update_post_meta( $id, 'academy_course_drip_content_type', $content_drip_type );
 		// course durations
 		$course_durations = get_post_meta( $id, '_course_duration', true );
-		if ( $course_durations ) {
-			$time             = [];
-			foreach ( $course_durations as $duration ) {
-				$time[] = $duration;
-			}
+		foreach ( $course_durations as $duration ) {
+			$time[] = (int) $duration;
 		}
-		update_post_meta( $id, 'academy_course_duration', is_array( $time ) ? $time : array( 0, 0, 0 ) );
+		$time[] = 0;
+		update_post_meta( $id, 'academy_course_duration', ! empty( $time ) ? $time : array( 0, 0, 0 ) );
+		update_post_meta( $id, 'academy_course_duration', ! empty( $time ) ? $time : [ 0, 0, 0 ] );
 		// course qa enable
 		$enable_qa = get_post_meta( $id, '_tutor_enable_qa', true );
 		update_post_meta( $id, 'academy_is_enabled_course_qa', 'yes' === $enable_qa ? true : false );
@@ -178,8 +198,21 @@ class Tutor  extends Migration implements MigrationInterface {
 		$tr_level = get_post_meta( $id, '_tutor_course_level', true );
 		if ( 'expert' === $tr_level ) {
 			$tr_level = 'experts';
+		} elseif ( 'all_levels' === $tr_level ) {
+			$tr_level = 'intermediate';
 		}
 		update_post_meta( $id, 'academy_course_difficulty_level', $tr_level );
+		// course type
+		$course_type = get_post_meta( $id, '_tutor_course_price_type', true );
+		$public_course_status = get_post_meta( $id, '_tutor_is_public_course', true );
+		if ( 'yes' === $public_course_status ) {
+			update_post_meta( $id, 'academy_course_type', 'public' );
+		} elseif ( 'free' === $course_type ) {
+			update_post_meta( $id, 'academy_course_type', 'free' );
+			add_post_meta( $id, 'academy_course_product_id', 0 );
+		} elseif ( 'paid' === $course_type ) {
+			$this->woo_product_insert( $id );
+		}
 		// thumbnail id
 		$thumbnail = get_post_meta( $id, '_thumbnail_id', true );
 		set_post_thumbnail( $id, $thumbnail );
@@ -214,6 +247,11 @@ class Tutor  extends Migration implements MigrationInterface {
 		update_post_meta( $id, 'academy_prerequisite_courses', is_array( $prerequisites ) ? $prerequisites : array() );
 		// prerequisite category
 		add_post_meta( $id, 'academy_prerequisite_categories', array() );
+		add_post_meta( $id, 'academy_is_disabled_course_review', false );
+		add_post_meta( $id, 'academy_course_enable_certificate', true );
+		add_post_meta( $id, 'academy_rcp_membership_levels', array() );
+		add_post_meta( $id, 'academy_course_certificate_id', 0 );
+		add_post_meta( $id, 'academy_course_download_id', 0 );
 	}
 
 	public function course_topics_prerequisite( $topic_ids ) {
@@ -266,42 +304,48 @@ class Tutor  extends Migration implements MigrationInterface {
 	}
 
 	public function migrate_course_lesson( $item ) {
-		$array = array(
-			'lesson_author'  => $item->post_author,
-			'lesson_title'   => $item->post_title,
-			'lesson_name'    => $item->post_status,
-			'lesson_status'  => 'publish',
-			'lesson_content' => '<!-- wp:html -->' . $item->post_content . '<!-- /wp:html -->'
-		);
+		$lesson_title = sanitize_text_field( $item->post_title );
+		$existing_lesson = Helper::get_lesson_by_title( $lesson_title );
 
-		$lesson_id      = \Academy\Classes\Query::lesson_insert( $array );
+		if ( $existing_lesson ) {
+			return [
+				'id'   => $existing_lesson->ID,
+				'name' => $lesson_title,
+				'type' => 'lesson',
+			];
+		}
+
+		$lesson_data = [
+			'lesson_author'  => $item->post_author,
+			'lesson_title'   => $lesson_title,
+			'lesson_name'    => \Academy\Helper::generate_unique_lesson_slug( $lesson_title ),
+			'lesson_status'  => $item->post_status,
+			'lesson_content' => '<!-- wp:html -->' . sanitize_text_field( $item->post_content ) . '<!-- /wp:html -->',
+		];
+
+		$lesson_id = \Academy\Classes\Query::lesson_insert( $lesson_data );
 		$is_previewable = (bool) get_post_meta( $item->ID, '_is_preview', true );
 
-		$video_durations = array(
-			'hours' => 0,
-			'minutes'  => 0,
-			'seconds' => 0
-		);
+		$video_durations = [
+			'hours'   => 0,
+			'minutes' => 0,
+			'seconds' => 0,
+		];
 
 		$videos = get_post_meta( $item->ID, '_video', true );
-		if ( ! empty( $videos ) ) {
-			$durations = (array) $videos['runtime'];
-			if ( $durations && 'shortcode' !== $videos['source'] ) {
-				if ( isset( $durations['hours'] ) ) {
-					$video_durations['hours'] = (int) $durations['hours'];
-				}
-				if ( isset( $durations['minutes'] ) ) {
-					$video_durations['minutes'] = (int) $durations['minutes'];
-				}
-				if ( isset( $durations['seconds'] ) ) {
-					$video_durations['seconds'] = (int) $durations['seconds'];
+
+		if ( ! empty( $videos ) && 'shortcode' !== $videos['source'] ) {
+			foreach ( [ 'hours', 'minutes', 'seconds' ] as $unit ) {
+				if ( isset( $videos['runtime'][ $unit ] ) ) {
+					$video_durations[ $unit ] = (int) $videos['runtime'][ $unit ];
 				}
 			}
 		}
 
-		$video_source       = $videos ? $this->set_video_source( $videos ) : array();
-		$featured     = get_post_meta( $item->ID, '_thumbnail_id', true );
-		$lesson_meta  = [
+		$video_source = $videos ? $this->set_video_source( $videos ) : [];
+		$featured = get_post_meta( $item->ID, '_thumbnail_id', true );
+
+		$lesson_meta = [
 			'featured_media' => $featured,
 			'attachment'     => '', // upnext
 			'is_previewable' => $is_previewable,
@@ -310,70 +354,89 @@ class Tutor  extends Migration implements MigrationInterface {
 		];
 
 		$content_drip_settings = get_post_meta( $item->ID, '_content_drip_settings', true );
-		if ( $content_drip_settings ) {
+		if ( ! empty( $content_drip_settings ) ) {
 			$drip_content = [
-				'schedule_by_date' => '',
-				'schedule_by_enroll_date' => 0,
+				'schedule_by_date'         => '',
+				'schedule_by_enroll_date'  => 0,
 				'schedule_by_prerequisite' => [],
 			];
+
 			if ( isset( $content_drip_settings['unlock_date'] ) ) {
-				$unlock_date = strtotime( isset( $content_drip_settings['unlock_date'] ) ? $content_drip_settings['unlock_date'] : '' );
-				$drip_content['schedule_by_date'] = gmdate( 'Y-m-d', $unlock_date );
+				$drip_content['schedule_by_date'] = gmdate( 'Y-m-d', strtotime( $content_drip_settings['unlock_date'] ) );
 			} elseif ( isset( $content_drip_settings['after_xdays_of_enroll'] ) ) {
 				$drip_content['schedule_by_enroll_date'] = (int) $content_drip_settings['after_xdays_of_enroll'];
 			} elseif ( isset( $content_drip_settings['prerequisites'] ) ) {
-				$prerequisite = (array) $this->course_topics_prerequisite( $content_drip_settings['prerequisites'] );
-				$drip_content['schedule_by_prerequisite'] = $prerequisite;
+				$drip_content['schedule_by_prerequisite'] = (array) $this->course_topics_prerequisite( $content_drip_settings['prerequisites'] );
 			}
+
 			$lesson_meta['drip_content'] = $drip_content;
 		}
+
 		\Academy\Classes\Query::lesson_meta_insert( $lesson_id, $lesson_meta );
-		return array(
+
+		return [
 			'id'   => $lesson_id,
-			'name' => $item->post_title,
+			'name' => $lesson_title,
 			'type' => 'lesson',
-		);
+		];
 	}
 
 	public function migrate_course_assignments( $item ) {
-		$id = $item->ID;
+		if ( empty( $item->ID ) ) {
+			return [];
+		}
+
+		$id = (int) $item->ID;
+
 		wp_update_post(
-			array(
-				'ID'        => $id,
-				'post_type' => 'academy_assignments',
-				'post_content' => '<!-- wp:html -->' . $item->post_content . '<!-- /wp:html -->'
-			)
+			[
+				'ID'           => $id,
+				'post_type'    => 'academy_assignments',
+				'post_content' => '<!-- wp:html -->' . wp_kses_post( $item->post_content ) . '<!-- /wp:html -->',
+			]
 		);
-		$assignments         = get_post_meta( $id, 'assignment_option', true );
-		$assignment_settings = array(
-			'submission_time'        => $assignments['time_duration']['value'],
-			'submission_time_unit'   => $assignments['time_duration']['time'],
-			'minimum_passing_points' => $assignments['pass_mark'],
-			'total_points'           => $assignments['total_mark'],
-		);
+
+		$assignments = get_post_meta( $id, 'assignment_option', true );
+
+		$assignment_settings = [
+			'submission_time'        => isset( $assignments['time_duration']['value'] ) ? (int) $assignments['time_duration']['value'] : 0,
+			'submission_time_unit'   => isset( $assignments['time_duration']['time'] ) ? sanitize_text_field( $assignments['time_duration']['time'] ) : '',
+			'minimum_passing_points' => isset( $assignments['pass_mark'] ) ? (int) $assignments['pass_mark'] : 0,
+			'total_points'           => isset( $assignments['total_mark'] ) ? (int) $assignments['total_mark'] : 0,
+		];
+
 		update_post_meta( $id, 'academy_assignment_settings', $assignment_settings );
-		update_post_meta( $id, 'academy_assignment_attachment', '' );  // upnext work
+		update_post_meta( $id, 'academy_assignment_attachment', '' ); // upnext work.
+
 		$content_drip_settings = get_post_meta( $id, '_content_drip_settings', true );
-		$drip_content = array(
-			'schedule_by_prerequisite' => array(),
+		$drip_content          = [
+			'schedule_by_prerequisite' => [],
 			'schedule_by_enroll_date'  => 0,
 			'schedule_by_date'         => '',
-		);
-		if ( ! empty( $content_drip_settings['unlock_date'] ) ) {
-			$unlock_date = strtotime( isset( $content_drip_settings['unlock_date'] ) ? $content_drip_settings['unlock_date'] : '' );
-			$drip_content['schedule_by_date']   = gmdate( 'Y-m-d', $unlock_date );
-		} elseif ( ! empty( $content_drip_settings['after_xdays_of_enroll'] ) ) {
-			$drip_content['schedule_by_enroll_date'] = (int) $content_drip_settings['after_xdays_of_enroll'];
-		} elseif ( ! empty( $content_drip_settings['prerequisites'] ) ) {
-			$drip_content['schedule_by_prerequisite'] = $this->course_topics_prerequisite( $content_drip_settings['prerequisites'] );
+		];
+
+		if ( ! empty( $content_drip_settings ) ) {
+			if ( ! empty( $content_drip_settings['unlock_date'] ) ) {
+				$unlock_date                   = strtotime( sanitize_text_field( $content_drip_settings['unlock_date'] ) );
+				$drip_content['schedule_by_date'] = gmdate( 'Y-m-d', $unlock_date );
+			}
+
+			if ( ! empty( $content_drip_settings['after_xdays_of_enroll'] ) ) {
+				$drip_content['schedule_by_enroll_date'] = (int) $content_drip_settings['after_xdays_of_enroll'];
+			}
+
+			if ( ! empty( $content_drip_settings['prerequisites'] ) ) {
+				$drip_content['schedule_by_prerequisite'] = (array) $this->course_topics_prerequisite( $content_drip_settings['prerequisites'] );
+			}
 		}
+
 		update_post_meta( $id, 'academy_assignment_drip_content', $drip_content );
 
-		return array(
+		return [
 			'id'   => $id,
-			'name' => $item->post_title,
+			'name' => sanitize_text_field( $item->post_title ),
 			'type' => 'assignment',
-		);
+		];
 	}
 
 	public function set_video_source( $source ) {
@@ -418,95 +481,98 @@ class Tutor  extends Migration implements MigrationInterface {
 	public function migrate_course_quiz( $item ) {
 		global $wpdb;
 		$quiz_id = $item->ID;
-		$quiz = get_post( $quiz_id );
+		$quiz    = get_post( $quiz_id );
+
 		wp_update_post(
 			array(
-				'ID'         => $quiz_id,
-				'post_type'  => 'academy_quiz',
+				'ID'        => $quiz_id,
+				'post_type' => 'academy_quiz',
 			)
 		);
+
 		$quiz_meta = get_post_meta( $quiz_id, 'tutor_quiz_option', true );
-		if ( 'asc' === $quiz_meta['questions_order'] ) {
-			$question_order = 'ASC';
-		} elseif ( 'desc' === $quiz_meta['questions_order'] ) {
-			$question_order = 'DESC';
-		} else {
-			$question_order = $quiz_meta['questions_order'];
-		}
-		$time = (int) $quiz_meta['time_limit']['time_value'];
-		$time_unit = $quiz_meta['time_limit']['time_type'];
-		// content drip
+
+		$question_order = isset( $quiz_meta['questions_order'] ) ? sanitize_text_field( $quiz_meta['questions_order'] ) : 'default';
+
+		$time       = isset( $quiz_meta['time_limit']['time_value'] ) ? (int) $quiz_meta['time_limit']['time_value'] : 0;
+		$time_unit  = isset( $quiz_meta['time_limit']['time_type'] ) ? sanitize_text_field( $quiz_meta['time_limit']['time_type'] ) : '';
+
+		// Content drip settings.
 		$content_drip_settings = get_post_meta( $quiz_id, '_content_drip_settings', true );
+		$date                 = '';
+		$enroll_date          = 0;
+		$course_prerequisites = array();
+
 		if ( ! empty( $content_drip_settings['unlock_date'] ) ) {
-			$unlock_date = strtotime( isset( $content_drip_settings['unlock_date'] ) ? $content_drip_settings['unlock_date'] : '' );
+			$unlock_date = strtotime( sanitize_text_field( $content_drip_settings['unlock_date'] ) );
 			$date        = gmdate( 'Y-m-d', $unlock_date );
 		} elseif ( ! empty( $content_drip_settings['after_xdays_of_enroll'] ) ) {
 			$enroll_date = (int) $content_drip_settings['after_xdays_of_enroll'];
 		} elseif ( ! empty( $content_drip_settings['prerequisites'] ) ) {
 			$course_prerequisites = $this->course_topics_prerequisite( $content_drip_settings['prerequisites'] );
 		}
+
 		$drip_content = array(
-			'schedule_by_prerequisite' => isset( $course_prerequisites ) ? $course_prerequisites : array(),
-			'schedule_by_enroll_date'  => isset( $enroll_date ) ? $enroll_date : 0,
-			'schedule_by_date'         => isset( $date ) ? $date : '',
+			'schedule_by_prerequisite' => $course_prerequisites,
+			'schedule_by_enroll_date'  => $enroll_date,
+			'schedule_by_date'         => $date,
 		);
+
 		$quiz_meta_data = array(
-			'_wp_page_template'                          => '',
 			'academy_quiz_drip_content'                  => $drip_content,
-			'academy_quiz_time'                          => (int) $time,
-			'academy_quiz_time_unit'                     => (string) $time_unit,
-			'academy_quiz_hide_quiz_time'                => (bool) 0 < $quiz_meta['hide_quiz_time_display'] ? 1 : false,
-			'academy_quiz_feedback_mode'                 => 'retry' === $quiz_meta['feedback_mode'] ? 'retry' : 'default',
-			'academy_quiz_passing_grade'                 => (int) $quiz_meta['passing_grade'],
-			'academy_quiz_max_questions_for_answer'      => (int) $quiz_meta['max_questions_for_answer'],
-			'academy_quiz_max_attempts_allowed'          => (int) $quiz_meta['attempts_allowed'],
+			'academy_quiz_time'                          => $time,
+			'academy_quiz_time_unit'                     => $time_unit,
+			'academy_quiz_hide_quiz_time'                => ! empty( $quiz_meta['hide_quiz_time_display'] ),
+			'academy_quiz_feedback_mode'                 => isset( $quiz_meta['feedback_mode'] ) && 'retry' === $quiz_meta['feedback_mode'] ? 'retry' : 'default',
+			'academy_quiz_passing_grade'                 => isset( $quiz_meta['passing_grade'] ) ? (int) $quiz_meta['passing_grade'] : 0,
+			'academy_quiz_max_questions_for_answer'      => isset( $quiz_meta['max_questions_for_answer'] ) ? (int) $quiz_meta['max_questions_for_answer'] : 0,
+			'academy_quiz_max_attempts_allowed'          => isset( $quiz_meta['attempts_allowed'] ) ? (int) $quiz_meta['attempts_allowed'] : 0,
 			'academy_quiz_auto_start'                    => false,
-			'academy_quiz_questions_order'               => (string) $question_order,
+			'academy_quiz_questions_order'               => $question_order,
 			'academy_quiz_hide_question_number'          => isset( $quiz_meta['hide_question_number_overview'] ),
-			'academy_quiz_short_answer_characters_limit' => (int) $quiz_meta['short_answer_characters_limit'],
-			'academy_quiz_questions'                     => [],
+			'academy_quiz_short_answer_characters_limit' => isset( $quiz_meta['short_answer_characters_limit'] ) ? (int) $quiz_meta['short_answer_characters_limit'] : 0,
+			'academy_quiz_questions'                     => array(),
 		);
+
 		foreach ( $quiz_meta_data as $key => $value ) {
 			add_post_meta( $quiz_id, $key, $value, true );
 		}
-		// quiz question migrate
+
+		// Quiz question migration.
 		$questions = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}tutor_quiz_questions 
-				WHERE quiz_id = %d",
+				"SELECT * FROM {$wpdb->prefix}tutor_quiz_questions WHERE quiz_id = %d",
 				$quiz_id
 			)
 		);
+
 		if ( $questions ) {
+			$quiz_question = [];
 			foreach ( $questions as $question ) {
-				$question_order = $question->question_order;
-				$question_type = $question->question_type;
-				if ( 'true_false' === $question_type ) {
-					$new_question_type = 'trueFalse';
-				} elseif ( 'single_choice' === $question_type ) {
-					$new_question_type = 'singleChoice';
-				} elseif ( 'multiple_choice' === $question_type ) {
-					$new_question_type = 'multipleChoice';
-				} elseif ( 'fill_in_the_blank' === $question_type ) {
-					$new_question_type = 'fillInTheBlanks';
-				} elseif ( 'short_answer' === $question_type ) {
-					$new_question_type = 'shortAnswer';
-				} elseif ( 'image_answering' === $question_type ) {
-					$new_question_type = 'imageAnswer';
-				}
-				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
-				$question_settings = unserialize( $question->question_settings );
-				$display_point = isset( $question_settings['show_question_mark'] ) ? 'true' : 'false';
-				$randomize = isset( $question_settings['randomize_question'] ) ? 'true' : 'false';
-				$answer_required = isset( $question_settings['answer_required'] ) ? 'true' : 'false';
+				$question_type_map = array(
+					'true_false'       => 'trueFalse',
+					'single_choice'    => 'singleChoice',
+					'multiple_choice'  => 'multipleChoice',
+					'fill_in_the_blank' => 'fillInTheBlanks',
+					'short_answer'     => 'shortAnswer',
+					'image_answering'  => 'imageAnswer',
+				);
+
+				$new_question_type = isset( $question_type_map[ $question->question_type ] ) ? $question_type_map[ $question->question_type ] : 'unknown';
+
+				$question_settings = maybe_unserialize( $question->question_settings );
+				$display_point     = ! empty( $question_settings['show_question_mark'] ) ? 'true' : 'false';
+				$randomize         = ! empty( $question_settings['randomize_question'] ) ? 'true' : 'false';
+				$answer_required   = ! empty( $question_settings['answer_required'] ) ? 'true' : 'false';
+
 				$array = array(
 					'quiz_id'           => (int) $quiz_id,
-					'question_title'    => $question->question_title,
-					'quiz_content'      => $question->question_description,
+					'question_title'    => sanitize_text_field( $question->question_title ),
+					'quiz_content'      => wp_kses_post( $question->question_description ),
 					'question_status'   => 'publish',
 					'question_type'     => $new_question_type,
 					'question_score'    => (int) $question->question_mark,
-					'question_order'    => $question_order,
+					'question_order'    => (int) $question->question_order,
 					'question_settings' => wp_json_encode(
 						array(
 							'display_points'  => $display_point,
@@ -515,44 +581,38 @@ class Tutor  extends Migration implements MigrationInterface {
 						)
 					),
 				);
+
 				$alms_question_id = \AcademyQuizzes\Classes\Query::quiz_question_insert( $array );
-				// quiz questions meta update
-				$old_quiz_questions = get_post_meta( $quiz_id, 'academy_quiz_questions', true );
-				if ( is_array( $old_quiz_questions ) ) {
-					$academy_quiz_question[] = array(
-						'id'    => $alms_question_id,
-						'title' => $question->question_title,
-					);
-				} else {
-					$academy_quiz_question = array(
-						'id'    => $alms_question_id,
-						'title' => $question->question_title,
-					);
-				}
-				update_post_meta( $quiz_id, 'academy_quiz_questions', $academy_quiz_question, $old_quiz_questions );
-				// quiz answer migrate
+				$quiz_question[]   = array(
+					'id' => $alms_question_id,
+					'title' => $array['question_title']
+				);
+				// Quiz answers migration.
 				$answers = $wpdb->get_results(
 					$wpdb->prepare(
-						"SELECT * from {$wpdb->prefix}tutor_quiz_question_answers 
-						WHERE belongs_question_id = %d AND belongs_question_type = %s",
-						$question->question_id, $question->question_type
+						"SELECT * FROM {$wpdb->prefix}tutor_quiz_question_answers WHERE belongs_question_id = %d AND belongs_question_type = %s",
+						$question->question_id,
+						$question->question_type
 					)
 				);
 				foreach ( $answers as $answer ) {
-					\AcademyQuizzes\Classes\Query::quiz_answer_insert( array(
-						'quiz_id'       => (int) $quiz_id,
-						'question_id'   => (int) $alms_question_id,
-						'question_type' => $new_question_type,
-						'answer_title'  => $answer->answer_title,
-						'is_correct'    => 0 < $answer->is_correct ? 1 : 0,
-						'answer_order'  => $answer->answer_order,
-						'answer_content' => 'fillInTheBlanks' === $new_question_type ? $answer->answer_two_gap_match : '',
-						'view_format'   => 'text',
-						'image_id'      => isset( $answer->image_id ) ? $answer->image_id : 0,
-					) );
+					\AcademyQuizzes\Classes\Query::quiz_answer_insert(
+						array(
+							'quiz_id'        => (int) $quiz_id,
+							'question_id'    => (int) $alms_question_id,
+							'question_type'  => $new_question_type,
+							'answer_title'   => sanitize_text_field( $answer->answer_title ),
+							'is_correct'     => (bool) $answer->is_correct,
+							'answer_order'   => (int) $answer->answer_order,
+							'view_format'    => 'text',
+							'image_id'      => isset( $answer->image_id ) ? (int) $answer->image_id : 0,
+						)
+					);
 				}
 			}//end foreach
+			update_post_meta( $quiz_id, 'academy_quiz_questions', $quiz_question );
 		}//end if
+
 		return array(
 			'id'   => $quiz_id,
 			'name' => $quiz->post_title,
@@ -598,16 +658,25 @@ class Tutor  extends Migration implements MigrationInterface {
 		}//end if
 	}
 
-	public function woo_product_insert( $tutor_course ) {
-		$course_id = $tutor_course->ID;
+	public function woo_product_insert( $course_id ) {
 		$product_id = get_post_meta( $course_id, '_tutor_course_product_id', true );
-		if ( $product_id ) {
+		$regular_price = (int) get_post_meta( $course_id, 'tutor_course_price', true );
+		$sale_price = (int) get_post_meta( $course_id, 'tutor_course_sale_price', true );
+		if ( ! empty( $product_id ) ) {
 			update_post_meta( $course_id, 'academy_course_product_id', $product_id );
 			update_post_meta( $product_id, '_academy_product', 'yes' );
 			update_post_meta( $course_id, 'academy_course_type', 'paid' );
-		} else {
-			update_post_meta( $course_id, 'academy_course_product_id', 0 );
-			update_post_meta( $course_id, 'academy_course_type', 'free' );
+		} elseif ( $regular_price > 0 || $sale_price > 0 ) {
+			$product_id = Migration::woo_create_or_update_product(
+				array(
+					'course_id'     => $course_id,
+					'course_title'   => get_the_title( $course_id ),
+					'course_slug' => get_post( $course_id )->post_name,
+					'regular_price' => isset( $regular_price ) ? $regular_price : 0,
+					'sale_price'    => isset( $sale_price ) ? $sale_price : 0,
+				)
+			);
+			add_post_meta( $course_id, 'academy_course_type', 'paid' );
 		}
 	}
 

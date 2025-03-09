@@ -35,6 +35,9 @@ class Lifterlms extends Migration implements MigrationInterface {
 		wp_update_post([
 			'ID' => $course_id,
 			'post_type' => 'academy_courses',
+			'post_name' => \Academy\Helper::generate_unique_lesson_slug( $course->post_name ),
+			'comment_status' => 'open',
+			'post_ping'    => 'open',
 			'post_content' => $content,
 		]);
 		// migrate course instructor
@@ -138,6 +141,11 @@ class Lifterlms extends Migration implements MigrationInterface {
 			is_array( $course_prerequisites ) ? $course_prerequisites : []
 		);
 		add_post_meta( $course_id, 'academy_prerequisite_categories', [] );
+		add_post_meta( $course_id, 'academy_is_disabled_course_review', false );
+		add_post_meta( $course_id, 'academy_course_enable_certificate', true );
+		add_post_meta( $course_id, 'academy_rcp_membership_levels', array() );
+		add_post_meta( $course_id, 'academy_course_certificate_id', 0 );
+		add_post_meta( $course_id, 'academy_course_download_id', 0 );
 	}
 
 	public function set_video_source( $url ) {
@@ -187,14 +195,22 @@ class Lifterlms extends Migration implements MigrationInterface {
 	}
 
 	public function migrate_course_lesson( $lesson ) {
+		$existing_lesson = \Academy\Helper::get_lesson_by_title( $lesson->post_title );
+		if ( $existing_lesson ) {
+			return [
+				'id' => $existing_lesson->ID,
+				'name' => $existing_lesson->post_title,
+				'type' => 'lesson',
+			];
+		}
 		$array = [
 			'lesson_author' => $lesson->post_author,
 			'lesson_title' => $lesson->post_title,
-			'lesson_name' => $lesson->post_status,
-			'lesson_status' => 'publish',
+			'lesson_name' => \Academy\Helper::generate_unique_lesson_slug( $lesson->post_name ),
+			'lesson_status' => $lesson->post_status,
 			'lesson_content' =>
 				'<!-- wp:html -->' .
-				$lesson->post_content .
+				wp_kses_post( $lesson->post_content ) .
 				'<!-- /wp:html -->',
 		];
 		$lesson_id = \Academy\Classes\Query::lesson_insert( $array );
@@ -231,6 +247,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 		wp_update_post([
 			'ID' => $quiz_id,
 			'post_type' => 'academy_quiz',
+			'post_name' => \Academy\Helper::generate_unique_lesson_slug( $quiz->post_name ),
 			'post_content' => $quiz->post_content,
 		]);
 		// quiz meta update
@@ -276,6 +293,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 			$quiz_id
 		) );
 		if ( $question_ids ) {
+			$quiz_questions = [];
 			foreach ( $question_ids as $question_id ) {
 				$question = get_post( $question_id );
 				$llms_question_type = get_post_meta(
@@ -313,29 +331,10 @@ class Lifterlms extends Migration implements MigrationInterface {
 					$array
 				);
 				// quiz questions meta update
-				$old_quiz_questions = get_post_meta(
-					$quiz_id,
-					'academy_quiz_questions',
-					true
-				);
-				if ( is_array( $old_quiz_questions ) ) {
-					$quiz_question = [
-						'id' => $alms_question_id,
-						'title' => $question->post_title,
-					];
-					$academy_quiz_question[] = $quiz_question;
-				} else {
-					$academy_quiz_question = [
-						'id' => $alms_question_id,
-						'title' => $question->post_title,
-					];
-				}
-				update_post_meta(
-					$quiz_id,
-					'academy_quiz_questions',
-					$academy_quiz_question,
-					$old_quiz_questions
-				);
+				$quiz_questions = [
+					'id' => $alms_question_id,
+					'title' => $question->post_title,
+				];
 
 				// quiz answer migrate
 				$question = new \LLMS_Question( $question_id );
@@ -360,6 +359,11 @@ class Lifterlms extends Migration implements MigrationInterface {
 					]);
 				}
 			}//end foreach
+			update_post_meta(
+				$quiz_id,
+				'academy_quiz_questions',
+				$quiz_questions
+			);
 		}//end if
 		return [
 			'id' => $quiz_id,
