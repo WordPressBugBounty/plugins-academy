@@ -1,4 +1,6 @@
 <?php
+/** @var int $product_id */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit(); // Exit if accessed directly
 
@@ -58,7 +60,7 @@ if ( 'woocommerce' === $monetization_engine ) {
 		<?php
 	else :
 		echo $purchase_link; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	endif; ?> 
+	endif; ?>
 	</div>
 	<?php
 }//end if

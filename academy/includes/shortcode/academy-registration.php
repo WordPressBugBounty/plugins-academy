@@ -156,43 +156,45 @@ class AcademyRegistration extends Registration {
 		);
 
 		$user_id = wp_insert_user( $login_data );
+		if ( is_wp_error( $user_id ) ) {
+			wp_send_json_error([
+				'message' => $user_id->get_error_message()
+			]);
+		}
+		update_user_meta(
+			$user_id,
+			'is_academy_instructor',
+			\Academy\Helper::get_time()
+		);
+		update_user_meta(
+			$user_id,
+			'academy_instructor_status',
+			apply_filters(
+				'academy/admin/registration_instructor_status',
+				'pending'
+			)
+		);
 
-		if ( ! is_wp_error( $user_id ) ) {
-			update_user_meta(
-				$user_id,
-				'is_academy_instructor',
-				\Academy\Helper::get_time()
-			);
-			update_user_meta(
-				$user_id,
-				'academy_instructor_status',
-				apply_filters(
-					'academy/admin/registration_instructor_status',
-					'pending'
-				)
-			);
+		$this->save_meta_info( $user_meta, $user_id );
 
-			$this->save_meta_info( $user_meta, $user_id );
+		do_action(
+			'academy/shortcode/after_instructor_registration',
+			$user_id
+		);
 
-			do_action(
-				'academy/shortcode/after_instructor_registration',
-				$user_id
-			);
-
-			$user = get_user_by( 'id', $user_id );
-			if ( $user ) {
-				wp_set_current_user( $user_id, $user->user_login );
-				wp_set_auth_cookie( $user_id );
-			}
-			if (
-				apply_filters(
-					'academy/is_allow_new_instructor_notification',
-					true
-				)
-			) {
-				wp_new_user_notification( $user_id, null, 'both' );
-			}
-		}//end if
+		$user = get_user_by( 'id', $user_id );
+		if ( $user ) {
+			wp_set_current_user( $user_id, $user->user_login );
+			wp_set_auth_cookie( $user_id );
+		}
+		if (
+			apply_filters(
+				'academy/is_allow_new_instructor_notification',
+				true
+			)
+		) {
+			wp_new_user_notification( $user_id, null, 'both' );
+		}
 
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 
@@ -250,34 +252,38 @@ class AcademyRegistration extends Registration {
 		);
 
 		$user_id = wp_insert_user( $login_data );
-		if ( ! is_wp_error( $user_id ) ) {
-			do_action(
-				'academy/shortcode/after_student_registration',
-				$user_id
-			);
+		if ( is_wp_error( $user_id ) ) {
+			wp_send_json_error([
+				'message' => $user_id->get_error_message()
+			]);
+		}
 
-			update_user_meta(
-				$user_id,
-				'is_academy_student',
-				\Academy\Helper::get_time()
-			);
+		do_action(
+			'academy/shortcode/after_student_registration',
+			$user_id
+		);
 
-			$this->save_meta_info( $user_meta, $user_id );
+		update_user_meta(
+			$user_id,
+			'is_academy_student',
+			\Academy\Helper::get_time()
+		);
 
-			$user = get_user_by( 'id', $user_id );
-			if ( $user ) {
-				wp_set_current_user( $user_id, $user->user_login );
-				wp_set_auth_cookie( $user_id );
-			}
-			if (
-				apply_filters(
-					'academy/is_allow_new_student_notification',
-					true
-				)
-			) {
-				wp_new_user_notification( $user_id, null, 'both' );
-			}
-		}//end if
+		$this->save_meta_info( $user_meta, $user_id );
+
+		$user = get_user_by( 'id', $user_id );
+		if ( $user ) {
+			wp_set_current_user( $user_id, $user->user_login );
+			wp_set_auth_cookie( $user_id );
+		}
+		if (
+			apply_filters(
+				'academy/is_allow_new_student_notification',
+				true
+			)
+		) {
+			wp_new_user_notification( $user_id, null, 'both' );
+		}
 
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 

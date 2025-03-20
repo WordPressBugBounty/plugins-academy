@@ -44,7 +44,7 @@ class Template {
 						$q->set( 'posts_per_page', $per_page );
 					}
 				}
-			} elseif ( is_archive( 'academy_courses' ) && 'academy_courses' === $q->query['post_type'] ) {
+			} elseif ( is_archive( 'academy_courses' ) && isset( $q->query['post_type'] ) && 'academy_courses' === $q->query['post_type'] ) {
 				$paged = ( get_query_var( 'paged' ) ) ? absint( get_query_var( 'paged' ) ) : 1;
 				$orderby = ( get_query_var( 'orderby' ) ) ? get_query_var( 'orderby' ) : Academy\Helper::get_settings( 'course_archive_courses_order' );
 				$q->set( 'posts_per_page', $per_page );

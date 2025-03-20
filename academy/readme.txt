@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.6.0
+Stable tag: 2.7.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -315,6 +315,14 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 
 == Changelog ==
 
+= 2.7.0 - 20/03/2025 =
+* Added - Added the ability to create courses directly from a YouTube video playlist.
+* Improved - Included the 'All Levels' option for course difficulty settings.
+* Fixed - Resolved category URL pagination issues in course listings.
+* Fixed - Error messages now display correctly when a user attempts to register with an already existing email.
+* Fixed - Unlimited quiz attempts issue related to PHP rendering.
+* Fixed - Learn page top bar now remains sticky when an FSE theme is activated.
+
 = 2.6.0 - 09/03/2025 =
 * Improved - Frontend dashboard responsiveness.
 * Fixed - QA section translation issue.
@@ -326,7 +334,6 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 * Fixed - Table border bottom display issue.
 * Fixed - Sub-curriculum lesson topics bar closure issue on the Learnpage.
 * Fixed - Academy Player video not showing issue in Astra theme.
-
 
 = 2.5.3 - 03/03/2025 =
 * Fixed - Astra Theme conflict issue

@@ -170,7 +170,7 @@ if ( $attempt_id ) {
 
 			<?php
 
-			if ( count( $attempts ) < $max_attempt ) {
+			if ( 0 === $max_attempt || count( $attempts ) < $max_attempt ) {
 				\Academy\Helper::get_template( 'curriculums/quiz/start.php', array( 'quiz_id' => $quiz_id ) );
 			}
 			?>

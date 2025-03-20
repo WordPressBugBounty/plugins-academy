@@ -9,6 +9,9 @@ use Academy;
 use Academy\Helper;
 use Academy\Classes\Sanitizer;
 use Academy\Classes\AbstractAjaxHandler;
+use Academy\Admin\Playlist\Import;
+use Academy\Admin\Playlist\Info;
+use Academy\Admin\Playlist\Platforms\Youtube;
 
 class Course extends AbstractAjaxHandler {
 	public function __construct() {
@@ -68,7 +71,15 @@ class Course extends AbstractAjaxHandler {
 			'import_course' => array(
 				'callback'  => array( $this, 'import_all_courses' ),
 				'capability' => 'manage_academy_instructor',
-			)
+			),
+			'validate_youtube_api' => array(
+				'callback'  => array( $this, 'save_youtube_api_key' ),
+				'capability' => 'manage_options',
+			),
+			'import_from_playlist' => [
+				'callback'   => [ $this, 'import_from_playlist' ],
+				'capability' => 'manage_options',
+			],
 		);
 	}
 
@@ -224,7 +235,6 @@ class Course extends AbstractAjaxHandler {
 				) );
 	}
 
-
 	public function render_pending_enrolled_courses() {
 		$user_id = get_current_user_id();
 		$pending_enrolled_course_ids = \Academy\Helper::get_pending_enrolled_courses_ids_by_user( $user_id );
@@ -285,7 +295,6 @@ class Course extends AbstractAjaxHandler {
 		wp_die();
 	}
 
-
 	public function course_add_to_wishlist( $payload_data ) {
 		if ( ! is_user_logged_in() ) {
 			if ( \Academy\Helper::get_settings( 'is_enabled_academy_login', true ) ) {
@@ -343,7 +352,6 @@ class Course extends AbstractAjaxHandler {
 		add_user_meta( $user_id, 'academy_course_favorite', $course_id );
 		wp_send_json_success( array( 'is_added' => true ) );
 	}
-
 
 	public function archive_course_filter( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
@@ -465,7 +473,6 @@ class Course extends AbstractAjaxHandler {
 		);
 	}
 
-
 	public function get_my_courses() {
 		$response = [];
 		$course_args = array(
@@ -494,7 +501,6 @@ class Course extends AbstractAjaxHandler {
 		endif;
 		wp_send_json_success( $response );
 	}
-
 
 	public function enroll_course( $payload_data ) {
 		if ( ! is_user_logged_in() ) {
@@ -1096,4 +1102,79 @@ class Course extends AbstractAjaxHandler {
 		}//end switch
 	}
 
+	public function save_youtube_api_key( $payload_data ) {
+		$api_key = ! empty( $payload_data['api_key'] ) ? sanitize_text_field( $payload_data['api_key'] ) : '';
+
+		if ( empty( $api_key ) ) {
+			wp_send_json_error( esc_html__( 'YouTube API Key is required.', 'academy' ) );
+		}
+
+		$url = "https://www.googleapis.com/youtube/v3/videos?part=id&id=dQw4w9WgXcQ&key={$api_key}";
+		$response = wp_remote_get( $url, [ 'timeout' => 10 ] );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( esc_html__( 'Failed to validate API key. Please try again.', 'academy' ) );
+		}
+
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( empty( $data ) || isset( $data['error'] ) ) {
+			wp_send_json_error( esc_html__( 'Invalid YouTube API Key.', 'academy' ) );
+		}
+
+		$user_id       = get_current_user_id();
+		$existing_key  = get_user_meta( $user_id, 'academy_youtube_api_key', true );
+
+		if ( ! $existing_key ) {
+			add_user_meta( $user_id, 'academy_youtube_api_key', $api_key );
+			wp_send_json_success( esc_html__( 'Successfully save your YouTube API Key.', 'academy' ) );
+		}
+
+		update_user_meta( $user_id, 'academy_youtube_api_key', $api_key );
+		wp_send_json_success( esc_html__( 'Successfully update your YouTube API Key.', 'academy' ) );
+	}
+
+	public function import_from_playlist( $payload_data ) : void {
+		$payload = Sanitizer::sanitize_payload([
+			'playlist_url'  => 'string',
+			'course_status' => 'string',
+			'course_type'   => 'string',
+		], $payload_data );
+
+		$url = isset( $payload['playlist_url'] ) ? $payload['playlist_url'] : '';
+		if ( empty( $url ) ) {
+			wp_send_json_error( esc_html__( 'Playlist url field is required.', 'academy' ) );
+		}
+
+		$api = sanitize_text_field( get_user_meta( get_current_user_id(), 'academy_youtube_api_key', true ) );
+		$parsed_url = parse_url( $url );
+		switch ( str_replace( 'www.', '', $parsed_url['host'] ?? '' ) ) {
+			case 'youtube.com':
+				if ( empty( $api ) ) {
+					wp_send_json_error( esc_html__( 'Youtube API key is missing.', 'academy' ) );
+				}
+
+				parse_str( isset( $parsed_url['query'] ) ? $parsed_url['query'] : '', $query_arr );
+				$playlist_id = ( $query_arr['list'] ?? '' );
+				if ( empty( $playlist_id ) ) {
+					wp_send_json_error( esc_html__( 'Not a valid playlist url.', 'academy' ) );
+				}
+
+				$course_id = ( new Import(
+					new Info( $api, $playlist_id, Youtube::class ),
+					$payload['course_status'] ?? '',
+					$payload['course_type'] ?? ''
+				) )->run();
+				if ( $course_id ) {
+					wp_send_json_success([
+						'message' => esc_html__( 'Course Created!', 'academy' ),
+						'course_id' => $course_id
+					]);
+				}
+				break;
+			default:
+				wp_send_json_error( esc_html__( 'Not a valid playlist url.', 'academy' ) );
+				break;
+		}//end switch
+	}
 }

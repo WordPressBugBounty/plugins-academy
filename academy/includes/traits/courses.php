@@ -1351,6 +1351,7 @@ trait Courses {
 	public static function get_course_difficulty_level( $course_id ) {
 		$lavel = get_post_meta( $course_id, 'academy_course_difficulty_level', true );
 		$levels = apply_filters('academy/difficulty_level', array(
+			'all_levels'  => __( 'All Levels', 'academy' ),
 			'beginner'    => __( 'Beginner', 'academy' ),
 			'intermediate' => __( 'Intermediate', 'academy' ),
 			'experts'     => __( 'Experts', 'academy' ),

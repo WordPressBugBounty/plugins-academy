@@ -1,4 +1,5 @@
 <?php
+
 namespace Academy;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -6,8 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use \Academy\Helper;
+use AcademyStoreEngine\Storeengine;
 
 class Addons {
+
 	public static function init() {
 		$self = new self();
 		// Load all addons
@@ -23,13 +26,13 @@ class Addons {
 		$Autoload = Autoload::get_instance();
 		$addons = apply_filters('academy/addons/loader_args', [
 			'multi-instructor' => 'MultiInstructor',
-			'quizzes'          => 'Quizzes',
-			'migration-tool'   => 'MigrationTool',
-			'webhooks'         => 'Webhooks',
-			'certificates'     => 'Certificates',
+			'quizzes' => 'Quizzes',
+			'migration-tool' => 'MigrationTool',
+			'webhooks' => 'Webhooks',
+			'certificates' => 'Certificates',
 			'easy-digital-downloads' => 'EasyDigitalDownloads',
-			'woocommerce'      => 'Woocommerce',
-			'course-preview'   => 'CoursePreview',
+			'woocommerce' => 'Woocommerce',
+			'course-preview' => 'CoursePreview',
 		]);
 
 		foreach ( $addons as $addon_name => $addon_class_name ) {
@@ -42,6 +45,9 @@ class Addons {
 
 			$class::init();
 		}
+
+		$Autoload->add_namespace_directory( 'AcademyStoreEngine', ACADEMY_ADDONS_DIR_PATH . 'storeengine/' );
+		Storeengine::init();
 	}
 
 	public function get_all_addons() {
@@ -97,6 +103,7 @@ class Addons {
 		// response
 		wp_send_json_success( $saved_addons );
 	}
+
 	public function check_addon_pre_active_requirement( $addon_slug, $requirement ) {
 		if ( 'certificates' === $addon_slug && Helper::is_plugin_active( 'academy-certificates/academy-certificates.php' ) ) {
 			wp_send_json_error( esc_html__( 'To avoid conflicts, please first deactivate the Academy Certificate plugin.', 'academy' ) );

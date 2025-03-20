@@ -182,6 +182,7 @@ class Database {
 			'academy_course_type'                       => 'string',
 			'academy_course_product_id'                 => 'integer',
 			'academy_course_download_id'                => 'integer',
+			'acdemy_store_product'                      => 'integer',
 			'academy_course_max_students'               => 'integer',
 			'academy_course_language'                   => 'string',
 			'academy_course_difficulty_level'           => 'string',

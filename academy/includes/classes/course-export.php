@@ -41,9 +41,9 @@ class CourseExport extends ExportBase {
 			'course_intro_video' => '',
 			'course_curriculum' => '',
 			'course_certificate_id' => '',
-			'academy_rcp_membership_levels',
-			'academy_course_enable_certificate',
-			'academy_is_disabled_course_review',
+			'academy_rcp_membership_levels' => [],
+			'academy_course_enable_certificate' => false,
+			'academy_is_disabled_course_review' => false,
 		);
 
 		$courses = $this->get_all_courses( 'course_completed' );

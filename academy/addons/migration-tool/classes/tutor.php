@@ -184,7 +184,6 @@ class Tutor  extends Migration implements MigrationInterface {
 		}
 		$time[] = 0;
 		update_post_meta( $id, 'academy_course_duration', ! empty( $time ) ? $time : array( 0, 0, 0 ) );
-		update_post_meta( $id, 'academy_course_duration', ! empty( $time ) ? $time : [ 0, 0, 0 ] );
 		// course qa enable
 		$enable_qa = get_post_meta( $id, '_tutor_enable_qa', true );
 		update_post_meta( $id, 'academy_is_enabled_course_qa', 'yes' === $enable_qa ? true : false );
@@ -198,8 +197,6 @@ class Tutor  extends Migration implements MigrationInterface {
 		$tr_level = get_post_meta( $id, '_tutor_course_level', true );
 		if ( 'expert' === $tr_level ) {
 			$tr_level = 'experts';
-		} elseif ( 'all_levels' === $tr_level ) {
-			$tr_level = 'intermediate';
 		}
 		update_post_meta( $id, 'academy_course_difficulty_level', $tr_level );
 		// course type

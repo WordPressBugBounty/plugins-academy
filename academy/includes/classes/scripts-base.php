@@ -45,6 +45,7 @@ class ScriptsBase {
 			'toplevel_menu_icon_url'    => $menu->get_toplevel_menu_icon_url(),
 			'toplevel_menu_title'   => $menu->get_toplevel_menu_title(),
 			'logo_url' => $menu->get_logo_url(),
+			'youtube_api_key' => sanitize_text_field( get_user_meta( get_current_user_id(), 'academy_youtube_api_key', true ) ),
 		);
 
 		if ( ! empty( $backend_settings['is_enabled_earning'] ) ) {

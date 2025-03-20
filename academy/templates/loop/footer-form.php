@@ -47,6 +47,14 @@ endif; ?>
 			<?php echo $total_completed_lessons ? esc_html__( 'Continue learning', 'academy' ) : esc_html__( 'Start Course', 'academy' ); ?> 
 		</a>
 	</div>
+<?php elseif ( $is_storeengine_product ) :
+	\Academy\Helper::get_template('loop/storeengine.php', array(
+		'is_enabled_academy_login' => $is_enabled_academy_login,
+		'integration' => $integration,
+		'course_link' => esc_url( $course_permalink ),
+		'number_of_price' => $price_qtn,
+		'card_style' => $card_style,
+	) ); ?>
 <?php elseif ( $prices ) :
 	Academy\Helper::get_template(
 		'loop/surecart-form.php',

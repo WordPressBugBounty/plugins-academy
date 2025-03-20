@@ -714,6 +714,7 @@ if ( ! function_exists( 'academy_archive_course_filter_by_tags' ) ) {
 if ( ! function_exists( 'academy_archive_course_filter_by_levels' ) ) {
 	function academy_archive_course_filter_by_levels() {
 		$levels = array(
+			'all_levels'   => __( 'All Levels', 'academy' ),
 			'beginner'     => __( 'Beginner', 'academy' ),
 			'intermediate' => __( 'Intermediate', 'academy' ),
 			'experts'      => __( 'Expert', 'academy' ),
