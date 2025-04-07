@@ -202,7 +202,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 			$parent = (int) sanitize_text_field( $_POST['parent'] );
 			$content = sanitize_text_field( $_POST['content'] );
 			$comment_approved = sanitize_text_field( $_POST['status'] );
-			$title = sanitize_text_field( $_POST['title'] );
+			$title = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
 			$current_user = wp_get_current_user();
 
 			$default_data = array(

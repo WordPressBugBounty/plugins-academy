@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.7.0
+Stable tag: 2.8.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -314,6 +314,17 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.8.0 - 07/04/2025 =
+* Added - Native payment integration.
+* Added - Redux Toolkit
+* Added - MathJax-LaTeX integration.
+* Removed - Old legacy redux 
+* Removed - Academy Pro React Code
+* Fixed - Course export functionality issue.
+* Fixed - "Answer Required" option for quiz questions not working during PHP rendering.
+* Fixed - Course Q&A and Announcement features not functioning properly during PHP rendering.
+* Fixed - Instructor feedback not displaying on submitted quiz  during PHP rendering.
 
 = 2.7.0 - 20/03/2025 =
 * Added - Added the ability to create courses directly from a YouTube video playlist.
@@ -754,3 +765,5 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 Are you want to see more changelog? please [visit here](https://academylms.net/changelog/)
 
 == Upgrade Notice ==
+= 2.8.0 =
+This is a major update with breaking changes. Please back up your site before proceeding with the update.

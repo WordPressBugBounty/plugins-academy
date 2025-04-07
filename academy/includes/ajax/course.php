@@ -435,7 +435,7 @@ class Course extends AbstractAjaxHandler {
 		wp_reset_postdata();
 		$courses_query = new \WP_Query( apply_filters( 'academy_courses_filter_args', $args ) );
 
-		if ( $found_posts ) {
+		if ( isset( $found_posts ) && ! empty( $found_posts ) ) {
 			$courses_query->max_num_pages = ceil( $found_posts / $count );
 		}
 		ob_start();
@@ -895,7 +895,7 @@ class Course extends AbstractAjaxHandler {
 		$course_duration = isset( $course_item['course_duration'] ) ? maybe_unserialize( sanitize_text_field( $course_item['course_duration'] ) ) : array( 0, 0, 0 );
 		$intro_video = isset( $course_item['course_intro_video'] ) ? maybe_unserialize( sanitize_text_field( $course_item['course_intro_video'] ) ) : array();
 		$course_curriculum = isset( $course_item['course_curriculum'] ) ? maybe_unserialize( sanitize_text_field( $course_item['course_curriculum'] ) ) : array();
-		$certificate_id = isset( $course_item['course_certificate_id'] ) ? absint( $course_item['course_certificate_id'] ) : 0;
+		$certificate_id = 0;
 		$product_id = isset( $course_item['course_product_id'] ) ? absint( $course_item['course_product_id'] ) : 0;
 		$download_id = isset( $course_item['course_download_id'] ) ? absint( $course_item['course_download_id'] ) : 0;
 		$course_review = isset( $course_item['is_disabled_course_review'] ) ? sanitize_key( $course_item['is_disabled_course_review'] ) : false;
@@ -1145,8 +1145,8 @@ class Course extends AbstractAjaxHandler {
 		if ( empty( $url ) ) {
 			wp_send_json_error( esc_html__( 'Playlist url field is required.', 'academy' ) );
 		}
-
-		$api = sanitize_text_field( get_user_meta( get_current_user_id(), 'academy_youtube_api_key', true ) );
+		$user_id = get_current_user_id();
+		$api = sanitize_text_field( get_user_meta( $user_id, 'academy_youtube_api_key', true ) );
 		$parsed_url = parse_url( $url );
 		switch ( str_replace( 'www.', '', $parsed_url['host'] ?? '' ) ) {
 			case 'youtube.com':
@@ -1166,6 +1166,7 @@ class Course extends AbstractAjaxHandler {
 					$payload['course_type'] ?? ''
 				) )->run();
 				if ( $course_id ) {
+					add_user_meta( $user_id, 'academy_instructor_course_id', $course_id );
 					wp_send_json_success([
 						'message' => esc_html__( 'Course Created!', 'academy' ),
 						'course_id' => $course_id

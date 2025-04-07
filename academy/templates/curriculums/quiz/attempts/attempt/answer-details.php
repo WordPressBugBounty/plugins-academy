@@ -108,4 +108,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 		</div>
 	</div>
+	<div class="academy-quiz-attempt-feedback">
+		<h3 class="academy-quiz-attempt-entry-title">
+			<?php esc_html_e( 'Instructor Feedback', 'academy' ); ?>
+		</h3>
+		<p class="academy-quiz-attempt-feedback__message">
+			<?php echo wp_kses_post( $instructor_feedback ); ?>
+		</p>
+	</div>
 </div>

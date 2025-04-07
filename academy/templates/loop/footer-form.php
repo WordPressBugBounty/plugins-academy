@@ -19,6 +19,7 @@ $required_levels          = isset( $required_levels ) ? $required_levels : [];
 $course_type              = isset( $course_type ) ? $course_type : 'public';
 $prerequisite_courses     = apply_filters( 'academy/templates/single_course/prerequisite_courses', false, $course_id );
 $prices                   = Academy\Helper::is_plugin_active( 'surecart/surecart.php' ) && Academy\Helper::get_addon_active_status( 'surecart' ) ? ( new AcademyProSurecart\Integration() )->check_integration_and_price( array(), $course_id ) : '';
+$is_active_woo            = Academy\Helper::is_plugin_active( 'woocommerce/woocommerce.php' ) ? true : false;
 ?>
 
 <?php if ( 'layout_two' === $card_style ) :
@@ -47,7 +48,7 @@ endif; ?>
 			<?php echo $total_completed_lessons ? esc_html__( 'Continue learning', 'academy' ) : esc_html__( 'Start Course', 'academy' ); ?> 
 		</a>
 	</div>
-<?php elseif ( $is_storeengine_product ) :
+<?php elseif ( isset( $is_storeengine_product ) && ! empty( $is_storeengine_product ) ) :
 	\Academy\Helper::get_template('loop/storeengine.php', array(
 		'is_enabled_academy_login' => $is_enabled_academy_login,
 		'integration' => $integration,
@@ -74,7 +75,7 @@ endif; ?>
 			'required_levels'          => $required_levels,
 		]
 	); ?>
-<?php elseif ( $is_paid && $product_id ) :
+<?php elseif ( $is_paid && $product_id && $is_active_woo ) :
 	Academy\Helper::get_template(
 		'loop/woo-form.php',
 		[

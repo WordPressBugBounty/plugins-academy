@@ -55,6 +55,7 @@ class Withdraw extends AbstractAjaxHandler {
 		$is_update = \Academy\Helper::update_withdraw_status_by_withdraw_id( $ID, $statusTo );
 		if ( $is_update ) {
 			$results = \Academy\Helper::get_withdraw_by_withdraw_id( $ID );
+			do_action( 'academy/multi_instructor/withdraw_request_' . $statusTo, current( $results ) );
 			wp_send_json_success( current( $results ) );
 			wp_die();
 		}

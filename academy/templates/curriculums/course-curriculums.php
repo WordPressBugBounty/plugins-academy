@@ -61,8 +61,8 @@ endif;
 							<input type="hidden" name="action" value="academy/save_topic_mark_as_complete">
 							<input type="hidden" name="course_id" value="<?php echo esc_attr( \Academy\Helper::get_the_current_course_id() ); ?>">
 							<input type="hidden" name="topic_type" value="<?php echo esc_attr( $topic['type'] ); ?>">
-							<input type="hidden" name="topic_id" value="<?php echo esc_attr( $topic['id'] ); ?>">
-							<input type="checkbox" class="topic_check" value="<?php echo esc_attr( $topic['id'] ); ?>" <?php echo esc_attr( $topic['is_completed'] ? 'checked' : '' ); ?>>
+							<input type="hidden" name="topic_id" value="<?php echo esc_attr( isset( $topic['id'] ) ? $topic['id'] : '' ); ?>">
+							<input type="checkbox" class="topic_check" value="<?php echo esc_attr( isset( $topic['id'] ) ? $topic['id'] : '' ); ?>" <?php echo esc_attr( $topic['is_completed'] ? 'checked' : '' ); ?>>
 						</form>
 						</div>
 						<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $topic ) ); ?>" class="academy-topics-lesson-item__btn">

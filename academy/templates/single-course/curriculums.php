@@ -42,7 +42,7 @@ if ( empty( $curriculums ) || empty( $course_id ) ) {
 											</div>
 												<div class="academy-entry-control">
 												<?php
-												if ( $sub_topic['is_accessible'] ) :
+												if ( isset( $sub_topic['is_accessible'] ) && ! empty( $sub_topic['is_accessible'] ) ) :
 													?>
 													<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $sub_topic, $course_id ) ); ?>" class="academy-btn-play academy-btn-lesson-preview">
 														<i class="academy-icon academy-icon--eye"></i>
@@ -68,7 +68,7 @@ if ( empty( $curriculums ) || empty( $course_id ) ) {
 								<li class="academy-lesson-list__item">
 									<div class="academy-entry-content">
 										<i class="<?php echo esc_attr( \Academy\Helper::get_topic_icon_class_name( $topic['type'] ) ); ?>" aria-hidden="true"></i>
-										<h4 class="academy-entry-title"><?php echo esc_html( wp_strip_all_tags( $topic['name'] ) ); ?></h4>
+										<h4 class="academy-entry-title"><?php echo esc_html( wp_strip_all_tags( isset( $topic['name'] ) ? $topic['name'] : '' ) ); ?></h4>
 										<?php
 										if ( isset( $topic['duration'] ) ) : ?>
 										<span class="academy-entry-time"><?php echo esc_html( $topic['duration'] ); ?></span>
@@ -78,7 +78,7 @@ if ( empty( $curriculums ) || empty( $course_id ) ) {
 									</div>
 									<div class="academy-entry-control">
 										<?php
-										if ( $topic['is_accessible'] ) :
+										if ( isset( $topic['is_accessible'] ) && ! empty( $topic['is_accessible'] ) ) :
 											?>
 											<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $topic, $course_id ) ); ?>" class="academy-btn-play academy-btn-lesson-preview">
 												<i class="academy-icon academy-icon--eye"></i>

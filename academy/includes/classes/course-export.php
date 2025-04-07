@@ -52,10 +52,14 @@ class CourseExport extends ExportBase {
 			return [ $empty_data, $empty_meta ];
 		}
 		foreach ( $courses as $course ) {
+			$course_type = isset( $meta['academy_course_type'][0] ) ? $meta['academy_course_type'][0] : '';
 			$meta = get_post_meta( $course->ID );
-			if ( 'paid' === $meta['academy_course_type'][0] ) {
-				$product_id = $meta['academy_course_product_id'][0] ?? null;
-				$download_id = $meta['academy_course_download_id'][0] ?? null;
+			if ( 'paid' === $course_type ) {
+				$product_id = $meta['academy_course_product_id'][0] ?? 0;
+				$download_id = $meta['academy_course_download_id'][0] ?? 0;
+				$regular_price = get_post_meta( $product_id, '_regular_price', true );
+				$sale_price = get_post_meta( $product_id, '_sale_price', true );
+				$edd_price = get_post_meta( $download_id, 'edd_price', true );
 			}
 			$curriculums = maybe_unserialize( $meta['academy_course_curriculum'][0] ?? array() );
 			$course_array[] = $this->extract_post_data( $course );
@@ -64,10 +68,10 @@ class CourseExport extends ExportBase {
 				[
 					'course_curriculum' => $meta['academy_course_curriculum'][0] ?? array(),
 					'course_download_id' => $download_id,
-					'edd_price' => get_post_meta( $download_id, 'edd_price', true ),
+					'edd_price' => isset( $edd_price ) ? $edd_price : 0,
 					'course_product_id' => $product_id,
-					'regular_price' => get_post_meta( $product_id, '_regular_price', true ),
-					'sale_price' => get_post_meta( $product_id, '_sale_price', true ),
+					'regular_price' => isset( $regular_price ) ? $regular_price : 0,
+					'sale_price' => isset( $sale_price ) ? $sale_price : 0,
 				],
 			);
 
@@ -76,9 +80,11 @@ class CourseExport extends ExportBase {
 					$is_topics = ! empty( $curriculum['topics'] ) ? true : false;
 					if ( $is_topics ) {
 						foreach ( $curriculum['topics'] as $topics ) {
-							if ( 'sub-curriculum' !== $topics['type'] ) {
+							$sub_topics_type = isset( $topics['type'] ) ? $topics['type'] : '';
+							if ( 'sub-curriculum' !== $sub_topics_type ) {
 								$data = $this->topics_make_for_csv( $topics );
-								if ( 'quiz' === $topics['type'] && $data ) {
+								$topics_type = isset( $topics['type'] ) ? $topics['type'] : '';
+								if ( 'quiz' === $topics_type && $data ) {
 									foreach ( $data as $quiz ) {
 										$course_array[] = $quiz;
 									}
@@ -88,7 +94,8 @@ class CourseExport extends ExportBase {
 							} elseif ( isset( $topics['topics'] ) && ! empty( $topics['topics'] ) ) {
 								foreach ( $topics['topics'] as $topic ) {
 									$data = $this->topics_make_for_csv( $topic );
-									if ( 'quiz' === $topic['type'] && $data ) {
+									$topic_type = isset( $topic['type'] ) ? $topic['type'] : '';
+									if ( 'quiz' === $topic_type && $data ) {
 										foreach ( $data as $quiz ) {
 											$course_array[] = $quiz;
 										}
@@ -157,7 +164,8 @@ class CourseExport extends ExportBase {
 		return $results;
 	}
 	public function topics_make_for_csv( $topic ) {
-		switch ( $topic['type'] ) {
+		$type = isset( $topics['type'] ) ? $topics['type'] : '';
+		switch ( $type ) {
 			case 'lesson':
 				return $this->get_lesson_by_topic( $topic ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
 			case 'quiz':

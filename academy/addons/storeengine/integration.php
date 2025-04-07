@@ -8,11 +8,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Academy\Helper;
 use Academy\Traits\Earning;
-use StoreEngine\Classes\Order;
-use StoreEngine\classes\order\OrderItem;
+use StoreEngine\classes\order\OrderItemProduct;
 
 class Integration {
-
 
 	use Earning;
 
@@ -22,7 +20,7 @@ class Integration {
 		add_action( 'storeengine/order/during_add_product', [ $self, 'add_course_line_meta' ] );
 	}
 
-	public function add_course_line_meta( OrderItem $item ) {
+	public function add_course_line_meta( OrderItemProduct $item ) {
 		$item->update_metadata( 'academy_course_id', '' );
 	}
 

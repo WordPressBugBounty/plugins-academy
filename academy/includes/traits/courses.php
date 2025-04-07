@@ -1237,18 +1237,18 @@ trait Courses {
 
 						$topic['is_completed'] = false;
 						$topic['is_accessible'] = false;
-
+						$topic_id = isset( $topic['id'] ) ? $topic['id'] : 0;
 						// if topic type is lesson then set duration
 						if ( isset( $topic['type'] ) && 'lesson' === $topic['type'] ) {
-							$topic['slug']              = \Academy\Helper::get_lesson_slug( $topic['id'] );
-							$topic['duration']          = \Academy\Helper::get_lesson_video_duration( $topic['id'] );
-							$topic['is_accessible']     = \Academy\Helper::get_lesson_meta( $topic['id'], 'is_previewable' ) && (bool) \Academy\Helper::get_addon_active_status( 'course-preview' );
+							$topic['slug']              = \Academy\Helper::get_lesson_slug( $topic_id );
+							$topic['duration']          = \Academy\Helper::get_lesson_video_duration( $topic_id );
+							$topic['is_accessible']     = \Academy\Helper::get_lesson_meta( $topic_id, 'is_previewable' ) && (bool) \Academy\Helper::get_addon_active_status( 'course-preview' );
 						} else {
-							$topic['slug'] = basename( get_permalink( $topic['id'] ) );
+							$topic['slug'] = basename( get_permalink( $topic_id ) );
 						}
 
 						if ( $complete_status ) {
-							$topic['is_completed'] = ( isset( $completed_topics[ $topic['type'] ][ $topic['id'] ] ) ? $completed_topics[ $topic['type'] ][ $topic['id'] ] : '' );
+							$topic['is_completed'] = ( isset( $completed_topics[ $topic['type'] ][ $topic_id ] ) ? $completed_topics[ $topic['type'] ][ $topic_id ] : '' );
 						}
 
 						if ( $is_public || $is_enrolled ) {

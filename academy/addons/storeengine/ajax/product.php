@@ -4,12 +4,10 @@ namespace AcademyStoreEngine\ajax;
 
 use Academy\Classes\AbstractAjaxHandler;
 use StoreEngine\Classes\Price;
-use StoreEngine\classes\SimpleProduct;
+use StoreEngine\Classes\Product\SimpleProduct;
 use StoreEngine\Utils\Helper;
 
 class Product extends AbstractAjaxHandler {
-
-
 
 	protected $namespace = ACADEMY_PLUGIN_SLUG . '_storeengine';
 
@@ -29,29 +27,49 @@ class Product extends AbstractAjaxHandler {
 	public function get_product( array $payload ) {
 		if ( ! isset( $payload['course_id'] ) ) {
 			wp_send_json_error([
-				'message' => 'course_id is required'
+				'message' => esc_html__( 'course_id is required', 'academy' )
 			]);
 		}
 
 		$course_id = absint( sanitize_text_field( $payload['course_id'] ) );
-		$integrations = Helper::get_integration_repository_by_id( 'storeengine/academylms', $course_id );
-
-		if ( empty( $integrations ) ) {
-			$product_id = get_post_meta( $course_id, 'academy_course_product_id', true );
+		$product_id = get_post_meta( $course_id, 'academy_store_product', true );
+		if ( empty( $product_id ) ) {
 			wp_send_json_success([
-				'product' => (int) $product_id,
+				'id' => 0,
+				'name' => '',
+				'prices' => []
 			]);
 		}
 
-		$product_object = Helper::get_product( $integrations[0]->price->get_product_id() );
+		$product_object = Helper::get_product( (int) $product_id );
 		if ( ! $product_object ) {
 			wp_send_json_success([
-				'product' => null
+				'id' => 0,
+				'name' => '',
+				'prices' => []
 			]);
 		}
+
+		$integrations = $product_object->get_integrations();
+		if ( empty( $integrations ) ) {
+			wp_send_json_success([
+				'product' => [
+					'id' => (int) $product_id,
+					'name' => $product_object->get_name(),
+					'prices' => []
+				],
+			]);
+		}
+
 		$prices = [];
 		foreach ( $integrations as $integration ) {
-			$prices[] = $this->format_price( $integration->price );
+			$price = $this->format_price( $integration->price );
+			if ( 'storeengine/membership-addon' === $integration->integration->get_provider() ) {
+				$price['membership_price_type'] = $price['price_type'];
+				$price['membership_access_group'] = $integration->integration->get_integration_id();
+				$price['price_type'] = 'membership';
+			}
+			$prices[] = $price;
 		}
 
 		$product = [];
@@ -67,7 +85,7 @@ class Product extends AbstractAjaxHandler {
 	public function save_product( array $payload ) {
 		if ( ! isset( $payload['course_id'] ) ) {
 			wp_send_json_error([
-				'message' => 'course_id is required'
+				'message' => esc_html__( 'course_id is required', 'academy' )
 			]);
 		}
 
@@ -113,7 +131,7 @@ class Product extends AbstractAjaxHandler {
 
 				$price_id = isset( $price['price_id'] ) ? (int) sanitize_text_field( $price['price_id'] ) : 0;
 				$order = isset( $price['order'] ) ? (int) sanitize_text_field( $price['order'] ) : 0;
-				$prices[] = [
+				$price_data = [
 					'price_id' => $price_id,
 					'price_name' => $price_name,
 					'price_type' => $price_type,
@@ -121,13 +139,33 @@ class Product extends AbstractAjaxHandler {
 					'sale_price' => $sale_price,
 					'order' => $order,
 				];
+
+				if ( 'membership' === $price_type ) {
+					if ( ! isset( $price['membership_price_type'] ) ) {
+						wp_send_json_error([
+							'message' => __( 'Membership Price type is required', 'academy' )
+						]);
+					}
+					$price_type = sanitize_text_field( wp_unslash( $price['membership_price_type'] ) );
+					if ( ! isset( $price['membership_access_group'] ) ) {
+						wp_send_json_error([
+							'message' => __( 'Access group is required', 'academy' )
+						]);
+					}
+					$access_group = sanitize_text_field( wp_unslash( $price['membership_access_group'] ) );
+					$price_data['membership'] = true;
+					$price_data['membership_access_group'] = (int) $access_group;
+					$price_data['price_type'] = $price_type;
+				}
+
+				$prices[] = $price_data;
 			}//end foreach
 		}//end if
 
 		$course_id = absint( sanitize_text_field( $payload['course_id'] ) );
 		$course_title = isset( $payload['course_title'] ) ? sanitize_text_field( $payload['course_title'] ) : 'Untitled product for Academy LMS';
 
-		$product_id = get_post_meta( $course_id, 'academy_course_product_id', true );
+		$product_id = get_post_meta( $course_id, 'academy_store_product', true );
 		$product_id = empty( $product_id ) ? 0 : (int) $product_id;
 		$product = new SimpleProduct( $product_id );
 		$product->set_name( $course_title );
@@ -141,7 +179,7 @@ class Product extends AbstractAjaxHandler {
 		}
 
 		if ( 0 === $product_id ) {
-			update_post_meta( $course_id, 'academy_course_product_id', $product->get_id() );
+			update_post_meta( $course_id, 'academy_store_product', $product->get_id() );
 			$product->update_metadata( '_academy_course_id', $course_id );
 		}
 
@@ -161,15 +199,19 @@ class Product extends AbstractAjaxHandler {
 			$price->save();
 			if ( 0 === $price_data['price_id'] ) {
 				$price_data['price_id'] = $price->get_id();
-				$price->add_integration( 'storeengine/academylms', $course_id );
+				if ( isset( $price_data['membership'] ) && ! empty( $price_data['membership'] ) ) {
+					$price->add_integration( 'storeengine/membership-addon', $price_data['membership_access_group'] );
+				} else {
+					$price->add_integration( 'storeengine/academylms', $course_id );
+				}
 			}
-		}
+		}//end foreach
 
 		$price_ids = array_map(function ( $price ) {
 			return $price['price_id'];
 		}, $prices);
 
-		$integrations = Helper::get_integration_repository_by_id( 'storeengine/academylms', $course_id );
+		$integrations = $product->get_integrations();
 		$product_price_ids = array_map(function ( $integration ) {
 			return $integration->price->get_id();
 		}, $integrations);
@@ -182,7 +224,6 @@ class Product extends AbstractAjaxHandler {
 			foreach ( $missing_price_ids as $price_id ) {
 				$price = new Price( $price_id );
 				$price->set_product_id( $product->get_id() );
-				$price->remove_integration( 'storeengine/academylms', $course_id );
 				$price->delete();
 			}
 		}
@@ -192,7 +233,13 @@ class Product extends AbstractAjaxHandler {
 				'id' => $product->get_id(),
 				'name' => $product->get_name(),
 				'prices' => array_map(function ( $integration ) {
-					return $this->format_price( $integration->price );
+					$price = $this->format_price( $integration->price );
+					if ( 'storeengine/membership-addon' === $integration->integration->get_provider() ) {
+						$price['membership_price_type'] = $price['price_type'];
+						$price['membership_access_group'] = $integration->integration->get_integration_id();
+						$price['price_type'] = 'membership';
+					}
+					return $price;
 				}, $saved_integrations)
 			]
 		]);

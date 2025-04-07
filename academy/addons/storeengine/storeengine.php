@@ -26,6 +26,7 @@ final class Storeengine implements AddonInterface {
 		}
 
 		// integration starts
+		Hooks::init();
 		Integration::init();
 		Ajax::init();
 	}

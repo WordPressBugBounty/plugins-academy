@@ -3,10 +3,12 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
+$course_id = \Academy\Helper::get_the_current_course_id();
+$qa = get_post_meta( $course_id, 'academy_is_enabled_course_qa', true );
+$announcement = get_post_meta( $course_id, 'academy_is_enabled_course_announcements', true );
 ?>
 
-<div class="academy-lesson-tab__head">
+<div class="academy-lesson-tab__head" data-is-enable-qa="<?php echo esc_attr( $qa ); ?>" data-is-enable-announcement="<?php echo esc_attr( $announcement ); ?>">
 	<?php foreach ( $title_lists as $label ) :
 		$tabClassName = 'Q&A' === $label ? 'QnA' : $label;
 		?>
