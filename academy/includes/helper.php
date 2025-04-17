@@ -124,7 +124,7 @@ class Helper {
 					]
 				];
 			}
-			if ( self::get_addon_active_status( 'course-bundle' ) && self::is_active_woocommerce() ) {
+			if ( self::get_addon_active_status( 'course-bundle' ) && ( 'woocommerce' === self::get_settings( 'monetization_engine' ) || 'storeengine' === self::get_settings( 'monetization_engine' ) ) ) {
 				$menu[ ACADEMY_PLUGIN_SLUG . '-course-bundle' ] = [
 					'parent_slug' => ACADEMY_PLUGIN_SLUG,
 					'title'       => __( 'Course Bundle', 'academy' ),

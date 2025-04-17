@@ -16,13 +16,13 @@ if ( $is_enabled_academy_login && ! is_user_logged_in() ) : ?>
 <?php else :
 	$number_of_price = count( $prices );
 	$cart_icon = '<span class="academy-icon academy-icon--cart" aria-hidden="true"></span>';
-	$status = $number_of_price > 1 ? __( 'Enroll Now', 'academy' ) : __( 'Add to cart', 'academy' );
-	$link = esc_url( $course_permalink );
+	$course_status = $number_of_price > 1 ? __( 'Enroll Now', 'academy' ) : __( 'Add to cart', 'academy' );
+	$product_link = esc_url( $course_permalink );
 
 	if ( 1 === $number_of_price ) {
 		$price = reset( $prices );
 		$checkout_url = \SureCart::pages()->url( 'checkout' );
-		$link = esc_url( add_query_arg(
+		$product_link = esc_url( add_query_arg(
 			[
 				'line_items' => [
 					[
@@ -36,14 +36,14 @@ if ( $is_enabled_academy_login && ! is_user_logged_in() ) : ?>
 	}
 	?>
 	<div class="academy-widget-enroll__add-to-cart academy-widget-enroll__add-to-cart--surecart">
-		<a class="academy-btn academy-btn--bg-purple" href="<?php echo $link; ?>">
+		<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $product_link ); ?>">
 			<?php
 			if ( 1 === $number_of_price ) {
-				echo $cart_icon;
+				echo wp_kses_post( $cart_icon );
 			}
 
 			if ( 'layout_two' !== $card_style || $number_of_price > 1 ) {
-				echo esc_html( $status );
+				echo esc_html( $course_status );
 			}
 			?>
 		</a>

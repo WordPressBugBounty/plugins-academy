@@ -106,7 +106,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 		$user_ID                   = get_current_user_id();
 		if ( ! empty( $request['post'] ) ) {
 			foreach ( (array) $request['post'] as $post_id ) {
-				$is_public = get_post_meta( $post_id, 'academy_course_type', true ) === 'public' ? true : false;
+				$is_public = \Academy\Helper::get_course_type( $post_id ) === 'public' ? true : false;
 				$enrolled      = \Academy\Helper::is_enrolled( $post_id, $user_ID );
 				$is_instructor = \Academy\Helper::is_instructor_of_this_course( $user_ID, $post_id );
 				if ( $is_administrator || $enrolled || $is_instructor || $is_public ) {
@@ -196,7 +196,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 		$is_administrator = current_user_can( 'administrator' );
 		$is_instructor  = \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), $course_id );
 		$enrolled    = \Academy\Helper::is_enrolled( $course_id, get_current_user_id() );
-		$is_public = get_post_meta( $course_id, 'academy_course_type', true ) === 'public' ? true : false;
+		$is_public = \Academy\Helper::get_course_type( $course_id ) === 'public' ? true : false;
 
 		if ( $is_administrator || $is_instructor || $enrolled || $is_public ) {
 			$parent = (int) sanitize_text_field( $_POST['parent'] );

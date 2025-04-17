@@ -138,7 +138,7 @@ class QuizAttempts extends \WP_REST_Controller {
 			);
 		}
 		$course_id = $request->get_param( 'course_id' );
-		$is_public = get_post_meta( $course_id, 'academy_course_type', true ) === 'public' ? true : false;
+		$is_public = \Academy\Helper::get_course_type( $course_id ) === 'public' ? true : false;
 		$is_administrator = current_user_can( 'administrator' );
 		$is_instructor  = \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), $course_id );
 		$enrolled    = \Academy\Helper::is_enrolled( $course_id, get_current_user_id() );

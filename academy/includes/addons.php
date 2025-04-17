@@ -78,9 +78,11 @@ class Addons {
 			do_action( 'academy/before_active_addon', $addon_slug, $required_plugin );
 			if ( $required_plugin && is_array( $required_plugin ) ) {
 				foreach ( $required_plugin as $plugin ) {
+					$active_plugins = get_option( 'active_plugins', array() );
 					if ( 'Wishlist Member' === $plugin['plugin_name'] ) {
-						$active_plugins = get_option( 'active_plugins', array() );
 						$plugin['plugin_dir_path'] = in_array( $plugin['plugin_dir_path'], $active_plugins, true ) ? $plugin['plugin_dir_path'] : ( in_array( 'wishlist-member-x/wpm.php', $active_plugins, true ) ? 'wishlist-member-x/wpm.php' : '' );
+					} elseif ( 'BuddyBoss' === $plugin['plugin_name'] ) {
+						$plugin['plugin_dir_path'] = in_array( $plugin['plugin_dir_path'], $active_plugins, true ) ? $plugin['plugin_dir_path'] : ( in_array( 'buddyboss-platform/bp-loader.php', $active_plugins, true ) ? 'buddyboss-platform/bp-loader.php' : '' );
 					}
 					if ( ! Helper::is_plugin_active( sanitize_text_field( $plugin['plugin_dir_path'] ) ) ) {
 						$error_message = sprintf( '%s Plugin is required to activate %s addon.', sanitize_text_field( $plugin['plugin_name'] ), $addon_name );

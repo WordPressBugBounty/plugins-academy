@@ -21,7 +21,7 @@ final class Storeengine implements AddonInterface {
 
 	public function init_addon() {
 		// if disable then stop running addon
-		if ( ! class_exists( \StoreEngine::class ) ) {
+		if ( ! class_exists( \StoreEngine::class ) || ( defined( 'STOREENGINE_VERSION' ) && version_compare( STOREENGINE_VERSION, '1.0.0-beta-3', '<=' ) ) ) {
 			return;
 		}
 

@@ -80,10 +80,9 @@ class CourseExport extends ExportBase {
 					$is_topics = ! empty( $curriculum['topics'] ) ? true : false;
 					if ( $is_topics ) {
 						foreach ( $curriculum['topics'] as $topics ) {
-							$sub_topics_type = isset( $topics['type'] ) ? $topics['type'] : '';
-							if ( 'sub-curriculum' !== $sub_topics_type ) {
+							$topics_type = isset( $topics['type'] ) ? $topics['type'] : '';
+							if ( 'sub-curriculum' !== $topics_type ) {
 								$data = $this->topics_make_for_csv( $topics );
-								$topics_type = isset( $topics['type'] ) ? $topics['type'] : '';
 								if ( 'quiz' === $topics_type && $data ) {
 									foreach ( $data as $quiz ) {
 										$course_array[] = $quiz;
@@ -164,7 +163,7 @@ class CourseExport extends ExportBase {
 		return $results;
 	}
 	public function topics_make_for_csv( $topic ) {
-		$type = isset( $topics['type'] ) ? $topics['type'] : '';
+		$type = isset( $topic['type'] ) ? $topic['type'] : '';
 		switch ( $type ) {
 			case 'lesson':
 				return $this->get_lesson_by_topic( $topic ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable

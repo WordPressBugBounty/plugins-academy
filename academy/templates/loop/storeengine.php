@@ -18,7 +18,7 @@ if ( $is_enabled_academy_login && ! is_user_logged_in() ) : ?>
 <div class="academy-widget-enroll__add-to-cart academy-widget-enroll__add-to-cart--storeengine">
 	<form id="storeengine-ajax-add-to-cart-form" action="#" method="post">
 		<?php wp_nonce_field( 'storeengine_add_to_cart', 'storeengine_nonce' ); ?>
-		<input type="hidden" name="product_id" value="<?php echo current( $integration )->integration->get_product_id(); ?>">
+		<input type="hidden" name="product_id" value="<?php echo current( $integration )->integration->get_product_id();//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 		<?php
 		if ( count( $integration ) === 1 ) :
 			?>
@@ -33,10 +33,10 @@ if ( $is_enabled_academy_login && ! is_user_logged_in() ) : ?>
 			else :
 				?>
 		<div class="academy-widget-enroll__add-to-cart academy-widget-enroll__add-to-cart--surecart">
-		<a class="academy-btn academy-btn--bg-purple" href="<?php echo $course_link; ?>">
+		<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $course_link ); ?>">
 				<?php
 				if ( 1 === $number_of_price ) {
-					echo $cart_icon;
+					echo esc_attr( $cart_icon );
 				}
 
 				if ( 'layout_two' !== $card_style || $number_of_price > 1 ) {

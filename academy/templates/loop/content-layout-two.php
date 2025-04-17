@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		echo '<p class="academy-course__meta academy-course__meta--category"><a href="' . esc_url( get_term_link( $categories[0]->term_id ) ) . '">' . esc_html( $categories[0]->name ) . '</a></p>';
 	}
 
-	$course_type = get_post_meta( $course_id, 'academy_course_type', true );
+	$course_type = \Academy\Helper::get_course_type( $course_id );
 	$is_paid     = \Academy\Helper::is_course_purchasable( $course_id );
 	$reviews_status = Academy\Helper::get_settings( 'is_enabled_course_review', true );
 	$price       = '';

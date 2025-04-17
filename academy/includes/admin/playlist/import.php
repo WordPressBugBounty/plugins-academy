@@ -84,7 +84,7 @@ class Import {
                     ]
                 ],
             ] ) )->save()->get_id();
-        }
+        }//end foreach
         return $course_id ?? 0;
     }
 }

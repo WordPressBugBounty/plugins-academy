@@ -7,6 +7,7 @@ class Hooks {
 	public static function init() {
 		$self = new self();
 		add_filter( 'academy/assets/backend_scripts_data', [ $self, 'add_active_addons' ] );
+		add_filter( 'academy/assets/frontend_scripts_data', [ $self, 'add_active_addons' ] );
 	}
 
 	public function add_active_addons( array $data ): array {

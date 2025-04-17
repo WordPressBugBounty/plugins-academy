@@ -89,8 +89,8 @@ class Course extends AbstractAjaxHandler {
 			'new_title' => 'string',
 			'new_slug' => 'string',
 		], $payload_data );
-
-		wp_send_json_success( Helper::get_sample_permalink_args( $payload['ID'], $payload['new_title'], $payload['new_slug'] ) );
+		$new_slug = isset( $payload['new_slug'] ) ? $payload['new_slug'] : '';
+		wp_send_json_success( Helper::get_sample_permalink_args( $payload['ID'], $payload['new_title'], $new_slug ) );
 	}
 
 	public function fetch_course_category( $payload_data ) {
@@ -513,7 +513,7 @@ class Course extends AbstractAjaxHandler {
 		], $payload_data );
 
 		$course_id = (int) $payload['course_id'];
-		$course_type = get_post_meta( $course_id, 'academy_course_type', true );
+		$course_type = \Academy\Helper::get_course_type( $course_id );
 		$course_type = apply_filters( 'academy/before_enroll_course_type', $course_type, $course_id );
 		if ( 'free' === $course_type || 'public' === $course_type ) {
 			$is_enrolled = \Academy\Helper::do_enroll( $course_id, $user_id );
@@ -1147,7 +1147,7 @@ class Course extends AbstractAjaxHandler {
 		}
 		$user_id = get_current_user_id();
 		$api = sanitize_text_field( get_user_meta( $user_id, 'academy_youtube_api_key', true ) );
-		$parsed_url = parse_url( $url );
+		$parsed_url = wp_parse_url( $url );
 		switch ( str_replace( 'www.', '', $parsed_url['host'] ?? '' ) ) {
 			case 'youtube.com':
 				if ( empty( $api ) ) {

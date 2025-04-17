@@ -14,15 +14,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="academy-announcement-item">
 					<h3><?php echo esc_html( $announcement->post_title ); ?></h3>
 					<?php
-                        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						echo $announcement->post_content;
+						echo wp_kses_post( $announcement->post_content );
 					?>
 				</div>
 		<?php endforeach; ?>
 		<?php else : ?>
 			<div class="academy-announcement-item">
 				<h3>
-					<?php echo esc_html( 'No Announcements Found Yet!' ); ?>
+					<?php esc_html_e( 'No Announcements Found Yet!', 'academy' ); ?>
 				</h3>
 			</div>
 		<?php endif; ?>

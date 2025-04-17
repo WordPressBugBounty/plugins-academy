@@ -146,7 +146,6 @@ class AcademySingleCourse {
 			return '';
 		}
 		?>
-	
 		<div id="comments" class="academy-single-course__content-item academy-single-course__content-item--reviews">
 			<?php
 			$paged             = get_query_var( 'cpage', 1 );
@@ -247,7 +246,6 @@ class AcademySingleCourse {
 		}
 		?>
 		</div> <!-- End #comments -->
-	
 		<?php
 		return apply_filters( 'academy/templates/shortcode/single_course_user_rating', ob_get_clean() );
 	}

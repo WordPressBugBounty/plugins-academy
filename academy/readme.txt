@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.8.0
+Stable tag: 2.8.1
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -314,6 +314,14 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.8.1 - 17/04/2025 =
+* Fixed - Resolved PHP CodeSniffer (PHPCS) compliance issues.
+* Fixed - Issue with Membership not saving in Courses.
+* Fixed - Resolved a bug where instructors couldn’t set prices in the frontend course dashboard using StoreEngine.
+* Fixed - Course archive filters not functioning when reCAPTCHA credentials were configured.
+* Fixed - Addressed translation issues on the LearnPage QA and Announcement section when PHP rendering was enabled.
+* Fixed - Lesson per page selection not updating properly.
 
 = 2.8.0 - 07/04/2025 =
 * Added - Native payment integration.

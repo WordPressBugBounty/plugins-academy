@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			data-exit-permalink="<?php echo esc_url( apply_filters( 'academy/templates/learn_page_exit_permalink', get_the_permalink() ) ); ?>"
 			data-enabled-course-qa="<?php echo esc_attr( get_post_meta( get_the_ID(), 'academy_is_enabled_course_qa', true ) ); ?>"
 			data-enabled-course-announcements="<?php echo esc_attr( get_post_meta( get_the_ID(), 'academy_is_enabled_course_announcements', true ) ); ?>"
-			data-course-type="<?php echo esc_attr( get_post_meta( get_the_ID(), 'academy_course_type', true ) ); ?>"
+			data-course-type="<?php echo esc_attr( \Academy\Helper::get_course_type( $course_id ) ); ?>"
 			data-is-completed-course="<?php echo esc_attr( \Academy\Helper::is_completed_course( get_the_ID(), get_current_user_id() ) ); ?>"
 			data-auto-load-next-lesson="<?php echo esc_attr( \Academy\Helper::is_auto_load_next_lesson() ); ?>"
 			data-auto-complete-topic="<?php echo esc_attr( \Academy\Helper::is_auto_complete_topic() ); ?>"

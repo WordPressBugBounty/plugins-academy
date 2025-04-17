@@ -8,7 +8,7 @@ use Academy\Admin\Playlist\Request;
 use Academy\Admin\Playlist\Info;
 use Academy\Admin\Playlist\Interfaces\Platform;
 class Youtube implements Platform {
-	private Info $Info;
+	private Info $info;
 	private Request $request;
 	public function __construct( Info $info ) {
 		$this->info    = $info;

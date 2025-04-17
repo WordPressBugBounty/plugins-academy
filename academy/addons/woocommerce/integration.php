@@ -325,7 +325,7 @@ class Integration {
 	}
 
 	public function add_course_price( $response, $post, $request ) {
-		if ( 'paid' === $response->data['meta']['academy_course_type'] ) {
+		if ( 'paid' === \Academy\Helper::get_course_type( $post->ID ) ) {
 			$product_id = get_post_meta(
 				$post->ID,
 				'academy_course_product_id',

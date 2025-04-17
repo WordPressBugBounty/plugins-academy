@@ -540,6 +540,7 @@ if ( ! function_exists( 'academy_course_enroll_form' ) ) {
 			// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 			$GLOBALS['post'] = get_post( $course_id );
 		}
+
 		$user_ID   = get_current_user_id();
 		$enrolled  = Helper::is_enrolled( get_the_ID(), get_current_user_id(), 'any' );
 		// Course Materials Access
@@ -558,9 +559,7 @@ if ( ! function_exists( 'academy_course_enroll_form' ) ) {
 		if ( ! $is_public_course ) {
 			if ( 'private' === get_post_status( $course_id ) && ! current_user_can( 'manage_academy_instructor' ) && ! $enrolled ) {
 				Helper::get_template( 'single-course/enroll/private-course.php' );
-			}
-			// Enrollment Functionality
-			elseif ( $enrolled && 'completed' === $enrolled->enrolled_status ) {
+			} elseif ( $enrolled && 'completed' === $enrolled->enrolled_status ) {
 				$is_completed_course = Helper::is_completed_course( get_the_ID(), $user_ID );
 				$is_show_complete_form = apply_filters( 'academy/single/is_show_complete_form', true, $is_completed_course, get_the_ID() );
 				if ( $is_show_complete_form ) {
@@ -588,6 +587,8 @@ if ( ! function_exists( 'academy_course_enroll_form' ) ) {
 					'download_id'                => $download_id,
 					'force_login_before_enroll' => $force_login_before_enroll
 				) );
+			} elseif ( 'storeengine' === Helper::monetization_engine() && Helper::is_course_purchasable( get_the_ID() ) ) {
+
 			} else {
 				$is_enabled_academy_login = Helper::get_settings( 'is_enabled_academy_login', true );
 				Helper::get_template( 'single-course/enroll/enroll-form.php', array(

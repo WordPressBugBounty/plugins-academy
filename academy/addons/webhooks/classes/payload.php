@@ -88,7 +88,8 @@ class Payload {
 			])
 		);
 		$sale_price = get_post_meta( $product_id, '_sale_price', true );
-		$course_type = get_post_meta( $course_id, 'academy_course_type', true );
+		$course_type = \Academy\Helper::get_course_type( $course_id );
+
 		$featured_id = get_post_meta( $course->ID, '_thumbnail_id', true );
 		$symbol = function_exists( 'get_woocommerce_currency_symbol' )
 			? html_entity_decode(

@@ -941,7 +941,7 @@ trait Courses {
 			$per_page
 		);
 
-		$instructors = $wpdb->get_results( $query );
+		$instructors = $wpdb->get_results( $query );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return ! empty( $instructors ) ? $instructors : false;
 	}
