@@ -4,7 +4,7 @@ namespace Academy\API\Schema;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
+use Academy\Classes\ColorConverter;
 trait LessonSchema {
 	public function get_public_item_schema() {
 		$schema = array(
@@ -125,6 +125,7 @@ trait LessonSchema {
 			'lesson_content'     => [
 				'type'   => 'string',
 				'sanitize_callback' => function ( $content ) {
+					$content = ColorConverter::rgb_to_hex( $content );
 					$allowed_tags = wp_kses_allowed_html( 'post' );
 					$allowed_tags['input'] = array(
 						'type'              => true,
@@ -145,6 +146,7 @@ trait LessonSchema {
 						'allow'           => true,
 						'allowfullscreen' => true,
 					);
+					// wp_send_json_error( wp_kses( $content, $allowed_tags ) );
 					return wp_kses( $content, $allowed_tags );
 				},
 			],

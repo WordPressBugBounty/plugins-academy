@@ -88,8 +88,8 @@ class Frontend {
 		$course_place = get_bloginfo( 'name' ) ?? 'Course Place Missing';
 
 		$course_completed = \Academy\Helper::is_completed_course( $course_id, $student_id, true );
-		$completion_date = $course_completed ? date( 'd F Y', strtotime( $course_completed->completion_date ) ) : 'Completion Date Missing'; // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
-
+		$date_format      = get_option( 'date_format' );
+		$completion_date  = ( $course_completed && ! empty( $course_completed->completion_date ) ) ? date_i18n( $date_format, $course_completed->completion_date ) : __( 'Completion Date Missing', 'academy' ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 		// Replace dynamic placeholders with available values or default messages
 		$certificate_template_dynamic_code_args = apply_filters( 'academy_certificates/template_dynamic_codes', [ '{{learner}}', '{{course_title}}', '{{instructor}}', '{{course_place}}', '{{completion_date}}' ] );
 		$certificate_template_dynamic_variable_args = apply_filters( 'academy_certificates/template_dynamic_codes_variables', [ $student_name, $course_title, $instructor_name, $course_place, $completion_date ], $student_id, $course_id );
@@ -125,6 +125,6 @@ class Frontend {
 
 		// Generate PDF preview
 		$certificate_pdf = new Generator( $course_id, $student_id, $certificate_template, $cssContent, $pageSize, $pageOrientation );
-		return $certificate_pdf->preview_certificate();
+		return $certificate_pdf->preview_certificate( get_the_title( $course_id ) );
 	}
 }

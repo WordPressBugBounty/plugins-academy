@@ -86,6 +86,8 @@ class ScriptsBase {
 			'is_enabled_lessons_content_title'    => (bool) \Academy\Helper::get_settings( 'is_enabled_lessons_content_title', true ),
 			'lessons_topic_length'    => (int) \Academy\Helper::get_settings( 'lessons_topic_length', true ),
 			'is_course_single'    => is_singular( 'academy_courses' ) ? get_the_ID() : false,
+			'auto_load_next_lesson' => \Academy\Helper::get_settings( 'auto_load_next_lesson' ),
+			'auto_complete_topic' => \Academy\Helper::get_settings( 'auto_complete_topic' ),
 		);
 
 		return apply_filters(

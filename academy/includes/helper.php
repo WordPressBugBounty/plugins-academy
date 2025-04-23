@@ -1391,6 +1391,34 @@ class Helper {
 			return esc_html( 'Just now' );
 		}
 	}
+	public static function get_course_curriculum_array( $course_id ) {
+		$course_curriculum = get_post_meta( $course_id, 'academy_course_curriculum', true );
+		$prepare_curriculum = array();
+		if ( is_array( $course_curriculum ) ) {
+			foreach ( $course_curriculum as $curriculum ) {
+				if ( is_array( $curriculum['topics'] ) ) {
+					foreach ( $curriculum['topics'] as $topic ) {
+						$prepare_curriculum[] = $topic;
+					}
+				}
+			}
+		}
+		return $prepare_curriculum;
+	}
+	public static function get_next_topic( $topics, $topic_id, $topic_type ) {
+		foreach ( $topics as $i => $topic ) {
+			$subs = $topic['topics'] ?? [];
 
+			foreach ( $subs as $j => $sub ) {
+				if ( (int) $sub['id'] === (int) $topic_id && $sub['type'] === $topic_type ) {
+					return $subs[ $j + 1 ] ?? $topics[ $i + 1 ] ?? false;
+				}
+			}
 
+			if ( (int) $topic['id'] === (int) $topic_id && $topic['type'] === $topic_type ) {
+				return $topics[ $i + 1 ] ?? $subs[0] ?? false;
+			}
+		}
+		return false;
+	}
 }

@@ -3,9 +3,9 @@ Contributors: kodezen, academylms, tusharimran
 Donate link: https://www.buymeacoffee.com/academylms
 Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.8.1
+Stable tag: 2.8.2
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -22,6 +22,9 @@ Academy LMS is the all-rounder among all WordPress LMS plugins. A complete solut
 👉 [aBlocks + Academy LMS](https://wordpress.org/plugins/ablocks) = 🔥
 
 Introducing [Academy LMS](https://academylms.net). The WordPress LMS plugin to create online learning websites. Easy integration with any WordPress site to create and sell courses. With its intuitive interface and swift performance, create the perfect eLearning platform quickly and easily.
+
+==== Academy LMS 3.0 Will Change Everything! 🔥 (Coming Soon) 👇 ====
+https://www.youtube.com/watch?v=s00SPMwdTCw
 
 == Why Choose Academy LMS? ==
 It offers a user-friendly SPA interface, advanced quiz builder, course builder, multi-instructor support, lightning-fast performance and free of cost. The advanced course creation, quiz management, and student progress tracking features are exceptionally easy for everyone. Even without technical knowledge, Academy LMS is easy to use. No need for advanced coding knowledge to create and offer personalized courses or integrate with various platforms to sell premium courses.
@@ -314,6 +317,14 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.8.2 - 23/04/2025 =
+* Added - Academy video player support for YouTube lessons with enhanced PHP rendering
+* Fixed - Certificate date format not matches the WordPress date format.
+* Fixed - Certificate filenames not dynamically include the course name.
+* Fixed - Issue where answers for single choice quiz questions were not updating.
+* Fixed - Lesson content color styling not applying correctly.
+* Fixed - Issue with renaming sub-curriculum items in courses.
 
 = 2.8.1 - 17/04/2025 =
 * Fixed - Resolved PHP CodeSniffer (PHPCS) compliance issues.

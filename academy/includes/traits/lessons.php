@@ -181,4 +181,9 @@ trait Lessons {
 
 		return current( $result );
 	}
+
+	public static function get_youtube_video_id( $url ) {
+		preg_match( '/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^"&?\/ ]{11})/', $url, $matches );
+		return $matches[1] ?? null;
+	}
 }

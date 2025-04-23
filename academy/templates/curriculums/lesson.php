@@ -15,7 +15,12 @@ if ( ! empty( $lesson_meta['video_source']['type'] ) ) {
 	switch ( $lesson_meta['video_source']['type'] ) {
 		case 'youtube':
 			$template_path = 'curriculums/lesson/youtube.php';
-			$template_args = [ 'url' => $lesson_meta['video_source']['url'] ];
+			$template_args = [
+				'url' => $lesson_meta['video_source']['url'],
+				'next_topic_play_url' => $next_topic_play_url,
+				'course_id' => $course_id,
+				'lesson_id' => $lesson->ID
+			];
 			break;
 
 		case 'vimeo':

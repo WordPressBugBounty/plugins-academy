@@ -135,11 +135,11 @@ class Generator extends FileUpload {
 		return $css;
 	}
 
-	public function preview_certificate() {
+	public function preview_certificate( $title ) {
 		$result = $this->prepare_pdf( true );
-
-		$this->mpdf->Output( 'test.pdf', Destination::INLINE );
-		die;
+		$file_name = sanitize_file_name( wp_strip_all_tags( $title ) );
+		$this->mpdf->Output( $file_name . '.pdf', Destination::INLINE );
+		exit;
 	}
 
 }

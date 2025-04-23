@@ -993,6 +993,21 @@ if ( ! function_exists( 'academy_curriculum_lesson_content' ) ) {
 		if ( ! apply_filters( 'academy/templates/curriculums/has_access_lesson_content', $has_permission ) ) {
 			return;
 		}
+		$current_meta = [];
+		$next_topic_play_url = [];
+		if ( \Academy\Helper::get_settings( 'is_enabled_academy_player' ) ) {
+			$curriculums = \Academy\Helper::get_course_curriculum_array( $course_id );
+
+			if ( ! empty( $curriculums ) ) {
+				$next_topic = \Academy\Helper::get_next_topic( $curriculums, $lesson->ID, 'lesson' );
+
+				if ( ! empty( $next_topic['id'] ) ) {
+					$lesson_data = \Academy\Helper::get_lesson( $next_topic['id'] );
+					$next_topic['slug'] = $lesson_data->lesson_name ?? '';
+					$next_topic_play_url = \Academy\Helper::get_topic_play_link( $next_topic ) ?? [];
+				}
+			}
+		}
 
 		if ( $lesson ) {
 			\Academy\Helper::get_template(
@@ -1000,7 +1015,8 @@ if ( ! function_exists( 'academy_curriculum_lesson_content' ) ) {
 				array(
 					'lesson' => $lesson,
 					'lesson_meta' => $lesson_meta,
-					'course_id' => $course_id
+					'course_id' => $course_id,
+					'next_topic_play_url' => $next_topic_play_url,
 				)
 			);
 		} else {
