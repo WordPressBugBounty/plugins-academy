@@ -9,7 +9,7 @@ class Base {
 	public static function get_saved_data() {
 		$settings = get_option( ACADEMY_SETTINGS_NAME );
 		if ( $settings ) {
-			return json_decode( $settings, true );
+			return apply_filters( 'academy/admin/settings/saved_data', json_decode( $settings, true ) );
 		}
 		return [];
 	}
@@ -85,6 +85,8 @@ class Base {
 			'is_instructor_can_publish_course'  => false,
 			'is_instructor_update_course_price' => true,
 			'is_enabled_instructor_review' => true,
+			// Frontend dashboard
+			'academy_frontend_dashboard_redirect_login_page'  => 'academy_login',
 			// WooCommerce
 			'woo_force_login_before_enroll' => true,
 			'hide_course_product_from_shop_page' => false,

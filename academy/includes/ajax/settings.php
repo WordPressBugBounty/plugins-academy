@@ -46,6 +46,7 @@ class Settings extends AbstractAjaxHandler {
 			'academy_primary_certificate_id' => 'integer',
 			// dashboard
 			'is_enable_apply_instructor_menu' => 'boolean',
+			'academy_frontend_dashboard_redirect_login_page' => 'string',
 			// Lesson
 			'lessons_page' => 'integer',
 			'is_enabled_lessons_php_render' => 'boolean',
@@ -121,6 +122,7 @@ class Settings extends AbstractAjaxHandler {
 			'academy_primary_certificate_id' => $payload['academy_primary_certificate_id'] ?? $default['academy_primary_certificate_id'],
 			// Dashboard
 			'is_enable_apply_instructor_menu' => $payload['is_enable_apply_instructor_menu'] ?? $default['is_enable_apply_instructor_menu'],
+			'academy_frontend_dashboard_redirect_login_page' => $payload['academy_frontend_dashboard_redirect_login_page'] ?? $default['academy_frontend_dashboard_redirect_login_page'],
 			// Lessons
 			'lessons_page' => $payload['lessons_page'] ?? $default['lessons_page'],
 			'is_enabled_lessons_php_render' => $payload['is_enabled_lessons_php_render'] ?? $default['is_enabled_lessons_php_render'],

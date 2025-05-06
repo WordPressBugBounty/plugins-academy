@@ -205,7 +205,7 @@ class Query {
 			'total_answered_questions'       => '',
 			'total_marks'        => '',
 			'earned_marks'         => '',
-			'attempt_info'        => '',
+			'attempt_info'        => wp_json_encode( array( 'total_correct_answers' => 0 ) ),
 			'attempt_status'     => 'pending',
 			'attempt_ip'        => \Academy\Helper::get_client_ip_address(),
 			'attempt_started_at'   => current_time( 'mysql' ),

@@ -1468,4 +1468,3 @@ function academy_frontend_dashboard_withdraw_bank_page() {
 		]
 	);
 }
-

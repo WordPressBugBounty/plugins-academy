@@ -20,12 +20,12 @@ if ( $force_login_before_enroll && ! is_user_logged_in() ) : ?>
 		<?php esc_html_e( 'View Cart', 'academy' ); ?>
 	</a>
 <?php elseif ( $product && $product->is_purchasable() ) : ?>
-
-	<form class="cart" method="post" enctype="multipart/form-data">
-		<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>"
-				class="academy-btn academy-btn--preset-purple">
-			<span class="academy-icon academy-icon--cart <?php $layout_class; ?>" aria-hidden="true"></span> 
-			<?php echo 'layout_two' !== $card_style ? esc_html( $product->single_add_to_cart_text() ) : ''; ?>
-		</button>
-	</form>
+	<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>"
+		data-quantity="1"
+		class="academy-btn academy-btn--preset-purple add_to_cart_button ajax_add_to_cart product_type_simple"
+		data-product_id="<?php echo esc_attr( $product->get_id() ); ?>"
+		data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>">
+		<span class="academy-icon academy-icon--cart" aria-hidden="true"></span>
+		<?php echo 'layout_two' !== $card_style ? esc_html( $product->add_to_cart_text() ) : ''; ?>
+	</a>
 <?php endif; ?>

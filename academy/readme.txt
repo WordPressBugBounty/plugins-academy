@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.8.2
+Stable tag: 2.8.3
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -20,11 +20,12 @@ Academy LMS is the all-rounder among all WordPress LMS plugins. A complete solut
 👉 [Academy LMS Pro](https://academylms.net/pricing/)
 👉 [Public Roadmap](https://trello.com/b/8bFLtVq7/academy-lms-public-roadmap)
 👉 [aBlocks + Academy LMS](https://wordpress.org/plugins/ablocks) = 🔥
+👉 [Native Payment (StoreEngine)](https://wordpress.org/plugins/storeengine) = 🚀
 
 Introducing [Academy LMS](https://academylms.net). The WordPress LMS plugin to create online learning websites. Easy integration with any WordPress site to create and sell courses. With its intuitive interface and swift performance, create the perfect eLearning platform quickly and easily.
 
 ==== Academy LMS 3.0 Will Change Everything! 🔥 (Coming Soon) 👇 ====
-https://www.youtube.com/watch?v=s00SPMwdTCw
+https://www.youtube.com/watch?v=HgrxVtxZEsA
 
 == Why Choose Academy LMS? ==
 It offers a user-friendly SPA interface, advanced quiz builder, course builder, multi-instructor support, lightning-fast performance and free of cost. The advanced course creation, quiz management, and student progress tracking features are exceptionally easy for everyone. Even without technical knowledge, Academy LMS is easy to use. No need for advanced coding knowledge to create and offer personalized courses or integrate with various platforms to sell premium courses.
@@ -247,12 +248,11 @@ More features Coming Soon!
 **🏫 Google Classroom Integration [PRO]:** Simplify course management with seamless Google Classroom integration.
 
 
-##➕ Free add-ons for Academy LMS WordPress Plugin ##
+## 🔥 WHAT’S NEXT
+If you like Academy LMS, then consider checking out our other WordPress Plugins for FREE:
 
-- [Academy Elementor Addons](https://wordpress.org/plugins/academy-elementor-addons) - Academy LMS Elementor Addons provides 23+ widgets to create an entire eLearning site.
-- [Academy Starter Templates](https://wordpress.org/plugins/academy-starter-templates/) - Academy Starter Templates is a one-click demo Importer addon for Academy LMS. Currently, there are three templates that you can choose from and create your e-Learning site with one click. But more templates are coming in this section pretty soon.
-- [Academy Divi Module](https://academylms.net/wp-content/uploads/2023/12/academy-divi-modules.zip) - Enhance your eLearning journey with the Academy LMS Divi Page Builder Addons!
-- [aBlocks Gutenberg Blocks](https://ablocks.pro/) - aBlocks offers a comprehensive collection of highly customizable Gutenberg blocks to elevate your WordPress website. Whether building a simple blog or a complex website, aBlocks provides the flexibility and control you need.
+🔝 [StoreEngine](https://wordpress.org/plugins/storeengine) –  StoreEngine is an all-in-one, next-gen eCommerce plugin for WordPress. It’s designed to make selling digital products, courses, memberships, and even physical goods easier than ever.
+🔝 [aBlocks](https://wordpress.org/plugins/ablocks) –  aBlocks is a powerful Gutenberg-based WordPress website builder and a clean alternative to Elementor. It provides custom blocks and design flexibility while keeping your website fast and bloat-free.
 
 ### Unlock more possibilities with aBlocks: Fully integrated with Academy LMS
 
@@ -317,6 +317,18 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 2.8.3 - 05/05/2025 =
+* Added - Settings for frontend dashboard login page redirection.
+* Fixed - Issue with course tag search functionality.
+* Fixed - "Add to Cart" button redirect issue on the course archive page.
+* Fixed - Responsive display issue with course lesson topics on mobile devices.
+* Fixed - Webhooks not functioning when Academy Pro is deactivated.
+* Fixed - No message displayed after clicking the course completion button.
+* Fixed - Blank Quiz Attempt table page on Admin and Instructor dashboards.
+* Fixed - Alert message appearing when closing unsaved course content.
+* Fixed - All selected categories not showing in single courses page.
+* Fixed - Issue with retrieving WooCommerce products in course editor.
 
 = 2.8.2 - 23/04/2025 =
 * Added - Academy video player support for YouTube lessons with enhanced PHP rendering

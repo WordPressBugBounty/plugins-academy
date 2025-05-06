@@ -131,7 +131,7 @@ add_action( 'academy_frontend_dashboard_lessons_endpoint', 'academy_frontend_das
 add_action( 'academy_frontend_dashboard_announcements_endpoint', 'academy_frontend_dashboard_announcements_page' );
 // Question Answer
 add_action( 'academy_frontend_dashboard_question-answer_endpoint', 'academy_frontend_dashboard_question_answer_page' );
-// Settings
+// Frontend Settings
 add_action( 'academy_frontend_dashboard_settings_endpoint', 'academy_frontend_dashboard_settings_page' );
 add_action( 'academy_frontend_dashboard_reset-password_endpoint', 'academy_frontend_dashboard_reset_password_page' );
 

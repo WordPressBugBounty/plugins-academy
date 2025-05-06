@@ -17,7 +17,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <?php
 	$categories = \Academy\Helper::get_the_course_category( get_the_ID() );
 if ( ! empty( $categories ) ) {
-	echo '<span class="academy-single-course__categroy"><a href="' . esc_url( get_term_link( $categories[0]->term_id ) ) . '">' . esc_html( $categories[0]->name ) . '</a></span>';
+	foreach ( $categories as $category ) {
+		echo '<span class="academy-single-course__categroy"><a href="' . esc_url( get_term_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a></span>';
+	}
 }
 ?>
 <h1 class="academy-single-course__title"><?php the_title(); ?></h1>

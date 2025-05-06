@@ -25,17 +25,17 @@ class Admin extends AbstractAjaxHandler {
 		$post_type               = 'product';
 		$paid_course_product_ids = [];
 		$payload                 = Sanitizer::sanitize_payload( [
-			'postId'  => 'integer',
 			'keyword' => 'string',
+			'postId'  => 'integer',
 		], $payload_data );
 
 		$postId  = isset( $payload['postId'] ) ? $payload['postId'] : 0;
 		$keyword = isset( $payload['keyword'] ) ? $payload['keyword'] : '';
-
 		if ( $postId ) {
 			$args = array(
 				'post_type' => $post_type,
 				'p'         => $postId,
+				'post_status' => 'publish',
 			);
 		} else {
 			$args = array(
@@ -48,23 +48,22 @@ class Admin extends AbstractAjaxHandler {
 
 			// fetch all paid course product id
 			$paid_course_product_ids = $wpdb->get_results( $wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->postmeta} postmeta  WHERE postmeta.meta_key = 'academy_course_product_id' AND postmeta.meta_value != %d", 0
+				"SELECT meta_value FROM {$wpdb->postmeta}  WHERE meta_key = %s AND meta_value != %d",
+				'academy_course_product_id', 0
 			), ARRAY_A );
 			$paid_course_product_ids = wp_list_pluck( $paid_course_product_ids, 'meta_value', 'meta_value' );
-		}
-
+		}//end if
 		$results = array();
 		$posts   = get_posts( $args );
 
 		if ( is_array( $posts ) ) {
 			foreach ( $posts as $post ) {
-				if ( $postId !== (int) $post->ID && isset( $paid_course_product_ids[ $post->ID ] ) ) {
-					continue;
+				if ( $postId === (int) $post->ID || isset( $paid_course_product_ids[ $post->ID ] ) ) {
+					$results[] = array(
+						'label' => $post->post_title,
+						'value' => $post->ID,
+					);
 				}
-				$results[] = array(
-					'label' => $post->post_title,
-					'value' => $post->ID,
-				);
 			}
 		}
 

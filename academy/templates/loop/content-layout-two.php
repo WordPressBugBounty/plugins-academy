@@ -16,7 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	// Display course category if available
 	if ( ! empty( $categories ) ) {
-		echo '<p class="academy-course__meta academy-course__meta--category"><a href="' . esc_url( get_term_link( $categories[0]->term_id ) ) . '">' . esc_html( $categories[0]->name ) . '</a></p>';
+		foreach ( $categories as $category ) {
+			echo '<p class="academy-course__meta academy-course__meta--category"><a href="' . esc_url( get_term_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a></p>';
+		}
 	}
 
 	$course_type = \Academy\Helper::get_course_type( $course_id );
