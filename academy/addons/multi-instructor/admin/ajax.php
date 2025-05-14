@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use AcademyMultiInstructor\Ajax\Instructor;
 use AcademyMultiInstructor\Ajax\Withdraw;
+use AcademyMultiInstructor\Ajax\FakeOrder;
 
 class Ajax {
 	public static function init() {
@@ -17,5 +18,6 @@ class Ajax {
 	public function dispatch_hooks() {
 		( new Instructor() )->dispatch_actions();
 		( new Withdraw() )->dispatch_actions();
+		( new FakeOrder() )->dispatch_actions();
 	}
 }

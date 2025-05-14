@@ -495,7 +495,11 @@ trait Courses {
 				$count += count( $topics_lists );
 			}
 		}
-		return (int) $count;
+		return apply_filters(
+			'academy/count_total_topics_in_course',
+			(int) $count,
+			$course_id
+		);
 	}
 
 	public static function get_total_number_of_completed_course_lessons( $course_id ) {
@@ -1498,7 +1502,11 @@ trait Courses {
 				}//end if
 			}//end foreach
 		}//end if
-		$curriculum_counts['total_topics'] = array_sum( $curriculum_counts );
+		$curriculum_counts['total_topics'] = apply_filters(
+			'academy/count_total_topics_in_curriculums',
+			array_sum( $curriculum_counts ),
+			$course_id
+		);
 		return $curriculum_counts;
 	}
 

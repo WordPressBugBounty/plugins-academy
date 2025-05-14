@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.8.3
+Stable tag: 2.9.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -318,8 +318,12 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 
 == Changelog ==
 
-= 2.8.3 - 05/05/2025 =
+= 2.9.0 - 14/05/2025 =
+* Added - New Addon ChatGPT Integration
+* Added - Take Note features
 * Added - Settings for frontend dashboard login page redirection.
+* Added - Detection function for fake WooCommerce course orders.
+* Improved - Manual enrollment with support for selecting multiple courses and students.
 * Fixed - Issue with course tag search functionality.
 * Fixed - "Add to Cart" button redirect issue on the course archive page.
 * Fixed - Responsive display issue with course lesson topics on mobile devices.
@@ -329,6 +333,7 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 * Fixed - Alert message appearing when closing unsaved course content.
 * Fixed - All selected categories not showing in single courses page.
 * Fixed - Issue with retrieving WooCommerce products in course editor.
+* Fixed - Issue with exporting course progress to CSV.
 
 = 2.8.2 - 23/04/2025 =
 * Added - Academy video player support for YouTube lessons with enhanced PHP rendering
@@ -796,5 +801,3 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 Are you want to see more changelog? please [visit here](https://academylms.net/changelog/)
 
 == Upgrade Notice ==
-= 2.8.0 =
-This is a major update with breaking changes. Please back up your site before proceeding with the update.

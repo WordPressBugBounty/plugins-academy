@@ -109,4 +109,44 @@ trait Earning {
 		}
 		return $results;
 	}
+
+	public static function get_academy_fake_earning_orders( $status ) {
+		global $wpdb;
+
+		$valid_order_ids = wc_get_orders( [
+			'limit'  => -1,
+			'status' => 'all',
+			'return' => 'ids',
+		] );
+
+		$table = $wpdb->prefix . 'academy_earnings';
+
+		if ( empty( $valid_order_ids ) ) {
+			return [];
+		}
+
+		$placeholders = implode( ',', array_fill( 0, count( $valid_order_ids ), '%d' ) );
+		$sql = "SELECT * FROM $table WHERE order_id NOT IN ($placeholders) OR course_price_total = %f";
+
+		$query = $wpdb->prepare( $sql, ...array_merge( $valid_order_ids, [ 0.0 ] ) );
+
+		return $wpdb->get_results( $query );
+	}
+
+	public static function delete_academy_fake_earning_orders( $order_ids ) {
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'academy_earnings';
+
+		if ( empty( $order_ids ) ) {
+			return 0;
+		}
+
+		$placeholders = implode( ',', array_fill( 0, count( $order_ids ), '%d' ) );
+		$sql = "DELETE FROM $table WHERE ID IN ($placeholders)";
+		$query = $wpdb->prepare( $sql, ...$order_ids );
+
+		return $wpdb->query( $query );
+	}
+
 }

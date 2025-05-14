@@ -97,6 +97,11 @@ class Base {
 			'woo_order_page_fd_link_label' => esc_html__( 'Courses Dashboard', 'academy' ),
 			'store_link_inside_frontend_dashboard' => true,
 			'store_link_label_inside_frontend_dashboard' => esc_html__( 'Store Dashboard', 'academy' ),
+
+			// chatgpt integration
+			'chatgpt_api_key'   => '',
+			'chatgpt_model'     => 'gpt-3.5-turbo',
+			'chatgpt_img_model' => 'dall-e-2',
 		]);
 	}
 

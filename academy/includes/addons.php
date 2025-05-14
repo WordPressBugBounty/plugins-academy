@@ -33,6 +33,7 @@ class Addons {
 			'easy-digital-downloads' => 'EasyDigitalDownloads',
 			'woocommerce' => 'Woocommerce',
 			'course-preview' => 'CoursePreview',
+			'chatgpt' => 'Chatgpt',
 		]);
 
 		foreach ( $addons as $addon_name => $addon_class_name ) {

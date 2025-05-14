@@ -22,6 +22,14 @@ class Lesson extends AbstractAjaxHandler {
 				'callback' => array( $this, 'lesson_slug_unique_check' ),
 				'capability' => 'manage_academy_instructor',
 			),
+			'save_lesson_note' => array(
+				'callback' => array( $this, 'save_lesson_note' ),
+				'capability' => 'read',
+			),
+			'get_lesson_note' => array(
+				'callback' => array( $this, 'get_save_lesson_note' ),
+				'capability' => 'read',
+			)
 		);
 	}
 	public function import_lessons() {
@@ -202,6 +210,40 @@ class Lesson extends AbstractAjaxHandler {
 		}
 		wp_send_json_success( false );
 	}
+	public function save_lesson_note( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload([
+			'note'      => 'string',
+			'user_id'   => 'integer',
+			'course_id' => 'integer',
+		], $payload_data );
+
+		$user_id   = $payload['user_id'] ?? get_current_user_id();
+		$course_id = $payload['course_id'] ?? 0;
+		$note      = $payload['note'] ?? '';
+
+		$meta_key = "academy_{$course_id}lesson_note_{$user_id}";
+		update_user_meta( $user_id, $meta_key, $note );
+
+		wp_send_json_success(
+			esc_html__( 'Successfully saved your lesson note.', 'academy' )
+		);
+	}
+
+	public function get_save_lesson_note( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload([
+			'user_id'   => 'integer',
+			'course_id' => 'integer',
+		], $payload_data );
+
+		$user_id   = $payload['user_id'] ?? get_current_user_id();
+		$course_id = $payload['course_id'] ?? 0;
+
+		$meta_key = "academy_{$course_id}lesson_note_{$user_id}";
+		$previous_note = get_user_meta( $user_id, $meta_key, true );
+
+		wp_send_json_success( $previous_note );
+	}
+
 	public function sanitize_video_source( $source, $url ) {
 		switch ( $source ) {
 			case 'embedded':

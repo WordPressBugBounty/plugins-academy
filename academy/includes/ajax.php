@@ -13,6 +13,8 @@ use Academy\Ajax\Registration;
 use Academy\Ajax\Student;
 use Academy\Ajax\Miscellaneous;
 use Academy\Ajax\Settings;
+// use Academy\AiIntegration\Platforms\Chatgpt\Init as ChatgptIntegrationInit;
+// use Academy\Ajax\CourseImport\Ajax as CourseImportAjax;
 
 class Ajax {
 	public static function init() {
@@ -28,5 +30,9 @@ class Ajax {
 		( new Student() )->dispatch_actions();
 		( new Miscellaneous() )->dispatch_actions();
 		( new Settings() )->dispatch_actions();
+
+		// chatgpt integration
+		// ( new ChatgptIntegrationInit() )->dispatch_actions();
+		// ( new CourseImportAjax() )->dispatch_actions();
 	}
 }

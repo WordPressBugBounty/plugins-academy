@@ -44,6 +44,9 @@ final class MultiInstructor implements AddonInterface {
 		Ajax::Init();
 		Post::init();
 		API::Init();
+
+		OrderTracker\OrderTrashed::init();
+		OrderTracker\OrderDeleted::init();
 	}
 
 	public function addon_activation_hook() {

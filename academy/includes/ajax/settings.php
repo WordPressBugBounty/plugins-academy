@@ -94,6 +94,12 @@ class Settings extends AbstractAjaxHandler {
 			'fee_deduction_name' => 'string',
 			'fee_deduction_amount' => 'integer',
 			'fee_deduction_type' => 'string',
+			// lesson note
+			'is_enabled_academy_lesson_note' => 'boolean',
+			// chatgpt integration
+			'chatgpt_api_key'   => 'string',
+			'chatgpt_model'     => 'string',
+			'chatgpt_img_model' => 'string',
 		], $payload_data );
 
 		$default = BaseSettings::get_default_data();
@@ -168,6 +174,12 @@ class Settings extends AbstractAjaxHandler {
 			'is_enabled_instructor_echeck_withdraw' => $payload['is_enabled_instructor_echeck_withdraw'] ?? $default['is_enabled_instructor_echeck_withdraw'],
 			'is_enabled_instructor_bank_withdraw' => $payload['is_enabled_instructor_bank_withdraw'] ?? $default['is_enabled_instructor_bank_withdraw'],
 			'instructor_bank_withdraw_instruction' => $payload['instructor_bank_withdraw_instruction'] ?? $default['instructor_bank_withdraw_instruction'],
+			// lesson note
+			'is_enabled_academy_lesson_note' => $payload['is_enabled_academy_lesson_note'] ?? $default['is_enabled_academy_lesson_note'],
+			// chatgpt integration
+			'chatgpt_api_key'   => $payload['chatgpt_api_key'] ?? $default['chatgpt_api_key'] ?? '',
+			'chatgpt_model'     => $payload['chatgpt_model'] ?? $default['chatgpt_model'] ?? '',
+			'chatgpt_img_model' => $payload['chatgpt_img_model'] ?? $default['chatgpt_img_model'] ?? '',
 		]);
 		do_action( 'academy/admin/after_save_settings', $is_update, 'base', $payload_data );
 		wp_send_json_success( $is_update );

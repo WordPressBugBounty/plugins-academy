@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'academy-icon';
-  src:  url('fonts/academy-icon.eot?5ki7xv');
-  src:  url('fonts/academy-icon.eot?5ki7xv#iefix') format('embedded-opentype'),
-    url('fonts/academy-icon.ttf?5ki7xv') format('truetype'),
-    url('fonts/academy-icon.woff?5ki7xv') format('woff'),
-    url('fonts/academy-icon.svg?5ki7xv#academy-icon') format('svg');
+  src:  url('fonts/academy-icon.eot?vcsbev');
+  src:  url('fonts/academy-icon.eot?vcsbev#iefix') format('embedded-opentype'),
+    url('fonts/academy-icon.ttf?vcsbev') format('truetype'),
+    url('fonts/academy-icon.woff?vcsbev') format('woff'),
+    url('fonts/academy-icon.svg?vcsbev#academy-icon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,24 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.academy-icon--wpml:before {
+  content: "\ea23";
+  color: #524f54;
+}
+.academy-icon--chatgpt:before {
+  content: "\ea24";
+  color: #10a37f;
+}
+.academy-icon--fluent-crm:before {
+  content: "\ea26";
+  color: #4a5fe0;
+}
+.academy-icon--fake-order:before {
+  content: "\ea25";
+}
+.academy-icon--ai:before {
+  content: "\ea31";
+}
 .academy-icon--three-dot-horizontal:before {
   content: "\ea22";
 }

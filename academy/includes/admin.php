@@ -15,6 +15,7 @@ class Admin {
 		Admin\Setup::init();
 		Admin\Export::init();
 		$self->dispatch_hooks();
+		$self->dispatch_insights();
 	}
 	public function dispatch_hooks() {
 		// Add a post display state for special Academy pages.
@@ -135,5 +136,44 @@ class Admin {
 			$links['go_pro'] = sprintf( '<a href="%1$s" target="_blank" class="academy-plugins-gopro" style="color: #7b68ee; font-weight: bold;">%2$s</a>', 'https://academylms.net/pricing/', esc_html__( 'Get Academy Pro', 'academy' ) );
 		}
 		return $links;
+	}
+
+	public function dispatch_insights() {
+		Admin\Insights::init(
+			'https://kodezen.com',
+			ACADEMY_PLUGIN_SLUG,
+			'plugin',
+			ACADEMY_VERSION,
+			[
+				'logo' => ACADEMY_ASSETS_URI . 'images/logo.svg', // default logo URL
+				'optin_message' => 'Help improve Academy LMS! Allow anonymous usage tracking?',
+				'deactivation_message' => 'If you have a moment, please share why you are deactivating Academy:',
+				'deactivation_reasons' => [
+					'no_longer_needed' => [
+						'label' => 'I no longer need the plugin',
+					],
+					'found_a_better_plugin' => [
+						'label' => 'I found a better plugin',
+						'has_custom_reason' => true,
+						'custom_reason_placeholder' => 'Please share which plugin',
+					],
+					'couldnt_get_the_plugin_to_work' => [
+						'label' => 'I couldn\'t get the plugin to work',
+					],
+					'temporary_deactivation' => [
+						'label' => 'It\'s a temporary deactivation',
+					],
+					'have_academy_pro' => [
+						'label' => 'I have Academy Pro',
+						'toggle_text' => 'Wait! Don\'t deactivate Academy. You have to activate both Academy and Academy Pro in order for the plugin to work.',
+					],
+					'other' => [
+						'label' => 'Other',
+						'has_custom_reason' => true,
+						'custom_reason_placeholder' => 'Please share the reason',
+					],
+				],
+			]
+		);
 	}
 }

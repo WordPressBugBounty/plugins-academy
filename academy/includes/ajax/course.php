@@ -693,7 +693,13 @@ class Course extends AbstractAjaxHandler {
 			$analytics_data['course_link'] = get_post_permalink( $course_id );
 			$response['enrolled_info'][] = $analytics_data;
 		}
-		wp_send_json_success( $response );
+		wp_send_json_success(
+			apply_filters(
+				'academy/get_course_analytics',
+				$response,
+				$course_id
+			)
+		);
 	}
 
 	public function import_all_courses() {

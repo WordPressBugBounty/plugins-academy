@@ -190,7 +190,12 @@ trait Student {
 				}
 			}
 		}
-		return (int) $count;
+		return apply_filters(
+			"academy/topic_completed_by_student_id_{$student_id}",
+			(int) $count,
+			$course_id,
+			$student_id
+		);
 	}
 	public static function get_completed_course_topics_by_course_and_student_id( $course_id, $student_id = 0 ) {
 		if ( ! $student_id ) {

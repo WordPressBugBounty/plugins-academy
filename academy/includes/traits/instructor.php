@@ -315,7 +315,9 @@ trait Instructor {
 
 		$instructor_rate = (int) \Academy\Helper::get_settings( 'instructor_commission_percentage' );
 		$admin_rate      = (int) \Academy\Helper::get_settings( 'admin_commission_percentage' );
-
+		if ( ! (bool) \Academy\Helper::get_settings( 'is_enabled_earning' ) ) {
+			$admin_rate = 100;
+		}
 		$instructor_amount = 0;
 		if ( $instructor_rate > 0 ) {
 			$instructor_amount = ( $course_price_grand_total * $instructor_rate ) / 100;

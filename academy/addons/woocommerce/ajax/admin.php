@@ -40,7 +40,7 @@ class Admin extends AbstractAjaxHandler {
 		} else {
 			$args = array(
 				'post_type'      => $post_type,
-				'posts_per_page' => 10,
+				'posts_per_page' => 20,
 			);
 			if ( ! empty( $keyword ) ) {
 				$args['s'] = $keyword;
@@ -48,10 +48,10 @@ class Admin extends AbstractAjaxHandler {
 
 			// fetch all paid course product id
 			$paid_course_product_ids = $wpdb->get_results( $wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->postmeta}  WHERE meta_key = %s AND meta_value != %d",
-				'academy_course_product_id', 0
+				"SELECT post_id FROM {$wpdb->postmeta}  WHERE meta_key = %s AND meta_value = %s",
+				'_academy_product', 'yes'
 			), ARRAY_A );
-			$paid_course_product_ids = wp_list_pluck( $paid_course_product_ids, 'meta_value', 'meta_value' );
+			$paid_course_product_ids = wp_list_pluck( $paid_course_product_ids, 'post_id', 'post_id' );
 		}//end if
 		$results = array();
 		$posts   = get_posts( $args );
@@ -69,4 +69,5 @@ class Admin extends AbstractAjaxHandler {
 
 		wp_send_json_success( $results );
 	}
+
 }
