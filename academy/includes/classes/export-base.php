@@ -19,6 +19,9 @@ class ExportBase {
 	}
 
 	public function flatten_array( $array, $prefix = '' ) {
+		if ( ! is_iterable( $array ) ) {
+			return [];
+		}
 		$result = array();
 		foreach ( $array as $key => $value ) {
 			if ( is_array( $value ) ) {

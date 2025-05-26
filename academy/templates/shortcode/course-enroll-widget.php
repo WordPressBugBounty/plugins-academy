@@ -8,7 +8,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="academy-widget-enroll academy-sticky-widget">
 	<?php
 		do_action( 'academy/templates/single_course_enroll_before' );
-		do_action( 'academy/templates/single_course_enroll_content' );
+	?>
+	<div class="academy-widget-enroll__content">
+		<?php
+			do_action( 'academy/templates/single_course_enroll_content' );
+		?>
+	</div>
+	<?php
 		do_action( 'academy/templates/single_course_enroll_after' );
 	?>
 </div>

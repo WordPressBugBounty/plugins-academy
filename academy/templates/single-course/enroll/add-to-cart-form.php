@@ -24,6 +24,7 @@ if ( 'woocommerce' === $monetization_engine ) {
 			<?php
 		elseif ( $product->is_purchasable() ) : ?>
 					<form class="cart" method="post" enctype='multipart/form-data'>
+						<?php do_action( 'academy/course_single/purchase', $product_id, get_the_ID() ); ?>
 						<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>"
 								class="academy-btn academy-btn--preset-purple academy-btn--add-to-cart">
 							<span class="academy-icon academy--shopping-cart" aria-hidden="true"></span> <?php echo esc_html( $product->single_add_to_cart_text() ); ?>

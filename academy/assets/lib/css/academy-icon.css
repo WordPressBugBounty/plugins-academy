@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'academy-icon';
-  src:  url('fonts/academy-icon.eot?vcsbev');
-  src:  url('fonts/academy-icon.eot?vcsbev#iefix') format('embedded-opentype'),
-    url('fonts/academy-icon.ttf?vcsbev') format('truetype'),
-    url('fonts/academy-icon.woff?vcsbev') format('woff'),
-    url('fonts/academy-icon.svg?vcsbev#academy-icon') format('svg');
+  src:  url('fonts/academy-icon.eot?fiig5s');
+  src:  url('fonts/academy-icon.eot?fiig5s#iefix') format('embedded-opentype'),
+    url('fonts/academy-icon.ttf?fiig5s') format('truetype'),
+    url('fonts/academy-icon.woff?fiig5s') format('woff'),
+    url('fonts/academy-icon.svg?fiig5s#academy-icon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.academy-icon--group-plus:before {
+  content: "\ea27";
+  color: #6958ca;
+}
 .academy-icon--wpml:before {
   content: "\ea23";
   color: #524f54;

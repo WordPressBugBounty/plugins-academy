@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.9.0
+Stable tag: 3.0.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -24,8 +24,8 @@ Academy LMS is the all-rounder among all WordPress LMS plugins. A complete solut
 
 Introducing [Academy LMS](https://academylms.net). The WordPress LMS plugin to create online learning websites. Easy integration with any WordPress site to create and sell courses. With its intuitive interface and swift performance, create the perfect eLearning platform quickly and easily.
 
-==== Academy LMS 3.0 Will Change Everything! 🔥 (Coming Soon) 👇 ====
-https://www.youtube.com/watch?v=HgrxVtxZEsA
+==== Academy LMS 3.0 The All-in-One Learning Ecosystem You’ve Been Waiting For! 🔥 👇 ====
+https://www.youtube.com/watch?v=Z00YHdTv_1o
 
 == Why Choose Academy LMS? ==
 It offers a user-friendly SPA interface, advanced quiz builder, course builder, multi-instructor support, lightning-fast performance and free of cost. The advanced course creation, quiz management, and student progress tracking features are exceptionally easy for everyone. Even without technical knowledge, Academy LMS is easy to use. No need for advanced coding knowledge to create and offer personalized courses or integrate with various platforms to sell premium courses.
@@ -36,7 +36,7 @@ It offers a user-friendly SPA interface, advanced quiz builder, course builder, 
 * State of the art support for its users.  
 
 ==== Check our overview video of Academy LMS 👇 ====
-https://www.youtube.com/watch?v=s00SPMwdTCw
+https://www.youtube.com/watch?v=un5c9A5m-I0
 
 = 🤝 Join the thriving Academy LMS community today! =
 Unlock a dynamic network of educational institution leaders, entrepreneurs, instructors, developers, and LMS specialists upon installing our plugin. Be part of our journey to enhance education based services worldwide.
@@ -92,6 +92,8 @@ Look no further than Academy LMS, the ultimate solution to create online courses
   * Form Builder (Student & Instructor)
   * Gutenberg Integration
   * Course Preview
+  * ChatGPT
+  * Lesson Note
   * Advanced Quiz Builder **[PRO]**
   * Email Notification **[PRO]**
   * Content Drip **[PRO]**
@@ -131,6 +133,8 @@ Look no further than Academy LMS, the ultimate solution to create online courses
   * BuddyPress **[PRO]**
   * BuddyBoss **[PRO]**
   * Device Login Restriction **[PRO]**
+  * Group Plus **[PRO]**
+  * WPML Integration **[PRO]**
 More features Coming Soon!
 
 **💻 Admin SPA Interface:** Academy LMS provides a lightning-fast interface designed with React.js. It ensures instant loading of all features and settings. Users can access settings without any delay / loading, making course creation and editing faster.
@@ -318,12 +322,26 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 
 == Changelog ==
 
+= 3.0.0 - 26/05/2025 =
+* Added - Lesson data custom CPT compatibility
+* Improved - Enhanced setup screen UI/UX.
+* Improved - ChatGPT settings improved
+* Fixed - List Table data status not updating correctly.
+* Fixed - Compatibility issues with certain themes.
+* Fixed - Default settings filter not working on course archive pages.
+* Fixed - Admin unable to view courses in the frontend dashboard after changing the primary instructor.
+* Fixed - Sorting issue in the "Note" feature list.
+
 = 2.9.0 - 14/05/2025 =
 * Added - New Addon ChatGPT Integration
 * Added - Take Note features
-* Added - Settings for frontend dashboard login page redirection.
 * Added - Detection function for fake WooCommerce course orders.
 * Improved - Manual enrollment with support for selecting multiple courses and students.
+* Fixed - Issue with retrieving WooCommerce products in course editor.
+* Fixed - Issue with exporting course progress to CSV.
+
+= 2.8.3
+* Added - Settings for frontend dashboard login page redirection.
 * Fixed - Issue with course tag search functionality.
 * Fixed - "Add to Cart" button redirect issue on the course archive page.
 * Fixed - Responsive display issue with course lesson topics on mobile devices.
@@ -332,8 +350,7 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 * Fixed - Blank Quiz Attempt table page on Admin and Instructor dashboards.
 * Fixed - Alert message appearing when closing unsaved course content.
 * Fixed - All selected categories not showing in single courses page.
-* Fixed - Issue with retrieving WooCommerce products in course editor.
-* Fixed - Issue with exporting course progress to CSV.
+
 
 = 2.8.2 - 23/04/2025 =
 * Added - Academy video player support for YouTube lessons with enhanced PHP rendering

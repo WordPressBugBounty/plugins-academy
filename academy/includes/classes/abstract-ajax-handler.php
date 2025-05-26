@@ -24,7 +24,7 @@ abstract class AbstractAjaxHandler {
 		$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : '';
 		$action = explode( $this->namespace . '/', $action )[1];
 		if ( ! isset( $this->actions[ $action ] ) ) {
-			wp_send_json_error( 'Invalid AJAX action.' );
+			wp_send_json_error( 'Invalid AJAX action.', 400 );
 		}
 
 		$details = $this->actions[ $action ];
@@ -34,18 +34,18 @@ abstract class AbstractAjaxHandler {
 			$nonce = sanitize_text_field( $_REQUEST['_wpnonce'] );
 		}
 		if ( ! wp_verify_nonce( $nonce, $this->nonce_action ) ) {
-			wp_send_json_error( 'Invalid nonce.' );
+			wp_send_json_error( 'Invalid nonce.', 400 );
 		}
 
 		$allow_visitor_action = isset( $details['allow_visitor_action'] ) ? $details['allow_visitor_action'] : false;
 		if ( ! $allow_visitor_action && ( ! is_user_logged_in() || ! current_user_can( isset( $details['capability'] ) ? $details['capability'] : 'manage_options' ) ) ) {
-			wp_send_json_error( 'Insufficient permissions.' );
+			wp_send_json_error( 'Insufficient permissions.', 401 );
 		}
 
 		if ( is_callable( $details['callback'] ) ) {
 			call_user_func( $details['callback'], wp_unslash( $_POST ) );
 		} else {
-			wp_send_json_error( 'Invalid callback method.' );
+			wp_send_json_error( 'Invalid callback method.', 500 );
 		}
 	}
 

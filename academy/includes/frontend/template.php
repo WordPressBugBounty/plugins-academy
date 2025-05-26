@@ -39,17 +39,23 @@ class Template {
 				$user = get_user_by( 'login', $q->query['author_name'] );
 				if ( $user ) {
 					if ( current( $user->roles ) === 'academy_instructor' || current( $user->roles ) === 'administrator' ) {
-						$q->set( 'post_type', array( 'academy_courses' ) );
 						$q->set( 'author', $q->query['author_name'] );
 						$q->set( 'posts_per_page', $per_page );
+						$q->set( 'post_type', 'academy_courses' );
 					}
 				}
-			} elseif ( is_archive( 'academy_courses' ) && isset( $q->query['post_type'] ) && 'academy_courses' === $q->query['post_type'] ) {
+			} elseif ( is_post_type_archive( 'academy_courses' ) ) {
 				$paged = ( get_query_var( 'paged' ) ) ? absint( get_query_var( 'paged' ) ) : 1;
 				$orderby = ( get_query_var( 'orderby' ) ) ? get_query_var( 'orderby' ) : Academy\Helper::get_settings( 'course_archive_courses_order' );
+				$q->set( 'post_type', apply_filters( 'academy_course_archive_posts_type', array( 'academy_courses' ) ) );
 				$q->set( 'posts_per_page', $per_page );
 				$q->set( 'paged', $paged );
-				$q->set( 'orderby', $orderby );
+				if ( 'name' === $orderby ) {
+					$q->set( 'orderby', 'title' );
+					$q->set( 'order', 'ASC' );
+				} else {
+					$q->set( 'orderby', $orderby );
+				}
 			}//end if
 		}//end if
 	}
@@ -133,7 +139,7 @@ class Template {
 			if ( 'lesson' === get_query_var( 'curriculum_type' ) ) {
 				$lesson = helper::get_lesson_by_slug( get_query_var( 'name' ) );
 				if ( $lesson ) {
-					return $lesson->lesson_title;
+					return $lesson['lesson_title'];
 				}
 				return get_query_var( 'name' );
 			}

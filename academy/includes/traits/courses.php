@@ -2,6 +2,7 @@
 namespace Academy\Traits;
 
 use Academy\Helper;
+use Academy\Classes\GroupPlusHelper;
 use WP_Query;
 use function _deprecated_function;
 
@@ -276,9 +277,10 @@ trait Courses {
 
 			if ( $getEnrolled ) {
 				return apply_filters( 'academy/course/is_enrolled', $getEnrolled, $course_id, $user_id );
+			} elseif ( $group_data = GroupPlusHelper::ins()->is_team_member_enrolled( $course_id, $user_id ) ) {
+				return apply_filters( 'academy/course/is_enrolled', $group_data, $course_id, $user_id );
 			}
 		}//end if
-
 		return false;
 	}
 
@@ -661,6 +663,19 @@ trait Courses {
 		}
 		return false;
 	}
+	public static function get_available_seats( $course_id ) : int {
+		$total_enrolled = self::count_course_enrolled( $course_id );
+		$max_students   = (int) get_post_meta( $course_id, 'academy_course_max_students', true );
+
+		if ( $max_students == 0 ) {
+			return PHP_INT_MAX;
+		}
+
+		if ( $max_students > $total_enrolled ) {
+			return $max_students - $total_enrolled;
+		}
+		return 0;
+	}
 
 	public static function count_course_enrolled( $course_id ) {
 		global $wpdb;
@@ -678,7 +693,7 @@ trait Courses {
 			)
 		);
 
-		return (int) $course_ids;
+		return intval( $course_ids ) + GroupPlusHelper::ins()->total_seat_count_by_course( $course_id );
 	}
 
 	public static function get_total_number_of_students() {

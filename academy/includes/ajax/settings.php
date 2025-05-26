@@ -21,7 +21,7 @@ class Settings extends AbstractAjaxHandler {
 	public function update_base_settings( $payload_data ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		do_action( 'academy/admin/before_save_settings', $payload_data, 'base' );
-		$payload = Sanitizer::sanitize_payload([
+		$payload = Sanitizer::sanitize_payload( apply_filters( 'academy/admin/settings/sanitize_payload', [
 			'is_enabled_academy_web_font' => 'boolean',
 			'is_enabled_academy_login' => 'boolean',
 			'primary_color' => 'string',
@@ -94,16 +94,18 @@ class Settings extends AbstractAjaxHandler {
 			'fee_deduction_name' => 'string',
 			'fee_deduction_amount' => 'integer',
 			'fee_deduction_type' => 'string',
+			// lesson migration
+			'academy_is_hp_lesson_active' => 'boolean',
 			// lesson note
 			'is_enabled_academy_lesson_note' => 'boolean',
 			// chatgpt integration
 			'chatgpt_api_key'   => 'string',
 			'chatgpt_model'     => 'string',
-			'chatgpt_img_model' => 'string',
-		], $payload_data );
+			'chatgpt_img_model' => 'string'
+		]), $payload_data );
 
 		$default = BaseSettings::get_default_data();
-		$is_update = BaseSettings::save_settings( [
+		$is_update = BaseSettings::save_settings( apply_filters( 'academy/admin/settings/save', [
 			'is_enabled_academy_web_font' => $payload['is_enabled_academy_web_font'] ?? $default['is_enabled_academy_web_font'],
 			'is_enabled_academy_login' => $payload['is_enabled_academy_login'] ?? $default['is_enabled_academy_login'],
 			'primary_color' => $payload['primary_color'] ?? $default['primary_color'],
@@ -130,6 +132,7 @@ class Settings extends AbstractAjaxHandler {
 			'is_enable_apply_instructor_menu' => $payload['is_enable_apply_instructor_menu'] ?? $default['is_enable_apply_instructor_menu'],
 			'academy_frontend_dashboard_redirect_login_page' => $payload['academy_frontend_dashboard_redirect_login_page'] ?? $default['academy_frontend_dashboard_redirect_login_page'],
 			// Lessons
+			'academy_is_hp_lesson_active' => $payload['academy_is_hp_lesson_active'] ?? $default['academy_is_hp_lesson_active'],
 			'lessons_page' => $payload['lessons_page'] ?? $default['lessons_page'],
 			'is_enabled_lessons_php_render' => $payload['is_enabled_lessons_php_render'] ?? $default['is_enabled_lessons_php_render'],
 			'lessons_topbar_logo' => $payload['lessons_topbar_logo'] ?? $default['lessons_topbar_logo'],
@@ -180,7 +183,7 @@ class Settings extends AbstractAjaxHandler {
 			'chatgpt_api_key'   => $payload['chatgpt_api_key'] ?? $default['chatgpt_api_key'] ?? '',
 			'chatgpt_model'     => $payload['chatgpt_model'] ?? $default['chatgpt_model'] ?? '',
 			'chatgpt_img_model' => $payload['chatgpt_img_model'] ?? $default['chatgpt_img_model'] ?? '',
-		]);
+		]));
 		do_action( 'academy/admin/after_save_settings', $is_update, 'base', $payload_data );
 		wp_send_json_success( $is_update );
 	}

@@ -138,6 +138,13 @@ class Helper {
 					'capability'  => 'manage_options'
 				];
 			}
+			if ( self::get_addon_active_status( 'group-plus' ) ) {
+				$menu[ ACADEMY_PLUGIN_SLUG . '-group-plus' ] = [
+					'parent_slug' => ACADEMY_PLUGIN_SLUG,
+					'title'       => __( 'Group Plus', 'academy' ),
+					'capability'  => 'manage_options'
+				];
+			}//end if
 		}//end if
 		$menu[ ACADEMY_PLUGIN_SLUG . '-announcements' ]   = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
@@ -247,6 +254,12 @@ class Helper {
 		$ablocks = 'ablocks/ablocks.php';
 
 		return self::is_plugin_active( $ablocks );
+	}
+
+	public static function is_active_storeengine() {
+		$storeengine = 'storeengine/storeengine.php';
+
+		return self::is_plugin_active( $storeengine );
 	}
 
 	public static function is_plugin_active( $basename ) {
@@ -1004,7 +1017,7 @@ class Helper {
 		if ( 'lesson' === $topic_type ) {
 			$lesson = self::get_lesson_by_slug( $slug );
 			if ( $lesson ) {
-				return $lesson->ID;
+				return $lesson['ID'];
 			}
 			return 0;
 		} elseif ( 'quiz' === $topic_type ) {

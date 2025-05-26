@@ -7,7 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Academy\Classes\Sanitizer;
 use Academy\Classes\AbstractAjaxHandler;
-
+use Throwable;
+use Exception;
+use Academy\Lesson\LessonApi\Lesson as LessonApi;
 class Lesson extends AbstractAjaxHandler {
 	public function __construct() {
 		$this->actions = array(
@@ -53,7 +55,7 @@ class Lesson extends AbstractAjaxHandler {
 			while ( false !== ( $item = fgetcsv( $file_open ) ) ) {
 				if ( 0 === $count ) {
 					$link_header = array_map( 'strtolower', $item );
-					$count ++;
+					$count++;
 					continue;
 				}
 
@@ -92,26 +94,32 @@ class Lesson extends AbstractAjaxHandler {
 				);
 				$content               = wp_kses( $item['content'], $allowed_tags );
 
-				$lesson_id = \Academy\Classes\Query::lesson_insert( array(
-					'lesson_author'  => $user ? $user->ID : $user_id,
-					'lesson_title'   => sanitize_text_field( $item['title'] ),
-					'lesson_name'    => \Academy\Helper::generate_unique_lesson_slug( $item['title'] ),
-					'lesson_content' => $content,
-					'lesson_status'  => $item['status'],
-				) );
+	
 
-				if ( $lesson_id ) {
-					\Academy\Classes\Query::lesson_meta_insert( $lesson_id, array(
+
+
+				try {				
+					$lesson = LessonApi::create( [
+						'lesson_author'  => $user ? $user->ID : $user_id,
+						'lesson_title'   => sanitize_text_field( $item['title'] ),
+						'lesson_name'    => \Academy\Helper::generate_unique_lesson_slug( $item['title'] ),
+						'lesson_content' => $content,
+						'lesson_status'  => $item['status'],
+					], [
 						'featured_media' => 0,
 						'attachment'     => 0,
 						'is_previewable' => sanitize_text_field( $item['is_previewable'] ),
 						'video_duration' => sanitize_text_field( $item['video_duration'] ),
-						'video_source'   => wp_json_encode( array(
+						'video_source'   => [
 							'type' => sanitize_text_field( $item['video_source_type'] ),
 							'url'  => $this->sanitize_video_source( $item['video_source_type'], $item['video_source_url'] ),
-						) ),
-					) );
+						],
+					] );
+					$lesson->save();
 					$results[] = __( 'Successfully Imported', 'academy' ) . ' - ' . $item['title'];
+				}
+				catch ( Throwable $e ) {
+					$results[] = __( 'An error occured', 'academy' ) . ' - ' . $item['title'];
 				}
 			}//end while
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
@@ -132,28 +140,25 @@ class Lesson extends AbstractAjaxHandler {
 		$user_id   = (int) get_current_user_id();
 
 		if ( \Academy\Helper::has_permission_to_access_lesson_curriculum( $course_id, $lesson_id, $user_id ) ) {
-			$lesson = \Academy\Helper::get_lesson( $lesson_id );
-			$lesson->lesson_title  = stripslashes( $lesson->lesson_title );
-			$lesson->lesson_content  = [
-				'raw' => stripslashes( $lesson->lesson_content ),
-				'rendered' => \Academy\Helper::get_content_html( stripslashes( $lesson->lesson_content ) ),
-			];
-			$lesson->author_name = get_the_author_meta( 'display_name', $lesson->lesson_author );
-			$lesson->meta            = \Academy\Helper::get_lesson_meta_data( $lesson_id );
+			
+			try {
+				$lesson = LessonApi::get_by_id( $lesson_id );
+				$lesson = $lesson->get_data();
+				do_action( 'academy/frontend/before_render_lesson', $lesson, $course_id, $lesson_id );
+				$lesson['lesson_title'] = stripslashes( $lesson['lesson_title'] );
+				$lesson['lesson_content'] = [
+					'raw' => stripslashes( $lesson['lesson_content'] ),
+					'rendered' => \Academy\Helper::get_content_html( stripslashes( $lesson['lesson_content'] ) ),
+				];
+				
+				$lesson['author_name'] = get_the_author_meta(  'display_name', $lesson['lesson_author'] );
 
-			if ( empty( $lesson ) ) {
-				wp_send_json_error( array( 'message' => __( 'Sorry, something went wrong!', 'academy' ) ) );
-				wp_die();
-			}
-
-			do_action( 'academy/frontend/before_render_lesson', $lesson, $course_id, $lesson_id );
-
-			if ( count( $lesson->meta ) > 0 ) {
-				if ( isset( $lesson->meta['attachment'] ) && ! empty( $lesson->meta['attachment'] ) ) {
-					$lesson->meta['attachment'] = wp_get_attachment_url( $lesson->meta['attachment'] );
+				if ( ! empty( $lesson['meta']['attachment'] ?? '' ) ) {
+					$lesson['meta']['attachment'] = wp_get_attachment_url( $lesson['meta']['attachment'] );
 				}
-				if ( isset( $lesson->meta['video_source'] ) && ! empty( $lesson->meta['video_source'] ) ) {
-					$video = $lesson->meta['video_source'];
+				
+				if ( ! empty( $lesson['meta']['video_source'] ?? '' ) ) {
+					$video = $lesson['meta']['video_source'];
 					if ( 'html5' === $video['type'] && isset( $video['id'] ) ) {
 						$attachment_id = (int) $video['id'];
 						$att_url       = wp_get_attachment_url( $attachment_id );
@@ -179,13 +184,15 @@ class Lesson extends AbstractAjaxHandler {
 						$video['type'] = 'external';
 						$video['url'] = $video['url'];
 					}//end if
-					$lesson->meta['video_source'] = $video;
+					$lesson['meta']['video_source'] = $video;
 				}//end if
-			}//end if
-			wp_send_json_success( $lesson );
+				wp_send_json_success( $lesson );
+			}
+			catch ( Throwable $e ) {
+				wp_send_json_success( $e->getMessage(), 422 );
+			}
 		}//end if
 		wp_send_json_error( array( 'message' => __( 'Access Denied', 'academy' ) ) );
-		wp_die();
 	}
 	public function lesson_slug_unique_check( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
@@ -193,34 +200,26 @@ class Lesson extends AbstractAjaxHandler {
 			'lesson_name' => 'string',
 		], $payload_data );
 
-		// Updating
-		if ( isset( $payload['ID'] ) && ! empty( $payload['ID'] ) ) {
-			$existing_lesson = \Academy\Helper::get_lesson( $payload['ID'] );
-			if ( $payload['lesson_name'] !== $existing_lesson->lesson_name ) {
-				$is_slug_exists = \Academy\Helper::is_lesson_slug_exists( $payload['lesson_name'] );
-				if ( $is_slug_exists ) {
-					wp_send_json_error( esc_html__( 'Slug already exists. Please try a different one.', 'academy' ) );
-				}
-			}
-		} else {
-			$is_slug_exists = \Academy\Helper::is_lesson_slug_exists( $payload['lesson_name'] );
-			if ( $is_slug_exists ) {
-				wp_send_json_error( esc_html__( 'Slug already exists. Please try a different one.', 'academy' ) );
-			}
+	
+		if (
+			\Academy\Helper::is_lesson_slug_exists( 
+				$payload['lesson_name'] ?? '',
+				 $payload['ID'] ?? null
+			)
+		) {
+			wp_send_json_error( __( 'Slug not available', 'academy' ) );
 		}
 		wp_send_json_success( false );
 	}
 	public function save_lesson_note( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
-			'note'      => 'string',
 			'user_id'   => 'integer',
 			'course_id' => 'integer',
 		], $payload_data );
 
 		$user_id   = $payload['user_id'] ?? get_current_user_id();
 		$course_id = $payload['course_id'] ?? 0;
-		$note      = $payload['note'] ?? '';
-
+		$note      = isset( $payload_data['note'] ) ? wp_kses_post( $payload_data['note'] ) : '';
 		$meta_key = "academy_{$course_id}lesson_note_{$user_id}";
 		update_user_meta( $user_id, $meta_key, $note );
 

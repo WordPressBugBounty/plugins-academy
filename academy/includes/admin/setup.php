@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use \Academy\Helper;
+
 class Setup {
 	const PAGE_ID = 'academy-setup';
 	private $assets;
@@ -50,13 +52,20 @@ class Setup {
 	}
 
 	public function get_setup_scripts_data() {
-		return apply_filters( 'academy/admin/setup_scripts_data', $this->assets->get_scripts_data() );
+		return apply_filters( 'academy/admin/setup_scripts_data', array_merge( [
+			'is_ablocks_active' => Helper::is_plugin_active( 'ablocks/ablocks.php' ),
+			'is_storeengine_active' => Helper::is_plugin_active( 'storeengine/storeengine.php' )
+		], $this->assets->get_scripts_data() ) );
 	}
 
 
 	private function enqueue_assets() {
 		$dependencies = include ACADEMY_ASSETS_DIR_PATH . sprintf( 'build/setup.%s.asset.php', ACADEMY_VERSION );
 		$this->assets->load_web_font_and_icon();
+		if ( Helper::is_plugin_active( 'ablocks/ablocks.php' ) ) {
+			$Assets = new \ABlocks\Assets();
+			$Assets->demo_template_importer_scripts();
+		}
 		wp_enqueue_style( 'academy-admin-style', ACADEMY_ASSETS_URI . 'build/setup.css', array( 'wp-components' ), $dependencies['version'], 'all' );
 		wp_enqueue_script(
 			'academy-setup-scripts',
@@ -65,9 +74,11 @@ class Setup {
 			$dependencies['version'],
 			true
 		);
+
 		wp_localize_script( 'academy-setup-scripts', 'AcademyGlobal', array_merge( $this->get_setup_scripts_data(), array( 'admin_url'  => admin_url() ) ) );
 		// Enqueue emoji styles to prevent deprecation notices
 		wp_enqueue_emoji_styles();
+
 	}
 
 	private function render() {

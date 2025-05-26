@@ -194,7 +194,7 @@ if ( ! function_exists( 'academy_archive_course_header_filter' ) ) {
 					<option value="menu_order" <?php selected( $orderby, 'menu_order' ); ?>>
 						<?php esc_html_e( 'Menu Order', 'academy' ); ?>
 					</option>
-					<option value="name" <?php selected( $orderby, 'name' ); ?>>
+					<option value="name" <?php selected( in_array( $orderby, [ 'title', 'name' ], true ) ); ?>>
 						<?php esc_html_e( 'Order by course name', 'academy' ); ?>
 					</option>
 					<option value="date" <?php selected( $orderby, 'date' ); ?>>

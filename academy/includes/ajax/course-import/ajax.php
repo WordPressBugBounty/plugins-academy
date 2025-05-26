@@ -30,7 +30,7 @@ class Ajax extends AbstractAjaxHandler {
 		try {
 			$id = ( new Importers\Course( $payload['data'] ?? [], $course_id, $thumbnail_id ) )->insert();
 			wp_send_json_success( [
-				'message' => __( 'Success!', 'academy-pro' ),
+				'message' => __( 'Success!', 'academy' ),
 				'course_id' => $id,
 			] );
 		} catch ( Exception $e ) {

@@ -149,6 +149,7 @@ trait LessonSchema {
 						'allowfullscreen' => true,
 						'style'             => true,
 					);
+
 					add_filter( 'safe_style_css', function( $styles ) {
 						$styles[] = 'display';
 						$styles[] = 'align-items';

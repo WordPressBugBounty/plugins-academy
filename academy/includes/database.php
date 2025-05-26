@@ -10,6 +10,7 @@ class Database {
 		$self = new self();
 		add_action( 'init', [ $self, 'create_academy_courses_post_type' ] );
 		add_action( 'init', [ $self, 'create_academy_announcement_post_type' ] );
+		add_action( 'init', [ $self, 'create_academy_lesson_post_type' ] );
 		add_action( 'rest_api_init', [ $self, 'register_academy_courses_meta' ] );
 		add_action( 'rest_api_init', [ $self, 'register_academy_announcement_meta' ] );
 	}
@@ -366,4 +367,48 @@ class Database {
 			)
 		);
 	}
+
+	public function create_academy_lesson_post_type() {
+		$post_type = 'academy_lessons';
+		register_post_type(
+			$post_type,
+			array(
+				'labels'                => array(
+					'name'                  => esc_html__( 'Lessons', 'academy' ),
+					'singular_name'         => esc_html__( 'Lesson', 'academy' ),
+					'search_items'          => esc_html__( 'Search lessons', 'academy' ),
+					'parent_item_colon'     => esc_html__( 'Parent lessons:', 'academy' ),
+					'not_found'             => esc_html__( 'No lessons found.', 'academy' ),
+					'not_found_in_trash'    => esc_html__( 'No lessons found in Trash.', 'academy' ),
+					'archives'              => esc_html__( 'Lesson archives', 'academy' ),
+				),
+				'public'                => true,
+				'publicly_queryable'    => true,
+				'show_ui'               => true,
+				'show_in_menu'          => false,
+				'show_in_admin_bar'     => false,
+				'show_in_nav_menus'     => false,
+				'hierarchical'          => true,
+				'rewrite'               => array( 'slug' => 'lesson' ),
+				'query_var'             => true,
+				'has_archive'           => true,
+				'delete_with_user'      => false,
+				'supports'              => array( 'title', 'editor', 'author', 'excerpt', 'custom-fields', 'comments', 'post-formats' ),
+				'show_in_rest'          => false,
+				'capability_type'           => 'post',
+				'capabilities'              => array(
+					'edit_post'             => 'edit_academy_lesson',
+					'read_post'             => 'read_academy_lesson',
+					'delete_post'           => 'delete_academy_lesson',
+					'delete_posts'          => 'delete_academy_lessons',
+					'edit_posts'            => 'edit_academy_lessons',
+					'edit_others_posts'     => 'edit_others_academy_lessons',
+					'publish_posts'         => 'publish_academy_lessons',
+					'read_private_posts'    => 'read_private_academy_lessons',
+					'create_posts'          => 'edit_academy_lessons',
+				),
+			)
+		);
+	}
+
 }

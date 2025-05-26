@@ -4,10 +4,10 @@ namespace Academy\API;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
+use Throwable;
 use Academy\API\Schema\LessonSchema;
 use Academy\Classes\Query;
-
+use Academy\Lesson\LessonApi\Lesson as LessonApi;
 class Lessons extends \WP_REST_Controller {
 
 	use LessonSchema;
@@ -17,7 +17,6 @@ class Lessons extends \WP_REST_Controller {
 		$self->namespace = ACADEMY_PLUGIN_SLUG . '/v1';
 		$self->rest_base = 'lessons';
 		add_action( 'rest_api_init', array( $self, 'register_routes' ) );
-		add_filter( 'rest_post_dispatch', array( $self, 'add_x_wp_total_header' ), 10, 3 );
 	}
 
 	/**
@@ -117,26 +116,40 @@ class Lessons extends \WP_REST_Controller {
 	 */
 	public function get_items( $request ) {
 		global $wpdb;
-		$author_id = $request->get_param( 'author' );
+		$author_id = current_user_can( 'manage_options' ) ? $request->get_param( 'author' ) : get_current_user_id();
 		$page = $request->get_param( 'page' );
 		$per_page = $request->get_param( 'per_page' );
 		$search_keyword = $request->get_param( 'search' );
 		$lesson_status = $request->get_param( 'lesson_status' );
 		$offset = ( $page - 1 ) * $per_page;
+
 		$data = [];
-		$lessons = \Academy\Helper::get_lessons( $offset, $per_page, $author_id, $search_keyword, $lesson_status );
-		if ( is_array( $lessons ) && count( $lessons ) ) {
+		$lessons = LessonApi::get( $page, $per_page, $author_id, $search_keyword, $lesson_status );
+
+		if ( ( $total = count( $lessons ) ) > 0 ) {
 			foreach ( $lessons as $lesson ) {
-				$data[] = $this->rest_prepare_item( $lesson, $request );
+				$data[] = $this->rest_prepare_item( $lesson->get_data(), $request );
 			}
 		}
-		return rest_ensure_response( $data );
+		rest_ensure_response( $data );
+		$response = rest_ensure_response( $data );
+		$response->header( 'x-wp-total', $total );
+		return $response;
 	}
 
 	public function get_item( $request ) {
 		$ID = (int) $request->get_param( 'id' );
-		$data = $this->rest_prepare_item( \Academy\Helper::get_lesson( $ID ), $request );
-		return rest_ensure_response( $data );
+		try {
+			$lesson = LessonApi::get_by_id( $ID );
+			$response = $this->rest_prepare_item( $lesson->get_data(), $request );
+			return rest_ensure_response( $response );
+		} catch ( Throwable $e ) {
+			return new \WP_Error(
+				'academy_lesson_rest_error',
+				$e->getMessage(),
+				[ 'status' => 404 ]
+			);
+		}
 	}
 
 	/**
@@ -149,131 +162,119 @@ class Lessons extends \WP_REST_Controller {
 	 */
 	public function create_item( $request ) {
 		$prepared_lesson = $this->prepare_item_for_database( $request );
-		$is_slug_exists = \Academy\Helper::is_lesson_slug_exists( $prepared_lesson->lesson_name );
-		if ( $is_slug_exists ) {
+		$lesson_meta     = (array) $this->prepare_item_meta_for_database( $request );
+
+		try {
+			$lesson = LessonApi::create(
+				wp_slash( (array) $prepared_lesson ),
+				(array) $lesson_meta
+			);
+			$lesson->save();
+			$response = $this->rest_prepare_item( $lesson->get_data(), $request );
+			do_action( 'academy_new_lesson_published', $response );
+			return rest_ensure_response( $response );
+		} catch ( Throwable $e ) {
 			return new \WP_Error(
-				'academy_lesson_rest_slug_validation',
-				esc_html__( 'Sorry, the slug you provided already exist. Please try adding a different slug.', 'academy' )
+				'academy_lesson_rest_error',
+				$e->getMessage(),
+				[ 'status' => 422 ]
 			);
 		}
-		$lesson_id       = Query::lesson_insert( wp_slash( (array) $prepared_lesson ) );
-		$lesson_meta     = (array) $this->prepare_item_meta_for_database( $request );
-		Query::lesson_meta_insert( $lesson_id, $lesson_meta );
-		$data = $this->rest_prepare_item( \Academy\Helper::get_lesson( $lesson_id ), $request );
-
-		do_action( 'academy_new_lesson_published', $data );
-
-		return rest_ensure_response( $data );
 	}
 
 	public function update_item( $request ) {
 		$prepared_lesson = $this->prepare_item_for_database( $request );
-		$existing_lesson = \Academy\Helper::get_lesson( $prepared_lesson->ID );
-		if ( $prepared_lesson->lesson_name !== $existing_lesson->lesson_name ) {
-			$is_slug_exists = \Academy\Helper::is_lesson_slug_exists( $prepared_lesson->lesson_name );
-			if ( $is_slug_exists ) {
-				return new \WP_Error(
-					'academy_lesson_rest_slug_validation',
-					esc_html__( 'Sorry, the slug you provided already exist. Please try adding a different slug.', 'academy' )
-				);
-			}
-		}
-		$lesson_id       = Query::lesson_insert( wp_slash( (array) $prepared_lesson ) );
 		$lesson_meta     = (array) $this->prepare_item_meta_for_database( $request );
-		Query::lesson_meta_update( $lesson_id, $lesson_meta );
-		$data = $this->rest_prepare_item( \Academy\Helper::get_lesson( $lesson_id ), $request );
-
-		do_action( 'academy_new_lesson_published', $data );
-
-		return new \WP_REST_Response( $data, 200 );
+		$ID = (int) $request->get_param( 'id' );
+		try {
+			$lesson = LessonApi::get_by_id( $ID );
+			$lesson->set_data( (array) $prepared_lesson );
+			$lesson->set_meta_data( (array) $lesson_meta );
+			$response = $this->rest_prepare_item( $lesson->save()->get_data(), $request );
+			do_action( 'academy_new_lesson_published', $response );
+			return rest_ensure_response( $response );
+		} catch ( Throwable $e ) {
+			return new \WP_Error(
+				'academy_lesson_rest_error',
+				$e->getMessage(),
+				[ 'status' => 422 ]
+			);
+		}
 	}
 	public function delete_item( $request ) {
-		$params = $request->get_params();
+		$ID = (int) $request->get_param( 'id' );
 		try {
-			global $wpdb;
-			$wpdb->delete(
-				$wpdb->prefix . 'academy_lessons',
-				array(
-					'ID' => $params['id'],
-				),
-				array(
-					'%d',
-				)
+			$lesson = LessonApi::get_by_id( $ID );
+			$lesson->delete();
+			return rest_ensure_response( true );
+		} catch ( Throwable $e ) {
+			return new \WP_Error(
+				'academy_lesson_rest_error',
+				$e->getMessage(),
+				[ 'status' => 422 ]
 			);
-			$wpdb->delete(
-				$wpdb->prefix . 'academy_lessonmeta',
-				array(
-					'lesson_id' => $params['id'],
-				),
-				array(
-					'%d',
-				)
-			);
-			return new \WP_REST_Response( $params['id'], 200 );
-		} catch ( \Throwable $th ) {
-			return new \WP_REST_Response( $th->getMessage(), 200 );
-		}//end try
+		}
 	}
 
 	protected function rest_prepare_item( $lesson, $request ) {
 		$data = array();
 		$schema = $this->get_public_item_schema();
-		if ( isset( $schema['properties']['ID'] ) && isset( $lesson->ID ) ) {
-			$data['ID'] = (int) $lesson->ID;
+		if ( isset( $schema['properties']['ID'] ) && isset( $lesson['ID'] ) ) {
+			$data['ID'] = (int) $lesson['ID'];
 		}
 		if ( isset( $schema['properties']['lesson_author'] ) ) {
-			$data['lesson_author'] = $lesson->lesson_author;
-			$data['author_name'] = get_the_author_meta( 'display_name', $lesson->lesson_author );
+			$data['lesson_author'] = $lesson['lesson_author'];
+			$data['author_name'] = get_the_author_meta( 'display_name', $lesson['lesson_author'] );
 		}
 
 		if ( isset( $schema['properties']['lesson_date'] ) ) {
-			$data['lesson_date'] = $lesson->lesson_date;
+			$data['lesson_date'] = $lesson['lesson_date'];
 		}
 
 		if ( isset( $schema['properties']['lesson_date_gmt'] ) ) {
-			$data['lesson_date_gmt'] = $lesson->lesson_date_gmt;
+			$data['lesson_date_gmt'] = $lesson['lesson_date_gmt'];
 		}
 
 		if ( isset( $schema['properties']['lesson_title'] ) ) {
-			$data['lesson_title'] = stripslashes( $lesson->lesson_title );
+			$data['lesson_title'] = stripslashes( $lesson['lesson_title'] );
 		}
 
 		if ( isset( $schema['properties']['lesson_name'] ) ) {
-			$data['lesson_name'] = stripslashes( $lesson->lesson_name );
+			$data['lesson_name'] = stripslashes( $lesson['lesson_name'] );
 		}
 
 		if ( isset( $schema['properties']['lesson_content'] ) ) {
 			$data['lesson_content'] = [
-				'raw' => stripslashes( $lesson->lesson_content ),
-				'rendered' => \Academy\Helper::get_content_html( stripslashes( $lesson->lesson_content ) ),
+				'raw' => stripslashes( $lesson['lesson_content'] ),
+				'rendered' => \Academy\Helper::get_content_html( stripslashes( $lesson['lesson_content'] ) ),
 			];
 		}
 
 		if ( isset( $schema['properties']['lesson_excerpt'] ) ) {
-			$data['lesson_excerpt'] = $lesson->lesson_excerpt;
+			$data['lesson_excerpt'] = $lesson['lesson_excerpt'];
 		}
 
 		if ( isset( $schema['properties']['lesson_status'] ) ) {
-			$data['lesson_status'] = $lesson->lesson_status;
+			$data['lesson_status'] = $lesson['lesson_status'];
 		}
 
 		if ( isset( $schema['properties']['comment_status'] ) ) {
-			$data['comment_status'] = $lesson->comment_status;
+			$data['comment_status'] = $lesson['comment_status'];
 		}
 		if ( isset( $schema['properties']['comment_count'] ) ) {
-			$data['comment_status'] = $lesson->comment_count;
+			$data['comment_status'] = $lesson['comment_count'];
 		}
 
 		if ( isset( $schema['properties']['lesson_modified'] ) ) {
-			$data['lesson_modified'] = $lesson->lesson_modified;
+			$data['lesson_modified'] = $lesson['lesson_modified'];
 		}
 
 		if ( isset( $schema['properties']['lesson_modified_gmt'] ) ) {
-			$data['lesson_modified_gmt'] = $lesson->lesson_modified_gmt;
+			$data['lesson_modified_gmt'] = $lesson['lesson_modified_gmt'];
 		}
 
 		if ( isset( $schema['properties']['meta'] ) ) {
-			$data['meta'] = $this->rest_prepare_meta_item( \Academy\Helper::get_lesson_meta_data( $lesson->ID ), $request );
+			$data['meta'] = $this->rest_prepare_meta_item( $lesson['meta'], $request );
 
 		}
 
@@ -286,19 +287,19 @@ class Lessons extends \WP_REST_Controller {
 		$schema = $schema['properties'];
 
 		if ( isset( $schema['meta']['properties']['featured_media'] ) ) {
-			$data->featured_media = (int) $lesson_meta['featured_media'];
+			$data->featured_media = intval( $lesson_meta['featured_media'] ?? 0 );
 		}
 
 		if ( isset( $schema['meta']['properties']['attachment'] ) ) {
-			$data->attachment = (int) $lesson_meta['attachment'];
+			$data->attachment = intval( $lesson_meta['attachment'] ?? 0 );
 		}
 
 		if ( isset( $schema['meta']['properties']['video_duration'] ) ) {
-			$data->video_duration = $lesson_meta['video_duration'];
+			$data->video_duration = $lesson_meta['video_duration'] ?? null;
 		}
 
 		if ( isset( $schema['meta']['properties']['video_source'] ) ) {
-			$data->video_source = $lesson_meta['video_source'];
+			$data->video_source = $lesson_meta['video_source'] ?? null;
 		}
 
 		return apply_filters( 'academy/api/lesson/rest_prepare_meta_item', (array) $data, $lesson_meta, $request, $schema );
@@ -421,29 +422,16 @@ class Lessons extends \WP_REST_Controller {
 
 		if ( ! empty( $schema['meta']['properties']['video_duration'] ) && isset( $request['meta']['video_duration'] ) ) {
 			if ( is_array( $request['meta']['video_duration'] ) ) {
-				$lesson_meta->video_duration = wp_json_encode( $request['meta']['video_duration'] );
+				$lesson_meta->video_duration = $request['meta']['video_duration'];
 			}
 		}
 
 		if ( ! empty( $schema['meta']['properties']['video_source'] ) && isset( $request['meta']['video_source'] ) ) {
 			if ( is_array( $request['meta']['video_source'] ) ) {
-				$lesson_meta->video_source = wp_json_encode( $request['meta']['video_source'] );
+				$lesson_meta->video_source = $request['meta']['video_source'];
 			}
 		}
 
 		return apply_filters( 'academy/api/lesson/rest_pre_insert_lesson_meta', $lesson_meta, $request, $schema );
-	}
-	public function add_x_wp_total_header( $response, $handler, $request ) {
-		if ( '/' . $this->namespace . '/' . $this->rest_base === $request->get_route() ) {
-			$status = $request->get_param( 'lesson_status' );
-			$total = 0;
-			if ( ! current_user_can( 'manage_options' ) ) {
-				$total = \Academy\Helper::get_total_number_of_lessons( $status, get_current_user_id() );
-			} else {
-				$total = \Academy\Helper::get_total_number_of_lessons( $status );
-			}
-			$response->header( 'x-wp-total', $total );
-		}
-		return $response;
 	}
 }

@@ -5,80 +5,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Throwable;
+use Academy\Lesson\LessonApi\Lesson as LessonApi;
 trait Lessons {
 
 	public static function get_lessons( $offset = 0, $per_page = -1, $author_id = 0, $search_keyword = '', $lesson_status = '' ) {
-		global $wpdb;
-
-		$query = "SELECT * FROM {$wpdb->prefix}academy_lessons";
-
-		if ( $search_keyword || $author_id || $lesson_status ) {
-			$query .= ' WHERE';
-
-			if ( ! empty( $search_keyword ) ) {
-				$wild = '%';
-				$like = $wild . $wpdb->esc_like( $search_keyword ) . $wild;
-				$query .= $wpdb->prepare( ' lesson_title LIKE %s', $like );
-
-				if ( ! empty( $lesson_status ) ) {
-					$query .= ' AND';
-				}
+		$lessons = LessonApi::get( $offset, $per_page, $author_id, $search_keyword, $lesson_status, true );
+		$data = [];
+		if ( ( $total = count( $lessons ) ) > 0 ) {
+			foreach ( $lessons as $lesson ) {
+				$data[] = (object) $lesson->get_data();
 			}
-
-			if ( ! empty( $author_id ) ) {
-				if ( ! empty( $lesson_status ) && 'any' !== $lesson_status ) {
-					$query .= $wpdb->prepare( ' lesson_author = %d AND lesson_status = %s', $author_id, $lesson_status );
-				} else {
-					$query .= $wpdb->prepare( ' lesson_author = %d AND lesson_status != %s', $author_id, 'trash' );
-				}
-			} else {
-				if ( ! empty( $lesson_status ) && 'any' !== $lesson_status ) {
-					$query .= $wpdb->prepare( ' lesson_status = %s', $lesson_status );
-				} else {
-					$query .= $wpdb->prepare( ' lesson_status != %s', 'trash' );
-				}
-			}
-		}//end if
-
-		$query .= ' ORDER BY lesson_date DESC';
-		if ( -1 !== $per_page ) {
-			$query .= $wpdb->prepare( ' LIMIT %d, %d', $offset, $per_page );
 		}
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		return $wpdb->get_results( $query, OBJECT );
+
+		return $data;
 	}
 
-	public static function get_lesson( $ID ) {
-		global $wpdb;
-		$lesson  = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_lessons WHERE ID=%d", $ID ), OBJECT );
-		return current( $lesson );
-	}
-	public static function get_lesson_slug( $ID ) {
-		global $wpdb;
-		$lesson  = $wpdb->get_results( $wpdb->prepare( "SELECT lesson_name FROM {$wpdb->prefix}academy_lessons WHERE ID=%d", $ID ), OBJECT );
-		return isset( $lesson[0] ) ? (string) $lesson[0]->lesson_name : '';
-	}
-	public static function get_lesson_meta_data( $ID ) {
-		global $wpdb;
-		$meta_data = [];
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}academy_lessonmeta WHERE lesson_id=%d", $ID ), OBJECT );
-		foreach ( $results as $result ) {
-			$meta_data[ $result->meta_key ] = json_decode( $result->meta_value, true );
+	public static function get_lesson( int $ID, bool $return_array = false ) {
+		try {
+			$lesson = LessonApi::get_by_id( $ID, true );
+			return $return_array ? $lesson->get_data() : (object) $lesson->get_data();
+		} catch ( Throwable $e ) {
+			return null;
 		}
-		return $meta_data;
 	}
-	public static function get_lesson_meta( $ID, $meta_key ) {
-		global $wpdb;
-		$lesson_meta = current( $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}academy_lessonmeta WHERE lesson_id=%d AND meta_key=%s", $ID, $meta_key ), OBJECT ) );
-		if ( $lesson_meta ) {
-			return json_decode( $lesson_meta->meta_value, true );
-		}
-		return null;
+	public static function get_lesson_slug( int $ID ) {
+		return LessonApi::get_lesson_slug( $ID );
+	}
+	public static function get_lesson_meta_data( int $ID ) : array {
+		return LessonApi::get_lesson_meta_data( $ID );
+	}
+	public static function get_lesson_meta( int $ID, string $meta_key ) {
+		return LessonApi::get_lesson_meta( $ID, $meta_key );
 	}
 
 	public static function get_lesson_video_duration( $lesson_id ) {
 		if ( $lesson_id ) {
-			$video_duration = \Academy\Helper::get_lesson_meta( $lesson_id, 'video_duration' );
+			$video_duration = self::get_lesson_meta( $lesson_id, 'video_duration' );
 			if ( is_array( $video_duration ) && ( $video_duration['hours'] || $video_duration['minutes'] || $video_duration['seconds'] ) ) {
 				$video_duration = array_map(function ( $number ) {
 					return sprintf( '%02d', $number );
@@ -90,35 +53,12 @@ trait Lessons {
 		return '';
 	}
 
-	public static function get_total_number_of_lessons_by_instructor( $instructor_id ) {
-		global $wpdb;
-
-		$count = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(ID)
-				FROM {$wpdb->prefix}academy_lessons
-				WHERE lesson_author = %d 
-				AND lesson_status = %s",
-				$instructor_id,
-				'publish'
-			)
-		);
-
-		return (int) $count;
+	public static function get_total_number_of_lessons_by_instructor( int $instructor_id ) : int {
+		return (int) self::get_total_number_of_lessons( 'publish', $instructor_id );
 	}
 
-	public static function get_total_number_of_lessons( $status = 'any', $user_id = 0 ) {
-		global $wpdb;
-		$query = "SELECT COUNT(*) FROM {$wpdb->prefix}academy_lessons";
-		if ( 'any' !== $status ) {
-			$query .= $wpdb->prepare( ' WHERE lesson_status = %s', $status );
-		}
-		if ( $user_id ) {
-			$query .= 'any' === $status ? ' WHERE' : ' AND';
-			$query .= $wpdb->prepare( ' lesson_author = %d', $user_id );
-		}
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		return $wpdb->get_var( $query );
+	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ) : int {
+		return LessonApi::get_total_number_of_lessons( $status, $user_id );
 	}
 
 	public static function generate_unique_lesson_slug( $title ) {
@@ -134,52 +74,44 @@ trait Lessons {
 		return $slug;
 	}
 
-	public static function is_lesson_slug_exists( $slug ) {
-		global $wpdb;
+	public static function is_lesson_slug_exists( string $slug, ?int $id = null ) : bool {
+		try {
+			if ( ! empty( $id ) ) {
+				$lesson = LessonApi::get_by_id( $id );
+				$lesson->set_data([
+					'lesson_name' => $slug
+				]);
+			} else {
+				$lesson = LessonApi::create( [
+					'lesson_name' => $slug
+				], [] );
+			}
 
-		$lesson_exists = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(ID) 
-                FROM {$wpdb->prefix}academy_lessons 
-                WHERE lesson_name = %s", $slug
-			)
-		);
-
-		$post_exists = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(ID) 
-                FROM {$wpdb->posts} 
-                WHERE post_name = %s", $slug
-			)
-		);
-
-		return $lesson_exists > 0 || $post_exists > 0;
+			return ! $lesson->is_slug_available();
+		} catch ( Throwable $e ) {
+			return false;
+		}
+		return false;
 	}
 
-	public static function get_lesson_by_slug( $slug ) {
-		global $wpdb;
-
-		$result = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}academy_lessons 
-                WHERE lesson_name = %s", $slug
-			)
-		);
-
-		return current( $result );
+	public static function get_lesson_by_slug( string $slug ) : ?array {
+		try {
+			$lesson = LessonApi::get_by_slug( $slug );
+			return $lesson->get_data();
+		} catch ( Throwable $e ) {
+			return null;
+		}
+		return null;
 	}
 
-	public static function get_lesson_by_title( $title ) {
-		global $wpdb;
-
-		$result = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}academy_lessons 
-                WHERE lesson_title = %s", $title
-			)
-		);
-
-		return current( $result );
+	public static function get_lesson_by_title( string $title ) : ?array {
+		try {
+			$lesson = LessonApi::get_by_title( $title );
+			return $lesson->get_data();
+		} catch ( Throwable $e ) {
+			return null;
+		}
+		return null;
 	}
 
 	public static function get_youtube_video_id( $url ) {

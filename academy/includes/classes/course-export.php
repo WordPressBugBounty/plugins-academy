@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
+use Throwable;
+use Academy\Lesson\LessonApi\Lesson as LessonApi;
 class CourseExport extends ExportBase {
 	public function get_courses_for_export( $status = '' ) {
 		$course_array = [];
@@ -54,6 +56,12 @@ class CourseExport extends ExportBase {
 		foreach ( $courses as $course ) {
 			$course_type = isset( $meta['academy_course_type'][0] ) ? $meta['academy_course_type'][0] : '';
 			$meta = get_post_meta( $course->ID );
+
+			$product_id = 0;
+			$download_id = 0;
+			$regular_price = 0;
+			$sale_price = 0;
+			$edd_price = 0;
 			if ( 'paid' === $course_type ) {
 				$product_id = $meta['academy_course_product_id'][0] ?? 0;
 				$download_id = $meta['academy_course_download_id'][0] ?? 0;
@@ -175,22 +183,25 @@ class CourseExport extends ExportBase {
 	}
 
 	public function get_lesson_by_topic( $topic ) {
-		$lesson = \Academy\Helper::get_lesson( $topic['id'] );
-		if ( ! empty( $lesson ) ) {
-			$meta = \Academy\Helper::get_lesson_meta_data( $topic['id'] );
-			$author = get_userdata( $lesson->lesson_author );
+		try {
+			$lesson = LessonApi::get_by_id( $topic['id'] );
+			$lesson = $lesson->get_data();
+			$author = get_userdata( $lesson->lesson_author ?? null );
 			$csv_data = [
-				'lesson_title'              => $lesson->lesson_title,
-				'lesson_content'            => $lesson->lesson_content,
-				'lesson_status'             => $lesson->lesson_status,
-				'lesson_author'             => $author->user_login,
-				'is_previewable'            => $meta['is_previewable'],
-				'video_duration'            => wp_json_encode( $meta['video_duration'] ),
-				'video_source_type'         => $meta['video_source']['type'],
-				'video_source_url'          => $meta['video_source']['url'],
+				'lesson_title'              => $lesson['lesson_title'],
+				'lesson_content'            => $lesson['lesson_content'],
+				'lesson_status'             => $lesson['lesson_status'],
+				'lesson_author'             => $author->user_login ?? 0,
+				'is_previewable'            => $lesson['meta']['is_previewable'] ?? false,
+				'video_duration'            => wp_json_encode( $lesson['meta']['video_duration'] ),
+				'video_source_type'         => $lesson['meta']['video_source']['type'],
+				'video_source_url'          => $lesson['meta']['video_source']['url'],
 			];
 			return $csv_data;
+		} catch ( Throwable $e ) {
+			return null;
 		}
+		return null;
 	}
 
 	/**

@@ -12,7 +12,8 @@ use Academy\Classes\AbstractAjaxHandler;
 use Academy\Admin\Playlist\Import;
 use Academy\Admin\Playlist\Info;
 use Academy\Admin\Playlist\Platforms\Youtube;
-
+use Throwable;
+use Academy\Lesson\LessonApi\Lesson as LessonApi;
 class Course extends AbstractAjaxHandler {
 	public function __construct() {
 		$this->actions = array(
@@ -1004,17 +1005,14 @@ class Course extends AbstractAjaxHandler {
 			'allowfullscreen' => true,
 		);
 		$content               = wp_kses( $item['lesson_content'], $allowed_tags );
-
-		$lesson_id = \Academy\Classes\Query::lesson_insert( array(
-			'lesson_author'  => $user ? $user->ID : (int) get_current_user_id(),
-			'lesson_title'   => sanitize_text_field( $item['lesson_title'] ),
-			'lesson_name'    => \Academy\Helper::generate_unique_lesson_slug( $item['lesson_title'] ),
-			'lesson_content' => $content,
-			'lesson_status'  => $item['lesson_status'],
-		) );
-
-		if ( $lesson_id ) {
-			\Academy\Classes\Query::lesson_meta_insert( $lesson_id, array(
+		try {				
+			$lesson = LessonApi::create( [
+				'lesson_author'  => $user ? $user->ID : (int) get_current_user_id(),
+				'lesson_title'   => sanitize_text_field( $item['lesson_title'] ),
+				'lesson_name'    => \Academy\Helper::generate_unique_lesson_slug( $item['lesson_title'] ),
+				'lesson_content' => $content,
+				'lesson_status'  => $item['lesson_status'],
+			], [
 				'featured_media' => 0,
 				'attachment'     => 0,
 				'is_previewable' => sanitize_text_field( $item['is_previewable'] ),
@@ -1023,10 +1021,14 @@ class Course extends AbstractAjaxHandler {
 					'type' => sanitize_text_field( $item['video_source_type'] ),
 					'url'  => $this->sanitize_video_source( $item['video_source_type'], $item['video_source_url'] ),
 				) ),
-			) );
-
-			return $lesson_id;
+			] );
+			$lesson->save();
+			return $lesson->id();
 		}
+		catch ( Throwable $e ) {
+			return false;
+		}
+		return false;
 	}
 
 	public function sanitize_video_source( $source, $url ) {
@@ -1079,7 +1081,7 @@ class Course extends AbstractAjaxHandler {
 				$lesson = \Academy\Helper::get_lesson_by_title( $topic['name'] );
 				if ( $lesson ) {
 					return array(
-						'id' => $lesson->ID,
+						'id' => $lesson['ID'],
 						'name' => $topic['name'],
 						'type'  => 'lesson',
 					);

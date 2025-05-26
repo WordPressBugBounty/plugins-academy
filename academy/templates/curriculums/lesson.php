@@ -68,6 +68,6 @@ $content = \Academy\Helper::get_content_html( stripslashes( $lesson->lesson_cont
 \Academy\Helper::get_template( 'curriculums/lesson/content.php', [ 'content' => $content ] );
 
 // attachment
-if ( $lesson_meta['attachment'] ) {
+if ( $lesson_meta['attachment'] ?? false ) {
 	\Academy\Helper::get_template( 'curriculums/lesson/attachment.php', [ 'attachment_id' => $lesson_meta['attachment'] ] );
 }

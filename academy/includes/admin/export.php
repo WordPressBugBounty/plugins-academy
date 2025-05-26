@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
+use Academy\Lesson\LessonApi\Lesson as LessonApi;
 class Export extends ExportBase {
 	public static function init() {
 		$self = new self();
@@ -61,20 +61,21 @@ class Export extends ExportBase {
 
 	public function get_lessons_for_export() {
 		$csv_data = [];
-		$lessons = \Academy\Helper::get_lessons();
-		if ( count( $lessons ) ) {
+		$lessons = LessonApi::get( 1, -1 );
+
+		if ( count( $lessons ) > 0 ) {
 			foreach ( $lessons as $lesson ) {
-				$meta = \Academy\Helper::get_lesson_meta_data( $lesson->ID );
-				$author = get_userdata( $lesson->lesson_author );
+				$lesson = $lesson->get_data();
+				$author = get_userdata( $lesson['lesson_author'] );
 				$csv_data[] = [
-					'title'                     => $lesson->lesson_title,
-					'content'                   => $lesson->lesson_content,
-					'status'                    => $lesson->lesson_status,
+					'title'                     => $lesson['lesson_title'],
+					'content'                   => $lesson['lesson_content'],
+					'status'                    => $lesson['lesson_status'],
 					'author'                    => $author->user_login,
-					'is_previewable'            => $meta['is_previewable'],
-					'video_duration'            => wp_json_encode( $meta['video_duration'] ),
-					'video_source_type'         => $meta['video_source']['type'],
-					'video_source_url'          => $meta['video_source']['url'],
+					'is_previewable'            => $lesson['meta']['is_previewable'] ?? false,
+					'video_duration'            => wp_json_encode( $lesson['meta'] ),
+					'video_source_type'         => $lesson['meta']['video_source']['type'],
+					'video_source_url'          => $lesson['meta']['video_source']['url'],
 				];
 			}
 			return $csv_data;

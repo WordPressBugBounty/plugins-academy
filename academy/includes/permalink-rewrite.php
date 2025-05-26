@@ -62,12 +62,10 @@ class PermalinkRewrite {
 		if ( ! (bool) Helper::get_settings( 'is_enabled_lessons_php_render' ) || empty( $wp_query->query_vars['curriculum_type'] ) ) {
 			return $post_link;
 		}
-
 		$post             = get_post( $id );
 		$permalinks = \Academy\Helper::get_permalink_structure();
 		$course_rewrite_slug = str_replace( '/', '', $permalinks['course_rewrite_slug'] );
 		$course_post_type = $course_rewrite_slug;
-
 		$course_name = get_query_var( 'course_name' );
 
 		if ( is_object( $post ) && 'academy_quiz' === $post->post_type && $course_name ) {
@@ -80,6 +78,8 @@ class PermalinkRewrite {
 			return home_url( "/{$course_post_type}/{$course_name}/meeting/{$post->post_name}/" );
 		} elseif ( is_object( $post ) && 'academy_booking' === $post->post_type && $course_name ) {
 			return home_url( "/{$course_post_type}/{$course_name}/booking/{$post->post_name}/" );
+		} elseif ( is_object( $post ) && 'academy_lessons' === $post->post_type && $course_name ) {
+			return home_url( "/{$course_post_type}/{$course_name}/lesson/{$post->post_name}/" );
 		}
 		return $post_link;
 	}

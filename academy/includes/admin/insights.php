@@ -78,6 +78,26 @@ class Insights {
 
 			wp_send_json_success();
 		} );
+		add_action( 'wp_ajax_insights_optin', function () {
+			if ( ! wp_verify_nonce( sanitize_text_field( $_POST['security'] ), $this->slug . '_nonce' ) ) {
+				wp_send_json_error( 'Invalid nonce.' );
+			}
+
+			$slug = sanitize_text_field( $_POST['slug'] );
+			$instance = self::$instances[ $slug ] ?? null;
+
+			if ( ! $instance || empty( $slug ) ) {
+				wp_send_json_error();
+			}
+
+			$instance->send_to_server( 'optin', [
+				'optin_status' => true,
+				'optin_time'   => current_time( 'mysql' ),
+			] );
+			$instance->mark_sent( 'optin' );
+		
+			wp_send_json_success();
+		} );
 	}
 
 	public static function init( $api_site, $slug, $type = 'plugin', $version = null, $config = [] ) {
@@ -87,6 +107,11 @@ class Insights {
 	}
 
 	public function maybe_show_optin() {
+		$screen = get_current_screen();
+		if ( $screen && (in_array( $screen->base, [ 'post', 'post-new' ], true ) || $screen->is_block_editor()) ) {
+			return;
+		}
+
 		if ( $this->is_already_sent( 'optin' ) ) {
 			return;
 		}
@@ -143,10 +168,12 @@ class Insights {
 		$key = 'insights_optin_' . $this->slug;
 		if ( isset( $_GET[ $key ] ) && wp_verify_nonce( sanitize_text_field( $_GET['security'] ), 'insights_optin_' . $this->slug ) ) {
 			$optin = $_GET[ $key ] === 'yes' ? 1 : 0;
-			$this->send_to_server( 'optin', [
-				'optin_status' => (int) $optin,
-				'optin_time'   => current_time( 'mysql' ),
-			] );
+			if($optin){
+				$this->send_to_server( 'optin', [
+					'optin_status' => (int) $optin,
+					'optin_time'   => current_time( 'mysql' ),
+				] );
+			}
 			$this->mark_sent( 'optin' );
 			wp_safe_redirect( remove_query_arg( $key ) );
 			exit;

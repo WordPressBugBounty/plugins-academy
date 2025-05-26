@@ -41,15 +41,15 @@ class Course implements Interfaces\Insertable {
 
 		$this->is_edit = $course_id > 0;
 		if ( $this->is_edit && ! get_post( $course_id ) ) {
-			throw new Exception( __( 'Course not found.', 'academy-pro' ) );
+			throw new Exception( __( 'Course not found.', 'academy' ) );
 		}
 
 		if ( $thumbnail_id > 0 && ! wp_attachment_is_image( $thumbnail_id ) ) {
-			throw new Exception( __( 'Invalid thumbnail ID.', 'academy-pro' ) );
+			throw new Exception( __( 'Invalid thumbnail ID.', 'academy' ) );
 		}
 
 		if ( empty( $data ) || empty( $data['modules'] ?? [] ) ) {
-			throw new Exception( __( 'Data is empty.', 'academy-pro' ) );
+			throw new Exception( __( 'Data is empty.', 'academy' ) );
 		}
 		$this->id = $course_id;
 		$this->thumbnail_id = $thumbnail_id;
@@ -74,7 +74,7 @@ class Course implements Interfaces\Insertable {
 		] ) );
 
 		if ( is_wp_error( $id ) ) {
-			throw new Exception( __( 'Error.', 'academy-pro' ) );
+			throw new Exception( __( 'Error.', 'academy' ) );
 		}
 		$this->id = $id;
 
