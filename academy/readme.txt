@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -23,6 +23,8 @@ Academy LMS is the all-rounder among all WordPress LMS plugins. A complete solut
 👉 [Native Payment (StoreEngine)](https://wordpress.org/plugins/storeengine) = 🚀
 
 Introducing [Academy LMS](https://academylms.net). The WordPress LMS plugin to create online learning websites. Easy integration with any WordPress site to create and sell courses. With its intuitive interface and swift performance, create the perfect eLearning platform quickly and easily.
+
+Academy LMS AI Studio redefines course creation by allowing educators to instantly generate complete course outlines, lessons, quizzes, and eye-catching images with a simple prompt. This powerful AI tool streamlines course content development, saving time and enabling administrators and instructors to focus on delivering engaging, high-quality course creation experiences.
 
 ==== Academy LMS 3.0 The All-in-One Learning Ecosystem You’ve Been Waiting For! 🔥 👇 ====
 https://www.youtube.com/watch?v=Z00YHdTv_1o
@@ -135,7 +137,6 @@ Look no further than Academy LMS, the ultimate solution to create online courses
   * Device Login Restriction **[PRO]**
   * Group Plus **[PRO]**
   * WPML Integration **[PRO]**
-More features Coming Soon!
 
 **💻 Admin SPA Interface:** Academy LMS provides a lightning-fast interface designed with React.js. It ensures instant loading of all features and settings. Users can access settings without any delay / loading, making course creation and editing faster.
 
@@ -322,10 +323,21 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 
 == Changelog ==
 
+= 3.0.1 - 28/05/2025 =
+* Fixed - Lesson content embedded links not saving properly.
+* Fixed - Responsive issue with the "Note" feature on smaller screens
+* Fixed - Default course name filter on course archive page not working with (FSE) themes.
+* Fixed - Course content show issue.
+
 = 3.0.0 - 26/05/2025 =
 * Added - Lesson data custom CPT compatibility
+* Added - Native Payments Integration (Membership, Subscriptions, Multi-Pricing, Affiliate Tools, Coupon Management)
+* Added - AI-Powered Course Creation (ChatGPT)
+* Added - Group Access & Team Training Academy Pro integration
+* Added - Full Customization with aBlocks
+* Added - Note-Taking (Admin, Student Both)
+* Added - WPML Integration Academy Pro integration
 * Improved - Enhanced setup screen UI/UX.
-* Improved - ChatGPT settings improved
 * Fixed - List Table data status not updating correctly.
 * Fixed - Compatibility issues with certain themes.
 * Fixed - Default settings filter not working on course archive pages.
@@ -333,14 +345,14 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 * Fixed - Sorting issue in the "Note" feature list.
 
 = 2.9.0 - 14/05/2025 =
-* Added - New Addon ChatGPT Integration
+* Added - New Addon ChatGPT Integration (beta)
 * Added - Take Note features
 * Added - Detection function for fake WooCommerce course orders.
 * Improved - Manual enrollment with support for selecting multiple courses and students.
 * Fixed - Issue with retrieving WooCommerce products in course editor.
 * Fixed - Issue with exporting course progress to CSV.
 
-= 2.8.3
+= 2.8.3 - 28/04/2025 =
 * Added - Settings for frontend dashboard login page redirection.
 * Fixed - Issue with course tag search functionality.
 * Fixed - "Add to Cart" button redirect issue on the course archive page.

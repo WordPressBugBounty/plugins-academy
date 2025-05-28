@@ -18,6 +18,7 @@ class Integration {
 		$self = new self();
 		add_filter( 'academy/frontend_dashboard_menu_items', array( $self, 'add_store_dashboard_menu' ), 10, 1 );
 		add_action( 'storeengine/order/during_add_product', [ $self, 'add_course_line_meta' ] );
+		add_filter( 'storeengine/frontend_dashboard_menu_items', [ $self, 'add_academy_dashboard_menu' ] );
 	}
 
 	public function add_course_line_meta( OrderItemProduct $item ) {
@@ -30,9 +31,20 @@ class Integration {
 			'icon'  => 'academy-icon academy-icon--calender',
 			'permalink' => \StoreEngine\Utils\Helper::get_page_permalink( 'dashboard_page' ),
 			'public' => true,
-			'priority' => 27,
+			'priority' => 7,
 		);
 
 		return $menu;
+	}
+
+	public function add_academy_dashboard_menu( $items ) {
+		$items['academy-dashboard'] = [
+			'label'    => __( 'Academy Dashboard', 'academy' ),
+			'icon'     => 'storeengine-icon storeengine-icon--layout',
+			'permalink' => \Academy\Helper::get_page_permalink( 'frontend_dashboard_page' ),
+			'public'   => true,
+			'priority' => 5,
+		];
+		return $items;
 	}
 }

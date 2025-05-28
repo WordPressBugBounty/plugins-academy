@@ -12,6 +12,7 @@ class AcademyCourses {
 	}
 	public function academy_courses( $atts, $content = '' ) {
 		$courses_per_row = \Academy\Helper::get_settings( 'course_archive_courses_per_row' );
+		$order_by = \Academy\Helper::get_settings( 'course_archive_courses_order' ) ?? '';
 		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 		extract(shortcode_atts(array(
 			'ids'               => '',
@@ -22,8 +23,8 @@ class AcademyCourses {
 			'tag_not_in'        => '',
 			'course_level'      => '',
 			'price_type'        => '',
-			'orderby'           => '',
-			'order'             => '',
+			'orderby'           => $order_by,
+			'order'             => 'name' === $order_by ? 'asc' : '',
 			'count'             => (int) \Academy\Helper::get_settings( 'course_archive_courses_per_page' ) ?? 3,
 			'column_per_row'    => (int) $courses_per_row->desktop ?? 3,
 			'has_pagination'    => false
@@ -119,7 +120,7 @@ class AcademyCourses {
 
 		if ( ! empty( $orderby ) ) {
 			switch ( $orderby ) {
-				case 'title':
+				case ( 'title' || 'name' ):
 					$args['orderby'] = 'post_title';
 					break;
 				case 'date':

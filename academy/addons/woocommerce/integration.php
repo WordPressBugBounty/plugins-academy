@@ -100,6 +100,16 @@ class Integration {
 
 	public function enrolled_courses_status_change( $order_id, $status_from, $status_to ) {
 		global $wpdb;
+		$order = wc_get_order( $order_id );
+		/* Group PLUS : ignore if purchase mode: team */
+		foreach ( $order->get_items() as $item_id => $item ) {
+			// check if academy group info present as line item meta
+			if ( ! empty( $item->get_meta( 'academy_group' ) ) ) {
+				return;
+			}
+		}
+		/* Group PLUS : END */
+
 		$course_enrolled_by_order = \Academy\Helper::get_course_enrolled_ids_by_order_id( $order_id );
 		if ( $course_enrolled_by_order && is_array( $course_enrolled_by_order ) && count( $course_enrolled_by_order ) ) {
 			foreach ( $course_enrolled_by_order as $enrolled_info ) {
@@ -114,7 +124,6 @@ class Integration {
 				}
 			}
 		} else {
-			$order = wc_get_order( $order_id );
 			if ( $order ) {
 				$items = $order->get_items();
 				foreach ( $items as $item ) {

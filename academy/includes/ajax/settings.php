@@ -183,7 +183,7 @@ class Settings extends AbstractAjaxHandler {
 			'chatgpt_api_key'   => $payload['chatgpt_api_key'] ?? $default['chatgpt_api_key'] ?? '',
 			'chatgpt_model'     => $payload['chatgpt_model'] ?? $default['chatgpt_model'] ?? '',
 			'chatgpt_img_model' => $payload['chatgpt_img_model'] ?? $default['chatgpt_img_model'] ?? '',
-		]));
+		], $payload, $default ) );
 		do_action( 'academy/admin/after_save_settings', $is_update, 'base', $payload_data );
 		wp_send_json_success( $is_update );
 	}

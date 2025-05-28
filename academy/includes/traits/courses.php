@@ -2,7 +2,6 @@
 namespace Academy\Traits;
 
 use Academy\Helper;
-use Academy\Classes\GroupPlusHelper;
 use WP_Query;
 use function _deprecated_function;
 
@@ -228,7 +227,10 @@ trait Courses {
 		if ( $enroll_id ) {
 			// Make Current User as Students
 			update_user_meta( $user_id, 'is_academy_student', self::get_time() );
-
+			$user = get_user_by( 'id', $user_id );
+			if ( ! in_array( 'academy_student', (array) $user->roles, true ) ) {
+				$user->add_role( 'academy_student' );
+			}
 			if ( $order_id ) {
 				$product_id = self::get_course_product_id( $course_id );
 				update_post_meta( $enroll_id, 'academy_enrolled_by_order_id', $order_id );
@@ -242,7 +244,7 @@ trait Courses {
 			}
 
 			return $enroll_id;
-		}
+		}//end if
 		return false;
 	}
 
@@ -277,8 +279,6 @@ trait Courses {
 
 			if ( $getEnrolled ) {
 				return apply_filters( 'academy/course/is_enrolled', $getEnrolled, $course_id, $user_id );
-			} elseif ( $group_data = GroupPlusHelper::ins()->is_team_member_enrolled( $course_id, $user_id ) ) {
-				return apply_filters( 'academy/course/is_enrolled', $group_data, $course_id, $user_id );
 			}
 		}//end if
 		return false;
@@ -693,7 +693,7 @@ trait Courses {
 			)
 		);
 
-		return intval( $course_ids ) + GroupPlusHelper::ins()->total_seat_count_by_course( $course_id );
+		return apply_filters('academy/count_course_enrolled', intval( $course_ids ), $course_id);
 	}
 
 	public static function get_total_number_of_students() {
