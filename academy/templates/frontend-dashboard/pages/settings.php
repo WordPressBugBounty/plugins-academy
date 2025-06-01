@@ -53,52 +53,47 @@ if ( ! defined( 'ABSPATH' ) ) {
 						echo esc_html__( 'Cover Photo Size: 1200x450 pixels', 'academy' );
 					?>
 				</div>
-				<div class="academy-form-group">
-					<div>
-						<label for="first_name"><?php esc_html_e( 'First Name', 'academy' ); ?></label>
-						<input name="first_name" id="first_name" placeholder="" value="<?php echo esc_attr( get_user_meta( $user_id, 'first_name', true ) ); ?>">
-					</div>
-					<div>
-						<label for="last_name"><?php esc_html_e( 'Last Name', 'academy' ); ?></label>
-						<input name="last_name" id="last_name" placeholder="" value="<?php echo esc_attr( get_user_meta( $user_id, 'last_name', true ) ); ?>">
-					</div>
+				<div class="academy-column-items">
+					<label for="first_name"><?php esc_html_e( 'First Name', 'academy' ); ?></label>
+					<input name="first_name" id="first_name" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'first_name', true ) ); ?>">
 				</div>
-				<div class="academy-form-group">
-					<div>
-						<label for="designation"><?php esc_html_e( 'Designation', 'academy' ); ?></label>
-						<input name="academy_profile_designation" id="designation" placeholder="" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_profile_designation', true ) ); ?>">
-					</div>
-					<div>
-						<label for="phone_number"><?php esc_html_e( 'Phone Number', 'academy' ); ?></label>
-						<input name="academy_phone_number" id="phone_number" placeholder="" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_phone_number', true ) ); ?>">
-					</div>
+				<div class="academy-column-items">
+					<label for="last_name"><?php esc_html_e( 'Last Name', 'academy' ); ?></label>
+					<input name="last_name" id="last_name" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'last_name', true ) ); ?>">
 				</div>
-				<div class="academy-form-block">
+				<div class="academy-column-items">
+					<label for="designation"><?php esc_html_e( 'Designation', 'academy' ); ?></label>
+					<input name="academy_profile_designation" id="designation" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_profile_designation', true ) ); ?>">
+				</div>
+				<div class="academy-column-items">
+					<label for="phone_number"><?php esc_html_e( 'Phone Number', 'academy' ); ?></label>
+					<input name="academy_phone_number" id="phone_number" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_phone_number', true ) ); ?>">
+				</div>
+				<div class="academy-column-items">
 				<label for="bio"><?php esc_html_e( 'Bio', 'academy' ); ?></label>
 				<textarea name="academy_profile_bio" id="bio" placeholder=""><?php echo esc_html( get_user_meta( $user_id, 'academy_profile_bio', true ) ); ?></textarea>
 				</div>
-				<div class="academy-form-block">
+				<div class="academy-column-items">
 					<label for="website_url"><?php esc_html_e( 'Website URL', 'academy' ); ?></label>
-					<input name="academy_website_url" id="website_url" type="url" placeholder="" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_website_url', true ) ); ?>">
+					<input name="academy_website_url" id="website_url" type="url" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_website_url', true ) ); ?>">
 				</div>
-				<div class="academy-form-block">
+				<div class="academy-column-items">
 					<label for="github_url"><?php esc_html_e( 'Github URL', 'academy' ); ?></label>
-					<input name="academy_github_url" id="github_url" type="url" placeholder="" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_github_url', true ) ); ?>">
+					<input name="academy_github_url" id="github_url" type="url" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_github_url', true ) ); ?>">
 				</div>
-				<div class="academy-form-block">
+				<div class="academy-column-items">
 					<label for="facebook_url"><?php esc_html_e( 'Facebook URL', 'academy' ); ?></label>
-					<input name="academy_facebook_url" id="facebook_url" type="url" placeholder="" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_facebook_url', true ) ); ?>">
+					<input name="academy_facebook_url" id="facebook_url" type="url" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_facebook_url', true ) ); ?>">
 				</div>
-				<div class="academy-form-block">
+				<div class="academy-column-items">
 					<label for="twitter_url"><?php esc_html_e( 'Twitter URL', 'academy' ); ?></label>
-					<input name="academy_twitter_url" id="twitter_url" type="url" placeholder="" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_twitter_url', true ) ); ?>">
+					<input name="academy_twitter_url" id="twitter_url" type="url" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_twitter_url', true ) ); ?>">
 				</div>
-				<div class="academy-form-block">
+				<div class="academy-column-items">
 					<label for="linkedin_url"><?php esc_html_e( 'LinkedIn URL', 'academy' ); ?></label>
-					<input name="academy_linkedin_url" id="linkedin_url" type="url" placeholder="" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_linkedin_url', true ) ); ?>">
+					<input name="academy_linkedin_url" id="linkedin_url" type="url" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_linkedin_url', true ) ); ?>">
 				</div>
-				<br />
-				<input class="academy-btn academy-btn--bg-purple" type="submit" value="<?php echo esc_html__( 'Save Settings', 'academy' ); ?>">
+				<input class="academy-btn academy-btn--bg-purple academy-btn--save-settings" type="submit" value="<?php echo esc_html__( 'Save Settings', 'academy' ); ?>">
 			</form>
 		</div>
 	</div>

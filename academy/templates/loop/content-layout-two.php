@@ -12,7 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	do_action( 'academy/templates/before_course_loop_content_inner' );
 
 	$course_id  = get_the_ID();
-	$categories = \Academy\Helper::get_the_course_category( $course_id );
+	$raw_categories = \Academy\Helper::get_the_course_category( $course_id );
+	$categories = apply_filters('academy/templates/course_categories', array_slice($raw_categories, 0, 1), $course_id, $raw_categories);
 
 	// Display course category if available
 	if ( ! empty( $categories ) ) {

@@ -14,7 +14,8 @@ global $authordata;
 	do_action( 'academy/templates/before_course_loop_content_inner' );
 
 	$course_id  = get_the_ID();
-	$categories = \Academy\Helper::get_the_course_category( $course_id );
+	$raw_categories = \Academy\Helper::get_the_course_category( $course_id );
+	$categories = apply_filters('academy/templates/course_categories', ! empty( $raw_categories ) ? array_slice($raw_categories, 0, 1) : '', $course_id, $raw_categories);
 	$rating     = \Academy\Helper::get_course_rating( $course_id );
 	$reviews_status = Academy\Helper::get_settings( 'is_enabled_course_review', true );
 
