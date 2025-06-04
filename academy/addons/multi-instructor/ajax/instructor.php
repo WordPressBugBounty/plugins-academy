@@ -22,6 +22,14 @@ class Instructor extends AbstractAjaxHandler {
 			'remove_instructor_from_course' => array(
 				'callback' => array( $this, 'remove_instructor_from_course' ),
 			),
+			'save_instructor_earning_percentage' => array(
+				'callback' => array( $this, 'save_instructor_earning_percentage' ),
+				'capability' => 'manage_academy_instructor',
+			),
+			'get_instructor_earning_percentage' => array(
+				'callback' => array( $this, 'get_instructor_earning_percentage' ),
+				'capability' => 'manage_academy_instructor',
+			)
 		);
 	}
 
@@ -68,6 +76,51 @@ class Instructor extends AbstractAjaxHandler {
 		}
 		wp_send_json_error( $is_delete );
 		wp_die();
+	}
+
+	public function save_instructor_earning_percentage( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload( [
+			'instructor_id' => 'integer',
+			'percentage'    => 'integer',
+		], $payload_data );
+
+		$instructor_id   = $payload['instructor_id'] ?? 0;
+		$instructor_rate = $payload['percentage'] ?? 0;
+
+		if ( ! $instructor_id ) {
+			wp_send_json_error( __( 'Invalid instructor ID.', 'academy' ) );
+		}
+
+		$updated = update_user_meta( $instructor_id, 'academy_instructor_earning_percentage', $instructor_rate );
+
+		if ( $updated ) {
+			wp_send_json_success( __( 'Successfully saved the instructors earning percentage.', 'academy' ) );
+		}
+
+		wp_send_json_error( __( 'Failed to save the instructors earning percentage.', 'academy' ) );
+	}
+
+	public function get_instructor_earning_percentage( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload( [
+			'instructor_id' => 'integer',
+		], $payload_data );
+
+		$instructor_id = $payload['instructor_id'] ?? 0;
+
+		if ( ! $instructor_id ) {
+			wp_send_json_error( __( 'Invalid Instructor ID.', 'academy' ) );
+		}
+
+		$instructor_rate = (int) get_user_meta( $instructor_id, 'academy_instructor_earning_percentage', true );
+		if ( empty( $instructor_rate ) ) {
+			$instructor_rate = (int) \Academy\Helper::get_settings( 'instructor_commission_percentage' );
+		}
+
+		if ( ! empty( $instructor_rate ) ) {
+			wp_send_json_success( $instructor_rate );
+		}
+
+		wp_send_json_error( __( 'Sorry, Instructor earning percentage not available. Please set Instructor earning percentage in settings.', 'academy' ) );
 	}
 
 }

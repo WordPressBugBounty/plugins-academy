@@ -276,10 +276,7 @@ trait Courses {
 
 			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$getEnrolled = $wpdb->get_row( $query );
-
-			if ( $getEnrolled ) {
-				return apply_filters( 'academy/course/is_enrolled', $getEnrolled, $course_id, $user_id );
-			}
+			return apply_filters( 'academy/course/is_enrolled', $getEnrolled, $course_id, $user_id );
 		}//end if
 		return false;
 	}
@@ -693,7 +690,7 @@ trait Courses {
 			)
 		);
 
-		return apply_filters('academy/count_course_enrolled', intval( $course_ids ), $course_id);
+		return apply_filters( 'academy/count_course_enrolled', intval( $course_ids ), $course_id );
 	}
 
 	public static function get_total_number_of_students() {
@@ -1531,12 +1528,12 @@ trait Courses {
 	}
 	public static function get_the_current_course_id() {
 		$course_name = get_query_var( 'course_name' );
-		$args = array(
+		$args = apply_filters( 'academy/get_courses_args', array(
 			'name'        => $course_name,
 			'post_type'   => 'academy_courses',
-			'post_status' => 'publish',
+			'post_status' => 'any',
 			'numberposts' => 1
-		);
+		) );
 		$course = current( get_posts( $args ) );
 		if ( $course ) {
 			return $course->ID;

@@ -68,7 +68,7 @@ trait Instructor {
 			$query .= $wpdb->prepare( 'AND (display_name LIKE %s OR user_nicename LIKE %s OR user_email LIKE %s)', $like, $like, $like );
 		}
 		$query .= $wpdb->prepare( ' ORDER BY ID DESC LIMIT %d, %d;', $offset, $per_page );
-		// phpcs:ignore 
+		// phpcs:ignore
 		$results = $wpdb->get_results( $query );
 		return $results;
 	}
@@ -87,10 +87,10 @@ trait Instructor {
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, display_name, user_nicename, user_email
-			FROM 	{$wpdb->users} 
-				INNER JOIN {$wpdb->usermeta} 
+			FROM 	{$wpdb->users}
+				INNER JOIN {$wpdb->usermeta}
 					ON ( {$wpdb->users}.ID = {$wpdb->usermeta}.user_id )
-			WHERE   {$wpdb->usermeta}.meta_key = %s AND 
+			WHERE   {$wpdb->usermeta}.meta_key = %s AND
                     {$wpdb->usermeta}.meta_value = %s;",
 				'academy_instructor_status',
 				$instructor_status
@@ -106,10 +106,10 @@ trait Instructor {
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, display_name, user_nicename, user_email
-			FROM 	{$wpdb->users} 
-				INNER JOIN {$wpdb->usermeta} 
+			FROM 	{$wpdb->users}
+				INNER JOIN {$wpdb->usermeta}
 					ON ( {$wpdb->users}.ID = {$wpdb->usermeta}.user_id )
-			WHERE   {$wpdb->usermeta}.meta_key = %s AND 
+			WHERE   {$wpdb->usermeta}.meta_key = %s AND
                     {$wpdb->usermeta}.meta_value = %s;",
 				'academy_instructor_status',
 				'approved'
@@ -126,8 +126,8 @@ trait Instructor {
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, display_name, user_nicename, user_email
-			FROM 	{$wpdb->users} 
-                INNER JOIN {$wpdb->usermeta} 
+			FROM 	{$wpdb->users}
+                INNER JOIN {$wpdb->usermeta}
 						ON ( {$wpdb->users}.ID = {$wpdb->usermeta}.user_id )
 			WHERE   {$wpdb->users}.ID = %d AND {$wpdb->usermeta}.meta_key = %s;",
 				$user_id,
@@ -205,8 +205,8 @@ trait Instructor {
 		global $wpdb;
 		$instructor = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * 
-                FROM {$wpdb->usermeta} 
+				"SELECT *
+                FROM {$wpdb->usermeta}
                 WHERE meta_key = %s
 				AND meta_value = %d",
 				'academy_instructor_course_id', $course_id
@@ -313,7 +313,12 @@ trait Instructor {
 			);
 		}
 
-		$instructor_rate = (int) \Academy\Helper::get_settings( 'instructor_commission_percentage' );
+		$instructor_rate = get_user_meta( $user_id, 'academy_instructor_earning_percentage', true );
+
+		if ( ! $instructor_rate ) {
+			$instructor_rate = \Academy\Helper::get_settings( 'instructor_commission_percentage' );
+		}
+
 		$admin_rate      = (int) \Academy\Helper::get_settings( 'admin_commission_percentage' );
 		if ( ! (bool) \Academy\Helper::get_settings( 'is_enabled_earning' ) ) {
 			$admin_rate = 100;

@@ -1471,15 +1471,15 @@ function academy_frontend_dashboard_withdraw_bank_page() {
 
 // add iframe support in cpt: academy_lessons
 function academy_allow_iframe_in_cpt_content( $tags, $context ) {
-    if ( $context === 'post' ) {
-        $tags['iframe'] = array(
-            'src'             => true,
-            'width'           => true,
-            'height'          => true,
-            'frameborder'     => true,
-            'allowfullscreen' => true,
-            'allow'           => true,
-        );
-    }
-    return $tags;
+	if ( $context === 'post' ) {
+		$tags['iframe'] = array(
+			'src'             => true,
+			'width'           => true,
+			'height'          => true,
+			'frameborder'     => true,
+			'allowfullscreen' => true,
+			'allow'           => true,
+		);
+	}
+	return $tags;
 }

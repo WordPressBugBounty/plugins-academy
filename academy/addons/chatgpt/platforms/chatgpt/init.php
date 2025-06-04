@@ -108,7 +108,7 @@ class Init extends AbstractAjaxHandler {
 		}
 
 		try {
-			$response = ( $model = new $this->models[ $this->img_model() . ':' . $type ](
+			$response = ( $model = new $this->models[ $this->img_model . ':' . $type ](
 				$this->api,
 				new $handler_class( $payload_data )
 			) )->request();

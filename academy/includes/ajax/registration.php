@@ -24,6 +24,8 @@ class Registration extends AbstractAjaxHandler {
 				'callback' => array( $this, 'save_student_form_settings' )
 			),
 		);
+		add_filter( 'academy/shortcode/after_register_instructor_redirect', [ $this, 'set_redirect_url_after_register' ] );
+		add_filter( 'academy/shortcode/after_register_student_redirect', [ $this, 'set_redirect_url_after_register' ] );
 	}
 
 	public function register_student( $payload_data ) {
@@ -190,4 +192,16 @@ class Registration extends AbstractAjaxHandler {
 		wp_send_json_success( isset( $form_settings['student'] ) ? $form_settings['student'] : [] );
 
 	}
+
+	public function set_redirect_url_after_register( $redirect_url ) {
+		$current_path = wp_parse_url( wp_get_referer(), PHP_URL_PATH );
+		$redirect_path = wp_parse_url( $redirect_url, PHP_URL_PATH );
+
+		if ( ! empty( $current_path ) && $current_path === $redirect_path ) {
+			$redirect_url = \Academy\Helper::get_page_permalink( 'frontend_dashboard_page' );
+		}
+
+		return $redirect_url;
+	}
+
 }

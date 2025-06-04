@@ -142,4 +142,4 @@ add_action( 'academy_frontend_dashboard_withdraw-echeck_endpoint', 'academy_fron
 add_action( 'academy_frontend_dashboard_withdraw-bank_endpoint', 'academy_frontend_dashboard_withdraw_bank_page' );
 
 // add iframe support in cpt: academy_lessons
-add_filter('wp_kses_allowed_html', 'academy_allow_iframe_in_cpt_content', 10, 2);
+add_filter( 'wp_kses_allowed_html', 'academy_allow_iframe_in_cpt_content', 10, 2 );
