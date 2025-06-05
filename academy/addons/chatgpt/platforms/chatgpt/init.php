@@ -38,11 +38,11 @@ class Init extends AbstractAjaxHandler {
 		$this->actions = [
 			'ai_integration/chatgpt' => [
 				'callback'   => [ $this, 'handle' ],
-				'capability' => 'manage_options',
+				'capability' => 'read',
 			],
 			'ai_integration/chatgpt/img_handler' => [
 				'callback'   => [ $this, 'img_handler' ],
-				'capability' => 'manage_options',
+				'capability' => 'read',
 			],
 			'ai_integration/chatgpt/key_test' => [
 				'callback'   => [ $this, 'key_test' ],
@@ -50,6 +50,20 @@ class Init extends AbstractAjaxHandler {
 			]
 		];
 	}
+
+	protected function authorize() : void {
+		if ( current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		else if ( 
+			in_array( 'academy_instructor', array_values( wp_get_current_user()->roles ), true ) && 
+			$this->get_setting( 'allow_instructor_to_use_chatgpt', true )
+		) {
+			return;
+		}
+		wp_send_json_error( __( 'Unauthorized.', 'academy' ), 401 );
+	}
+
 	public function key_test( array $payload_data ) : void {
 		if ( empty( $key = $payload_data['key'] ?? '' ) ) {
 			wp_send_json_error( __( 'Key field is required.', 'academy' ), 500 );
@@ -64,6 +78,7 @@ class Init extends AbstractAjaxHandler {
 		] );
 	}
 	public function handle( array $payload_data ) : void {
+		$this->authorize();
 		$prompt_handler = sanitize_text_field( $payload_data['prompt_handler'] ?? '' );
 		if ( ! array_key_exists( $this->model, $this->models ) ) {
 			wp_send_json_error( __( 'Model is Not Assigned.', 'academy' ), 500 );
@@ -90,6 +105,7 @@ class Init extends AbstractAjaxHandler {
 	}
 
 	public function img_handler( array $payload_data ) : void {
+		$this->authorize();
 		$type = sanitize_text_field( $payload_data['action_type'] ?? 'create' );
 		$prompt_handler = 'img:' . sanitize_text_field( $payload_data['prompt_handler'] ?? 'create_img' );
 		if ( ! in_array( $type, [ 'create', 'edit' ] ) ) {

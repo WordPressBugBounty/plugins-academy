@@ -459,7 +459,7 @@ trait Courses {
 			)
 		);
 
-		return $course_ids;
+		return apply_filters( 'academy/enrolled_courses_ids_by_user', $course_ids, (int) $user_id );
 	}
 
 	public static function get_wishlist_courses_by_user( $user_id, $post_status = 'publish' ) {

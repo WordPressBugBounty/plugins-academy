@@ -1,6 +1,6 @@
 <?php
 namespace AcademyChatgpt\CourseImport\Importers;
-
+use Academy\Helper;
 use Exception;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -77,7 +77,7 @@ class Course implements Interfaces\Insertable {
 			throw new Exception( __( 'Error.', 'academy' ) );
 		}
 		$this->id = $id;
-
+		update_user_meta( get_current_user_id(), 'academy_instructor_course_id', $this->id );
 		if ( $this->thumbnail_id > 0 ) {
 			set_post_thumbnail( $this->id, $this->thumbnail_id );
 		}
@@ -106,7 +106,7 @@ class Course implements Interfaces\Insertable {
 		return $topics;
 	}
 	protected function insert_quizzes( array $quizzes ) : array {
-		if ( empty( $quizzes ) ) {
+		if ( empty( $quizzes ) || ! Helper::get_addon_active_status( 'quizzes' ) ) {
 			return [];
 		}
 		$topics = [];

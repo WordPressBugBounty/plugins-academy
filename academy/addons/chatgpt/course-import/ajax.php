@@ -16,6 +16,7 @@ class Ajax extends AbstractAjaxHandler {
 		$this->actions = [
 			'course_importer' => [
 				'callback' => [ $this, 'course_importer' ],
+				'capability' => 'read',
 			],
 		];
 	}
@@ -24,8 +25,13 @@ class Ajax extends AbstractAjaxHandler {
 		$payload = Sanitizer::sanitize_payload( [
 			'data' => 'array',
 		], [ 'data' => json_decode( $payload_data['data'] ?? '{}', true ) ] );
+
 		$course_id = absint( $payload_data['course_id'] ?? 0 );
 		$thumbnail_id = absint( $payload_data['thumbnail_id'] ?? 0 );
+
+		if ( ! $this->authorize( $course_id ) ) {
+			wp_send_json_error( [ 'message' =>  __( 'Unauthorized.', 'academy' ) ], 401 );
+		}
 
 		try {
 			$id = ( new Importers\Course( $payload['data'] ?? [], $course_id, $thumbnail_id ) )->insert();
@@ -37,5 +43,11 @@ class Ajax extends AbstractAjaxHandler {
 			wp_send_json_error( [ 'message' => $e->getMessage() ], 422 );
 		}
 	}
-
+	protected function authorize( int $course_id = 0 ) : bool {
+		if ( empty( $course_id ) ) {
+			$post_type_obj = get_post_type_object( 'academy_courses' );
+			return $post_type_obj && current_user_can( $post_type_obj->cap->create_posts );
+		}
+		return current_user_can( 'edit_post', $course_id );
+	}
 }

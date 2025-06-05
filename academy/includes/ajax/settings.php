@@ -101,7 +101,8 @@ class Settings extends AbstractAjaxHandler {
 			// chatgpt integration
 			'chatgpt_api_key'   => 'string',
 			'chatgpt_model'     => 'string',
-			'chatgpt_img_model' => 'string'
+			'chatgpt_img_model' => 'string',
+			'allow_instructor_to_use_chatgpt' => 'boolean'
 		]), $payload_data );
 
 		$default = BaseSettings::get_default_data();
@@ -183,6 +184,7 @@ class Settings extends AbstractAjaxHandler {
 			'chatgpt_api_key'   => $payload['chatgpt_api_key'] ?? $default['chatgpt_api_key'] ?? '',
 			'chatgpt_model'     => $payload['chatgpt_model'] ?? $default['chatgpt_model'] ?? '',
 			'chatgpt_img_model' => $payload['chatgpt_img_model'] ?? $default['chatgpt_img_model'] ?? '',
+			'allow_instructor_to_use_chatgpt' => $payload['allow_instructor_to_use_chatgpt'] ?? $default['allow_instructor_to_use_chatgpt'] ?? false
 		], $payload, $default ) );
 		do_action( 'academy/admin/after_save_settings', $is_update, 'base', $payload_data );
 		wp_send_json_success( $is_update );

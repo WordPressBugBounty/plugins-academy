@@ -103,6 +103,7 @@ class Base {
 			'chatgpt_api_key'   => '',
 			'chatgpt_model'     => 'gpt-3.5-turbo',
 			'chatgpt_img_model' => 'dall-e-2',
+			'allow_instructor_to_use_chatgpt' => false
 		]);
 	}
 
