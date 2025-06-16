@@ -30,7 +30,7 @@ class Ajax extends AbstractAjaxHandler {
 		$thumbnail_id = absint( $payload_data['thumbnail_id'] ?? 0 );
 
 		if ( ! $this->authorize( $course_id ) ) {
-			wp_send_json_error( [ 'message' =>  __( 'Unauthorized.', 'academy' ) ], 401 );
+			wp_send_json_error( [ 'message' => __( 'Unauthorized.', 'academy' ) ], 401 );
 		}
 
 		try {

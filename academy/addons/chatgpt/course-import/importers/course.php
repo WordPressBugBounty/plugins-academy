@@ -1,5 +1,6 @@
 <?php
 namespace AcademyChatgpt\CourseImport\Importers;
+
 use Academy\Helper;
 use Exception;
 if ( ! defined( 'ABSPATH' ) ) {

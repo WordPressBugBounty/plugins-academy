@@ -54,9 +54,7 @@ class Init extends AbstractAjaxHandler {
 	protected function authorize() : void {
 		if ( current_user_can( 'manage_options' ) ) {
 			return;
-		}
-		else if ( 
-			in_array( 'academy_instructor', array_values( wp_get_current_user()->roles ), true ) && 
+		} elseif ( in_array( 'academy_instructor', array_values( wp_get_current_user()->roles ), true ) &&
 			$this->get_setting( 'allow_instructor_to_use_chatgpt', true )
 		) {
 			return;
@@ -124,7 +122,7 @@ class Init extends AbstractAjaxHandler {
 		}
 
 		try {
-			$response = ( $model = new $this->models[ $this->img_model . ':' . $type ](
+			$response = ( $model = new $this->models[ $this->img_model() . ':' . $type ](
 				$this->api,
 				new $handler_class( $payload_data )
 			) )->request();

@@ -64,7 +64,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="academy-oops__icon">
 							<img src="<?php echo esc_url( ACADEMY_ASSETS_URI . 'images/NoDataAvailable.svg' ); ?>" alt="oops"></div>
 							<h3 class="academy-oops__heading"><?php esc_html_e( 'No data Available!!', 'academy' ); ?></h3>
-							<h3 class="academy-oops__text"><?php esc_html_e( 'No purchase data was found to see the available list here.', 'academy' ); ?></h3>
+							<h3 class="academy-oops__text"><?php esc_html_e( 'No data was found to see the available list here.', 'academy' ); ?></h3>
 						</div>
 				<?php endif; ?>
 		</div>

@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -322,6 +322,17 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.1.2 - 16/06/2025 =
+* Fixed - Astra theme conflict issues.
+* Fixed - WooCommerce integration “Add to Cart” button issue for courses.
+* Fixed - Wrong message shown when announcement table has no data.
+* Fixed - After setting the engine, deactivating the addon caused paid option not working.
+* Fixed - Learn page sub-curriculum topic toggle issue.
+* Fixed - When selecting a parent category in the category table, removing it and the parent column to not display.
+* Fixed - Quiz attempt details mobile responsiveness issue on the Learn page.
+* Fixed - 'LaTeX' backslashes were being removed when saving lesson text.
+* Fixed - Lesson title conflict issue with the 'Rank Math' plugin in learn page when php rendering is enabled.
 
 = 3.1.1 - 05/06/2025 =
 * Improved - Course generation with AI support for Instructor.

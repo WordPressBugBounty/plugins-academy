@@ -128,8 +128,13 @@ class Template {
 
 		return apply_filters( 'academy/frontend/post_type_archive_link', $link, $post_type );
 	}
+
 	public function pre_get_document_title( $title ) {
-		if ( class_exists( 'RankMath' ) ) {
+		$items = [ 'lesson', 'quiz', 'assignment', 'booking', 'zoom', 'meeting' ];
+		if ( 
+			class_exists( 'RankMath' ) &&  
+			! in_array( get_query_var( 'curriculum_type' ), $items, true ) 
+		) {
 			$page_id = (int) get_queried_object_id();
 			$course_page = (int) \Academy\Helper::get_settings( 'course_page' );
 			if ( $page_id === $course_page ) {

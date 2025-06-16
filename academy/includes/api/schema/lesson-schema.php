@@ -20,7 +20,7 @@ trait LessonSchema {
 				),
 				'lesson_author' => array(
 					'description'  => esc_html__( 'Lesson Author.', 'academy' ),
-					'type'         => 'string',
+					'type'         => array( 'string', 'integer' ),
 				),
 				'lesson_date' => array(
 					'description'  => esc_html__( 'Lesson Date.', 'academy' ),
@@ -98,7 +98,7 @@ trait LessonSchema {
 				'validate_callback' => 'rest_validate_request_arg',
 			],
 			'lesson_author'               => [
-				'type'   => 'string',
+				'type'         => array( 'string', 'integer' ),
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',
 			],
@@ -160,6 +160,10 @@ trait LessonSchema {
 					$sanitize_content = wp_kses( $content, $allowed_tags );
 
 					remove_all_filters( 'safe_style_css' );
+
+					$sanitize_content = str_replace( '–', '-', $sanitize_content ); // fix en dash
+					$sanitize_content = str_replace( '—', '-', $sanitize_content ); // fix em dash
+					$sanitize_content = str_replace( '\\', '\\\\', $sanitize_content ); // esc slash
 					return $sanitize_content;
 				},
 			],
