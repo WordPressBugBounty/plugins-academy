@@ -9,11 +9,11 @@ $announcement = get_post_meta( $course_id, 'academy_is_enabled_course_announceme
 ?>
 
 <div class="academy-lesson-tab__head" data-is-enable-qa="<?php echo esc_attr( $qa ); ?>" data-is-enable-announcement="<?php echo esc_attr( $announcement ); ?>">
-	<?php foreach ( $title_lists as $label ) :
-		$tabClassName = 'Q&A' === $label ? 'QnA' : $label;
+	<?php foreach ( $title_lists as $key => $label ) :
+		$tabClassName = [ 'Course Content', 'QnA', 'Announcement' ];
 		$label = 'Q&A' === $label ? __( 'Q&A', 'academy' ) : $label;
 		?>
-	<span role="presentation" class="academy-lesson-tab-nav <?php echo esc_attr( 'academy-lesson-tab-' . $tabClassName ); ?>">
+	<span role="presentation" class="academy-lesson-tab-nav <?php echo esc_attr( 'academy-lesson-tab-' . $tabClassName[ $key ] ); ?>">
 		<span class="academy-btn--label">
 			<?php echo esc_html( $label ); ?>
 		</span>

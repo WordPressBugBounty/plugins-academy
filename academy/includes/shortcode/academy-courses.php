@@ -30,7 +30,7 @@ class AcademyCourses {
 			'has_pagination'    => false
 		), $atts));
 		$args = [
-			'post_type'   => 'academy_courses',
+			'post_type'   => apply_filters( 'academy/get_course_archive_post_types', [ 'academy_courses' ] ),
 			'post_status' => 'publish',
 		];
 
@@ -120,11 +120,12 @@ class AcademyCourses {
 
 		if ( ! empty( $orderby ) ) {
 			switch ( $orderby ) {
-				case ( 'title' || 'name' ):
+				case 'title':
+				case 'name':
 					$args['orderby'] = 'post_title';
 					break;
 				case 'date':
-					$args['orderby'] = 'publish_date';
+					$args['orderby'] = 'date';
 					break;
 				case 'modified':
 					$args['orderby'] = 'modified';

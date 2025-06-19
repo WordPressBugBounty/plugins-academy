@@ -47,7 +47,7 @@ class Template {
 			} elseif ( is_post_type_archive( 'academy_courses' ) ) {
 				$paged = ( get_query_var( 'paged' ) ) ? absint( get_query_var( 'paged' ) ) : 1;
 				$orderby = ( get_query_var( 'orderby' ) ) ? get_query_var( 'orderby' ) : Academy\Helper::get_settings( 'course_archive_courses_order' );
-				$q->set( 'post_type', apply_filters( 'academy_course_archive_posts_type', array( 'academy_courses' ) ) );
+				$q->set( 'post_type', apply_filters( 'academy/course_archive_post_types', array( 'academy_courses' ) ) );
 				$q->set( 'posts_per_page', $per_page );
 				$q->set( 'paged', $paged );
 				if ( 'name' === $orderby ) {
@@ -131,9 +131,8 @@ class Template {
 
 	public function pre_get_document_title( $title ) {
 		$items = [ 'lesson', 'quiz', 'assignment', 'booking', 'zoom', 'meeting' ];
-		if ( 
-			class_exists( 'RankMath' ) &&  
-			! in_array( get_query_var( 'curriculum_type' ), $items, true ) 
+		if ( class_exists( 'RankMath' ) &&
+			! in_array( get_query_var( 'curriculum_type' ), $items, true )
 		) {
 			$page_id = (int) get_queried_object_id();
 			$course_page = (int) \Academy\Helper::get_settings( 'course_page' );

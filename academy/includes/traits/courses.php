@@ -1576,7 +1576,7 @@ trait Courses {
 		$comments = get_comments( $args );
 		foreach ( $comments as $comment ) {
 			$meta = get_comment_meta( $comment->comment_ID );
-			$comment->title = $meta['academy_question_title'] ? current( $meta['academy_question_title'] ) : '';
+			$comment->title = ! empty( $meta['academy_question_title'] ) ? current( $meta['academy_question_title'] ) : '';
 		}
 
 		return $comments;
@@ -1602,4 +1602,28 @@ trait Courses {
 
 		return false;
 	}
+
+	public static function get_search_courses( $search_keyword ) {
+		global $wpdb;
+
+		$wild = '%';
+		$like = $wild . $wpdb->esc_like( $search_keyword ) . $wild;
+
+		$post_status = [ 'publish', 'private' ];
+		$status_placeholders = implode( ',', array_fill( 0, count( $post_status ), '%s' ) );
+
+		$sql = "SELECT ID, post_title
+			FROM {$wpdb->posts}
+			WHERE (post_title LIKE %s OR CAST(ID AS CHAR) LIKE %s)
+			AND post_type = 'academy_courses'
+			AND post_status IN ($status_placeholders)
+		";
+
+		$params = array_merge( [ $like, $like ], $post_status );
+
+		$results = $wpdb->get_results( $wpdb->prepare( $sql, ...$params ) );
+
+		return $results;
+	}
+
 }

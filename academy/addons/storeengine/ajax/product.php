@@ -4,10 +4,11 @@ namespace AcademyStoreEngine\ajax;
 
 use Academy\Classes\AbstractAjaxHandler;
 use StoreEngine\Classes\Product\SimpleProduct;
-use StoreEngine\Utils\Helper;
 use StoreEngine\Integrations\IntegrationTrait;
+use StoreEngine\Utils\Helper;
 
 class Product extends AbstractAjaxHandler {
+
 	use IntegrationTrait;
 
 	protected $namespace = ACADEMY_PLUGIN_SLUG . '_storeengine';
@@ -16,21 +17,36 @@ class Product extends AbstractAjaxHandler {
 		$this->init_integration();
 
 		$this->actions = array(
-			'get_product'  => array(
+			'get_product_list' => array(
+				'callback'   => array( $this, 'get_product_list' ),
+				'capability' => 'manage_academy_instructor',
+			),
+			'get_product'      => array(
 				'callback'   => array( $this, 'get_product' ),
 				'capability' => 'manage_academy_instructor',
 			),
-			'save_product' => array(
+			'save_product'     => array(
 				'callback'   => array( $this, 'save_product' ),
 				'capability' => 'manage_academy_instructor',
 			),
 		);
 	}
 
+	public function get_product_list( array $payload ) {
+		if ( ! isset( $payload['integration_id'] ) ) {
+			wp_send_json_error( [
+				'message' => __( 'integration_id is required', 'storeengine' )
+			] );
+		}
+
+		$search         = isset( $payload['search'] ) ? sanitize_text_field( wp_unslash( $payload['search'] ) ) : '';
+		$integration_id = absint( $payload['integration_id'] );
+		$provider       = isset( $payload['provider'] ) ? sanitize_text_field( $payload['provider'] ) : 'storeengine/academylms';
+		wp_send_json_success( Helper::get_product_list( $integration_id, $provider, $search ) );
+	}
+
 	protected function set_integration_config(): void {
 		$this->integration_name = 'storeengine/academylms';
-		$this->item_meta        = 'academy_store_product';
-		$this->product_meta     = '_academy_course_id';
 	}
 
 	public function get_product( array $payload ) {
@@ -41,29 +57,23 @@ class Product extends AbstractAjaxHandler {
 		}
 
 		$this->item_id = absint( sanitize_text_field( $payload['course_id'] ) );
-		$this->get_product_integrations();
+		$this->get_integrations();
 	}
 
-	public function create_or_update_product() {
-		$product_id = $this->get_product_id();
-		$product    = new SimpleProduct( $product_id );
-
+	public function create_product(): SimpleProduct {
+		$product = new SimpleProduct();
 		$product->set_name( $this->item_title );
 		$product->set_author_id( get_current_user_id() );
+		$product->set_hide( true );
+		$product->set_shipping_type( 'digital' );
+		$product->set_digital_auto_complete( true );
 		$product->save();
 
 		if ( ! $product->get_id() ) {
 			wp_send_json_error( [ 'message' => __( 'Could not create product!', 'storeengine' ) ] );
 		}
 
-		if ( 0 === $product_id ) {
-			update_post_meta( $this->item_id, $this->item_meta, $product->get_id() );
-			$product->update_metadata( $this->product_meta, $this->item_id );
-			$product->set_hide( true );
-			$product->save();
-		}
-
-		$this->product = $product;
+		return $product;
 	}
 
 	public function save_product( array $payload ) {
@@ -90,14 +100,6 @@ class Product extends AbstractAjaxHandler {
 		// handle integrations
 		$this->handle_integrations();
 
-		wp_send_json_success( [
-			'product' => [
-				'id'     => $this->product->get_id(),
-				'name'   => $this->product->get_name(),
-				'prices' => array_values( array_map( function ( $integration ) {
-					return $this->format_price( $integration->price );
-				}, $this->saved_integrations ) )
-			]
-		] );
+		$this->get_integrations();
 	}
 }
