@@ -87,6 +87,7 @@ class Base {
 			'is_enabled_instructor_review' => true,
 			// Frontend dashboard
 			'academy_frontend_dashboard_redirect_login_page'  => 'academy_login',
+			'academy_frontend_dashboard_redirect_login_url' => '',
 			// WooCommerce
 			'woo_force_login_before_enroll' => true,
 			'hide_course_product_from_shop_page' => false,

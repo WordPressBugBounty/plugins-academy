@@ -24,7 +24,7 @@ trait Earning {
 			'deduct_fees_amount'       => '',
 			'deduct_fees_name'         => '',
 			'deduct_fees_type'         => '',
-			'process_by'               => 'woocommerce',
+			'process_by'               => '',
 			'created_at'               => gmdate( 'Y-m-d H:i:s', \Academy\Helper::get_time() ),
 		);
 		$args     = wp_parse_args( $args, $defaults );

@@ -70,7 +70,7 @@ class Integration {
 		$course = \Academy\Helper::download_belongs_with_course( $download_id );
 
 		if ( $course ) {
-			\Academy\Helper::save_instructor_earnings( $course, $download_details, $download_id );
+			\Academy\Helper::save_instructor_earnings( $course->post_id, $download_details, $download_id );
 		}//end if
 	}
 }

@@ -63,7 +63,7 @@ if ( ! empty( $pending_enrolled_courses ) ) :
 						<h3><a href="<?php echo esc_url( get_permalink( $course_id ) ); ?>"><?php echo esc_html( $course_title ); ?></a></h3>
 						<div class="academy-course__meta">
 							<div class="academy-course__meta-item"><?php echo esc_html__( 'Total Topics:', 'academy' ); ?><span><?php echo esc_html( $total_topics ); ?></span></div>
-							<div class="academy-course__meta-item"><?php echo esc_html__( 'Completed Topics:', 'academy' ); ?><span><?php echo esc_html( $total_topics . '/' . $total_completed_topics ); ?></span>
+							<div class="academy-course__meta-item"><?php echo esc_html__( 'Completed Topics:', 'academy' ); ?><span><?php echo esc_html( $total_completed_topics . '/' . $total_topics ); ?></span>
 							</div>
 						</div>
 						<div class="academy-progress-wrap">
@@ -74,7 +74,7 @@ if ( ! empty( $pending_enrolled_courses ) ) :
 							<span class="academy-progress-wrap__percent"><?php echo esc_attr( $percentage ) . '%'; ?><?php echo esc_html__( ' Complete', 'academy' ); ?></span>
 						</div>
 						<div class="academy-widget-enroll__continue">
-						<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $course_permalink ); ?>"><?php echo esc_html__( 'Start Course', 'academy' ); ?></a></div>
+						<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $course_permalink ); ?>"><?php echo $total_completed_topics ? esc_html__( 'Continue Course', 'academy' ) : esc_html__( 'Start Course', 'academy' ); ?></a></div>
 						<div class="academy-widget-enroll__view_details" data-id="<?php echo esc_attr( $course_id ); ?>">
 							<button class="academy-btn academy-btn--bg-purple">
 								<?php

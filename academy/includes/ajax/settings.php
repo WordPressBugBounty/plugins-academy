@@ -47,6 +47,7 @@ class Settings extends AbstractAjaxHandler {
 			// dashboard
 			'is_enable_apply_instructor_menu' => 'boolean',
 			'academy_frontend_dashboard_redirect_login_page' => 'string',
+			'academy_frontend_dashboard_redirect_login_url' => 'url',
 			// Lesson
 			'lessons_page' => 'integer',
 			'is_enabled_lessons_php_render' => 'boolean',
@@ -105,6 +106,12 @@ class Settings extends AbstractAjaxHandler {
 			'allow_instructor_to_use_chatgpt' => 'boolean'
 		]), $payload_data );
 
+		$redirect_login_url = $payload['academy_frontend_dashboard_redirect_login_url'] ?? $default['academy_frontend_dashboard_redirect_login_url'];
+		$redirect_login_page = $payload['academy_frontend_dashboard_redirect_login_page'] ?? $default['academy_frontend_dashboard_redirect_login_page'];
+		if ( 'custom_login' === $redirect_login_page ) {
+			self::check_redirect_login_url_is_valid( $redirect_login_url );
+		}
+
 		$default = BaseSettings::get_default_data();
 		$is_update = BaseSettings::save_settings( apply_filters( 'academy/admin/settings/save', [
 			'is_enabled_academy_web_font' => $payload['is_enabled_academy_web_font'] ?? $default['is_enabled_academy_web_font'],
@@ -131,7 +138,8 @@ class Settings extends AbstractAjaxHandler {
 			'academy_primary_certificate_id' => $payload['academy_primary_certificate_id'] ?? $default['academy_primary_certificate_id'],
 			// Dashboard
 			'is_enable_apply_instructor_menu' => $payload['is_enable_apply_instructor_menu'] ?? $default['is_enable_apply_instructor_menu'],
-			'academy_frontend_dashboard_redirect_login_page' => $payload['academy_frontend_dashboard_redirect_login_page'] ?? $default['academy_frontend_dashboard_redirect_login_page'],
+			'academy_frontend_dashboard_redirect_login_page' => $redirect_login_page,
+			'academy_frontend_dashboard_redirect_login_url' => $redirect_login_url,
 			// Lessons
 			'academy_is_hp_lesson_active' => $payload['academy_is_hp_lesson_active'] ?? $default['academy_is_hp_lesson_active'],
 			'lessons_page' => $payload['lessons_page'] ?? $default['lessons_page'],
@@ -188,6 +196,39 @@ class Settings extends AbstractAjaxHandler {
 		], $payload, $default ) );
 		do_action( 'academy/admin/after_save_settings', $is_update, 'base', $payload_data );
 		wp_send_json_success( $is_update );
+	}
+
+	public static function check_redirect_login_url_is_valid( $auth_redirect_url ) {
+		if ( ! $auth_redirect_url ) {
+			wp_send_json_error( [
+				'message' => __( 'Login URL is required.', 'academy' )
+			], 400 );
+		} else {
+			if ( filter_var( $auth_redirect_url, FILTER_VALIDATE_URL ) === false ) {
+				wp_send_json_error( [
+					'message' => __( 'Login URL is invalid.', 'academy' )
+				], 400 );
+			}
+
+			if ( is_ssl() && ! str_starts_with( $auth_redirect_url, 'https://' ) ) {
+				wp_send_json_error( [
+					'message' => __( 'Invalid dashboard login redirect URL. Please use secure (https) URL.', 'academy' )
+				], 400 );
+			}
+
+			if ( str_starts_with( $auth_redirect_url, \Academy\Helper::get_page_permalink( 'frontend_dashboard_page' ) ) ) {
+				// Prevent redirect loop.
+				wp_send_json_error( [
+					'message' => __( 'Dashboard URL is not allowed. Please use academy as auth redirect instead.', 'academy' )
+				], 400 );
+			}
+
+			if ( ! wp_validate_redirect( $auth_redirect_url ) ) {
+				wp_send_json_error( [
+					'message' => __( 'Login URL is not allowed.', 'academy' )
+				], 400 );
+			}
+		}//end if
 	}
 
 }

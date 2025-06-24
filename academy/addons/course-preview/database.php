@@ -42,7 +42,7 @@ class Database {
 
 	public function course_preview_rest_pre_insert_lesson_meta( $lesson_meta, $request, $schema ) {
 		if ( ! empty( $schema['meta']['properties']['is_previewable'] ) && isset( $request['meta']['is_previewable'] ) ) {
-			$lesson_meta->is_previewable = $request['meta']['is_previewable'];
+			$lesson_meta->is_previewable = (bool) $request['meta']['is_previewable'];
 		}
 
 		return $lesson_meta;
@@ -50,7 +50,7 @@ class Database {
 
 	public function course_preview_rest_prepare_meta_item( $data, $lesson_meta, $request, $schema ) {
 		if ( isset( $schema['meta']['properties']['is_previewable'] ) && isset( $lesson_meta['is_previewable'] ) ) {
-			$data['is_previewable'] = $lesson_meta['is_previewable'];
+			$data['is_previewable'] = (bool) $lesson_meta['is_previewable'];
 		}
 		return $data;
 	}

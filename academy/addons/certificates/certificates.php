@@ -49,7 +49,6 @@ final class Certificates implements AddonInterface {
 		Database::init();
 		Assets::init();
 		Frontend::init();
-		Ajax::init();
 		Api::init();
 	}
 

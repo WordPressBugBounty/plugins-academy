@@ -40,6 +40,9 @@ class AcademyDashboard {
 				case 'default':
 					wp_safe_redirect( wp_login_url( get_the_permalink() ) );
 					exit;
+				case 'custom_login':
+					wp_safe_redirect( \Academy\Helper::get_settings( 'academy_frontend_dashboard_redirect_login_url' ) );
+					exit;
 				default:
 					echo do_shortcode( $default_form_shortcode );
 					break;

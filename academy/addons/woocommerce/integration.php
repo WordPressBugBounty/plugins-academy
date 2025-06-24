@@ -208,7 +208,7 @@ class Integration {
 		$product_id = $item->get_product_id();
 		$course     = \Academy\Helper::product_belongs_with_course( $product_id );
 		if ( $course ) {
-			\Academy\Helper::save_instructor_earnings( $course, $item, $order_id );
+			\Academy\Helper::save_instructor_earnings( $course->post_id, $item, $order_id );
 		}//end if
 	}
 	public function save_earning_data_status_change( $order_id, $status_from, $status_to ) {

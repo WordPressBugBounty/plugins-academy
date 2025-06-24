@@ -160,7 +160,7 @@ class Membership extends AbstractAjaxHandler {
 		$current_membership = 'post-' . $course_id . '-|';
 
 		foreach ( $specifics as $key => $specific ) {
-			if ( $specific === $current_membership ) {
+			if ( $specific['value'] === $current_membership ) {
 				if ( $is_remove ) {
 					unset( $specifics[ $key ] );
 				} else {

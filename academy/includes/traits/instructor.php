@@ -275,13 +275,15 @@ trait Instructor {
 		return $user_id;
 	}
 
-	public static function save_instructor_earnings( $course, $order, $order_id ) {
-		$course_id    = $course->post_id;
+	public static function save_instructor_earnings( $course_id, $order, $order_id ) {
 		$user_id      = \Academy\Helper::get_user_id_from_course_id( $course_id );
-
-		if ( 'woocommerce' === \Academy\Helper::get_settings( 'monetize_engine' ) ) {
+		$monetize_engine = \Academy\Helper::monetization_engine();
+		if ( 'woocommerce' === $monetize_engine ) {
 			$order_status = \Academy\Helper::get_order_status_by_id( $order_id );
 			$total_price              = $order->get_total();
+		} elseif ( 'storeengine' === $monetize_engine ) {
+			$order_status = $order->get_status();
+			$total_price = $order->get_total();
 		} else {
 			$order_status = 'completed';
 			$total_price = $order['subtotal'];
@@ -347,8 +349,9 @@ trait Instructor {
 			'admin_amount'             => $admin_amount,
 			'admin_rate'               => $admin_rate,
 			'commission_type'          => $commission_type,
+			'process_by'               => $monetize_engine,
 		);
-		$data         = apply_filters( 'academy/integration/woocommerce/insert_earning_args', array_merge( $earning_data, $fees_deduct_data ) );
+		$data         = apply_filters( 'academy/instructor/insert_earning_args', array_merge( $earning_data, $fees_deduct_data ) );
 		self::insert_earning( $data );
 	}
 }
