@@ -37,11 +37,19 @@ class AcademySingleCourse {
 	public function single_course_additional_info( $attributes, $content = '' ) {
 		ob_start();
 
+		$benefits     = \Academy\Helper::string_to_array( get_post_meta( get_the_ID(), 'academy_course_benefits', true ) );
 		$audience     = \Academy\Helper::string_to_array( get_post_meta( get_the_ID(), 'academy_course_audience', true ) );
 		$requirements = \Academy\Helper::string_to_array( get_post_meta( get_the_ID(), 'academy_course_requirements', true ) );
 		$materials    = \Academy\Helper::string_to_array( get_post_meta( get_the_ID(), 'academy_course_materials_included', true ) );
 		$tabs_nav     = [];
 		$tabs_content = [];
+		if ( is_array( $benefits ) && count( $benefits ) > 0 ) {
+			\Academy\Helper::get_template(
+			'single-course/benefits.php', 
+			apply_filters( 'academy/single_course_content_benefits_args', 
+			[ 'benefits' => $benefits ] 
+			));
+		}
 		if ( is_array( $audience ) && count( $audience ) > 0 ) {
 			$tabs_nav['audience']     = esc_html__( 'Targeted Audience', 'academy' );
 			$tabs_content['audience'] = $audience;

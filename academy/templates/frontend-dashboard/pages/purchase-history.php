@@ -6,40 +6,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 
-<div class="kzui-table kzui-table--purchase ">
-	<div class="kzui-table__container">
-		<div class="kzui-table__table kzui-table--has-slider">
-			<div class="kzui-table__head">
-				<div class="kzui-table__head-row">
-					<div class="kzui-table__row-cell kzui-table__row-cell-checkbox">
+<div class="academy-table academy-table--purchase ">
+	<div class="academy-table__container">
+		<div class="academy-table__table academy-table--has-slider">
+			<div class="academy-table__head">
+				<div class="academy-table__head-row">
+					<div class="academy-table__row-cell academy-table__row-cell-checkbox">
 						<input type="checkbox"></div>
-						<div class="kzui-table__row-cell kzui-table__header-row-cell"><?php echo esc_html__( 'ID', 'academy' ); ?></div>
-						<div class="kzui-table__row-cell kzui-table__header-row-cell"><?php echo esc_html__( 'Courses', 'academy' ); ?></div>
-						<div class="kzui-table__row-cell kzui-table__header-row-cell"><?php echo esc_html__( 'Amount', 'academy' ); ?></div>
-						<div class="kzui-table__row-cell kzui-table__header-row-cell"><?php echo esc_html__( 'Status', 'academy' ); ?></div>
-						<div class="kzui-table__row-cell kzui-table__header-row-cell"><?php echo esc_html__( 'Date', 'academy' ); ?></div>
+						<div class="academy-table__row-cell academy-table__header-row-cell"><?php echo esc_html__( 'ID', 'academy' ); ?></div>
+						<div class="academy-table__row-cell academy-table__header-row-cell"><?php echo esc_html__( 'Courses', 'academy' ); ?></div>
+						<div class="academy-table__row-cell academy-table__header-row-cell"><?php echo esc_html__( 'Amount', 'academy' ); ?></div>
+						<div class="academy-table__row-cell academy-table__header-row-cell"><?php echo esc_html__( 'Status', 'academy' ); ?></div>
+						<div class="academy-table__row-cell academy-table__header-row-cell"><?php echo esc_html__( 'Date', 'academy' ); ?></div>
 					</div>
 				</div>
-				<div class="kzui-table__body">
+				<div class="academy-table__body">
 				<?php if ( ! empty( $orders ) ) : ?>
 					<?php  // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 					foreach ( $orders as $order ) : ?>
 
-						<div class="kzui-table__body-row">
+						<div class="academy-table__body-row">
 
-						<div class="kzui-table__row-cell">
+						<div class="academy-table__row-cell">
 							<div class=""><?php echo esc_html( $order['ID'] ); ?> </div>
 						</div>
-						<div class="kzui-table__row-cell">
+						<div class="academy-table__row-cell">
 						<div class="academy-table-title">
 								<?php foreach ( $order['courses'] as $course ) : ?>
 								<p><a href="<?php echo esc_html( $course['permalink'] ); ?> "><?php echo esc_html( $course['title'] ); ?></a></p>
 								<?php endforeach; ?>
 							</div>
 						</div>
-						<div class="kzui-table__row-cell"><?php echo wp_kses_post( $order['price'] ); ?></div>
-						<div class="kzui-table__row-cell"><?php echo wp_kses_post( $order['status'] ); ?></div>
-							<div class="kzui-table__row-cell">
+						<div class="academy-table__row-cell"><?php echo wp_kses_post( $order['price'] ); ?></div>
+						<div class="academy-table__row-cell"><?php echo wp_kses_post( $order['status'] ); ?></div>
+							<div class="academy-table__row-cell">
 							<div class=""><?php echo esc_html( $order['date'] ); ?></div>
 						</div>
 				</div>

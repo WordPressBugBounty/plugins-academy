@@ -100,13 +100,13 @@ class FrontendDashboard extends Base implements DynamicStyleInterface {
 				$table_css .= "border-color: $table_border_color !important;";
 			}
 			if ( $table_css ) {
-				$css .= ".kzui-table {
+				$css .= ".academy-table  {
 					$table_css
 				}";
 			}
 		}
 		if ( $table_color ) {
-			$css .= ".kzui-table {
+			$css .= ".academy-table  {
                 color: $table_color;
             }";
 		}

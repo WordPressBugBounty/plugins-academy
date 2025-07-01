@@ -18,36 +18,36 @@ $latest_attempt_grade = apply_filters( 'academy_quizzes/grade_book/latest_attemp
 	<div class='academy-list-wrap academy-dashboard__content'>
 		<div class="academy-quiz-table-wrapper">
 			<div class="academy-list-wrap academy-dashboard__content">
-				<div class="kzui-table kzui-table--quiz-result-overview">
-					<div class="kzui-table__container">
-						<div class="kzui-table__table kzui-table--has-slider">
-							<div class="kzui-table__head">
-								<div class="kzui-table__head-row">
-									<div class="kzui-table__row-cell kzui-table__header-row-cell">
+				<div class="academy-table academy-table--quiz-result-overview">
+					<div class="academy-table__container">
+						<div class="academy-table__table academy-table--has-slider">
+							<div class="academy-table__head">
+								<div class="academy-table__head-row">
+									<div class="academy-table__row-cell academy-table__header-row-cell">
 										<?php echo esc_html__( 'Date', 'academy' ); ?>
 									</div>
-									<div class="kzui-table__row-cell kzui-table__header-row-cell">
+									<div class="academy-table__row-cell academy-table__header-row-cell">
 										<?php echo esc_html__( 'Questions', 'academy' ); ?>
 									</div>
-									<div class="kzui-table__row-cell kzui-table__header-row-cell">
+									<div class="academy-table__row-cell academy-table__header-row-cell">
 										<?php echo esc_html__( 'Marks', 'academy' ); ?>
 									</div>
-									<div class="kzui-table__row-cell kzui-table__header-row-cell">
+									<div class="academy-table__row-cell academy-table__header-row-cell">
 										<?php echo esc_html__( 'Answers', 'academy' ); ?>
 									</div>
-									<div class="kzui-table__row-cell kzui-table__header-row-cell">
+									<div class="academy-table__row-cell academy-table__header-row-cell">
 										<?php echo esc_html__( 'Result', 'academy' ); ?>
 									</div>
 									<?php if ( ! empty( $latest_attempt_grade ) ) { ?>
-										<div class="kzui-table__row-cell kzui-table__header-row-cell">
+										<div class="academy-table__row-cell academy-table__header-row-cell">
 											<?php echo esc_html__( 'Final Grade', 'academy' ); ?>
 										</div>
 									<?php } ?>
 								</div>
 							</div>
-							<div class="kzui-table__body">
-								<div class="kzui-table__body-row">
-									<div class="kzui-table__row-cell">
+							<div class="academy-table__body">
+								<div class="academy-table__body-row">
+									<div class="academy-table__row-cell">
 									<?php
 										$attempt_date = new DateTime( $quiz_attempt->attempt_started_at );
 									?>
@@ -60,7 +60,7 @@ $latest_attempt_grade = apply_filters( 'academy_quizzes/grade_book/latest_attemp
 											</p>
 										</div>
 									</div>
-									<div class="kzui-table__row-cell">
+									<div class="academy-table__row-cell">
 										<div class="academy-items-column">
 											<p>
 												<b><?php echo esc_html__( 'Total : ', 'academy' ); ?></b> <?php echo esc_html( $quiz_attempt->total_questions ); ?>
@@ -70,7 +70,7 @@ $latest_attempt_grade = apply_filters( 'academy_quizzes/grade_book/latest_attemp
 											</p>
 										</div>
 									</div>
-									<div class="kzui-table__row-cell">
+									<div class="academy-table__row-cell">
 										<div class="academy-items-column">
 											<p>
 												<b><?php echo esc_html__( 'Total : ', 'academy' ); ?></b> <?php echo esc_html( $quiz_attempt->total_marks ); ?>
@@ -80,7 +80,7 @@ $latest_attempt_grade = apply_filters( 'academy_quizzes/grade_book/latest_attemp
 											</p>
 										</div>
 									</div>
-									<div class="kzui-table__row-cell">
+									<div class="academy-table__row-cell">
 										<div class="academy-items-column">
 											<p>
 												<b><?php echo esc_html__( 'Correct : ', 'academy' ); ?></b> <?php echo esc_html( $correct_answers ); ?>
@@ -90,13 +90,13 @@ $latest_attempt_grade = apply_filters( 'academy_quizzes/grade_book/latest_attemp
 											</p>
 										</div>
 									</div>
-									<div class="kzui-table__row-cell">
+									<div class="academy-table__row-cell">
 										<span class="academy-<?php echo esc_attr( $quiz_attempt->attempt_status ); ?>">
 											<?php echo esc_html( $quiz_attempt->attempt_status ); ?>
 										</span>
 									</div>
 									<?php if ( ! empty( $latest_attempt_grade ) ) { ?>
-										<div class="kzui-table__row-cell">
+										<div class="academy-table__row-cell">
 											<div class="academy-table-title-wrap">
 												<div class="academy-table-title">
 													<div class="academy-grade-color" style="background: <?php echo esc_attr( $latest_attempt_grade->grade_config['grade_color'] ); ?>">

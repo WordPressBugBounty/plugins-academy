@@ -243,7 +243,7 @@ class Template {
 				);
 			} elseif ( 'embedded' === $type ) {
 				$embed = Helper::parse_embedded_url( $intro_video[1] );
-				$output .= sprintf( '<div class="academy-embed-responsive academy-embed-responsive-16by9"><iframe class="academy-embed-responsive-item" src="%s" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>', esc_url( $embed['url'] ) );
+				$output .= sprintf( '<div class="academy-embed-responsive"><iframe class="academy-embed-responsive-item" src="%s" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>', esc_url( $embed['url'] ) );
 			} elseif ( 'youtube' === $type || 'vimeo' === $type ) {
 				$embed = Helper::get_basic_url_to_embed_url( $intro_video[1] );
 				$output .= sprintf( '<div class="academy-plyr plyr__video-embed" id="academyPlayer"><iframe src="%s" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>', esc_url( $embed['url'] ) );

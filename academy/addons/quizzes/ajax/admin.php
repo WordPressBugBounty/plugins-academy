@@ -34,7 +34,7 @@ class Admin extends AbstractAjaxHandler {
 		$instructor_feedback = ( isset( $payload['instructor_feedback'] ) ? $payload['instructor_feedback'] : '' );
 		// get exising attempt
 		$attempt = (array) Query::get_quiz_attempt( $attempt_id );
-		$attempt_info = json_decode( $attempt['attempt_info'], true );
+		$attempt_info[] = json_decode( $attempt['attempt_info'], true );
 		// prepare
 		$attempt_info['instructor_feedback'] = $instructor_feedback;
 		$attempt['attempt_info'] = wp_json_encode( $attempt_info );

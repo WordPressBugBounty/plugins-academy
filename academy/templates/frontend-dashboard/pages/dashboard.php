@@ -21,36 +21,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 <?php if ( current_user_can( 'manage_academy_instructor' ) ) :
 	; ?>
 
-<div class="kzui-table kzui-table--dashboard-course">
-<div class="kzui-table__container">
-		<div class="kzui-table__table kzui-table--has-slider">
-			<div class="kzui-table__head">
-				<div class="kzui-table__head-row">
-						<div class="kzui-table__row-cell kzui-table__header-row-cell">
+<div class="academy-table academy-table--dashboard-course">
+<div class="academy-table__container">
+		<div class="academy-table__table academy-table--has-slider">
+			<div class="academy-table__head">
+				<div class="academy-table__head-row">
+						<div class="academy-table__row-cell academy-table__header-row-cell">
 							<?php echo esc_html__( 'Course Name', 'academy' ); ?> 
 						</div>
-						<div class="kzui-table__row-cell kzui-table__header-row-cell">
+						<div class="academy-table__row-cell academy-table__header-row-cell">
 							<?php echo esc_html__( 'Enrolled Course', 'academy' ); ?>
 						</div>
-						<div class="kzui-table__row-cell kzui-table__header-row-cell">
+						<div class="academy-table__row-cell academy-table__header-row-cell">
 							<?php echo esc_html__( 'Course Review', 'academy' ); ?>
 						</div>
 					</div>
 				</div>
-				<div class="kzui-table__body">
+				<div class="academy-table__body">
 				<?php if ( ! empty( $course_ids ) ) : ?>
 					<?php  // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 					foreach ( $course_ids as $id ) : ?>
-						<div class="kzui-table__body-row">
+						<div class="academy-table__body-row">
 
-						<div class="kzui-table__row-cell">
+						<div class="academy-table__row-cell">
 							<div class=""><?php echo esc_html( get_the_title( $id ) ); ?></div>
 						</div>
 
-						<div class="kzui-table__row-cell">
+						<div class="academy-table__row-cell">
 							<?php echo esc_html( \Academy\Helper::count_course_enrolled( $id ) ); ?>
 						</div>
-						<div class="kzui-table__row-cell">
+						<div class="academy-table__row-cell">
 							<?php
 							$rating = \Academy\Helper::get_course_rating( $id );
 							$rating_markup = \Academy\Helper::star_rating_generator( $rating->rating_avg );

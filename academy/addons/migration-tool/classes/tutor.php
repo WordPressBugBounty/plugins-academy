@@ -222,7 +222,7 @@ class Tutor  extends Migration implements MigrationInterface {
 		// course language
 		add_post_meta( $id, 'academy_course_language', '' );
 		// intro video
-		$source       = $this->set_video_source( get_post_meta( $id, '_video', true ) );
+		$source       = $this->set_video_source( (array) get_post_meta( $id, '_video', true ) );
 		if ( ! empty( $source ) ) {
 			$intro_video = array(
 				$source['type'],
@@ -302,11 +302,10 @@ class Tutor  extends Migration implements MigrationInterface {
 
 	public function migrate_course_lesson( $item ) {
 		$lesson_title = sanitize_text_field( $item->post_title );
-		$existing_lesson = Helper::get_lesson_by_title( $lesson_title );
-
+		$existing_lesson = (array) Helper::get_lesson_by_title( $lesson_title );
 		if ( $existing_lesson ) {
 			return [
-				'id'   => $existing_lesson->ID,
+				'id'   => $existing_lesson['ID'],
 				'name' => $lesson_title,
 				'type' => 'lesson',
 			];
@@ -321,6 +320,13 @@ class Tutor  extends Migration implements MigrationInterface {
 		];
 
 		$lesson_id = \Academy\Classes\Query::lesson_insert( $lesson_data );
+		if ( ! $lesson_id ) {
+			return [
+				'id'   => 0,
+				'name' => 'Not valid lesson',
+				'type' => 'lesson',
+			];
+		}
 		$is_previewable = (bool) get_post_meta( $item->ID, '_is_preview', true );
 
 		$video_durations = [
@@ -339,7 +345,7 @@ class Tutor  extends Migration implements MigrationInterface {
 			}
 		}
 
-		$video_source = $videos ? $this->set_video_source( $videos ) : [];
+		$video_source = $videos ? $this->set_video_source( (array) $videos ) : [];
 		$featured = get_post_meta( $item->ID, '_thumbnail_id', true );
 
 		$lesson_meta = [

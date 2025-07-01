@@ -688,7 +688,7 @@ class Helper {
 	}
 
 	public static function get_basic_url_to_embed_url( $url ) {
-		$embedObject = self::oembed_get( $url );
+		$embedObject = wp_oembed_get( $url, $args = '' );
 		if ( $embedObject ) {
 			return self::parse_embedded_url( $embedObject->html );
 		}
@@ -697,12 +697,6 @@ class Helper {
 			'url'   => self::generate_video_embed_url( $url ),
 			'allow' => '',
 		);
-	}
-
-	public static function oembed_get( $url, $args = '' ) {
-		$oembed = _wp_oembed_get_object();
-
-		return $oembed->get_data( $url, $args );
 	}
 
 	public static function minify_css( $css ) {

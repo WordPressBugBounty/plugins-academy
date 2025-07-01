@@ -35,7 +35,6 @@ if ( ! empty( $lesson_meta['video_source']['type'] ) ) {
 			break;
 
 		case 'external':
-		case 'embedded':
 			$video = $lesson_meta['video_source'];
 			// first check external URL contain html5 video or not
 			if ( \Academy\Helper::is_html5_video_link( $video['url'] ) ) {
@@ -50,6 +49,16 @@ if ( ! empty( $lesson_meta['video_source']['type'] ) ) {
 
 			$template_path = 'curriculums/lesson/' . ( 'html5' === $video['type'] ? 'html5.php' : 'external.php' );
 			$template_args = $video['url'];
+			break;
+		case 'embedded':
+			$video = $lesson_meta['video_source'];
+			$host_url = \Academy\Helper::generate_video_embed_url( $video['url'] );
+			$path = 'external.php';
+			if ( $video['url'] == $host_url ) {
+				$path  = 'embedded.php';
+			}
+			$template_path = 'curriculums/lesson/' . $path;
+			$template_args = \Academy\Helper::get_basic_url_to_embed_url( $video['url'] );
 			break;
 		case 'short_code':
 			$short_code = \Academy\Helper::get_content_html( stripslashes( $lesson_meta['video_source']['url'] ) );
