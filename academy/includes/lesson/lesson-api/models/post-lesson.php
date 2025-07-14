@@ -131,8 +131,6 @@ class PostLesson extends Base\Lesson {
 	public function save_data() : void {
 		if ( array_key_exists( 'ID', $this->data ) && absint( $this->data['ID'] ) === 0 ) {
 			unset( $this->data['ID'] );
-			$this->data['post_date']     = current_time( 'mysql' );
-			$this->data['post_date_gmt'] = current_time( 'mysql' );
 		}
 
 		if ( ! array_key_exists( 'ID', $this->data ) ) {

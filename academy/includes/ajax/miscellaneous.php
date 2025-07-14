@@ -56,6 +56,14 @@ class Miscellaneous extends AbstractAjaxHandler {
 				'callback'   => array( $this, 'get_user_purchase_history' ),
 				'capability' => 'read'
 			),
+			'insert_lesson_comment' => array(
+				'callback'   => array( $this, 'insert_lesson_comment' ),
+				'capability' => 'read'
+			),
+			'get_lesson_comment' => array(
+				'callback'   => array( $this, 'get_lesson_comment' ),
+				'capability' => 'read'
+			),
 		);
 	}
 
@@ -310,4 +318,82 @@ class Miscellaneous extends AbstractAjaxHandler {
 		}//end if
 		wp_send_json_success( array_reverse( $results ) );
 	}
+
+	public function insert_lesson_comment( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload([
+			'post' => 'integer',
+			'lesson_id' => 'integer',
+			'parent' => 'integer',
+			'content' => 'string',
+		], $payload_data );
+
+		$course_id = isset( $payload['post'] ) ? $payload['post'] : 0;
+		$lesson_id = isset( $payload['lesson_id'] ) ? $payload['lesson_id'] : 0;
+		$current_user = wp_get_current_user();
+		if ( current_user_can( 'administrator' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
+			$comment_data = array(
+				'comment_post_ID'      => $lesson_id,
+				'comment_parent'       => $payload['parent'] ?? '0',
+				'comment_content'      => $payload['content'],
+				'comment_approved'     => true,
+				'comment_type'         => 'comment',
+				'user_id'              => $current_user->ID,
+				'comment_author'       => $current_user->user_login,
+				'comment_author_email' => $current_user->user_email,
+				'comment_author_url'   => $current_user->user_url,
+				'comment_agent'        => 'Academy',
+				'comment_meta'         => array(
+					'academy_comment_course_id' => $course_id ?? '0'
+				)
+			);
+
+			$comment_id = wp_insert_comment( $comment_data );
+			$comment = ( new \Academy\API\QuestionAnswer() )->prepare_comment_for_response( get_comment( $comment_id ) );
+
+			do_action( 'academy/frontend/insert_course_lesson_comments', $comment );
+			wp_send_json_success( $comment );
+
+		}//end if
+		wp_die( 'You do not have the permission to do this.' );
+	}
+
+	public function get_lesson_comment( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload([
+			'course_id' => 'integer',
+			'lesson_id' => 'integer',
+		], $payload_data );
+
+		$course_id = $payload['course_id'] ?? 0;
+		$lesson_id = $payload['lesson_id'] ?? 0;
+
+		if ( ! $lesson_id ) {
+			wp_send_json_success( [] );
+		}
+
+		$current_user = wp_get_current_user();
+
+		if (
+			current_user_can( 'administrator' ) ||
+			\Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) ||
+			\Academy\Helper::is_enrolled( $course_id, $current_user->ID ) ||
+			\Academy\Helper::is_public_course( $course_id )
+		) {
+			$comment_args = array(
+				'status'  => true,
+				'post_id' => $lesson_id,
+				'type'    => 'comment',
+			);
+
+			$raw_comments = get_comments( $comment_args );
+			foreach ( $raw_comments as $comment ) {
+				$comment_data[] = ( new \Academy\API\QuestionAnswer() )->prepare_comment_for_response( $comment );
+			}
+
+			wp_send_json_success( $comment_data );
+		}
+
+		wp_die( 'You do not have the permission to do this.' );
+	}
+
+
 }

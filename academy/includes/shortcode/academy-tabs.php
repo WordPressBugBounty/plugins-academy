@@ -36,17 +36,19 @@ class AcademyTabs {
 				case 'Announcement':
 					$display_title = __( 'Announcement', 'academy' );
 					break;
+				case 'Lesson Comments':
+					$display_title = __( 'Comments', 'academy' );
+					break;
 				default:
 					$display_title = $title;
 					break;
 			}
-
 			$display_titles[] = $display_title;
 			$shortcode_lists_with_title[] = [
 				'title' => $title,
 				'shortcode' => $shortcode_lists[ $key ] ?? ''
 			];
-		}
+		}//end foreach
 
 		ob_start();
 		\Academy\Helper::get_template( 'shortcode/tabs.php', [

@@ -2,7 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
+$course_id = \Academy\Helper::get_the_current_course_id();
+$id = 0;
 ?>
 
 <?php if ( ! $curriculums ) : ?>
@@ -35,7 +36,7 @@ endif;
 									<form id="save_mark_topic" class="save_mark_topic" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 										<?php wp_nonce_field( 'academy_nonce', 'security' ); ?>
 										<input type="hidden" name="action" value="academy/save_topic_mark_as_complete">
-										<input type="hidden" name="course_id" value="<?php echo esc_attr( \Academy\Helper::get_the_current_course_id() ); ?>">
+										<input type="hidden" name="course_id" value="<?php echo esc_attr( $course_id ); ?>">
 										<input type="hidden" name="topic_type" value="<?php echo esc_attr( $sub_topic['type'] ); ?>">
 										<input type="hidden" name="topic_id" value="<?php echo esc_attr( $sub_topic['id'] ); ?>">
 										<input type="checkbox" class="topic_check" value="<?php echo esc_attr( $sub_topic['id'] ); ?>" <?php echo esc_attr( $sub_topic['is_completed'] ? 'checked' : '' ); ?>>
@@ -59,7 +60,7 @@ endif;
 						<form id="save_mark_topic" class="save_mark_topic" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 							<?php wp_nonce_field( 'academy_nonce', 'security' ); ?>
 							<input type="hidden" name="action" value="academy/save_topic_mark_as_complete">
-							<input type="hidden" name="course_id" value="<?php echo esc_attr( \Academy\Helper::get_the_current_course_id() ); ?>">
+							<input type="hidden" name="course_id" value="<?php echo esc_attr( $course_id ); ?>">
 							<input type="hidden" name="topic_type" value="<?php echo esc_attr( $topic['type'] ); ?>">
 							<input type="hidden" name="topic_id" value="<?php echo esc_attr( isset( $topic['id'] ) ? $topic['id'] : '' ); ?>">
 							<input type="checkbox" class="topic_check" value="<?php echo esc_attr( isset( $topic['id'] ) ? $topic['id'] : '' ); ?>" <?php echo esc_attr( $topic['is_completed'] ? 'checked' : '' ); ?>>

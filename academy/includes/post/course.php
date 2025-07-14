@@ -24,6 +24,10 @@ class Course extends AbstractPostHandler {
 				'callback' => array( $this, 'student_register_as_instructor' ),
 				'capability'    => 'read'
 			),
+			'insert_lesson_comments' => array(
+				'callback' => array( $this, 'insert_lesson_comments' ),
+				'capability' => 'read',
+			)
 		);
 	}
 
@@ -114,6 +118,44 @@ class Course extends AbstractPostHandler {
 			exit;
 		}
 
+		wp_die( 'You do not have the permission to do this.' );
+	}
+
+	public function insert_lesson_comments( $form_data ) {
+		$payload = Sanitizer::sanitize_payload([
+			'course_id' => 'integer',
+			'lesson_id' => 'integer',
+			'parent'  => 'integer',
+			'content' => 'string',
+		], $form_data );
+
+		$course_id = isset( $payload['course_id'] ) ? $payload['course_id'] : 0;
+		$lesson_id = isset( $payload['lesson_id'] ) ? $payload['lesson_id'] : 0;
+		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
+		$current_user = wp_get_current_user();
+
+		if ( current_user_can( 'administrator' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
+			$comment_data = array(
+				'comment_post_ID'      => $lesson_id,
+				'comment_parent'       => $payload['parent'] ?? '0',
+				'comment_content'      => $payload['content'],
+				'comment_approved'     => true,
+				'comment_type'         => 'comment',
+				'user_id'              => $current_user->ID,
+				'comment_author'       => $current_user->user_login,
+				'comment_author_email' => $current_user->user_email,
+				'comment_author_url'   => $current_user->user_url,
+				'comment_agent'        => 'Academy',
+				'comment_meta'         => array(
+					'academy_comment_course_id' => $course_id ?? '0'
+				)
+			);
+
+			if ( wp_insert_comment( $comment_data ) ) {
+				wp_safe_redirect( $referer_url );
+				exit;
+			}
+		}//end if
 		wp_die( 'You do not have the permission to do this.' );
 	}
 }

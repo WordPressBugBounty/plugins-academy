@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.2.2
+Stable tag: 3.2.3
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -322,6 +322,11 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.2.3 - 14/07/2025 =
+* Added - Lesson Comments feature for student-instructor interaction within lessons.
+* Improved - Gutenberg Editor support for lessons, enabling rich content editing.
+* Improved - [academy_enroll_form layout='new' course_id=''] shortcode now offers better layout and compatibility for course enrollment pricing display.
 
 = 3.2.2 - 01/07/2025 =
 * Fixed - Lesson migration issue from Tutor LMS to Academy LMS.

@@ -212,6 +212,11 @@ class Integration {
 		}//end if
 	}
 	public function save_earning_data_status_change( $order_id, $status_from, $status_to ) {
+		$is_enabled_earning = (bool) \Academy\Helper::get_settings( 'is_enabled_earning' );
+		if ( ! \Academy\Helper::get_addon_active_status( 'multi_instructor' ) || ! $is_enabled_earning ) {
+			return;
+		}
+
 		if ( ! get_post_meta( $order_id, 'is_academy_order_for_course', true ) ) {
 			return;
 		}

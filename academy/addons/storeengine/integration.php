@@ -78,6 +78,10 @@ class Integration {
 	}
 
 	public function save_store_earning_data_status_changed( $order_id, $old_status, $new_status ) {
+		$is_enabled_earning = (bool) Helper::get_settings( 'is_enabled_earning' );
+		if ( ! Helper::get_addon_active_status( 'multi_instructor' ) || ! $is_enabled_earning ) {
+			return;
+		}
 		if ( count( Helper::get_earning_by_order_id( $order_id ) ) ) {
 			Helper::update_earning_status_by_order_id( $order_id, $new_status );
 		}

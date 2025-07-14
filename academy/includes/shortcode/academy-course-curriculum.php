@@ -28,7 +28,10 @@ class AcademyCourseCurriculum {
 			$this,
 			'course_questions_answers',
 		]);
-
+		add_shortcode( 'academy_course_lesson_comments', [
+			$this,
+			'course_lesson_comments',
+		]);
 	}
 
 	public function course_topbar( $attributes, $content = '' ) {
@@ -95,5 +98,20 @@ class AcademyCourseCurriculum {
 		]);
 
 		return apply_filters( 'academy/templates/shortcode/course_questions_answers', ob_get_clean() );
+	}
+
+	public static function course_lesson_comments( $attributes, $content = '' ) {
+		$course_id = \Academy\Helper::get_the_current_course_id();
+		$topic_slug = get_query_var( 'name' );
+		$lesson_post = \Academy\Helper::get_lesson_by_slug( $topic_slug );
+		$comments = \Academy\Helper::get_course_lesson_comments( $lesson_post['ID'] ?? 0 );
+		ob_start();
+
+		\Academy\Helper::get_template( 'curriculums/lesson-comments.php', [
+			'comments' => $comments,
+			'course_id' => $course_id,
+		]);
+
+		return apply_filters( 'academy/templates/shortcode/course_lesson_comments', ob_get_clean() );
 	}
 }

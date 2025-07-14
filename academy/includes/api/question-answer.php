@@ -23,6 +23,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 		add_action( 'wp_ajax_academy/insert_qa', array( $self, 'insert_qa' ) );
 		add_action( 'wp_ajax_academy/update_qa', array( $self, 'update_qa' ) );
 		add_action( 'wp_ajax_academy/delete_qa', array( $self, 'delete_qa' ) );
+		add_filter( 'post_type_link', array( $self, 'academy_lesson_post_permalink' ), 1, 2 );
 	}
 
 	/**
@@ -316,6 +317,45 @@ class QuestionAnswer extends \WP_REST_Controller {
 		}
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return $wpdb->get_var( $wpdb->prepare( $query, $query_params ) );
+	}
+
+	public function academy_lesson_post_permalink( $permalink, $post = [] ) {
+		if ( ! is_object( $post ) || 'academy_lessons' !== $post->post_type ) {
+			return $permalink;
+		}
+
+		$comment_ids = get_comments( array(
+			'post_id' => $post->ID,
+			'fields'  => 'ids',
+		) );
+
+		if ( empty( $comment_ids ) ) {
+			return $permalink;
+		}
+
+		foreach ( $comment_ids as $comment_id ) {
+			$course_id = (int) get_comment_meta( $comment_id, 'academy_comment_course_id', true );
+
+			if ( ! $course_id ) {
+				continue;
+			}
+
+			// If PHP rendering is disabled
+			if ( ! \Academy\Helper::get_settings( 'is_enabled_lessons_php_render' ) ) {
+				$course_permalink = \Academy\Helper::get_start_course_permalink( $course_id );
+				return esc_url( $course_permalink ) . '#/lesson/' . $post->ID;
+			}
+
+			// If PHP rendering is enabled
+			$topic = array(
+				'type' => 'lesson',
+				'slug' => $post->post_name ?? '',
+			);
+
+			return \Academy\Helper::get_topic_play_link( $topic, $course_id );
+		}//end foreach
+
+		return $permalink;
 	}
 
 }

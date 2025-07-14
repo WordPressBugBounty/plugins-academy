@@ -101,6 +101,8 @@ class Role {
 			'edit_academy_lesson',
 			'read_academy_lesson',
 			'delete_academy_lesson',
+			'edit_academy_lessons',
+			'edit_others_academy_lessons',
 			// Meeting
 			'edit_academy_meeting',
 			'read_academy_meeting',

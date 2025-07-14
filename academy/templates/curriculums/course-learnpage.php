@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="academy-course-curriculum-wrapper">
 	<div class="academy-course-curriculum-contents" id="academy-course-curriculum-contents">
 		<?php echo do_shortcode( '[academy_course_curriculum_content]' ); ?>
-		<?php echo do_shortcode( '[academy_tabs render_title="Course Content,Q&A,Announcement" render_shortcode="academy_course_curriculums,academy_course_questions_answers,academy_course_announcements"]' ); ?>
+		<?php echo do_shortcode( '[academy_tabs render_title="Course Content,Q&A,Announcement,Lesson Comments" render_shortcode="academy_course_curriculums,academy_course_questions_answers,academy_course_announcements,academy_course_lesson_comments"]' ); ?>
 	</div>
 	<div class="academy-course-curriculums-container" id="academy-course-curriculums-container">
 		<div class="academy-expand-button-wrapper">

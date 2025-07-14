@@ -60,6 +60,14 @@ class Migration {
 		if ( in_array( 'administrator', $user->roles, true ) && ! in_array( 'academy_instructor', $user->roles, true ) ) {
 			$user->add_role( 'academy_instructor' );
 		}
+		// lesson gutenberg editor support for instructor
+		if ( version_compare( $academy_version, '3.2.2', '>' ) ) {
+			$role = get_role( 'manage_academy_instructor' );
+			if ( $role ) {
+				$role->add_cap( 'edit_academy_lessons' );
+				$role->add_cap( 'edit_others_academy_lessons' );
+			}
+		}
 	}
 
 	public function migrate_1_3_5( $academy_version ) {

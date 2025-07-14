@@ -25,6 +25,7 @@ class Admin {
 		add_action( 'current_screen', array( $this, 'conditional_loaded' ) );
 		add_filter( 'plugin_action_links_' . ACADEMY_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
 		add_filter( 'plugin_row_meta', array( $this, 'add_plugin_links' ), 10, 2 );
+		add_filter( 'admin_init', array( $this, 'redirect_academy_course' ) );
 	}
 	public function add_white_listed_redirect_hosts( $hosts ) {
 		$hosts[] = 'academylms.net';
@@ -175,5 +176,14 @@ class Admin {
 				],
 			]
 		);
+	}
+	public function redirect_academy_course() {
+		global $pagenow;
+		$post_type = isset( $_GET['post_type'] ) ? sanitize_key( $_GET['post_type'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( 'edit.php' === $pagenow && $post_type && 'academy_courses' === $post_type ) {
+			$new_url = admin_url( 'admin.php?page=academy-courses' );
+			wp_safe_redirect( $new_url );
+			exit;
+		}
 	}
 }

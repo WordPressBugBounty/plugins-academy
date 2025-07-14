@@ -39,6 +39,7 @@ class Base {
 			'is_enabled_lessons_content_title'   => false,
 			'lessons_topic_length'   => 0,
 			'is_enabled_academy_player'   => false,
+			'is_enabled_academy_lessons_comment' => false,
 			// Course Archive
 			'course_page' => '',
 			'is_enabled_course_share' => true,

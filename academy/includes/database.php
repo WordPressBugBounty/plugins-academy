@@ -380,6 +380,7 @@ class Database {
 					'not_found'             => esc_html__( 'No lessons found.', 'academy' ),
 					'not_found_in_trash'    => esc_html__( 'No lessons found in Trash.', 'academy' ),
 					'archives'              => esc_html__( 'Lesson archives', 'academy' ),
+					'view_item'            => esc_html__( 'View Lesson', 'academy' ),
 				),
 				'public'                => true,
 				'publicly_queryable'    => true,
@@ -392,8 +393,8 @@ class Database {
 				'query_var'             => true,
 				'has_archive'           => true,
 				'delete_with_user'      => false,
-				'supports'              => array( 'title', 'editor', 'author', 'excerpt', 'custom-fields', 'comments', 'post-formats' ),
-				'show_in_rest'          => false,
+				'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'comments', 'post-formats' ),
+				'show_in_rest'          => true,
 				'capability_type'           => 'post',
 				'capabilities'              => array(
 					'edit_post'             => 'edit_academy_lesson',

@@ -448,11 +448,10 @@ trait Courses {
 		$course_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post_parent
-			FROM 	{$wpdb->posts}
-			WHERE 	post_type = %s
-					AND post_status = %s
-					AND post_author = %d;
-			",
+				FROM {$wpdb->posts}
+				WHERE post_type = %s
+				AND post_status = %s
+				AND post_author = %d",
 				'academy_enrolled',
 				'completed',
 				$user_id
@@ -1578,6 +1577,21 @@ trait Courses {
 			$meta = get_comment_meta( $comment->comment_ID );
 			$comment->title = ! empty( $meta['academy_question_title'] ) ? current( $meta['academy_question_title'] ) : '';
 		}
+
+		return $comments;
+	}
+
+	public static function get_course_lesson_comments( $lesson_id ) {
+		if ( ! $lesson_id ) {
+			return [];
+		}
+		$args = array(
+			'status' => 'any',
+			'post_id' => $lesson_id,
+			'type' => 'comment',
+		);
+
+		$comments = get_comments( $args );
 
 		return $comments;
 	}
