@@ -137,7 +137,6 @@ class Frontend extends AbstractAjaxHandler {
 						$question_score = (float) $attempt_answer['question_score'];
 						$question_type = (string) $attempt_answer['question_type'];
 						$given_answer = $attempt_answer['given_answer'];
-
 						$correct_answer = 0;
 						if ( 'imageAnswer' === $question_type ) {
 							$given_answer = wp_list_pluck( json_decode( stripslashes( $given_answer ) ), 'value', 'id' );
@@ -156,10 +155,14 @@ class Frontend extends AbstractAjaxHandler {
 							$correct_answer = (int) \AcademyQuizzes\Classes\Query::is_quiz_correct_answer( $given_answer, $question_id );
 						}
 
-						$score = $correct_answer ? $question_score : 0;
+						$negative_score = 0;
+						$negative_mark = floatval( current( \AcademyQuizzes\Classes\Query::get_question_details_by_question_id( $question_id ) )->question_negative_score );
+						if ( ! empty( $given_answer ) && $negative_mark > 0 && empty( $correct_answer ) ) {
+							$negative_score -= $negative_mark;
+						}
 
 						$score_total   += $question_score;
-						$achieved_score += $score;
+						$achieved_score += $correct_answer ? $question_score : $negative_score;
 
 						$results[] = \AcademyQuizzes\Classes\Query::quiz_attempt_answer_insert(array(
 							'user_id'           => $user_id,
@@ -168,7 +171,7 @@ class Frontend extends AbstractAjaxHandler {
 							'attempt_id'        => $attempt_id,
 							'answer'            => $given_answer,
 							'question_mark'     => $question_score,
-							'achieved_mark'     => $correct_answer ? $question_score : '',
+							'achieved_mark'     => $correct_answer ? $question_score : ( $negative_score ?? '' ),
 							'minus_mark'        => '',
 							'is_correct'        => $correct_answer,
 						));

@@ -42,6 +42,9 @@ class Migration {
 		// enable course preview
 		$this->migrate_2_3_1( $academy_version );
 
+		// new column add in quiz_questions table
+		$this->migrate_3_2_3();
+
 		// Save Version Number, flash role management and save permalink
 		if ( ACADEMY_VERSION !== $academy_version ) {
 			Settings::save_settings();
@@ -345,6 +348,24 @@ class Migration {
 			$saved_addons = (array) json_decode( get_option( ACADEMY_ADDONS_SETTINGS_NAME ), true );
 			$saved_addons['course-preview'] = true;
 			update_option( ACADEMY_ADDONS_SETTINGS_NAME, wp_json_encode( $saved_addons ) );
+		}
+	}
+
+	public function migrate_3_2_3() {
+		if ( ! \Academy\Helper::get_addon_active_status( 'quizzes' ) ) {
+			return;
+		}
+		if ( ! get_option( 'academy_quiz_questions_migrate_3_2_3' ) ) {
+			global $wpdb;
+			$table_name = $wpdb->prefix . ACADEMY_PLUGIN_SLUG . '_quiz_questions';
+			// Check if the column exists
+			$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE 'question_negative_score'" );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+			if ( empty( $column_exists ) ) {
+				// Add the new column
+				$wpdb->query( "ALTER TABLE `$table_name` ADD `question_negative_score` DECIMAL(9,2) UNSIGNED NULL DEFAULT 0.00 AFTER `question_score`" );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			}
+			update_option( 'academy_quiz_questions_migrate_3_2_3', true );
 		}
 	}
 

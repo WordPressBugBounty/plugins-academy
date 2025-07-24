@@ -690,7 +690,7 @@ class Helper {
 	public static function get_basic_url_to_embed_url( $url ) {
 		$embedObject = wp_oembed_get( $url, $args = '' );
 		if ( $embedObject ) {
-			return self::parse_embedded_url( $embedObject->html );
+			return self::parse_embedded_url( $embedObject );
 		}
 
 		return array(

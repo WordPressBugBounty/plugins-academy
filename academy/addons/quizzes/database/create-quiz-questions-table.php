@@ -19,6 +19,7 @@ class CreateQuizQuestionsTable {
 			question_level varchar(20) NOT NULL,
 			question_type varchar(20) NOT NULL,
 			question_score decimal(9,2) NOT NULL,
+			question_negative_score decimal(9,2) NOT NULL,
 			question_settings longtext NULL,
 			question_order int(11) NOT NULL,
 			question_created_at datetime DEFAULT NULL,

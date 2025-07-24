@@ -140,6 +140,12 @@ if ( ! function_exists( 'academy_quizzes_submit_quiz' ) ) {
 					$is_correct = ( $answer_id ) ? $is_correct : 0;
 				}//end if
 
+				$negative_score = 0;
+				$negative_mark = floatval( current( \AcademyQuizzes\Classes\Query::get_question_details_by_question_id( $question_id ) )->question_negative_score );
+				if ( ! empty( $answer_id ) && $negative_mark > 0 && empty( $is_correct ) ) {
+					$negative_score -= $negative_mark;
+				}
+
 				$attempt_answer = array(
 					'user_id' => get_current_user_id(),
 					'quiz_id' => $question_details->quiz_id,
@@ -147,16 +153,10 @@ if ( ! function_exists( 'academy_quizzes_submit_quiz' ) ) {
 					'attempt_id' => $attempt_id,
 					'answer' => $answer_id,
 					'question_mark' => $question_details->question_score,
-					'achieved_mark' => $question_details->question_score,
+					'achieved_mark' => $is_correct ? $question_details->question_score : ( $negative_score ?? 0 ),
 					'minus_mark' => 0,
-					'is_correct' => 1,
+					'is_correct' => (int) $is_correct,
 				);
-
-				if ( ! $is_correct ) {
-					$attempt_answer['achieved_mark'] = 0;
-					$attempt_answer['minus_mark'] = 0;
-					$attempt_answer['is_correct'] = 0;
-				}
 
 				Query::quiz_attempt_answer_insert( $attempt_answer );
 			}//end foreach

@@ -282,6 +282,13 @@ class QuizQuestions extends \WP_REST_Controller {
 			}
 		}
 
+		// Question Negative Score.
+		if ( ! empty( $schema['question_negative_score'] ) && isset( $request['question_negative_score'] ) ) {
+			if ( is_numeric( $request['question_negative_score'] ) ) {
+				$prepared_question->question_negative_score = $request['question_negative_score'];
+			}
+		}
+
 		// Question Settings.
 		if ( ! empty( $schema['question_settings'] ) && isset( $request['question_settings'] ) ) {
 			if ( is_array( $request['question_settings'] ) ) {

@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.2.3
+Stable tag: 3.3.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -322,6 +322,13 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.3.0 - 24/07/2025 =
+* Added - Negative marking feature for quiz questions.
+* Fixed - Course intro video not displaying when a featured image is set.
+* Fixed - Lesson duration for sub-curriculum not showing on the single course page.
+* Fixed - Empty answer values were being saved when a quiz was submitted without selecting any answers.
+* Fixed - Comment form was displaying even when both Course Announcement, Q&A sections, Comment form were disabled.
 
 = 3.2.3 - 14/07/2025 =
 * Added - Lesson Comments feature for student-instructor interaction within lessons.

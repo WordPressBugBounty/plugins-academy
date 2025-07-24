@@ -208,20 +208,28 @@ class Template {
 		}
 	}
 
-	public function custom_featured_image_with_default( $academy_fse_block_content, $block ) {
-		if ( 'core/post-featured-image' === $block['blockName'] ) {
-			if ( ! has_post_thumbnail() && is_singular( 'academy_courses' ) ) {
-				$video_output = self::get_course_fsc_preview_videos( get_the_ID() );
-				if ( empty( $video_output ) ) {
-					$academy_fse_image_url = plugins_url( 'academy/assets/images/thumbnail-placeholder.png' );
-					$academy_fse_block_content = '<img src="' . esc_url( $academy_fse_image_url ) . '" alt="' . esc_attr__( 'Default Featured Image', 'academy' ) . '" class="default-feture-image" />';
-				} else {
-					// If a video exists, use the video output
-					$academy_fse_block_content = $video_output;
-				}
-			}
+	public function custom_featured_image_with_default( $block_content, $block ) {
+		if ( 'core/post-featured-image' !== $block['blockName'] || ! is_singular( 'academy_courses' ) ) {
+			return $block_content;
 		}
-		return $academy_fse_block_content;
+
+		$course_id    = get_the_ID();
+		$video_output = self::get_course_fsc_preview_videos( $course_id );
+
+		if ( ! empty( $video_output ) ) {
+			return $video_output;
+		}
+
+		if ( has_post_thumbnail() ) {
+			return $block_content;
+		}
+
+		$image_url = plugins_url( 'academy/assets/images/thumbnail-placeholder.png' );
+		return sprintf(
+			'<img src="%s" alt="%s" class="default-feture-image" />',
+			esc_url( $image_url ),
+			esc_attr__( 'Default Featured Image', 'academy' )
+		);
 	}
 
 	public static function get_course_fsc_preview_videos( $id ) {

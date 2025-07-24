@@ -70,7 +70,7 @@ class Admin extends AbstractAjaxHandler {
 		$answer = Query::get_quiz_attempt_answer( $answer_id );
 		$answer->attempt_answer_id = $answer_id;
 		$answer->question_mark = $question->question_score;
-		$answer->achieved_mark = 'correct' === $mark_as ? $question->question_score : '';
+		$answer->achieved_mark = 'correct' === $mark_as ? $question->question_score : ( - $question->question_negative_score ?? '' );
 		$answer->is_correct = 'correct' === $mark_as ? 1 : 0;
 		// update attempt answer
 		Query::quiz_attempt_answer_insert( (array) $answer );

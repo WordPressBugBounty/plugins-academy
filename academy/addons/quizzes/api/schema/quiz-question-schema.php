@@ -51,6 +51,10 @@ trait QuizQuestionSchema {
 					'description'  => esc_html__( 'The score for the question.', 'academy' ),
 					'type'         => 'number',
 				),
+				'question_negative_score' => array(
+					'description'  => esc_html__( 'The score for the question.', 'academy' ),
+					'type'         => 'number',
+				),
 				'question_order' => array(
 					'description'  => esc_html__( 'The order for the question.', 'academy' ),
 					'type'         => 'integer',
@@ -112,6 +116,11 @@ trait QuizQuestionSchema {
 				'validate_callback' => 'rest_validate_request_arg',
 			],
 			'question_score'         => [
+				'type'              => 'number',
+				'sanitize_callback' => 'sanitize_text_field',
+				'validate_callback' => 'rest_validate_request_arg',
+			],
+			'question_negative_score' => [
 				'type'              => 'number',
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',

@@ -39,6 +39,12 @@ if ( empty( $curriculums ) || empty( $course_id ) ) {
 											<div class="academy-entry-content">
 											<i class="<?php echo esc_attr( \Academy\Helper::get_topic_icon_class_name( $sub_topic['type'] ) ); ?>" aria-hidden="true"></i>
 											<h4 class="academy-entry-title"><?php echo esc_html( $sub_topic['name'] ); ?></h4>
+											<?php
+											if ( isset( $sub_topic['duration'] ) ) : ?>
+												<span class="academy-entry-time"><?php echo esc_html( $sub_topic['duration'] ); ?></span>
+												<?php
+												endif;
+											?>
 											</div>
 												<div class="academy-entry-control">
 												<?php
