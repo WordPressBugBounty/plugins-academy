@@ -29,58 +29,85 @@ trait Student {
 	}
 
 	public static function prepare_get_all_students_response( $students ) {
-		if ( ! is_array( $students ) ) {
-			return;
+		if ( ! is_array( $students ) || empty( $students ) ) {
+			return [];
 		}
 
 		$student_fields = self::get_form_builder_fields( 'student' );
 		$results = [];
+
 		foreach ( $students as $student ) {
-			$completed_courses_ids = self::get_completed_courses_ids_by_user( $student->ID );
-			$enrolled_courses_ids = self::get_enrolled_courses_ids_by_user( $student->ID );
+			if ( is_object( $student ) ) {
+				$student_id = $student->ID;
+				// Batch user meta fetch
+				$all_meta = get_user_meta( $student_id );
 
-			if ( is_array( $completed_courses_ids ) && count( $completed_courses_ids ) > 0 ) {
-				$completed_courses = [];
-				foreach ( $completed_courses_ids as $courses_id ) {
-					$completed_courses[ $courses_id ] = [
-						'ID'     => $courses_id,
-						'title'     => html_entity_decode( get_the_title( $courses_id ) ),
-						'permalink' => get_the_permalink( $courses_id ),
+				// Assign common meta fields
+				$student->phone        = $all_meta['academy_phone_number'][0] ?? '';
+				$student->bio          = $all_meta['academy_profile_bio'][0] ?? '';
+				$student->desigination = $all_meta['academy_profile_designation'][0] ?? '';
+				$student->website      = $all_meta['academy_website_url'][0] ?? '';
+				$student->github       = $all_meta['academy_github_url'][0] ?? '';
+				$student->facebook     = $all_meta['academy_facebook_url'][0] ?? '';
+				$student->twitter      = $all_meta['academy_twitter_url'][0] ?? '';
+				$student->linkedin     = $all_meta['academy_linkedin_url'][0] ?? '';
 
+				// Optional meta builder
+				$meta = \Academy\Helper::prepare_user_meta_data( $student_fields, $student_id );
+				if ( ! empty( $meta ) ) {
+					$student->meta = $meta;
+				}
+			} else {
+				$student_id = (int) $student;
+				$student_details = get_userdata( $student_id );
+				$student = (object) [ 'ID' => $student ];
+				$student->display_name = $student_details->display_name;
+				$student->registration_date = date( 'F j, Y', strtotime( $student_details->user_registered ) );
+			}//end if
+			// Course info
+			$completed_ids = self::get_completed_courses_ids_by_user( $student_id );
+			$enrolled_info = self::get_total_enrolled_courses_info_by_student_id( $student_id );
+
+			if ( ! empty( $enrolled_info ) && is_array( $enrolled_info ) ) {
+				$course_ids = array_unique( array_column( $enrolled_info, 'post_parent' ) );
+
+				// Fetch all course titles/permalinks in bulk
+				$courses = get_posts( [
+					'post__in'       => $course_ids,
+					'post_type'      => 'academy_courses',
+					'post_status'    => [ 'publish', 'private' ],
+					'posts_per_page' => -1,
+				] );
+
+				$course_data = [];
+				foreach ( $courses as $course ) {
+					$course_data[ $course->ID ] = [
+						'title'     => html_entity_decode( get_the_title( $course->ID ) ),
+						'permalink' => get_the_permalink( $course->ID ),
 					];
 				}
-				$student->completed_courses = array_values( $completed_courses );
-			}
 
-			if ( is_array( $enrolled_courses_ids ) && count( $enrolled_courses_ids ) > 0 ) {
 				$enrolled_courses = [];
-				foreach ( $enrolled_courses_ids as $courses_id ) {
-					$title = get_the_title( $courses_id );
-					if ( $title ) {
-						$enrolled_courses[ $courses_id ] = [
-							'ID'     => $courses_id,
-							'title'     => html_entity_decode( get_the_title( $courses_id ) ),
-							'permalink' => get_the_permalink( $courses_id ),
+				foreach ( $enrolled_info as $info ) {
+					$cid = intval( $info['post_parent'] );
+					if ( isset( $course_data[ $cid ] ) ) {
+						$status = in_array( $cid, $completed_ids ) ? 'completed' : ( 'completed' === $info['post_status'] ? 'approved' : 'pending' );
+						$enrolled_courses[] = [
+							'ID'        => $cid,
+							'enrolled_id' => intval( $info['ID'] ),
+							'title'     => $course_data[ $cid ]['title'],
+							'permalink' => $course_data[ $cid ]['permalink'],
+							'status'    => $status,
 						];
 					}
 				}
-				$student->enrolled_courses = array_values( $enrolled_courses );
-			}
 
-			$meta = \Academy\Helper::prepare_user_meta_data( $student_fields, $student->ID );
-			if ( count( $meta ) ) {
-				$student->meta = $meta;
-			}
-			$student->phone = get_user_meta( $student->ID, 'academy_phone_number', true );
-			$student->bio = get_user_meta( $student->ID, 'academy_profile_bio', true );
-			$student->desigination = get_user_meta( $student->ID, 'academy_profile_designation', true );
-			$student->website = get_user_meta( $student->ID, 'academy_website_url', true );
-			$student->github = get_user_meta( $student->ID, 'academy_github_url', true );
-			$student->facebook = get_user_meta( $student->ID, 'academy_facebook_url', true );
-			$student->twitter = get_user_meta( $student->ID, 'academy_twitter_url', true );
-			$student->linkedin = get_user_meta( $student->ID, 'academy_linkedin_url', true );
+				$student->enrolled_courses = $enrolled_courses;
+			}//end if
+
 			$results[] = $student;
 		}//end foreach
+
 		return $results;
 	}
 

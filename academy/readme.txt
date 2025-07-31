@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -322,6 +322,17 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.3.1 - 31/07/2025 =
+* Added - New editor wysiwyg.
+* Added - Student table in the instructor's frontend dashboard.
+* Improved - Enroll widget UI and information on the course single page.
+* Improved - Redesigned the student table in the admin dashboard for better usability and understanding.
+* Fixed - Quiz question responsiveness issue on mobile devices.
+* Fixed - No message was displayed when accessing the course learning page without logging in.
+* Fixed - Withdraw page was not displaying the correct dynamic currency.
+* Fixed - Student table in the admin dashboard was not showing all enrolled courses.
+* Fixed - PHPCS (PHP CodeSniffer) compliance issues.
 
 = 3.3.0 - 24/07/2025 =
 * Added - Negative marking feature for quiz questions.

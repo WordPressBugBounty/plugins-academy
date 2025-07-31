@@ -12,8 +12,6 @@ class Comments {
 
 	}
 
-
-
 	/**
 	 * Rating field for comments.
 	 *

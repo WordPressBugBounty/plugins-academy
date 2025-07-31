@@ -12,6 +12,13 @@ $share_config = array(
 
 <div class="academy-widget-enroll__wishlist-and-share">
 	<?php
+	if ( $is_show_course_share ) :
+		?>
+	<button class="academy-btn academy-btn--bg-white-border academy-share-button academy-btn--lg">
+		<i class="academy-icon academy-icon--share"></i><?php esc_html_e( 'Share', 'academy' ); ?>
+	</button>
+		<?php
+		endif;
 	if ( $is_show_wishlist ) :
 		?>
 	<button class="academy-btn academy-btn--bg-white-border academy-course__wishlist academy-add-wishlist-btn academy-btn--lg" data-course-id="<?php the_ID(); ?>" data-show-label="true">
@@ -25,12 +32,7 @@ $share_config = array(
 	</button>
 		<?php
 		endif;
-
-	if ( $is_show_course_share ) :
-		?>
-	<button class="academy-btn academy-btn--bg-white-border academy-share-button academy-btn--lg">
-		<i class="academy-icon academy-icon--share"></i><?php esc_html_e( 'Share', 'academy' ); ?>
-	</button>
+	?>
 	<div class="academy-share-wrap" data-social-share-config="<?php echo esc_attr( wp_json_encode( $share_config ) ); ?>">
 		<button class="academy-social-share academy_facebook"><i class="academy-icon academy-icon--facebook" aria-hidden="true"></i></button>
 		<button class="academy-social-share academy_linkedin"><i class="academy-icon academy-icon--linkedIn" aria-hidden="true"></i></button>
@@ -38,7 +40,4 @@ $share_config = array(
 		<button class="academy-social-share academy_pinterest"><i class="academy-icon academy-icon--pinterest" aria-hidden="true"></i></button>
 		<button class="academy-social-share academy_gmail"><i class="academy-icon academy-icon--mail" aria-hidden="true"></i></button>
 	</div>
-		<?php
-		endif;
-	?>
 </div>

@@ -1262,6 +1262,12 @@ class Helper {
 				'public' => true,
 				'priority' => 40,
 			);
+			$items['students'] = array(
+				'label' => __( 'Students', 'academy' ),
+				'icon'  => 'academy-icon academy-icon--students-two',
+				'public' => true,
+				'priority' => 42,
+			);
 			if ( self::get_addon_active_status( 'multi_instructor' ) && self::get_settings( 'is_enabled_earning' ) ) {
 				$items['withdrawal']  = array(
 					'label' => __( 'Withdrawal', 'academy' ),

@@ -113,11 +113,9 @@ class Assets extends ScriptsBase {
 		// js
 		wp_enqueue_script( 'academy-sticksy', ACADEMY_ASSETS_URI . 'lib/js/sticksy.min.js', array( 'jquery' ), $dependencies['version'], false );
 		wp_enqueue_script( 'academy-plyr', ACADEMY_ASSETS_URI . 'lib/js/plyr.js', array( 'jquery' ), $dependencies['version'], false );
-		wp_enqueue_script( 'academy-SocialShare', ACADEMY_ASSETS_URI . 'lib/js/SocialShare.min.js', array( 'jquery' ), $dependencies['version'], false );
 
 		// JS
 		if ( apply_filters( 'academy/is_load_common_js_scripts', true ) ) {
-			wp_enqueue_script( 'academy-SocialShare', ACADEMY_ASSETS_URI . 'lib/js/SocialShare.min.js', array( 'jquery' ), $dependencies['version'], false );
 			wp_enqueue_script(
 				'academy-common-scripts',
 				ACADEMY_ASSETS_URI . sprintf( 'build/frontendCommon.%s.js', ACADEMY_VERSION ),

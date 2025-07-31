@@ -31,7 +31,9 @@ class Base {
 			// Password Reset
 			'password_reset_page' => '',
 			// Learn Page
-			'lessons_page'                              => '',
+			'lessons_page'                      => '',
+			'lesson_content_width'              => 100,
+			'lesson_content_width_unit'         => '%',
 			'is_enabled_lessons_php_render'             => false,
 			'lessons_topbar_logo'                       => '',
 			'is_enabled_lessons_theme_header_footer'    => false,
@@ -105,7 +107,9 @@ class Base {
 			'chatgpt_api_key'   => '',
 			'chatgpt_model'     => 'gpt-3.5-turbo',
 			'chatgpt_img_model' => 'dall-e-2',
-			'allow_instructor_to_use_chatgpt' => false
+			'allow_instructor_to_use_chatgpt' => false,
+			// editor type
+			'academy_editor_type' => 'quill',
 		]);
 	}
 

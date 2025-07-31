@@ -62,13 +62,14 @@ class AcademyCourseCurriculum {
 			$slug,
 			$type
 		);
-
+		$is_previewable = \Academy\Helper::get_lesson_meta( $id, 'is_previewable' );
 		ob_start();
 
 		\Academy\Helper::get_template('curriculums/content.php', [
 			'id' => $id,
 			'type' => $type,
 			'course_id' => \Academy\Helper::get_the_current_course_id(),
+			'is_previewable' => $is_previewable,
 		]);
 
 		return apply_filters( 'academy/templates/shortcode/course_curriculum_content', ob_get_clean() );

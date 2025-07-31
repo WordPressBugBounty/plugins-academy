@@ -3,27 +3,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if ( ! $enrolled ) :
-	?>
-<div class="academy-widget-enroll__head">
-	<?php
-	if ( $is_paid ) {
-		if ( $price ) {
-			echo '<div class="academy-course-price">' . wp_kses_post( $price ) . '</div>';
-		} else {
-			echo '<div class="academy-course-type">' . esc_html__( 'Paid', 'academy' ) . '</div>';
-		}
-	} elseif ( $is_public ) {
-		echo '<div class="academy-course-type">' . esc_html__( 'Public', 'academy' ) . '</div>';
-	} else {
-		echo '<div class="academy-course-type">' . esc_html__( 'Free', 'academy' ) . '</div>';
-	}
-	?>
-</div>
-<?php endif; ?>
+?>
 <div class="academy-widget-enroll__content">
 	<ul class="academy-widget-enroll__content-lists">
 		<?php
+		if ( $skill ) :
+			?>
+		<li>
+			<span class="label">
+				<span class="academy-icon academy-icon--level"></span>
+			<?php esc_html_e( 'Course Level', 'academy' ); ?>
+			</span>
+			<span class="data"><?php echo esc_html( $skill ); ?></span>
+		</li>
+			<?php
+			endif;
+		if ( $total_lessons ) :
+			?>
+		<li>
+			<span class="label">
+				<i class="academy-icon academy-icon--video-lesson"></i>
+			<?php esc_html_e( 'Lessons', 'academy' ); ?>
+			</span>
+			<span class="data"><?php echo esc_html( $total_lessons ); ?></span>
+		</li>
+			<?php
+			endif;
 		if ( $duration ) :
 			?>
 		<li>
@@ -35,34 +40,7 @@ if ( ! $enrolled ) :
 		</li>
 			<?php
 			endif;
-		?>
-		<?php
-		if ( $total_lessons ) :
-			?>
-		<li>
-			<span class="label">
-				<i class="academy-icon academy-icon--lesson"></i>
-			<?php esc_html_e( 'Lessons', 'academy' ); ?>
-			</span>
-			<span class="data"><?php echo esc_html( $total_lessons ); ?></span>
-		</li>
-			<?php
-			endif;
-		?>
-		<?php
-		if ( $total_enrolled && $total_enroll_count_status ) :
-			?>
-		<li>
-			<span class="label">
-				<i class="academy-icon academy-icon--group-profile"></i>
-			<?php esc_html_e( 'Enrolled', 'academy' ); ?>
-			</span>
-			<span class="data"><?php echo esc_html( $total_enrolled ); ?></span>
-		</li>
-			<?php
-			endif;
-		?>
-		<?php
+
 		if ( $language ) :
 			?>
 		<li>
@@ -74,16 +52,14 @@ if ( ! $enrolled ) :
 		</li>
 			<?php
 			endif;
-		?>
-		<?php
-		if ( $skill ) :
+		if ( $total_enrolled && $total_enroll_count_status ) :
 			?>
 		<li>
 			<span class="label">
-				<span class="academy-icon academy-icon--skill"></span>
-			<?php esc_html_e( 'Skill', 'academy' ); ?>
+				<i class="academy-icon academy-icon--group-profile"></i>
+				<?php esc_html_e( 'Enrolled', 'academy' ); ?>
 			</span>
-			<span class="data"><?php echo esc_html( $skill ); ?></span>
+			<span class="data"><?php echo esc_html( $total_enrolled ?? 0 ); ?></span>
 		</li>
 			<?php
 			endif;
@@ -92,14 +68,23 @@ if ( ! $enrolled ) :
 			?>
 		<li>
 			<span class="label">
-				<span class="academy-icon academy-icon--group-profile"></span>
+				<span class="academy-icon academy-icon--user"></span>
 			<?php esc_html_e( 'Available Seats', 'academy' ); ?>
 			</span>
 			<span class="data"><?php echo esc_html( max( $max_students - $total_enrolled, 0 ) ); ?></span>
 		</li>
 			<?php
 			endif;
+		?>
+		<li>
+			<span class="label">
+				<span class="academy-icon academy-icon--file"></span>
+			<?php esc_html_e( 'Additional Resource', 'academy' ); ?>
+			</span>
+			<span class="data"><?php echo esc_html( $total_resource ?? 0 ); ?></span>
+		</li>
 
+		<?php
 		if ( $last_update ) :
 			?>
 		<li>
@@ -113,32 +98,5 @@ if ( ! $enrolled ) :
 			endif;
 		?>
 	</ul>
+	<?php do_action( 'academy/templates/single_course_enroll_content_after' ); ?>
 </div>
-
-<?php
-if ( $enrolled ) :
-	?>
-<div class="academy-widget-enroll__enrolled-info">
-	<?php
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo sprintf(
-		// translators: %s: Enrollment date
-		esc_html__( 'You have been enrolled on %s', 'academy' ),
-		wp_kses_post('<span>' . date_i18n(
-			get_option( 'date_format' ),
-			strtotime( $enrolled->post_date )
-		) . '</span>')
-	);
-	if ( $completed ) {
-		echo sprintf(
-			// translators: %s: Completed date
-			esc_html__( 'and completed on %s', 'academy' ),
-			wp_kses_post('<span> ' . date_i18n(
-				get_option( 'date_format' ),
-				strtotime( $completed->completion_date )
-			) . '</span>')
-		);
-	}
-	?>
-</div>
-<?php endif; ?>

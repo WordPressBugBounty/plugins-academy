@@ -461,6 +461,22 @@ trait Courses {
 		return apply_filters( 'academy/enrolled_courses_ids_by_user', $course_ids, (int) $user_id );
 	}
 
+	public static function get_total_enrolled_courses_info_by_student_id( int $user_id ) {
+		global $wpdb;
+
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"SELECT *
+			FROM {$wpdb->posts} 
+			WHERE post_type = %s 
+			AND post_author = %d",
+			'academy_enrolled',
+			$user_id
+		), ARRAY_A );
+
+		return $results ?? [];
+	}
+
+
 	public static function get_wishlist_courses_by_user( $user_id, $post_status = 'publish' ) {
 		$course_ids = self::get_wishlist_courses_ids_by_user( $user_id );
 		if ( count( $course_ids ) ) {
@@ -738,6 +754,29 @@ trait Courses {
 		return (int) $count;
 	}
 
+	public static function get_total_students_by_instructor( $instructor_id ) {
+		global $wpdb;
+
+		$student_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT enrollment.post_author
+				FROM {$wpdb->posts} enrollment
+				LEFT JOIN {$wpdb->posts} course
+					ON enrollment.post_parent = course.ID
+				WHERE course.post_author = %d
+					AND course.post_type = %s
+					AND course.post_status = %s
+					AND enrollment.post_type = %s",
+				$instructor_id,
+				'academy_courses',
+				'publish',
+				'academy_enrolled',
+			)
+		);
+
+		return $student_ids;
+	}
+
 	public static function get_reviews_by_user( $user_id, $offset = 0, $limit = 150 ) {
 		global $wpdb;
 		$reviews = $wpdb->get_results(
@@ -889,6 +928,7 @@ trait Courses {
 
 	public static function get_total_number_of_course_lesson( $ID ) {
 		$total_lessons = 0;
+		$total_file = 0;
 		$curriculum    = get_post_meta( $ID, 'academy_course_curriculum', true );
 		if ( is_array( $curriculum ) ) {
 			if ( is_array( $curriculum ) && count( $curriculum ) ) {
@@ -898,30 +938,86 @@ trait Courses {
 							if ( isset( $topic_item['type'] ) && 'lesson' === $topic_item['type'] ) {
 								// phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 								$total_lessons += 1;
+								$total_file += (int) \Academy\Helper::get_lesson_meta( $topic_item['id'], 'featured_media' );
 							}
 							if ( 'sub-curriculum' === $topic_item['type'] ) {
 								foreach ( $topic_item['topics'] as $sub_topic ) {
 									if ( isset( $sub_topic['type'] ) && 'lesson' === $sub_topic['type'] ) {
 										// phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 										$total_lessons += 1;
+										$total_file += (int) \Academy\Helper::get_lesson_meta( $topic_item['id'], 'featured_media' );
 									}
 								}
 							}
 						}
 					}
 				}
-			}
+			}//end if
 		}//end if
 		return $total_lessons;
 	}
 
+	public static function get_total_number_of_course_lesson_resource( $course_id ) {
+		$curriculum = get_post_meta( $course_id, 'academy_course_curriculum', true );
+
+		if ( empty( $curriculum ) || ! is_array( $curriculum ) ) {
+			return 0;
+		}
+
+		$total = 0;
+
+		foreach ( $curriculum as $topic ) {
+			if ( empty( $topic['topics'] ) ) {
+				continue;
+			}
+
+			foreach ( $topic['topics'] as $item ) {
+				if ( empty( $item['type'] ) ) {
+					continue;
+				}
+
+				if ( $item['type'] === 'lesson' && ! empty( $item['id'] ) ) {
+					if ( \Academy\Helper::get_lesson_meta( $item['id'], 'attachment' ) ) {
+						++$total;
+					}
+				}
+
+				// Nested sub-curriculum lessons
+				if ( $item['type'] === 'sub-curriculum' && ! empty( $item['topics'] ) ) {
+					foreach ( $item['topics'] as $sub_item ) {
+						if (
+							! empty( $sub_item['type'] ) &&
+							$sub_item['type'] === 'lesson' &&
+							! empty( $sub_item['id'] ) &&
+							\Academy\Helper::get_lesson_meta( $sub_item['id'], 'attachment' )
+						) {
+							++$total;
+						}
+					}
+				}
+			}//end foreach
+		}//end foreach
+
+		return $total;
+	}
+
 	public static function get_course_duration( $ID ) {
 		$duration = get_post_meta( $ID, 'academy_course_duration', true );
-		if ( is_array( $duration ) && count( $duration ) && ( $duration[0] || $duration[1] || $duration[2] ) ) {
-			$duration = array_map(function ( $number ) {
-				return sprintf( '%02d', $number );
-			}, $duration);
-			return implode( ':', $duration );
+		if ( is_array( $duration ) && count( $duration ) && ( $duration[0] || $duration[1] ) ) {
+			$hours   = intval( $duration[0] );
+			$minutes = intval( $duration[1] );
+
+			$parts = [];
+
+			if ( $hours > 0 ) {
+				$parts[] = $hours . ' hr';
+			}
+
+			if ( $minutes > 0 ) {
+				$parts[] = $minutes . ' mins';
+			}
+
+			return implode( ' ', $parts );
 		}
 		return '';
 	}

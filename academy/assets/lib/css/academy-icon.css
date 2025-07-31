@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'academy-icon';
-  src:  url('fonts/academy-icon.eot?f8tc34');
-  src:  url('fonts/academy-icon.eot?f8tc34#iefix') format('embedded-opentype'),
-    url('fonts/academy-icon.ttf?f8tc34') format('truetype'),
-    url('fonts/academy-icon.woff?f8tc34') format('woff'),
-    url('fonts/academy-icon.svg?f8tc34#academy-icon') format('svg');
+  src:  url('fonts/academy-icon.eot?vsccu');
+  src:  url('fonts/academy-icon.eot?vsccu#iefix') format('embedded-opentype'),
+    url('fonts/academy-icon.ttf?vsccu') format('truetype'),
+    url('fonts/academy-icon.woff?vsccu') format('woff'),
+    url('fonts/academy-icon.svg?vsccu#academy-icon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,20 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.academy-icon--file:before {
+  content: "\ea29";
+}
+.academy-icon--user:before {
+  content: "\ea2b";
+}
+.academy-icon--video-lesson:before {
+  content: "\ea2d";
+  color: #595959;
+}
+.academy-icon--level:before {
+  content: "\ea2f";
+  color: #595959;
+}
 .academy-icon--group-plus:before {
   content: "\ea28";
 }

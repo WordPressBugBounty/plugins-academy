@@ -467,10 +467,48 @@ if ( ! function_exists( 'handle_academy_course_password_form' ) ) {
 if ( ! function_exists( 'academy_single_course_enroll_content' ) ) {
 	function academy_single_course_enroll_content() {
 		$course_id   = get_the_ID();
-		$enrolled    = Helper::is_enrolled( get_the_ID(), get_current_user_id() );
-		$completed   = Helper::is_completed_course( get_the_ID(), get_current_user_id(), true );
-		$is_paid     = (bool) Helper::is_course_purchasable( $course_id );
 		$is_public = Helper::is_public_course( $course_id );
+		$duration       = Helper::get_course_duration( $course_id );
+		$total_lessons  = Helper::get_total_number_of_course_lesson( $course_id );
+		$total_resource  = Helper::get_total_number_of_course_lesson_resource( $course_id );
+		$total_enroll_count_status = Helper::get_settings( 'is_enabled_course_single_enroll_count', true );
+		$total_enrolled = Helper::count_course_enrolled( $course_id );
+		$skill          = Helper::get_course_difficulty_level( $course_id );
+		$language       = get_post_meta( $course_id, 'academy_course_language', true );
+		$max_students   = (int) get_post_meta( $course_id, 'academy_course_max_students', true );
+		$last_update    = get_the_modified_time( get_option( 'date_format' ), $course_id );
+
+		ob_start();
+
+		Helper::get_template(
+			'single-course/enroll/content.php',
+			apply_filters(
+				'academy/single/course_content_args',
+				array(
+					'duration'       => $duration,
+					'total_lessons'  => $total_lessons,
+					'total_enroll_count_status' => $total_enroll_count_status,
+					'total_enrolled' => $total_enrolled,
+					'total_resource' => $total_resource,
+					'skill'          => $skill,
+					'language'       => $language,
+					'max_students'   => $max_students,
+					'last_update'    => $last_update,
+				),
+				$course_id
+			)
+		);
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo apply_filters( 'academy/templates/single_course/enroll_content_args', ob_get_clean(), $course_id );
+	}
+}//end if
+
+if ( ! function_exists( 'academy_course_pricing_type' ) ) {
+	function academy_course_pricing_type() {
+		$course_id   = get_the_ID();
+		$is_public = Helper::is_public_course( $course_id );
+		$enrolled    = Helper::is_enrolled( $course_id, get_current_user_id() );
+		$is_paid     = (bool) Helper::is_course_purchasable( $course_id );
 		$price       = '';
 		$monetization = Helper::get_settings( 'monetization_engine', 'woocommerce' );
 		if ( $is_paid && ( Helper::is_active_woocommerce() || Helper::is_active_easy_digital_downloads() ) ) {
@@ -494,35 +532,17 @@ if ( ! function_exists( 'academy_single_course_enroll_content' ) ) {
 			}
 		}
 
-		$duration       = Helper::get_course_duration( $course_id );
-		$total_lessons  = Helper::get_total_number_of_course_lesson( $course_id );
-		$total_enroll_count_status = Helper::get_settings( 'is_enabled_course_single_enroll_count', true );
-		$total_enrolled = Helper::count_course_enrolled( $course_id );
-		$skill          = Helper::get_course_difficulty_level( $course_id );
-		$language       = get_post_meta( $course_id, 'academy_course_language', true );
-		$max_students   = (int) get_post_meta( $course_id, 'academy_course_max_students', true );
-		$last_update    = get_the_modified_time( get_option( 'date_format' ), $course_id );
-
 		ob_start();
 
 		Helper::get_template(
-			'single-course/enroll/content.php',
+			'single-course/enroll/pricing.php',
 			apply_filters(
 				'academy/single/enroll_content_args',
 				array(
 					'enrolled'       => $enrolled,
-					'completed'      => $completed,
 					'is_paid'        => $is_paid,
 					'is_public'      => $is_public,
 					'price'          => $price,
-					'duration'       => $duration,
-					'total_lessons'  => $total_lessons,
-					'total_enroll_count_status' => $total_enroll_count_status,
-					'total_enrolled' => $total_enrolled,
-					'skill'          => $skill,
-					'language'       => $language,
-					'max_students'   => $max_students,
-					'last_update'    => $last_update,
 				),
 				$course_id
 			)
@@ -547,12 +567,15 @@ if ( ! function_exists( 'academy_course_enroll_form' ) ) {
 		$is_administrator = current_user_can( 'administrator' );
 		$is_instructor    = Helper::is_instructor_of_this_course( $user_ID, get_the_ID() );
 		$is_public_course = Helper::is_public_course( get_the_ID() );
-
 		ob_start();
 
 		// is private course
 		if ( ( $enrolled && 'completed' === $enrolled->enrolled_status ) || $is_administrator || $is_instructor || $is_public_course ) {
-			Helper::get_template( 'single-course/enroll/continue.php' );
+			$completed   = Helper::is_completed_course( get_the_ID(), $user_ID, true );
+			Helper::get_template( 'single-course/enroll/continue.php', [
+				'enrolled' => $enrolled,
+				'completed' => $completed
+			] );
 		}
 
 		// is public course
@@ -1080,7 +1103,8 @@ function academy_frontend_dashboard_content() {
 			'label' => esc_html__( 'Total Students', 'academy' ),
 			'value' => \Academy\Helper::get_total_number_of_students_by_instructor( $user_id ),
 			'color' => 'instructor',
-			'icon' => 'academy-icon academy-icon--students-two'
+			'icon' => 'academy-icon academy-icon--students-two',
+			'link' => esc_url( \Academy\Helper::get_frontend_dashboard_endpoint_url( 'students' ) )
 		];
 		$data['total_courses'] = [
 			'label' => esc_html__( 'Total Courses', 'academy' ),
@@ -1403,6 +1427,12 @@ function academy_frontend_dashboard_question_answer_page() {
 	);
 }
 
+function academy_frontend_dashboard_students_page() {
+	\Academy\Helper::get_template(
+		'frontend-dashboard/pages/students.php'
+	);
+}
+
 function academy_frontend_dashboard_settings_page() {
 	$user_id = get_current_user_id();
 	\Academy\Helper::get_template(
@@ -1420,15 +1450,18 @@ function academy_frontend_dashboard_reset_password_page() {
 
 function academy_frontend_dashboard_withdrawal_page() {
 	$user_id             = get_current_user_id();
+	$monetize_engine     = \Academy\Helper::get_settings( 'monetization_engine' );
 	$withdraw_history    = \Academy\Helper::get_withdraw_history_by_user_id( $user_id );
 	$earning             = (object) \Academy\Helper::get_earning_by_user_id( $user_id );
 	$earning->withdraw_currency_symbol = '$';
-	if ( \Academy\Helper::is_active_woocommerce() ) {
+	if ( 'woocommerce' === $monetize_engine && \Academy\Helper::is_active_woocommerce() ) {
 		$earning->withdraw_currency_symbol = html_entity_decode(
 			get_woocommerce_currency_symbol(),
 			ENT_HTML5,
 			'UTF-8'
 		);
+	} elseif ( 'storeengine' === $monetize_engine && \Academy\Helper::is_plugin_active( 'storeengine/storeengine.php' ) ) {
+		$earning->withdraw_currency_symbol = \StoreEngine\Utils\Helper::get_currency_symbol();
 	}
 	$withdraw_method_type = get_user_meta( $user_id, 'academy_instructor_withdraw_method_type', true );
 
@@ -1444,9 +1477,21 @@ function academy_frontend_dashboard_withdrawal_page() {
 
 function academy_frontend_dashboard_withdraw_page() {
 	$user_id = get_current_user_id();
+	$monetize_engine     = \Academy\Helper::get_settings( 'monetization_engine' );
+	$currency_symbol = '$';
+	if ( 'woocommerce' === $monetize_engine && \Academy\Helper::is_active_woocommerce() ) {
+		$currency_symbol = html_entity_decode(
+			get_woocommerce_currency_symbol(),
+			ENT_HTML5,
+			'UTF-8'
+		);
+	} elseif ( 'storeengine' === $monetize_engine && \Academy\Helper::is_plugin_active( 'storeengine/storeengine.php' ) ) {
+		$currency_symbol = \StoreEngine\Utils\Helper::get_currency_symbol();
+	}
 	\Academy\Helper::get_template(
 		'frontend-dashboard/pages/withdraw.php', [
-			'user_id' => $user_id
+			'user_id' => $user_id,
+			'currency' => $currency_symbol
 		]
 	);
 }

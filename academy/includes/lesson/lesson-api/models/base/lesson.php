@@ -58,7 +58,7 @@ abstract class Lesson extends Db {
 	public function get_data() : array {
 		$output = $this->data;
 		$output['meta'] = $this->meta;
-		return $output;
+		return apply_filters( 'academy/lesson', $output, $this->id );
 	}
 	public function save() : self {
 		$this->save_data();

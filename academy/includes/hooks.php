@@ -30,9 +30,10 @@ add_action( 'academy/templates/single_course_content', 'academy_single_course_re
 add_action( 'academy/templates/single_course_sidebar_widgets', 'academy_single_course_enroll', 10 );
 
 // enroll widget
-add_action( 'academy/templates/single_course_enroll_content', 'academy_single_course_enroll_content', 10 );
-add_action( 'academy/templates/single_course_enroll_content', 'academy_course_enroll_form', 15 );
-add_action( 'academy/templates/single_course_enroll_content', 'academy_course_enroll_wishlist_and_share', 20 );
+add_action( 'academy/templates/single_course_enroll_content', 'academy_course_pricing_type', 10 );
+add_action( 'academy/templates/single_course_enroll_content', 'academy_course_enroll_form', 12 );
+add_action( 'academy/templates/single_course_enroll_content', 'academy_single_course_enroll_content', 15 );
+add_action( 'academy/templates/single_course_enroll_content_after', 'academy_course_enroll_wishlist_and_share', 10 );
 
 // handle course password form
 add_filter( 'the_password_form', 'handle_academy_course_password_form' );
@@ -131,6 +132,8 @@ add_action( 'academy_frontend_dashboard_lessons_endpoint', 'academy_frontend_das
 add_action( 'academy_frontend_dashboard_announcements_endpoint', 'academy_frontend_dashboard_announcements_page' );
 // Question Answer
 add_action( 'academy_frontend_dashboard_question-answer_endpoint', 'academy_frontend_dashboard_question_answer_page' );
+// Frontend Students table
+add_action( 'academy_frontend_dashboard_students_endpoint', 'academy_frontend_dashboard_students_page' );
 // Frontend Settings
 add_action( 'academy_frontend_dashboard_settings_endpoint', 'academy_frontend_dashboard_settings_page' );
 add_action( 'academy_frontend_dashboard_reset-password_endpoint', 'academy_frontend_dashboard_reset_password_page' );

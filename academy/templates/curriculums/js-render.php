@@ -10,6 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$is_administrator = current_user_can( 'administrator' );
 		$is_instructor    = \Academy\Helper::is_instructor_of_this_course( $user_id, $course_id );
 		$is_public_course = \Academy\Helper::is_public_course( $course_id );
+		$lesson_content_width = \Academy\Helper::get_settings( 'lesson_content_width' );
+		$lesson_content_width_unit = \Academy\Helper::get_settings( 'lesson_content_width_unit' );
 		$is_hp_lesson = \Academy\Helper::get_settings( 'academy_is_hp_lesson_active', false ) ? false : true;
 		$is_topics_accessible = $is_administrator || $enrolled || $is_instructor || $is_public_course;
 ?>
@@ -23,6 +25,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			data-enabled-course-qa="<?php echo esc_attr( get_post_meta( get_the_ID(), 'academy_is_enabled_course_qa', true ) ); ?>"
 			data-enabled-course-announcements="<?php echo esc_attr( get_post_meta( get_the_ID(), 'academy_is_enabled_course_announcements', true ) ); ?>"
 			data-enabled-course-lesson-comment="<?php echo esc_attr( \Academy\Helper::get_settings( 'is_enabled_academy_lessons_comment', true ) ); ?>"
+			data-lesson-content-width="<?php echo esc_html( $lesson_content_width ); ?>"
+			data-lesson-content-width-unit="<?php echo esc_html( $lesson_content_width_unit ); ?>"
 			data-enabled-hp-lesson="<?php echo $is_hp_lesson; ?>"
 			data-course-type="<?php echo esc_attr( \Academy\Helper::get_course_type( $course_id ) ); ?>"
 			data-is-completed-course="<?php echo esc_attr( \Academy\Helper::is_completed_course( get_the_ID(), get_current_user_id() ) ); ?>"
