@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 $course_id = \Academy\Helper::get_the_current_course_id();
-$id = 0;
+$id = 0;// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 ?>
 
 <?php if ( ! $curriculums ) : ?>

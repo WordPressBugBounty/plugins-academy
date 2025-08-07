@@ -9,7 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		echo $preview_video; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	else :
 		?>
-		<img class="academy-course__thumbnail-image" src="<?php echo esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ); ?>" alt="<?php esc_html_e( 'thumbnail', 'academy' ); ?>">
+		<?php
+			// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+			echo '<img class="academy-course__thumbnail-image" src="' . esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ) . '" alt="' . esc_html__( 'thumbnail', 'academy' ) . '">'; ?>
 		<?php
 		endif;
 	?>

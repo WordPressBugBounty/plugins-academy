@@ -119,6 +119,7 @@ trait Student {
 
 	public static function student_course_taken( $id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT count(post_parent)
@@ -255,6 +256,7 @@ trait Student {
 		$wild = '%';
 		$like = $wild . $wpdb->esc_like( $search_keyword ) . $wild;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT ID, user_login, display_name, user_nicename, user_email
 			FROM {$wpdb->users}

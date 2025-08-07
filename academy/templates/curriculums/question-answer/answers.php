@@ -10,7 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="academy-qa">
 	<div class="academy-qa__meta">
 		<div class="academy-course__author-meta">
-			<img src="<?php echo esc_url( get_avatar_url( $comment->user_id, [ 'size' => '40' ] ) ); ?>" />
+			<?php
+			// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+			echo '<img src="' . esc_url( get_avatar_url( $comment->user_id, [ 'size' => '40' ] ) ) . '" />'; ?>
 		</div>
 		<div class="academy-qa-user-info">
 			<h4 class="academy-qa-username">

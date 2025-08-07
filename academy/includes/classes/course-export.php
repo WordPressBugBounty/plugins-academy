@@ -159,7 +159,7 @@ class CourseExport extends ExportBase {
 
 	public function get_all_courses( $status ) {
 		global $wpdb;
-		// phpcs::ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT *
 			FROM {$wpdb->posts}

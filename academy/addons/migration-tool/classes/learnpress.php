@@ -90,6 +90,7 @@ class LearnPress extends Migration implements MigrationInterface {
 			add_post_meta( $quiz->ID, $key, $value, true );
 		}
 		// quiz question migrate
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$questions = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT question_id,question_order FROM {$wpdb->prefix}learnpress_quiz_questions 
@@ -138,6 +139,8 @@ class LearnPress extends Migration implements MigrationInterface {
 				);
 
 				// quiz answer migrate
+
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$answers = $wpdb->get_results(
 					$wpdb->prepare(
 						"SELECT * from {$wpdb->prefix}learnpress_question_answers 
@@ -358,6 +361,7 @@ class LearnPress extends Migration implements MigrationInterface {
 
 	public function migrate_course_reviews( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$review_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT comments.comment_ID 
@@ -371,6 +375,7 @@ class LearnPress extends Migration implements MigrationInterface {
 		);
 		if ( $review_ids ) {
 			foreach ( $review_ids as $review_id ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->update( $wpdb->comments,
 					array(
 						'comment_approved' => 'approved',
@@ -382,12 +387,15 @@ class LearnPress extends Migration implements MigrationInterface {
 						'comment_ID' => $review_id
 					)
 				);
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->update( $wpdb->commentmeta,
 					array(
+						// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 						'meta_key' => 'academy_rating',
 						'comment_id' => $review_id
 					),
 					array(
+						// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 						'meta_key' => '_lpr_rating',
 						'comment_id' => $review_id
 					)
@@ -398,6 +406,7 @@ class LearnPress extends Migration implements MigrationInterface {
 
 	public function migrate_course_complete( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$complete_courses = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT user_id, lp_order.post_date as order_date
@@ -414,6 +423,7 @@ class LearnPress extends Migration implements MigrationInterface {
 
 	public function migrate_enrollments( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$enrollments = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT user_id, lp_order.post_date as order_post_date

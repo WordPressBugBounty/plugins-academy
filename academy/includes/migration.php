@@ -76,6 +76,7 @@ class Migration {
 	public function migrate_1_3_5( $academy_version ) {
 		if ( version_compare( $academy_version, '1.2.15', '>=' ) && version_compare( $academy_version, '1.3.5', '<' ) ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}academy_lessons SET lesson_status=%s WHERE lesson_status= %s", 'publish', 'draft' ) );
 		}
 	}
@@ -91,6 +92,7 @@ class Migration {
 				return;
 			}
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$topic_lists = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT meta_key, meta_value FROM $wpdb->usermeta WHERE meta_key LIKE %s AND user_id = %d",
@@ -232,6 +234,7 @@ class Migration {
 		if ( version_compare( $academy_version, '1.8.2', '<' ) ) {
 			global $wpdb;
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$course_announcements = $wpdb->get_results($wpdb->prepare(
 				"SELECT post_id, meta_value 
 				FROM {$wpdb->prefix}postmeta 
@@ -331,10 +334,12 @@ class Migration {
 		global $wpdb;
 		if ( ! get_option( 'academy_is_migrate_lessons_slug' ) ) {
 			// Lesson name issue solved
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$existing_lessons = $wpdb->get_results( "SELECT ID, lesson_title FROM {$wpdb->prefix}academy_lessons WHERE lesson_name IS NULL OR lesson_name = ''" );
 			if ( count( $existing_lessons ) ) {
 				foreach ( $existing_lessons as $lesson ) {
 					$slug = Helper::generate_unique_lesson_slug( sanitize_title( $lesson->lesson_title ) );
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					$wpdb->update( "{$wpdb->prefix}academy_lessons", array( 'lesson_name' => $slug ), array( 'ID' => $lesson->ID ) );
 				}
 			}

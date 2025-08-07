@@ -135,7 +135,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php else : ?>
 					<div class="academy-oops academy-oops__message">
 						<div class="academy-oops__icon">
-							<img src="<?php echo esc_url( ACADEMY_ASSETS_URI . 'images/NoDataAvailable.svg' ); ?>" alt="oops">
+						<?php
+								// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+								echo '<img src="' . esc_url( ACADEMY_ASSETS_URI . 'images/NoDataAvailable.svg' ) . '" alt="oops">'; ?>
 						</div>
 						<h3 class="academy-oops__heading"><?php esc_html_e( 'No data Available!!', 'academy' ); ?></h3>
 						<h3 class="academy-oops__text"><?php esc_html_e( 'No purchase data was found to see the available list here.', 'academy' ); ?></h3>

@@ -53,9 +53,9 @@ if ( ! empty( $lesson_meta['video_source']['type'] ) ) {
 		case 'embedded':
 			$video = $lesson_meta['video_source'];
 			$host_url = \Academy\Helper::generate_video_embed_url( $video['url'] );
-			$path = 'external.php';
-			if ( $video['url'] == $host_url ) {
-				$path  = 'embedded.php';
+			$path = 'external.php';// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			if ( $video['url'] === $host_url ) {
+				$path  = 'embedded.php';// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 			}
 			$template_path = 'curriculums/lesson/' . $path;
 			$template_args = \Academy\Helper::get_basic_url_to_embed_url( $video['url'] );

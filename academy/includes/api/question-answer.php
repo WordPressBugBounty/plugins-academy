@@ -315,7 +315,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 				$query_params = array_merge( $query_params, $course_ids );
 			}
 		}
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		return $wpdb->get_var( $wpdb->prepare( $query, $query_params ) );
 	}
 

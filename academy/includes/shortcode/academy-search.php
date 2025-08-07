@@ -26,9 +26,12 @@ class AcademySearch {
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) :
 				$query->the_post();
+
 				$item_markup .= '<li>
-								<a href="' . get_the_permalink() . '">
-									<img src="' . esc_url( \Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ) . '">
+								<a href="' . get_the_permalink() . '">' .
+
+									// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+									'<img src="' . esc_url( \Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ) . '">
 									' . get_the_title() . '
 								</a>
 							</li>';

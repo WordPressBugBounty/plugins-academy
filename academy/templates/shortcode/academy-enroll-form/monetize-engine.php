@@ -28,7 +28,7 @@ if ( 'free' !== $course_type || ! empty( $required_levels ) || $is_surecart_inte
 	?>
 <?php else : ?>
 	<div class="academy-enroll-form-shortcode__price">
-		<?php esc_attr_e( ucwords( $course_type ) ); ?>
+		<?php esc_html( ucwords( $course_type ) ); ?>
 	</div>
 	<form id="academy_course_enroll_form" class="academy-course-enroll-form" method="post" action="#">
 		<?php wp_nonce_field( 'academy_nonce' ); ?>

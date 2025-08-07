@@ -45,10 +45,14 @@ class AcademySingleCourse {
 		$tabs_content = [];
 		if ( is_array( $benefits ) && count( $benefits ) > 0 ) {
 			\Academy\Helper::get_template(
-			'single-course/benefits.php', 
-			apply_filters( 'academy/single_course_content_benefits_args', 
-			[ 'benefits' => $benefits ] 
-			));
+				'single-course/benefits.php',
+				apply_filters(
+					'academy/single_course_content_benefits_args',
+					[
+						'benefits' => $benefits,
+					]
+				)
+			);
 		}
 		if ( is_array( $audience ) && count( $audience ) > 0 ) {
 			$tabs_nav['audience']     = esc_html__( 'Targeted Audience', 'academy' );

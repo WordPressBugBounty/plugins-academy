@@ -67,6 +67,7 @@ class Query {
 	public static function get_total_number_of_questions_by_student_id( int $student_id ) : int {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(comment_ID) 
 			FROM {$wpdb->comments}

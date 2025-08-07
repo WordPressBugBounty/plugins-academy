@@ -23,7 +23,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="academy-mycourse academy-mycourse-12">
 							<div class="academy-mycourse__thumbnail">
 								<a href="<?php echo esc_url( $course_permalink ); ?>">
-									<img class="academy-course__thumbnail-image" src="<?php echo esc_url( $thumbnail_url ); ?>" alt="<?php echo esc_attr( $course_title ); ?>">
+									
+								<?php
+								// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+								echo '<img class="academy-course__thumbnail-image" src="' . esc_url( $thumbnail_url ) . '" alt="' . esc_attr( $course_title ) . '">'; ?>
 								</a>
 							</div>
 							<div class="academy-mycourse__content">

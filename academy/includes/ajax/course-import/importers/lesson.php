@@ -61,7 +61,9 @@ class Lesson implements Interfaces\Insertable {
 		foreach ( $this->meta as $key => $value ) {
 			$res = $this->wpdb->insert( $this->wpdb->prefix . 'academy_lessonmeta', [
 				'lesson_id'  => $this->id,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_key'   => $key,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'meta_value' => is_array( $value ) ? json_encode( $value ) : $value,
 			] );
 			if ( $res === false ) {

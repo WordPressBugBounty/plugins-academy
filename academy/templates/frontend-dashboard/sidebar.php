@@ -9,14 +9,18 @@ $user = wp_get_current_user();
 <div class="academy-frontend-dashboard__sidebar" id="academy-frontend-dashboard-sidebar">
 	<div class="academy-frontend-dashboard__user">
 		<div class="user-title" id="user-avatar">
-			<img src="<?php echo esc_url( get_avatar_url( $user->ID, [ 'size' => '40' ] ) ); ?>" />
+		<?php
+			// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+			echo '<img src="' . esc_url( get_avatar_url( $user->ID, [ 'size' => '40' ] ) ) . '" />'; ?>
 			<span class="academy-dashboard-menu__item-label"><?php echo esc_html( Helper::get_current_user_full_name() ); ?></span>
 			<span id="user-dropdown-icon" class="academy-icon academy-icon--angle-right"></span>
 		</div>
 			<ul class="academy-frontend-dashboard__user-dropdown" id="user-avatar-dropdown">
 				<li class="academy-user-info">
 					<div class="academy-entry-left">
-						<img src="<?php echo esc_url( get_avatar_url( $user->ID, [ 'size' => '40' ] ) ); ?>" />
+					<?php
+						// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+						echo '<img src="' . esc_url( get_avatar_url( $user->ID, [ 'size' => '40' ] ) ) . '" />'; ?>
 					</div>
 					<p class="academy-entry-right">
 						<span class="academy-user-name">

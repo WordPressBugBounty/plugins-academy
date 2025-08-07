@@ -48,7 +48,11 @@ if ( ! empty( $pending_enrolled_courses ) ) :
 					<div class="academy-col-lg-4 academy-col-md-6 academy-col-sm-12">
 					<div class="academy-mycourse academy-mycourse-12">
 					<div class="academy-mycourse__thumbnail">
-						<a href="<?php echo esc_url( $course_permalink ); ?>"><img class="academy-course__thumbnail-image" src="<?php echo esc_url( $thumbnail_url ); ?>" alt="thumbnail"></a>
+						<a href="<?php echo esc_url( $course_permalink ); ?>">
+							<?php
+							// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+							echo '<img class="academy-course__thumbnail-image" src="' . esc_url( $thumbnail_url ) . '" alt="thumbnail">'; ?>
+						</a>
 					</div>
 					<div class="academy-mycourse__content">
 					<div class="academy-course__rating">

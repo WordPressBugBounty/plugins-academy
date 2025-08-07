@@ -117,6 +117,7 @@ class Integration {
 					$status_to = 'completed';
 					self::order_mark_as_completed( $order_id );
 				}
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->update( $wpdb->posts, array( 'post_status' => $status_to ), array( 'ID' => $enrolled_info['enrolled_id'] ) );
 				if ( 'completed' === $status_to ) {
 					$enrolled_user_id = get_post_field( 'post_author', $enrolled_info['enrolled_id'] );
@@ -144,6 +145,7 @@ class Integration {
 									$status_to = 'completed';
 									self::order_mark_as_completed( $order_id );
 								}
+								// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 								$wpdb->update( $wpdb->posts, array( 'post_status' => $status_to ), array( 'ID' => $enroll_id ) );
 								if ( 'completed' === $status_to ) {
 									$enrolled_user_id = get_post_field( 'post_author', $enroll_id );
@@ -299,12 +301,14 @@ class Integration {
 	public static function order_mark_as_completed( $order_id ) {
 		global $wpdb;
 		if ( 'yes' === get_option( 'woocommerce_custom_orders_table_enabled' ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$is_update = $wpdb->update(
 				"{$wpdb->prefix}wc_orders",
 				array( 'status' => 'wc-completed' ),
 				array( 'ID' => $order_id )
 			);
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$is_update = $wpdb->update(
 				$wpdb->posts,
 				array( 'post_status' => 'wc-completed' ),

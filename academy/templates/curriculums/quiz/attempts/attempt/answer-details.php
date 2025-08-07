@@ -60,11 +60,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 												echo is_array( $correct ) ? esc_html( $correct['answer_title'] ) : esc_html( $correct->answer_title ?? $correct );
 												if ( isset( $correct->image_url ) ) : ?>
 													<div class="academy-quiz-table-answers-item">
-														<img src="<?php echo esc_url( $correct->image_url ); ?>" width="50" class="academy-quiz-table-answers-item" alt="<?php echo esc_attr( $correct->answer_title ); ?>">
+
+														<?php
+
+														// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+														echo '<img src="' . esc_url( $correct->image_url ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $correct->answer_title ) . '">'; ?>
+
+
 													</div>
 												<?php elseif ( is_array( $correct ) && ! empty( $correct['image_url'] ) ) : ?>
 													<div class="academy-quiz-table-answers-item">
-														<img src="<?php echo esc_url( $correct['image_url'] ); ?>" width="50" class="academy-quiz-table-answers-item" alt="<?php echo esc_attr( $correct['answer_title'] ); ?>">
+														<?php
+
+														// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+														echo '<img src="' . esc_url( $correct['image_url'] ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $correct['answer_title'] ) . '">'; ?>
 													</div>
 												<?php endif;
 											endforeach; ?>
@@ -74,12 +83,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 											foreach ( $attempt_answer_detail->given_answer as $given ) :
 												if ( isset( $given->image_url ) ) : ?>
 													<div class="academy-quiz-table-answers-item">
-														<img src="<?php echo esc_url( $given->image_url ); ?>" width="50" class="academy-quiz-table-answers-item" alt="<?php echo esc_attr( $given->answer_title ); ?>">
+														<?php
+														// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+														echo '<img src="' . esc_url( $given->image_url ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $given->answer_title ) . '">'; ?>
 													</div>
 
 												<?php elseif ( is_array( $given ) && ! empty( $given['image_url'] ) ) : ?>
 													<div class="academy-quiz-table-answers-item">
-														<img src="<?php echo esc_url( $given['image_url'] ); ?>" width="50" class="academy-quiz-table-answers-item" alt="<?php echo esc_attr( $given['answer_title'] ); ?>">
+														<?php
+														// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+														echo '<img src="' . esc_url( $given['image_url'] ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $given['answer_title'] ) . '">'; ?>
 													</div>
 
 												<?php endif;

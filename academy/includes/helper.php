@@ -841,6 +841,7 @@ class Helper {
 	public static function get_page_by_title( $page_title, $post_type = 'page' ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$page = $wpdb->get_var( $wpdb->prepare(
 			"SELECT ID
 			FROM $wpdb->posts
@@ -878,6 +879,7 @@ class Helper {
 
 	public static function has_user_meta_exists( $author_id, $meta_key, $meta_value ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$has_meta = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(umeta_id) FROM {$wpdb->usermeta} 

@@ -24,6 +24,7 @@ class Analytics {
 
 	public function get_total_number_of_courses() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(ID) 
             FROM {$wpdb->posts} 
@@ -46,12 +47,13 @@ class Analytics {
 		if ( $user_id ) {
 			$query .= $wpdb->prepare( ' AND post_author = %d', $user_id );
 		}
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$results = $wpdb->get_var( $query );
 		return (int) $results;
 	}
 	public static function get_total_number_of_completed_courses() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$number_of_completed = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(comment_ID), 
@@ -83,6 +85,7 @@ class Analytics {
 	}
 	public function get_total_number_of_enrolled_by_course_id( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(ID) 
             FROM {$wpdb->posts} 
@@ -95,6 +98,7 @@ class Analytics {
 
 	public function get_total_number_of_lessons() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(ID) 
             FROM {$wpdb->prefix}academy_lessons
@@ -105,6 +109,7 @@ class Analytics {
 
 	public function get_total_number_of_questions() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(comment_ID) 
             FROM {$wpdb->comments}
@@ -117,6 +122,7 @@ class Analytics {
 	public function get_total_number_of_instructors( $course_id = 0 ) {
 		global $wpdb;
 		if ( $course_id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			return (int) $wpdb->get_var(
 				$wpdb->prepare("SELECT COUNT(umeta_id) 
 					FROM {$wpdb->usermeta} 
@@ -124,6 +130,7 @@ class Analytics {
 					AND meta_value = %d", 'academy_instructor_course_id', $course_id)
 			);
 		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return (int) $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(umeta_id) 
             FROM {$wpdb->usermeta} 
@@ -133,6 +140,7 @@ class Analytics {
 
 	public function get_total_number_of_students() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(umeta_id) 
@@ -144,6 +152,7 @@ class Analytics {
 
 	public function get_total_number_of_student_by_course_id( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$total_student = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(DISTINCT post_author) 
@@ -164,7 +173,7 @@ class Analytics {
 		if ( $user_id ) {
 			$query .= $wpdb->prepare( ' AND user_id =%d', $user_id );
 		}
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$results = $wpdb->get_var( $query );
 		return (int) $results;
 	}
@@ -173,6 +182,7 @@ class Analytics {
 		global $wpdb;
 		$from    = gmdate( 'Y-m-d', strtotime( ' - 30 days' ) );
 		$to      = gmdate( 'Y-m-d', strtotime( ' + 1 days' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
 			$wpdb->prepare("SELECT COUNT(ID) as total, DATE(post_date)  as date_format 
             FROM {$wpdb->posts} 
@@ -215,6 +225,7 @@ class Analytics {
 
 	public function get_number_of_questions_by_course_id( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(comment_ID) 
                      FROM {$wpdb->comments}
@@ -228,6 +239,7 @@ class Analytics {
 
 	public function get_total_number_of_reviews_by_course_id( $id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(comment_ID) 
                      FROM {$wpdb->comments} 
@@ -243,6 +255,7 @@ class Analytics {
 		global $wpdb;
 		$product_id = \Academy\Helper::get_course_product_id( $course_id );
 		if ( $product_id && \Academy\Helper::is_active_woocommerce() ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$total_earning = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT SUM(meta_value)

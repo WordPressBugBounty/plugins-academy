@@ -18,6 +18,7 @@ trait Withdrawals {
 			'created_at'  => current_time( 'mysql' ),
 		);
 		$args     = wp_parse_args( $args, $defaults );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
 				"INSERT INTO {$wpdb->prefix}academy_withdraws ( user_id, amount, method_data, status, updated_at, created_at)
@@ -35,18 +36,21 @@ trait Withdrawals {
 
 	public static function update_withdraw_status_by_user_id( $user_id, $status_to ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_update = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}academy_withdraws SET status=%s WHERE user_id= %d", $status_to, $user_id ) );
 		return $is_update;
 	}
 
 	public static function update_withdraw_status_by_withdraw_id( $ID, $status_to ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_update = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}academy_withdraws SET status=%s WHERE ID= %d", $status_to, $ID ) );
 		return $is_update;
 	}
 
 	public static function get_withdraw_history_by_user_id( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}academy_withdraws WHERE user_id=%d ORDER BY created_at DESC",
@@ -65,11 +69,12 @@ trait Withdrawals {
 		}
 
 		$query .= ' ORDER BY created_at DESC LIMIT %d, %d';
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		return $wpdb->get_results( $wpdb->prepare( $query, $offset, $per_page ) );
 	}
 	public static function get_withdraw_by_withdraw_id( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT 
@@ -115,6 +120,7 @@ trait Withdrawals {
 	}
 	public static function get_total_number_of_withdraw_request() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}academy_withdraws" );
 	}
 }

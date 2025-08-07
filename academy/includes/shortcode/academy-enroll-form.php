@@ -23,7 +23,7 @@ class AcademyEnrollForm {
 		$layout = isset( $attributes['layout'] ) ? $attributes['layout'] : 'legacy';
 		ob_start();
 
-		if ( $layout === 'legacy' ) {
+		if ( 'legacy' === $layout ) {
 			echo '<div class="academy-enroll-form-shortcode academy-enroll-form-shortcode--legacy">';
 			if ( $course_id ) {
 				do_action( 'academy/templates/shortcode/enroll_form_content', $course_id );

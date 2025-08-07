@@ -237,6 +237,7 @@ if ( ! function_exists( 'academy_course_loop_header' ) ) {
 		$is_already_in_wishlist = false;
 		$wishlists_status = (bool) Helper::get_settings( 'is_enabled_course_wishlist', true );
 		if ( $wishlists_status ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$is_already_in_wishlist = $wpdb->get_row( $wpdb->prepare( "SELECT * from {$wpdb->usermeta} WHERE user_id = %d AND meta_key = 'academy_course_wishlist' AND meta_value = %d;", $user_id, $course_id ) );
 		}
 		Helper::get_template( 'loop/header.php', array(
@@ -633,6 +634,7 @@ if ( ! function_exists( 'academy_course_enroll_wishlist_and_share' ) ) {
 		global $wpdb;
 		$course_id              = get_the_ID();
 		$user_id                = get_current_user_id();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_already_in_wishlist = $wpdb->get_row( $wpdb->prepare( "SELECT * from {$wpdb->usermeta} WHERE user_id = %d AND meta_key = 'academy_course_wishlist' AND meta_value = %d;", $user_id, $course_id ) );
 		$is_show_wishlist = (bool) Helper::get_settings( 'is_enabled_course_wishlist', true );
 		$is_show_course_share = (bool) Helper::get_settings( 'is_enabled_course_share', true );

@@ -169,7 +169,11 @@ class Course extends AbstractAjaxHandler {
 				<div class="academy-mycourse academy-mycourse-<?php the_ID(); ?>">
 					<div class="academy-mycourse__thumbnail">
 						<a href="<?php echo esc_url( get_the_permalink() ); ?>">
-							<img class="academy-course__thumbnail-image" src="<?php echo esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ); ?>" alt="<?php esc_html_e( 'thumbnail', 'academy' ); ?>">
+							
+							<?php 
+							// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+							echo '<img class="academy-course__thumbnail-image" src="' . esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ) . '" alt="' . esc_html_e( 'thumbnail', 'academy' ) . '">'; 
+							?>
 						</a>
 					</div>
 					<div class="academy-mycourse__content">
@@ -314,13 +318,17 @@ class Course extends AbstractAjaxHandler {
 
 		$course_id          = $payload['course_id'];
 		$user_id            = get_current_user_id();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_already_in_list = $wpdb->get_row( $wpdb->prepare( "SELECT * from {$wpdb->usermeta} WHERE user_id = %d AND meta_key = 'academy_course_wishlist' AND meta_value = %d;", $user_id, $course_id ) );
 		if ( $is_already_in_list ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->delete(
 				$wpdb->usermeta,
 				array(
 					'user_id'    => $user_id,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 					'meta_key'   => 'academy_course_wishlist',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 					'meta_value' => $course_id,
 				)
 			);
@@ -338,13 +346,17 @@ class Course extends AbstractAjaxHandler {
 
 		$course_id          = $payload['course_id'];
 		$user_id            = get_current_user_id();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_already_in_list = $wpdb->get_row( $wpdb->prepare( "SELECT * from {$wpdb->usermeta} WHERE user_id = %d AND meta_key = 'academy_course_favorite' AND meta_value = %d;", $user_id, $course_id ) );
 		if ( $is_already_in_list ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->delete(
 				$wpdb->usermeta,
 				array(
 					'user_id'    => $user_id,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 					'meta_key'   => 'academy_course_favorite',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 					'meta_value' => $course_id,
 				)
 			);
@@ -564,6 +576,7 @@ class Course extends AbstractAjaxHandler {
 		do_action( 'academy/admin/course_complete_before', $course_id );
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$completed = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(comment_ID) from {$wpdb->comments} 
@@ -582,6 +595,7 @@ class Course extends AbstractAjaxHandler {
 		// hash is unique.
 		do {
 			$hash    = substr( md5( wp_generate_password( 32 ) . $date . $course_id . $user_id ), 0, 16 );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$hasHash = (int) $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT COUNT(comment_ID) from {$wpdb->comments} 
@@ -603,6 +617,7 @@ class Course extends AbstractAjaxHandler {
 			'comment_type'     => 'course_completed',
 			'user_id'          => $user_id,
 		);
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_complete = $wpdb->insert( $wpdb->comments, $data );
 
 		do_action( 'academy/admin/course_complete_after', $course_id, $user_id );

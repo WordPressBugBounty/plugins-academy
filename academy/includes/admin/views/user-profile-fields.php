@@ -44,6 +44,7 @@ wp_enqueue_media();
 						<?php
 							$profile_photo = get_user_meta( $user->ID, 'academy_profile_photo', true );
 						if ( $profile_photo ) {
+							// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
 							echo '<img src="' . esc_url( $profile_photo ) . '" alt="" style="max-width:100%" /> ';
 						}
 						?>
@@ -95,7 +96,9 @@ jQuery(document).ready(function () {
 				// Get media attachment details from the frame state
 				var attachment = frame.state().get('selection').first().toJSON();
 				// Send the attachment URL to our custom image input field.
-				imgContainer.append('<img src="' + attachment.url + '" alt="" style="max-width:100%;"/>');
+				imgContainer.append(
+					// eslint-disable-line PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+					'<img src="' + attachment.url + '" alt="" style="max-width:100%;"/>');
 				// Send the attachment id to our hidden input
 				imgIdInput.val(attachment.url);
 				// Hide the add image link

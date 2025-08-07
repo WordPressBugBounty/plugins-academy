@@ -12,7 +12,8 @@ trait Lessons {
 	public static function get_lessons( $offset = 0, $per_page = -1, $author_id = 0, $search_keyword = '', $lesson_status = '' ) {
 		$lessons = LessonApi::get( $offset, $per_page, $author_id, $search_keyword, $lesson_status, true );
 		$data = [];
-		if ( ( $total = count( $lessons ) ) > 0 ) {
+		$total = count( $lessons );
+		if ( $total > 0 ) {
 			foreach ( $lessons as $lesson ) {
 				$data[] = (object) $lesson->get_data();
 			}

@@ -354,6 +354,7 @@ class Masterstudy extends Migration implements MigrationInterface {
 
 	public function migrate_enrollments( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$enrollments = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * from {$wpdb->prefix}stm_lms_user_courses 
 			WHERE course_id = %d AND status = %s ",
@@ -382,6 +383,7 @@ class Masterstudy extends Migration implements MigrationInterface {
 
 	public function migrate_course_complete( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$complete_courses = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * from {$wpdb->prefix}stm_lms_user_courses 
 			WHERE course_id = %d AND status = %s AND progress_percent = %d",
@@ -394,6 +396,7 @@ class Masterstudy extends Migration implements MigrationInterface {
 
 	public function migrate_course_reviews( $course ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$reviews = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT post_id FROM {$wpdb->postmeta}
@@ -410,6 +413,8 @@ class Masterstudy extends Migration implements MigrationInterface {
 					$user_data = get_user_by( 'ID', $user_id );
 					$comment_author = $user_data ? $user_data->display_name : '';
 					$email = $user_data ? $user_data->user_email : '';
+
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 					$wpdb->insert(
 						$wpdb->comments,
 						array(
@@ -425,10 +430,13 @@ class Masterstudy extends Migration implements MigrationInterface {
 						array( '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s' )
 					);
 
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 					$wpdb->insert(
 						$wpdb->commentmeta,
 						array(
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 							'meta_key'   => 'academy_rating',
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 							'meta_value' => $rating,
 							'comment_id' => $wpdb->insert_id,
 						),

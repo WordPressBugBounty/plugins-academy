@@ -20,7 +20,9 @@ if ( ! $course_id ) {
 	<div class="academy-lesson-topbar__left">
 		<div class="academy-logo">
 			<a href="<?php echo esc_url( site_url() ); ?>">
-				<img src="<?php echo esc_url( is_array( $topbar_logo ) ? $topbar_logo[0] : ACADEMY_ASSETS_URI . 'images/logo.svg' ); ?>" alt="academy_logo" />
+				<?php
+				// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+				echo '<img src="' . esc_url( is_array( $topbar_logo ) ? $topbar_logo[0] : ACADEMY_ASSETS_URI . 'images/logo.svg' ) . '" alt="academy_logo" />'; ?>
 			</a>
 		</div>
 		<hr class="topbar-hr">

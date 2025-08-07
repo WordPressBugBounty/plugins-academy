@@ -16,7 +16,10 @@ $max_attempt   = ( 'retry' === $quiz['settings']['quiz_feedback_mode'] ) ? $quiz
 <div class="academy-lesson-quiz__inner">
 	<div class="academy-lesson-quiz__expire-message academy-lesson-quiz--expire-wrap">
 		<div class="academy-lesson-quiz__expire-image">
-			<img class="academy-expire-image" src="<?php echo esc_url( ACADEMY_ASSETS_URI . 'images/expire.png' ); ?>" alt="image" />
+			<?php
+			// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+			echo '<img class="academy-expire-image" src="' . esc_url( ACADEMY_ASSETS_URI . 'images/expire.png' ) . '" alt="image" />';
+			?>
 		</div>
 		<div class="academy-lesson-quiz__expire">
 			<span class="academy-quiz-expire-message">

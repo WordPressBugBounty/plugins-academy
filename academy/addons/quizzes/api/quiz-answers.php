@@ -176,6 +176,7 @@ class QuizAnswers extends \WP_REST_Controller {
 		global $wpdb;
 		$question_id = $request->get_param( 'id' );
 		$question_type = $request->get_param( 'question_type' );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$answers = (array) $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT *  FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d AND question_type=%s ORDER BY answer_order ASC",

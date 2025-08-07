@@ -68,7 +68,9 @@ class Tutor  extends Migration implements MigrationInterface {
 		$meta_value = $course_id;
 		$user_ids = get_users(
 			array(
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'meta_key' => $meta_key,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'meta_value' => $meta_value,
 			)
 		);
@@ -119,6 +121,7 @@ class Tutor  extends Migration implements MigrationInterface {
 		$new_curriculums = [];
 
 		foreach ( $topics as $topic ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$items = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT * FROM {$wpdb->posts} WHERE post_parent = %d AND post_status = %s",
@@ -256,6 +259,7 @@ class Tutor  extends Migration implements MigrationInterface {
 		$prerequisite = array();
 		if ( is_array( $topic_ids ) ) {
 			foreach ( $topic_ids as $topic_id ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$topics = $wpdb->get_results(
 					$wpdb->prepare(
 						"SELECT * FROM {$wpdb->posts} 
@@ -265,6 +269,7 @@ class Tutor  extends Migration implements MigrationInterface {
 				);
 				foreach ( $topics as $topic ) {
 					if ( 'lesson' === $topic->post_type ) {
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 						$lessons = $wpdb->get_results(
 							$wpdb->prepare(
 								"SELECT * FROM {$wpdb->prefix}academy_lessons WHERE lesson_title LIKE %s",
@@ -542,6 +547,7 @@ class Tutor  extends Migration implements MigrationInterface {
 		}
 
 		// Quiz question migration.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$questions = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}tutor_quiz_questions WHERE quiz_id = %d",
@@ -591,6 +597,7 @@ class Tutor  extends Migration implements MigrationInterface {
 					'title' => $array['question_title']
 				);
 				// Quiz answers migration.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$answers = $wpdb->get_results(
 					$wpdb->prepare(
 						"SELECT * FROM {$wpdb->prefix}tutor_quiz_question_answers WHERE belongs_question_id = %d AND belongs_question_type = %s",
@@ -625,6 +632,7 @@ class Tutor  extends Migration implements MigrationInterface {
 
 	public function migrate_course_reviews( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$tr_review_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT comments.comment_ID FROM {$wpdb->comments} comments 
@@ -647,13 +655,17 @@ class Tutor  extends Migration implements MigrationInterface {
 					'comment_agent'    => 'academy',
 					'comment_approved' => 1,
 				);
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->update( $wpdb->prefix . 'comments', $update, $where );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->update($wpdb->commentmeta,
 					array(
+						// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 						'meta_key' => 'academy_rating'
 					),
 					array(
 						'comment_id' => $review_id,
+						// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 						'meta_key' => 'tutor_rating'
 					)
 				);
@@ -685,6 +697,7 @@ class Tutor  extends Migration implements MigrationInterface {
 
 	public function migrate_course_orders( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$enrolled_ids = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->posts} 
@@ -715,6 +728,7 @@ class Tutor  extends Migration implements MigrationInterface {
 
 	public function migrate_enrollments( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$enroll_courses = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->posts} 
@@ -752,6 +766,7 @@ class Tutor  extends Migration implements MigrationInterface {
 			'comment_agent'    => 'academy',
 			'comment_approved' => 'approved',
 		);
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update( $wpdb->prefix . 'comments', $update, $where );
 	}
 

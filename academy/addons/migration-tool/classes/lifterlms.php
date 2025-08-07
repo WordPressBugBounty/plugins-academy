@@ -125,6 +125,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 		);
 		$course_prerequisites = [];
 		if ( $prerequisite_id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$posts = $wpdb->get_results(
 				$wpdb->prepare( "SELECT * FROM {$wpdb->posts} WHERE ID = %d", $prerequisite_id )
 			);
@@ -287,6 +288,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 		}
 
 		// Execute the query
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$question_ids = $wpdb->get_col( $wpdb->prepare(
 			"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %d",
 			'_llms_parent_id',
@@ -374,6 +376,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 
 	public function migrate_enrollments( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$enrollments = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT user_id, post.post_date as order_post_date
@@ -391,6 +394,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 
 	public function migrate_course_complete( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_complete = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT user_id
@@ -416,6 +420,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 		$course_id = $course->ID;
 
 		// Execute the query
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$product_ids = $wpdb->get_col( $wpdb->prepare(
 			"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %d",
 			'_llms_product_id',

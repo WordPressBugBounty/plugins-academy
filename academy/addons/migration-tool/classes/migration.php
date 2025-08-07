@@ -17,6 +17,8 @@ class Migration {
 				$date = gmdate( 'Y-m-d H:i:s', \Academy\Helper::get_time() );
 				do {
 					$hash    = substr( md5( wp_generate_password( 32 ) . $date . $course_id . $user_id ), 0, 16 );
+
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					$hasHash = (int) $wpdb->get_var(
 						$wpdb->prepare(
 							"SELECT COUNT(comment_ID) from {$wpdb->comments} 
@@ -38,6 +40,7 @@ class Migration {
 					'comment_type'     => 'course_completed',
 					'user_id'          => $user_id,
 				);
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 				$wpdb->insert( $wpdb->comments, $data );
 			}//end if
 		}//end foreach
@@ -94,6 +97,7 @@ class Migration {
 		$course_prerequisites = [];
 		if ( is_array( $course_ids ) ) {
 			foreach ( $course_ids as $course_id ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$titles = $wpdb->get_results( $wpdb->prepare( "SELECT post_title FROM {$wpdb->posts} WHERE ID = %d", $course_id ) );
 				foreach ( $titles as $title ) {
 						$course_prerequisites[] = array(

@@ -15,12 +15,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 			if ( Academy\Helper::get_settings( 'is_show_public_profile' ) ) :
 				?>
 				<a href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID', $instructor->ID ) ) ); ?>">
-					<img src="<?php echo esc_url( get_avatar_url( $instructor->ID ) ); ?>" alt="<?php esc_attr_e( 'profile', 'academy' ); ?>">
+				<?php
+					// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+					echo '<img src="' . esc_url( get_avatar_url( $instructor->ID ) ) . '" alt="' . esc_attr__( 'profile', 'academy' ) . '">'; ?>
 				</a>
 				<?php
 				else :
 					?>
-					<img src="<?php echo esc_url( get_avatar_url( $instructor->ID ) ); ?>" alt="<?php esc_attr_e( 'profile', 'academy' ); ?>">
+					<?php
+						// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+						echo '<img src="' . esc_url( get_avatar_url( $instructor->ID ) ) . '" alt="' . esc_attr__( 'profile', 'academy' ) . '">'; ?>
 				<?php endif; ?>
 			</div>
 			<div class="instructor-info__content">

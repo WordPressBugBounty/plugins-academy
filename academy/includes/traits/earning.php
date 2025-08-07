@@ -128,9 +128,7 @@ trait Earning {
 		$placeholders = implode( ',', array_fill( 0, count( $valid_order_ids ), '%d' ) );
 		$sql = "SELECT * FROM $table WHERE order_id NOT IN ($placeholders) OR course_price_total = %f";
 
-		$query = $wpdb->prepare( $sql, ...array_merge( $valid_order_ids, [ 0.0 ] ) );
-
-		return $wpdb->get_results( $query );
+		return $wpdb->get_results( $wpdb->prepare( $sql, ...array_merge( $valid_order_ids, [ 0.0 ] ) ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public static function delete_academy_fake_earning_orders( $order_ids ) {
@@ -144,9 +142,8 @@ trait Earning {
 
 		$placeholders = implode( ',', array_fill( 0, count( $order_ids ), '%d' ) );
 		$sql = "DELETE FROM $table WHERE ID IN ($placeholders)";
-		$query = $wpdb->prepare( $sql, ...$order_ids );
 
-		return $wpdb->query( $query );
+		return $wpdb->query( $wpdb->prepare( $sql, ...$order_ids ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 }

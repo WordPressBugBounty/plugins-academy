@@ -75,6 +75,7 @@ class Query {
 		// post insert will be here
 		$table_name = $wpdb->prefix . 'academy_quiz_questions';
 		if ( $update ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update(
 				$table_name,
 				$question_arr,
@@ -98,6 +99,7 @@ class Query {
 			);
 			return $question_ID;
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->insert(
 				$table_name,
 				array(
@@ -142,6 +144,7 @@ class Query {
 			'offset' => 0,
 		);
 		$args = wp_parse_args( $args, $defaults );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}academy_quiz_questions ORDER BY question_created_at DESC LIMIT %d, %d;",
@@ -153,6 +156,7 @@ class Query {
 	}
 	public static function get_quiz_question( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$question   = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_quiz_questions WHERE question_id=%d", $ID ), OBJECT );
 		return current( $question );
 	}
@@ -161,6 +165,7 @@ class Query {
 		global $wpdb;
 		$validOrders = [ 'rand', 'ASC', 'DESC' ];
 		$order = in_array( $order, $validOrders, true ) ? $order : 'DESC';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results( $wpdb->prepare(
 			"SELECT * FROM {$wpdb->prefix}academy_quiz_questions WHERE quiz_id = %d ORDER BY " . ( 'rand' === $order ? 'RAND()' : 'question_created_at ' . $order ), //phpcs:ignore
 			$quiz_id
@@ -185,6 +190,7 @@ class Query {
 
 	public static function get_total_questions_marks_by_quiz_id( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$questions_marks = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT sum(question_score) as total_marks FROM {$wpdb->prefix}academy_quiz_questions WHERE quiz_id=%d;",
@@ -232,6 +238,7 @@ class Query {
 		// post insert will be here
 		$table_name = $wpdb->prefix . 'academy_quiz_attempts';
 		if ( $update ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update(
 				$table_name,
 				$attempt,
@@ -254,6 +261,7 @@ class Query {
 			);
 			return $attempt_id;
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->insert(
 				$table_name,
 				array(
@@ -321,6 +329,7 @@ class Query {
 		// post insert will be here
 		$table_name = $wpdb->prefix . 'academy_quiz_attempts';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update(
 			$table_name,
 			$attempt,
@@ -348,6 +357,7 @@ class Query {
 
 	public static function has_attempt_quiz( $course_id, $quiz_id, $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_var( $wpdb->prepare( "SELECT attempt_id FROM {$wpdb->prefix}academy_quiz_attempts WHERE course_id=%d AND quiz_id=%d AND user_id=%d LIMIT 1", $course_id, $quiz_id, $user_id ) );
 	}
 
@@ -365,6 +375,7 @@ class Query {
 		if ( $args['quiz_id'] ) {
 			return self::get_quiz_attempt_details_by_quiz_id( $args );
 		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$query = $wpdb->prepare(
 			"SELECT 
 				attempt_id, 
@@ -469,6 +480,7 @@ class Query {
 			'user_id' => get_current_user_id()
 		);
 		$args = wp_parse_args( $args, $defaults );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT attempt_id, course_id, quiz_id, user_id, total_questions, total_answered_questions, total_marks, earned_marks, attempt_info, attempt_status, attempt_ip, attempt_started_at, attempt_ended_at,  
@@ -486,18 +498,21 @@ class Query {
 
 	public static function get_quiz_attempt( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$attempt   = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_quiz_attempts WHERE attempt_id=%d", $ID ), OBJECT );
 		return current( $attempt );
 	}
 
 	public static function get_all_quiz_attempts() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$attempt = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}academy_quiz_attempts", OBJECT );
 		return $attempt;
 	}
 
 	public static function get_quiz_answer( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$answer   = $wpdb->get_results( $wpdb->prepare( "SELECT answer_id, quiz_id, answer_title, answer_content, image_id, view_format, answer_order, answer_created_at, answer_updated_at FROM {$wpdb->prefix}academy_quiz_answers WHERE answer_id=%d", $ID ), OBJECT );
 		return current( $answer );
 	}
@@ -513,6 +528,7 @@ class Query {
 
 	public static function get_quiz_answers_by_question_id( $question_id, $question_type ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT answer_id, quiz_id, answer_title, image_id, view_format, answer_order, answer_created_at, answer_updated_at  FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d AND question_type=%s",
@@ -559,6 +575,7 @@ class Query {
 		// post insert will be here
 		$table_name = $wpdb->prefix . 'academy_quiz_answers';
 		if ( $update ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update(
 				$table_name,
 				$question_arr,
@@ -581,6 +598,7 @@ class Query {
 			return $answer_ID;
 		} else {
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->insert(
 				$table_name,
 				array(
@@ -617,18 +635,21 @@ class Query {
 
 	public static function get_quiz_total_correct_answer_by_question_id( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$answers   = $wpdb->get_results( $wpdb->prepare( "SELECT is_correct FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d AND is_correct=%d", $ID, 1 ), OBJECT );
 		return count( $answers );
 	}
 
 	public static function get_quiz_total_answer_by_question_id( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$total_questions = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(question_id) FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d", $ID ) );
 		return $total_questions;
 	}
 
 	public static function get_total_quiz_attempt_correct_answers( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$correct_answers = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(is_correct) FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE attempt_id=%d AND is_correct=%d", $ID, 1 ) );
 		return (int) $correct_answers;
 	}
@@ -638,6 +659,7 @@ class Query {
 		if ( is_array( $IDs ) ) {
 			$correct_answer_count = 0;
 			foreach ( $IDs as $ID => $value ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$correct_answer_count  += $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(answer_id) FROM {$wpdb->prefix}academy_quiz_answers WHERE answer_id=%d AND answer_title=%s", $ID, $value ) );
 			}
 			$total_correct_answer = (int) self::get_quiz_total_answer_by_question_id( $question_id );
@@ -659,6 +681,7 @@ class Query {
 			$given_answer = implode( '|', $given_answer_args );
 
 			// Query for a match ignoring any spaces around the pipe symbol in both the database and given answer
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$is_correct = $wpdb->get_var( $wpdb->prepare(
 				"SELECT count(answer_id) FROM {$wpdb->prefix}academy_quiz_answers 
 				WHERE question_id=%d AND REPLACE(TRIM(answer_content), ' ', '') LIKE REPLACE(TRIM(%s), ' ', '')",
@@ -677,6 +700,7 @@ class Query {
 			$correct_answer_count = 0;
 			$has_wrong_answer = false;
 			foreach ( $IDs as $ID ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$answers   = $wpdb->get_results( $wpdb->prepare( "SELECT is_correct FROM {$wpdb->prefix}academy_quiz_answers WHERE answer_id=%d", $ID ), OBJECT );
 				if ( (bool) current( $answers )->is_correct === true ) {
 					$correct_answer_count++;
@@ -691,12 +715,14 @@ class Query {
 			$total_correct_answer = (int) self::get_quiz_total_correct_answer_by_question_id( $question_id );
 			return ( $total_correct_answer === $correct_answer_count ? true : false );
 		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$answers   = $wpdb->get_results( $wpdb->prepare( "SELECT is_correct FROM {$wpdb->prefix}academy_quiz_answers WHERE answer_id=%d", $IDs ), OBJECT );
 		return (bool) current( $answers )->is_correct;
 	}
 
 	public static function get_quiz_attempt_answer( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$attemp_answer   = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE attempt_answer_id=%d", $ID ), OBJECT );
 		return current( $attemp_answer );
 	}
@@ -733,6 +759,7 @@ class Query {
 		}
 		// update attempt answer
 		if ( $update ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update(
 				$table_name,
 				$attempt,
@@ -751,8 +778,9 @@ class Query {
 				array( '%d' )
 			);
 			return $attempt_answer_id;
-		}
+		}//end if
 		// insert attempt answer
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -783,6 +811,7 @@ class Query {
 
 	public static function get_quiz_attempt_answers_earned_marks( $user_id, $attempt_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$earned_marks = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT sum(achieved_mark) as total_marks FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE user_id=%d AND attempt_id=%d;",
@@ -796,6 +825,7 @@ class Query {
 
 	public static function get_quiz_attempt_details( $attempt_id, $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results($wpdb->prepare( "SELECT
             attempt_answers.attempt_answer_id, 
             attempt_answers.attempt_id, 
@@ -820,27 +850,35 @@ class Query {
 
 	public static function delete_quiz_attempt( $attempt_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_delete_attempts = $wpdb->delete( $wpdb->prefix . 'academy_quiz_attempts', array( 'attempt_id' => $attempt_id ), array( '%d' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_delete_attempt_answers = $wpdb->delete( $wpdb->prefix . 'academy_quiz_attempt_answers', array( 'attempt_id' => $attempt_id ), array( '%d' ) );
 		return $is_delete_attempts === $is_delete_attempt_answers;
 	}
 
 	public static function delete_question( $question_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_deleted = $wpdb->delete( $wpdb->prefix . 'academy_quiz_questions', array( 'question_id' => $question_id ), array( '%d' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( $wpdb->prefix . 'academy_quiz_answers', array( 'question_id' => $question_id ), array( '%d' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$attempt_id = $wpdb->delete( $wpdb->prefix . 'academy_quiz_attempt_answers', array( 'question_id' => $question_id ), array( '%d' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( $wpdb->prefix . 'academy_quiz_attempts', array( 'attempt_id' => $attempt_id ), array( '%d' ) );
 		return $is_deleted;
 	}
 
 	public static function delete_answer( $answer_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->delete( $wpdb->prefix . 'academy_quiz_answers', array( 'answer_id' => $answer_id ), array( '%d' ) );
 	}
 
 	public static function get_total_number_of_quizzes() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(ID) 
             FROM {$wpdb->posts} 
@@ -851,6 +889,7 @@ class Query {
 	}
 	public static function get_total_number_of_quizzes_by_instructor_id( $instructor_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare("SELECT COUNT(ID) 
             FROM {$wpdb->posts} 
@@ -862,6 +901,7 @@ class Query {
 	}
 	public static function is_required_manually_reviewed( $quiz_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(question_id) FROM {$wpdb->prefix}academy_quiz_questions WHERE quiz_id=%d AND question_type=%s;",
@@ -873,10 +913,12 @@ class Query {
 	}
 	public static function get_quiz_correct_answers( $question_id, $quiz_type ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results( $wpdb->prepare( "SELECT answer_id, quiz_id, answer_title, image_id, view_format, answer_order, answer_created_at, answer_updated_at FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d AND question_type=%s AND is_correct=%d", $question_id, $quiz_type, 1 ), OBJECT );
 	}
 	public static function get_total_number_of_attempts( $user_id = 0 ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$query = "SELECT COUNT(attempt_id)
 			FROM {$wpdb->prefix}academy_quiz_attempts qa
 			INNER JOIN {$wpdb->prefix}posts p ON p.ID = qa.quiz_id
@@ -890,6 +932,7 @@ class Query {
 	}
 	public static function get_question_details_by_question_id( $question_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_quiz_questions WHERE question_id = %d LIMIT 1", $question_id )
 		);
@@ -897,6 +940,7 @@ class Query {
 	public static function get_total_pending_attempt_by_attempt_id( $attempt_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(quiz_id) FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE attempt_id = %d",

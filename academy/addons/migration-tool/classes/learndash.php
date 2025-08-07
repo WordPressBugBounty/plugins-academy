@@ -71,6 +71,8 @@ class Learndash extends Migration implements MigrationInterface {
 				$items = array();
 				foreach ( $section->steps as $key => $value ) {
 					$items[] = $this->migrate_course_lesson( $value );
+
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					$results = $wpdb->get_col( $wpdb->prepare(
 						"SELECT post_id FROM {$wpdb->postmeta} 
 							WHERE meta_key = %s AND meta_value = %d",
@@ -188,6 +190,7 @@ class Learndash extends Migration implements MigrationInterface {
 
 	public function migrate_enrollments( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$enrollments = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * from {$wpdb->prefix}learndash_user_activity 
@@ -343,6 +346,7 @@ class Learndash extends Migration implements MigrationInterface {
 			$question_ids = array_keys( $question_ids );
 			foreach ( $question_ids as $id ) {
 				$question_id = get_post_meta( $id, 'question_pro_id', true );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$questions = $wpdb->get_results(
 					$wpdb->prepare(
 						"SELECT id, title, points, question, answer_type, answer_data FROM {$wpdb->prefix}learndash_pro_quiz_question
@@ -351,6 +355,7 @@ class Learndash extends Migration implements MigrationInterface {
 					)
 				);
 				if ( ! $questions ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					$questions = $wpdb->get_results(
 						$wpdb->prepare(
 							"SELECT id, title, points, question, answer_type, answer_data FROM {$wpdb->prefix}wp_pro_quiz_question 
@@ -472,6 +477,7 @@ class Learndash extends Migration implements MigrationInterface {
 
 	public function migrate_course_complete( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$complete_courses = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * from {$wpdb->prefix}learndash_user_activity 

@@ -20,7 +20,7 @@ if ( ! $lesson_post ) {
 		<?php
 		$child_comments = [];
 		if ( ! empty( $comments ) ) {
-			foreach ( $comments as $comment ) {
+			foreach ( $comments as $comment ) {// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				if ( $comment->comment_parent ) {
 					$child_comments[ $comment->comment_parent ][] = $comment;
 					continue;

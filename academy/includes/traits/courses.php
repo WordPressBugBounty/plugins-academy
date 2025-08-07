@@ -30,6 +30,7 @@ trait Courses {
 			),
 		);
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rating = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT COUNT(meta_value) AS rating_count,
@@ -50,6 +51,7 @@ trait Courses {
 		if ( $rating->rating_count ) {
 			$avg_rating = number_format( ( $rating->rating_sum / $rating->rating_count ), 1 );
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$stars = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT commentmeta.meta_value AS rating, 
@@ -94,6 +96,7 @@ trait Courses {
 	public static function get_courses_reviews( $course_id, $offset = 0, $limit = 200 ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$reviews = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT {$wpdb->comments}.comment_ID, 
@@ -134,6 +137,7 @@ trait Courses {
 			'rating_avg'   => 0.00,
 		);
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rating = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT COUNT(rating.meta_value) as rating_count, SUM(rating.meta_value) as rating_sum  
@@ -273,9 +277,9 @@ trait Courses {
 			if ( 'completed' === $status ) {
 				$query .= $wpdb->prepare( ' AND post_status = %s', $status );
 			}
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$getEnrolled = $wpdb->get_row( $query );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$getEnrolled = $wpdb->get_row( $query );
 			return apply_filters( 'academy/course/is_enrolled', $getEnrolled, $course_id, $user_id );
 		}//end if
 		return false;
@@ -299,6 +303,7 @@ trait Courses {
 			'post_parent' => $course_id
 		);
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_update = $wpdb->update( $wpdb->posts, $data, $where );
 		if ( $is_update && 'completed' === $status ) {
 			do_action( 'academy/course/after_enroll', $course_id, $enrolled_id, $user_id );
@@ -314,6 +319,7 @@ trait Courses {
 			return false;
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$instructor = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT umeta_id
@@ -340,6 +346,7 @@ trait Courses {
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_completed = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT comment_ID, 
@@ -373,6 +380,7 @@ trait Courses {
 
 	public static function get_completed_courses_ids_by_user( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT comment_post_ID AS course_id
@@ -391,6 +399,7 @@ trait Courses {
 
 	public static function get_pending_enrolled_courses_ids_by_user( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post_parent
@@ -410,6 +419,7 @@ trait Courses {
 
 	public static function get_complete_courses_ids_by_user( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT comment_post_ID
@@ -445,6 +455,7 @@ trait Courses {
 
 	public static function get_enrolled_courses_ids_by_user( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post_parent
@@ -493,6 +504,7 @@ trait Courses {
 
 	public static function get_wishlist_courses_ids_by_user( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_ids = $wpdb->get_col( $wpdb->prepare( "SELECT meta_value from {$wpdb->usermeta} WHERE user_id = %d AND meta_key = 'academy_course_wishlist';", $user_id ) );
 		return $course_ids;
 	}
@@ -563,6 +575,7 @@ trait Courses {
 	public static function product_belongs_with_course( $product_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM 	{$wpdb->postmeta} WHERE	meta_key = %s  AND meta_value = %d  limit 1",
@@ -575,6 +588,7 @@ trait Courses {
 	public static function download_belongs_with_course( $downlaod_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %d LIMIT 1",
@@ -587,6 +601,7 @@ trait Courses {
 	public static function download_belongs_to_course( $download_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM 	{$wpdb->postmeta} WHERE	meta_key = %s  AND meta_value = %d  limit 1",
@@ -600,6 +615,7 @@ trait Courses {
 	public static function is_course_slug_exist( $post_title ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_exists = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(ID) 
@@ -618,6 +634,7 @@ trait Courses {
 
 	public static function get_course_enrolled_ids_by_order_id( $order_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$courses_ids = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key LIKE %s", $order_id, 'academy_order_for_course_id_%' ) );
 		if ( is_array( $courses_ids ) && count( $courses_ids ) ) {
 			$course_enrolled_by_order = array();
@@ -679,7 +696,7 @@ trait Courses {
 		$total_enrolled = self::count_course_enrolled( $course_id );
 		$max_students   = (int) get_post_meta( $course_id, 'academy_course_max_students', true );
 
-		if ( $max_students == 0 ) {
+		if ( 0 === $max_students ) {
 			return PHP_INT_MAX;
 		}
 
@@ -691,6 +708,7 @@ trait Courses {
 
 	public static function count_course_enrolled( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_ids = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(ID) 
@@ -710,6 +728,7 @@ trait Courses {
 
 	public static function get_total_number_of_students() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(enrollment.ID)
@@ -732,6 +751,7 @@ trait Courses {
 
 	public static function get_total_number_of_students_by_instructor( $instructor_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(DISTINCT enrollment.post_author)
@@ -779,6 +799,7 @@ trait Courses {
 
 	public static function get_reviews_by_user( $user_id, $offset = 0, $limit = 150 ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$reviews = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT {$wpdb->comments}.comment_ID,
@@ -858,6 +879,7 @@ trait Courses {
 
 	public static function get_assigned_courses_ids_by_instructor_id( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT 	meta_value
@@ -878,6 +900,7 @@ trait Courses {
 		$orders = [];
 
 		if ( 'yes' === get_option( 'woocommerce_custom_orders_table_enabled' ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$orders = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT
@@ -898,6 +921,7 @@ trait Courses {
 		} else {
 			$post_type = 'shop_order';
 			$user_meta = '_customer_user';
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$orders    = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT {$wpdb->posts}.*
@@ -1024,7 +1048,7 @@ trait Courses {
 
 	public static function get_instructors_by_course_id( $course_id, $offset = 0, $per_page = 10 ) {
 		global $wpdb;
-
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$query = $wpdb->prepare(
 			"SELECT 
 				u.ID,
@@ -1051,7 +1075,7 @@ trait Courses {
 			$offset,
 			$per_page
 		);
-
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$instructors = $wpdb->get_results( $query );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return ! empty( $instructors ) ? $instructors : false;
@@ -1059,6 +1083,7 @@ trait Courses {
 
 	public static function get_instructor_by_author_id( $author_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$instructors = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID,
@@ -1088,6 +1113,7 @@ trait Courses {
 
 	public static function get_course_ids_by_instructor_id( $instructor_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT meta_value
@@ -1106,12 +1132,14 @@ trait Courses {
 
 	public static function get_user_id_from_course_id( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var( $wpdb->prepare( "SELECT post_author FROM {$wpdb->posts} WHERE ID = %d ", $course_id ) );
 		return $results;
 	}
 
 	public static function get_order_status_by_id( $order_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var( $wpdb->prepare( "SELECT post_status from {$wpdb->posts} where ID = %d ", $order_id ) );
 		return $results;
 	}
@@ -1154,6 +1182,7 @@ trait Courses {
 		}
 		if ( count( $tax_query ) > 0 ) {
 			$tax_query['relation'] = 'AND';
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 			$args['tax_query']     = $tax_query;
 		}
 		// meta
@@ -1174,6 +1203,7 @@ trait Courses {
 		}
 		if ( count( $meta_query ) > 0 ) {
 			$tax_query['relation'] = 'AND';
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			$args['meta_query']    = $meta_query;
 		}
 
@@ -1249,6 +1279,7 @@ trait Courses {
 
 	public static function get_last_course_id() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_col( "
 			SELECT MAX(ID) FROM {$wpdb->prefix}posts
 			WHERE post_type LIKE 'academy_courses'
@@ -1265,6 +1296,7 @@ trait Courses {
 		$enrolled  = self::is_enrolled( $course_id, $user_id );
 		if ( $enrolled ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->delete(
 				$wpdb->posts,
 				array(
@@ -1288,11 +1320,13 @@ trait Courses {
 			return;
 		}
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$enrolled_courses = $wpdb->get_results(
 			$wpdb->prepare( "SELECT ID, post_author FROM {$wpdb->posts} WHERE post_type=%s AND post_parent=%d", 'academy_enrolled', $course_id )
 		);
 		if ( is_array( $enrolled_courses ) && count( $enrolled_courses ) ) {
 			foreach ( $enrolled_courses as $enrolled_course ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->delete(
 					$wpdb->posts,
 					array(
@@ -1314,6 +1348,7 @@ trait Courses {
 		global $wpdb;
 		$enroll_ids = implode( ',', $enroll_ids );
 		$status     = 'complete' === $status ? 'completed' : $status;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$update     = $wpdb->query(
 			$wpdb->prepare( "UPDATE {$wpdb->posts} SET post_status = %s WHERE ID IN (%s)", $status, $enroll_ids )
 		);
@@ -1638,7 +1673,7 @@ trait Courses {
 
 	public static function get_course_announcements_by_course_id( $course_id ) {
 		global $wpdb;
-
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$announcement_ids = $wpdb->get_col($wpdb->prepare(
 			"SELECT post_id 
 				FROM {$wpdb->postmeta} 
@@ -1731,8 +1766,7 @@ trait Courses {
 
 		$params = array_merge( [ $like, $like ], $post_status );
 
-		$results = $wpdb->get_results( $wpdb->prepare( $sql, ...$params ) );
-
+		$results = $wpdb->get_results( $wpdb->prepare( $sql, ...$params ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return $results;
 	}
 

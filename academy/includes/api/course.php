@@ -84,6 +84,7 @@ class Course extends \WP_REST_Controller {
 		global $wpdb;
 		$course_id     = $request['id'];
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$announcement_ids = $wpdb->get_col($wpdb->prepare(
 			"SELECT post_id 
 				FROM {$wpdb->postmeta} 

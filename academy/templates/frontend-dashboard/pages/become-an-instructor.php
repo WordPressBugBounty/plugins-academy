@@ -11,7 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<h2 class="academy-reg-thankyou__heading"><?php esc_html_e( 'Thank you for applying as an Instructor.', 'academy' ); ?></h2>
 		<p class="academy-reg-thankyou__error"><?php esc_html_e( "We've received your application and the results will be sent to you by email.", 'academy' ); ?></p>
 	<?php elseif ( empty( $instructor_status ) ) : ?>
-		<img src="<?php echo esc_url( ACADEMY_ASSETS_URI . 'images/become-an-instructor.svg' ); ?>" alt="instructor" />
+		<?php
+		// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+		echo '<img src="' . esc_url( ACADEMY_ASSETS_URI . 'images/become-an-instructor.svg' ) . '" alt="instructor" />'; ?>
 		<h2 class="academy-reg-thankyou__heading"><?php esc_html_e( 'Instructor Registration', 'academy' ); ?></h2>
 		<p class="academy-reg-thankyou__description">
 			<?php esc_html_e( 'Do you want to start your career as an instructor?', 'academy' ); ?> 

@@ -7,7 +7,9 @@ global $authordata;
 ?>
 
 <div class="academy-course__author-meta">
-	<img src="<?php echo esc_url( get_avatar_url( $authordata->ID, [ 'size' => '40' ] ) ); ?>" />
+<?php
+	// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+	echo '<img src="' . esc_url( get_avatar_url( $authordata->ID, [ 'size' => '40' ] ) ) . '" />'; ?>
 	<div class="academy-course__author">
 		<span class="author"><?php esc_html_e( 'BY -', 'academy' ); ?>
 			<?php

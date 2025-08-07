@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$button_text = $is_free ? __( 'Enroll Now', 'academy-pro' ) : __( 'Add to Cart', 'academy-pro' );
+$button_text = $is_free ? __( 'Enroll Now', 'academy' ) : __( 'Add to Cart', 'academy' );
 ?>
 <div class="academy-enroll-form-shortcode__price">
 	<?php echo wp_kses_post( ucwords( $course_type ) ); ?>
@@ -11,7 +11,7 @@ $button_text = $is_free ? __( 'Enroll Now', 'academy-pro' ) : __( 'Add to Cart',
 
 <div class="academy-enroll-form-shortcode__prerequisite" id="prerequisite-message">
 	<div class="academy-shortcode-archive-prerequisite">	
-		<p class="academy-shortcode-prerequisites-message"><?php esc_html_e( 'NOTE: Complete prerequisite courses to begin this.', 'academy-pro' ); ?></p>
+		<p class="academy-shortcode-prerequisites-message"><?php esc_html_e( 'NOTE: Complete prerequisite courses to begin this.', 'academy' ); ?></p>
 		<ul class="academy-shortcode-prerequisites-lists">
 			<?php
 			foreach ( $required_courses as $course_id ) :

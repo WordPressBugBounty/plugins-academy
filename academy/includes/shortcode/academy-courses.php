@@ -41,6 +41,7 @@ class AcademyCourses {
 
 		if ( ! empty( $exclude_ids ) ) {
 			$exclude_ids = (array) explode( ',', $exclude_ids );
+			// phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in
 			$args['post__not_in'] = $exclude_ids;
 		}
 
@@ -90,6 +91,7 @@ class AcademyCourses {
 			if ( count( $tax_query ) > 1 ) {
 				$tax_query['relation'] = 'AND';
 			}
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 			$args['tax_query']     = $tax_query;
 		}
 
@@ -115,6 +117,7 @@ class AcademyCourses {
 			if ( count( $meta_query ) > 1 ) {
 				$meta_query['relation'] = 'OR';
 			}
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			$args['meta_query']    = $meta_query;
 		}
 

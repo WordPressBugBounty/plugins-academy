@@ -11,7 +11,9 @@ $time_different = \Academy\Helper::get_time_different_dynamically_for_any_time( 
 <div class="academy-qa__question">
 	<div class="academy-qa__meta">
 		<div class="academy-course__author-meta">
-			<img src="<?php echo esc_url( get_avatar_url( $qa->user_id, [ 'size' => '40' ] ) ); ?>" />
+			<?php
+			// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+			echo '<img src="' . esc_url( get_avatar_url( $qa->user_id, [ 'size' => '40' ] ) ) . '" />'; ?>
 		</div>
 		<div class="academy-qa-user-info">
 			<h4 class="academy-qa-username">

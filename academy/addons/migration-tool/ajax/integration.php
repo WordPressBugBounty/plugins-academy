@@ -82,6 +82,7 @@ class Integration extends AbstractAjaxHandler {
 			wp_send_json_error( sprintf( __( 'You need to Activated WooCommerce to run this migration.', 'academy' ), $pluginName ) );
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$courses = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_title FROM {$wpdb->posts} WHERE post_type = %s AND post_status = 'publish';", $course_post_type ) );
 
 		if ( ! count( $courses ) ) {
