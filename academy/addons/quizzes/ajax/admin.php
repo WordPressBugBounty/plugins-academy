@@ -75,7 +75,7 @@ class Admin extends AbstractAjaxHandler {
 		// update attempt answer
 		Query::quiz_attempt_answer_insert( (array) $answer );
 		// update attempt
-		$total_questions_marks = Query::get_total_questions_marks_by_quiz_id( $quiz_id );
+		$total_questions_marks = Query::get_total_questions_marks_by_attempt_id( $attempt_id );
 		$total_earned_marks = Query::get_quiz_attempt_answers_earned_marks( $user_id, $attempt_id );
 		$attempt = (array) Query::get_quiz_attempt( $attempt_id );
 		$passing_grade = (int) get_post_meta( $quiz_id, 'academy_quiz_passing_grade', true );

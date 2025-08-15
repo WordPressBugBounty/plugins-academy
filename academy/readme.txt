@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.3.2
+Stable tag: 3.3.3
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -322,6 +322,13 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.3.3 - 14/08/2025 =
+* Improved - Quiz question maximum attempts allowed in Quiz settings.
+* Fixed - Issues with the new editor.
+* Fixed - YouTube video rendering issue.
+* Fixed - StoreEngine predefined product price can't set in course editor.
+* Fixed - Custom Rest Endpoint conflicts with hostinger server
 
 = 3.3.2 - 07/08/2025 =
 * Added - New released Content in the Help Docs section for better clarity and guidance.

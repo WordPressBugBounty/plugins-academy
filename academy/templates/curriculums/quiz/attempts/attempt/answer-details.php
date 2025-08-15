@@ -2,6 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+$topic['type'] = 'quiz';
+$topic['slug'] = get_query_var( 'name' );
 ?>
 <div class="academy-quiz-attempt-answer-details">
 	<h3 class="academy-quiz-attempt-entry-title-details">
@@ -129,4 +131,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php echo wp_kses_post( $instructor_feedback ); ?>
 		</p>
 	</div>
+	<a class="academy-btn academy-btn--md academy-btn--preset-purple" href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $topic ) ); ?>">
+		<?php
+			esc_html_e( 'Back', 'academy' );
+		?>
+	</a>
 </div>

@@ -487,6 +487,28 @@ trait Courses {
 		return $results ?? [];
 	}
 
+	public static function get_total_enrolled_courses_info_by_student_and_instructor_id( int $student_id, int $instructor_id ) {
+		global $wpdb;
+
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"SELECT DISTINCT p.*
+			FROM {$wpdb->posts} AS p
+			INNER JOIN {$wpdb->posts} AS pp
+				ON pp.ID = p.post_parent
+			INNER JOIN {$wpdb->usermeta} AS um 
+				ON um.meta_value = pp.ID 
+				AND um.meta_key = 'academy_instructor_course_id'
+				AND um.user_id = %d
+			WHERE p.post_type = 'academy_enrolled'
+			AND p.post_author = %d
+			AND pp.post_type = 'academy_courses'
+			ORDER BY p.post_date DESC",
+			$instructor_id,
+			$student_id
+		), ARRAY_A);
+
+		return $results ?: [];
+	}
 
 	public static function get_wishlist_courses_by_user( $user_id, $post_status = 'publish' ) {
 		$course_ids = self::get_wishlist_courses_ids_by_user( $user_id );

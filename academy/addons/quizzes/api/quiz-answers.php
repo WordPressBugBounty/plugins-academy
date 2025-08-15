@@ -39,7 +39,7 @@ class QuizAnswers extends \WP_REST_Controller {
 					'permission_callback' => array( $this, 'create_permissions_check' ),
 					'args'                => $this->get_item_schema(),
 				),
-				'schema' => $this->get_public_item_schema(),
+				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
 
@@ -81,7 +81,7 @@ class QuizAnswers extends \WP_REST_Controller {
 						),
 					),
 				),
-				'schema' => $this->get_public_item_schema(),
+				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
 	}

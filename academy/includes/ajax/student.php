@@ -95,7 +95,7 @@ class Student extends AbstractAjaxHandler {
 		$offset   = ( $page - 1 ) * $per_page;
 
 		$student_ids = \Academy\Helper::get_total_students_by_instructor( get_current_user_id(), $offset, $per_page, $search );
-		$student_data = \Academy\Helper::prepare_get_all_students_response( $student_ids );
+		$student_data = \Academy\Helper::prepare_get_all_students_response( $student_ids, get_current_user_id() );
 		// Set the x-wp-total header
 		header( 'x-wp-total: ' . count( $student_ids ) );
 

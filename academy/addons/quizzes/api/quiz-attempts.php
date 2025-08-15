@@ -40,7 +40,7 @@ class QuizAttempts extends \WP_REST_Controller {
 					'permission_callback' => array( $this, 'permissions_check' ),
 					'args'                => $this->get_item_schema(),
 				),
-				'schema' => $this->get_public_item_schema(),
+				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
 
@@ -82,7 +82,8 @@ class QuizAttempts extends \WP_REST_Controller {
 						),
 					),
 				),
-				'schema' => $this->get_public_item_schema(),
+				'schema' => array( $this, 'get_public_item_schema' ),
+
 			)
 		);
 
@@ -224,7 +225,7 @@ class QuizAttempts extends \WP_REST_Controller {
 	public function update_item( $request ) {
 		$params = $request->get_params();
 		do_action( 'academy_quizzes/api/before_quiz_attempt_finished', $params );
-		$total_questions_marks = Query::get_total_questions_marks_by_quiz_id( $params['quiz_id'] );
+		$total_questions_marks = Query::get_total_questions_marks_by_attempt_id( $params['attempt_id'] );
 		$total_earned_marks = Query::get_quiz_attempt_answers_earned_marks( get_current_user_id(), $params['attempt_id'] );
 		$params['total_marks'] = $total_questions_marks;
 		$params['earned_marks'] = $total_earned_marks;

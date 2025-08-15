@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *  - get_quiz_question
  *  - get_questions_by_quiz_id
  *  - get_question_settings_by_quiz_id
- *  - get_total_questions_marks_by_quiz_id
+ *  - get_total_questions_marks_by_attempt_id
  *  - quiz_attempt_insert
  *  - has_attempt_quiz
  *  - get_quiz_attempts
@@ -163,13 +163,19 @@ class Query {
 
 	public static function get_questions_by_quid_id( $quiz_id, $order = 'rand' ) {
 		global $wpdb;
+
 		$validOrders = [ 'rand', 'ASC', 'DESC' ];
 		$order = in_array( $order, $validOrders, true ) ? $order : 'DESC';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		return $wpdb->get_results( $wpdb->prepare(
-			"SELECT * FROM {$wpdb->prefix}academy_quiz_questions WHERE quiz_id = %d ORDER BY " . ( 'rand' === $order ? 'RAND()' : 'question_created_at ' . $order ), //phpcs:ignore
-			$quiz_id
-		), OBJECT );
+
+		$sql = "SELECT * FROM {$wpdb->prefix}academy_quiz_questions WHERE quiz_id = %d ORDER BY ";
+		$sql .= ( 'rand' === $order ) ? 'RAND()' : 'question_created_at ' . $order;
+		$limit = (int) get_post_meta( $quiz_id, 'academy_quiz_max_questions_for_answer', true );
+		$limit_sql = '';
+		if ( $limit > 0 ) {
+			$sql .= $wpdb->prepare( ' LIMIT %d', $limit );
+		}
+
+		return $wpdb->get_results( $wpdb->prepare( $sql, $quiz_id ), OBJECT );// phpcs:ignore
 	}
 
 	public static function get_question_settings_by_quiz_id( $ID ) {
@@ -188,12 +194,12 @@ class Query {
 		];
 	}
 
-	public static function get_total_questions_marks_by_quiz_id( $ID ) {
+	public static function get_total_questions_marks_by_attempt_id( $ID ) {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$questions_marks = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT sum(question_score) as total_marks FROM {$wpdb->prefix}academy_quiz_questions WHERE quiz_id=%d;",
+				"SELECT sum(question_mark) as total_marks FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE attempt_id=%d;",
 				$ID
 			),
 			OBJECT
@@ -811,16 +817,14 @@ class Query {
 
 	public static function get_quiz_attempt_answers_earned_marks( $user_id, $attempt_id ) {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$earned_marks = $wpdb->get_results(
+		$total_marks = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT sum(achieved_mark) as total_marks FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE user_id=%d AND attempt_id=%d;",
+				"SELECT SUM(achieved_mark) FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE user_id = %d AND attempt_id = %d",
 				$user_id,
 				$attempt_id
-			),
-			OBJECT
+			)
 		);
-		return (float) current( $earned_marks )->total_marks;
+		return (float) ( $total_marks ?? 0 );
 	}
 
 	public static function get_quiz_attempt_details( $attempt_id, $user_id ) {

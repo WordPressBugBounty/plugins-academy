@@ -101,7 +101,7 @@ if ( ! function_exists( 'academy_quizzes_submit_quiz' ) ) {
 				'attempt_id' => $attempt_id,
 				'total_questions' => count( \AcademyQuizzes\Classes\Query::get_questions_by_quid_id( $quiz_id ) ),
 				'total_answered_questions' => 0,
-				'total_marks' => Query::get_total_questions_marks_by_quiz_id( $quiz_id ),
+				'total_marks' => Query::get_total_questions_marks_by_attempt_id( $attempt_id ),
 				'earned_marks' => 0,
 				'attempt_status' => 'failed',
 			);
@@ -168,7 +168,7 @@ if ( ! function_exists( 'academy_quizzes_submit_quiz' ) ) {
 				'total_questions' => count( \AcademyQuizzes\Classes\Query::get_questions_by_quid_id( $quiz_id ) ),
 				'total_answered_questions' => count( $answers ),
 			);
-			$total_questions_marks = Query::get_total_questions_marks_by_quiz_id( $quiz_id );
+			$total_questions_marks = Query::get_total_questions_marks_by_attempt_id( $quiz_id );
 			$total_earned_marks = Query::get_quiz_attempt_answers_earned_marks( get_current_user_id(), $attempt_id );
 			$args['total_marks'] = $total_questions_marks;
 			$args['earned_marks'] = $total_earned_marks;
@@ -188,7 +188,7 @@ if ( ! function_exists( 'academy_quizzes_submit_quiz' ) ) {
 				'quiz_id'           => $quiz_id,
 				'assignment_id'     => null,
 				'result_for'        => 'quiz',
-				'earned_percentage' => ( $args['earned_marks'] / $args['total_marks'] ) * 100,
+				'earned_percentage' => $earned_percentage,
 			);
 
 			do_action( 'academy_quizzes/after_quiz_insert', $quiz_data );

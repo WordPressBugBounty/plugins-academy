@@ -11,7 +11,7 @@ class Migration {
 
 	public static function init() {
 		$self = new self();
-		$self->run_migration();
+		add_action( 'admin_init', [ $self, 'run_migration' ] );
 	}
 
 	public function run_migration() {
@@ -44,6 +44,11 @@ class Migration {
 
 		// new column add in quiz_questions table
 		$this->migrate_3_2_3();
+
+		// quiz max question allowed for displaying
+		if ( ! get_option( 'academy_quiz_question_max_allowed' ) ) {
+			$this->migrate_3_3_2();
+		}
 
 		// Save Version Number, flash role management and save permalink
 		if ( ACADEMY_VERSION !== $academy_version ) {
@@ -374,4 +379,22 @@ class Migration {
 		}
 	}
 
+	public function migrate_3_3_2() {
+		global $wpdb;
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+				SET pm.meta_value = %d
+				WHERE p.post_type = %s
+				AND pm.meta_key = %s
+				AND CAST(pm.meta_value AS UNSIGNED) > %d",
+				0,
+				'academy_quiz',
+				'academy_quiz_max_attempts_allowed',
+				0
+			)
+		);
+		add_option( 'academy_quiz_question_max_allowed', true );
+	}
 }

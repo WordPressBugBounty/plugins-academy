@@ -28,7 +28,7 @@ trait Student {
 		return $results;
 	}
 
-	public static function prepare_get_all_students_response( $students ) {
+	public static function prepare_get_all_students_response( $students, $instructor_id = null ) {
 		if ( ! is_array( $students ) || empty( $students ) ) {
 			return [];
 		}
@@ -57,17 +57,19 @@ trait Student {
 				if ( ! empty( $meta ) ) {
 					$student->meta = $meta;
 				}
+				$enrolled_info = self::get_total_enrolled_courses_info_by_student_id( $student_id );
 			} else {
 				$student_id = (int) $student;
 				$student_details = get_userdata( $student_id );
 				$student = (object) [ 'ID' => $student ];
 				$student->display_name = $student_details->display_name;
 				$student->registration_date = date( 'F j, Y', strtotime( $student_details->user_registered ) );
+				$enrolled_info = self::get_total_enrolled_courses_info_by_student_and_instructor_id( $student_id, $instructor_id );
 			}//end if
-			// Course info
-			$completed_ids = self::get_completed_courses_ids_by_user( $student_id );
-			$enrolled_info = self::get_total_enrolled_courses_info_by_student_id( $student_id );
 
+			// Completed Course ids
+			$completed_ids = self::get_completed_courses_ids_by_user( $student_id );
+			$enrolled_courses = [];
 			if ( ! empty( $enrolled_info ) && is_array( $enrolled_info ) ) {
 				$course_ids = array_unique( array_column( $enrolled_info, 'post_parent' ) );
 
@@ -87,7 +89,6 @@ trait Student {
 					];
 				}
 
-				$enrolled_courses = [];
 				foreach ( $enrolled_info as $info ) {
 					$cid = intval( $info['post_parent'] );
 					if ( isset( $course_data[ $cid ] ) ) {
@@ -101,9 +102,8 @@ trait Student {
 						];
 					}
 				}
-
-				$student->enrolled_courses = $enrolled_courses;
 			}//end if
+			$student->enrolled_courses = $enrolled_courses;
 
 			$results[] = $student;
 		}//end foreach
