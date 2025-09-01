@@ -142,7 +142,7 @@ class Helper {
 				$menu[ ACADEMY_PLUGIN_SLUG . '-group-plus' ] = [
 					'parent_slug' => ACADEMY_PLUGIN_SLUG,
 					'title'       => __( 'Group Plus', 'academy' ),
-					'capability'  => 'manage_options'
+					'capability'  => 'manage_options',
 				];
 			}//end if
 		}//end if
@@ -1285,7 +1285,7 @@ class Helper {
 			}
 		}//end if
 
-		if ( self::is_active_woocommerce() ) {
+		if ( self::is_active_woocommerce() || self::is_active_storeengine() ) {
 			$items['purchase-history'] = array(
 				'label' => __( 'Purchase History', 'academy' ),
 				'icon' => 'academy-icon academy-icon--purchase',

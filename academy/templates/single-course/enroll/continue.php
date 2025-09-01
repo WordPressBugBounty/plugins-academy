@@ -17,7 +17,7 @@ $course_type = ucfirst( \Academy\Helper::get_course_type( $course_id ) );
 		</div>
 	<?php endif;
 
-	if ( $enrolled ) : ?>
+	if ( ! empty( $enrolled ) ) : ?>
 		<div class="academy-widget-enroll__enrolled-info">
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

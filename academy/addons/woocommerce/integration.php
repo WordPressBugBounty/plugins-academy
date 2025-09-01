@@ -58,6 +58,13 @@ class Integration {
 		 * Modify academy course type
 		 */
 		add_filter( 'rest_prepare_academy_courses', array( $self, 'add_course_price' ), 10, 3 );
+		// delete order
+		add_action( 'woocommerce_before_delete_order', array( $self, 'academy_woo_order_delete' ), 10, 2 );
+
+		// Add dropdown field in product data -> General tab
+		add_action( 'woocommerce_product_options_general_product_data', array( $self, 'academy_courses_linked_with_woo_product' ), 10, 2 );
+		// Save product with courses
+		add_action( 'woocommerce_admin_process_product_object', array( $self, 'save_academy_courses_meta' ) );
 	}
 
 	public function add_store_dashboard_menu( $menu ) {
@@ -126,12 +133,13 @@ class Integration {
 			}
 		} else {
 			if ( $order ) {
+				$order_status = \Academy\Helper::get_settings( 'woo_order_auto_complete_status' ) ?? [ 'on-hold', 'pending', 'processing', 'completed' ];
 				$items = $order->get_items();
 				foreach ( $items as $item ) {
 					$product_id = $item->get_product_id();
 					$has_course = \Academy\Helper::product_belongs_with_course( $product_id );
 					if ( $has_course ) {
-						if ( $order && in_array( $order->get_status(), array( 'processing', 'pending', 'completed', 'on-hold' ), true ) ) {
+						if ( $order && in_array( $order->get_status(), $order_status, true ) ) {
 							$customer_id = $order->get_customer_id();
 							if ( ! $customer_id ) {
 								$customer_id = $this->create_user_by_order_details( $order );
@@ -283,7 +291,6 @@ class Integration {
 		}
 	}
 
-
 	public static function is_order_will_be_automatically_completed( $order_id ) {
 		$enable_woo_order_auto_complete     = (bool) \Academy\Helper::get_settings( 'woo_order_auto_complete' );
 		if ( ! $enable_woo_order_auto_complete ) {
@@ -376,4 +383,65 @@ class Integration {
 
 		return $response;
 	}
+
+	public function academy_woo_order_delete( $order_id, $order ) {
+		// Check if the order is an academy order
+		if ( empty( get_post_meta( $order_id, 'is_academy_order_for_course', true ) ) ) {
+			return;
+		}
+
+		if ( ! $order_id ) {
+			return;
+		}
+
+		// Retrieve enrollment info
+		$enrolled_info = \Academy\Helper::get_course_enrolled_ids_by_order_id( $order_id );
+		if ( empty( $enrolled_info ) ) {
+			return;
+		}
+
+		$info = reset( $enrolled_info );
+		$enrolled_post = get_post( $info['enrolled_id'] );
+		if ( ! $enrolled_post ) {
+			return;
+		}
+
+		// Cancel course enrollment
+		wp_delete_post( $info['enrolled_id'] );
+		delete_post_meta( $order_id, 'is_academy_order_for_course' );
+		delete_post_meta( $order_id, 'academy_order_for_course_id_' . $info['course_id'] );
+		delete_user_meta( $enrolled_post->post_author, 'academy_course_' . $info['course_id'] . '_completed_topics' );
+	}
+
+	public function academy_courses_linked_with_woo_product() {
+		global $post;
+
+		$courses = get_posts( [
+			'post_type' => 'academy_courses',
+			'posts_per_page' => -1,
+			'post_status' => 'publish'
+		] );
+
+		if ( $courses ) {
+			woocommerce_wp_select( [
+				'id'      => '_linked_academy_courses',
+				'label'   => __( 'Linked Academy Courses', 'academy' ),
+				'options' => wp_list_pluck( $courses, 'post_title', 'ID' ),
+				'desc_tip' => true,
+				'description' => __( 'Select a course to link with this product.', 'academy' ),
+			] );
+		}
+
+	}
+
+	public function save_academy_courses_meta( $product ) {
+		if ( isset( $_POST['_linked_academy_courses'] ) && isset( $_POST['_academy_product'] ) ) {
+			$course_id = absint( $_POST['_linked_academy_courses'] );
+			$product_id = absint( $product->id );
+			$product->update_meta_data( '_linked_academy_courses', $course_id );
+			update_post_meta( $course_id, 'academy_course_product_id', $product_id );
+			update_post_meta( $course_id, 'academy_course_type', 'paid' );
+		}
+	}
+
 }

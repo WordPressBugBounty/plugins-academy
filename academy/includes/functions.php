@@ -505,9 +505,9 @@ if ( ! function_exists( 'academy_single_course_enroll_content' ) ) {
 }//end if
 
 if ( ! function_exists( 'academy_course_pricing_type' ) ) {
-	function academy_course_pricing_type() {
-		$course_id   = get_the_ID();
-		$is_public = Helper::is_public_course( $course_id );
+	function academy_course_pricing_type( $course_id = null ) {
+		$course_id   = intval( ! empty( $course_id ) ? $course_id : get_the_ID() );
+		$is_public   = Helper::is_public_course( $course_id );
 		$enrolled    = Helper::is_enrolled( $course_id, get_current_user_id() );
 		$is_paid     = (bool) Helper::is_course_purchasable( $course_id );
 		$price       = '';
@@ -1360,7 +1360,7 @@ function academy_frontend_dashboard_purchase_history_page() {
 	$user_id = get_current_user_id();
 	$orders  = \Academy\Helper::get_orders_by_user_id( $user_id );
 	$results = [];
-	if ( is_array( $orders ) ) {
+	if ( 'woocommerce' === Helper::get_settings( 'monetization_engine' ) && is_array( $orders ) ) {
 		foreach ( $orders as $order ) {
 			$courses_order = \Academy\Helper::get_course_enrolled_ids_by_order_id( $order->ID );
 			$courses       = [];
@@ -1386,9 +1386,13 @@ function academy_frontend_dashboard_purchase_history_page() {
 		}//end foreach
 	}//end if
 	\Academy\Helper::get_template(
-		'frontend-dashboard/pages/purchase-history.php', [
-			'orders' => $results
-		]
+		'frontend-dashboard/pages/purchase-history.php',
+		apply_filters( 'academy/get_courses_purchase_history',
+			[
+				'orders' => $results
+			],
+			$user_id
+		)
 	);
 }
 

@@ -1,8 +1,6 @@
 <?php
 namespace AcademyCertificates;
 
-use Academy;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -11,6 +9,7 @@ class Assets {
 	public static function init() {
 		$self = new self();
 		add_filter( 'ablocks/assets/editor_scripts_data', array( $self, 'add_academy_certificate_default_image' ) );
+		add_filter( 'academy/assets/backend_scripts_data', array( $self, 'add_scripts_data' ) );
 	}
 
 	public function add_academy_certificate_default_image( $script_data ) {
@@ -40,5 +39,13 @@ class Assets {
 			$script_data['certificate_image'] = $certificate_image_array;
 		}
 		return $script_data;
+	}
+
+	public function add_scripts_data( array $data ): array {
+		return array_merge( $data, [
+			'certificates' => [
+				'fonts_downloaded' => (bool) get_option( 'academy_mpdf_fonts_downloaded', false ),
+			],
+		] );
 	}
 }

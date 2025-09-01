@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class LessonImport extends AbstractImport {
 
 	public function save() : self {
-		$this->id = \Academy\Classes\Query::lesson_insert( $this->data );
+		$this->id = (int) \Academy\Classes\Query::lesson_insert( $this->data );
 		if ( is_int( $this->id ) ) {
 			\Academy\Classes\Query::lesson_meta_insert( $this->id, $this->meta_data );
 		}

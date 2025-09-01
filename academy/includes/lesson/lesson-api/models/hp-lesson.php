@@ -189,7 +189,7 @@ class HpLesson extends Base\Lesson {
 			);
 			foreach ( $this->meta as $key => $value ) {
 				if ( is_array( $value ) || is_object( $value ) ) {
-					$value = wp_json_encode( $value );
+					$value = json_encode( $value, JSON_UNESCAPED_SLASHES );
 				}
 
 				if ( in_array( $key, $meta_keys ) ) {

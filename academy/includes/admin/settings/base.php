@@ -95,6 +95,13 @@ class Base {
 			'woo_force_login_before_enroll' => true,
 			'hide_course_product_from_shop_page' => false,
 			'woo_order_auto_complete' => false,
+			'woo_order_auto_complete_status' =>
+			[
+				'on-hold',
+				'pending',
+				'processing',
+				'completed'
+			],
 			'is_enabled_fd_link_inside_woo_dashboard' => true,
 			'woo_dashboard_fd_link_label' => esc_html__( 'Courses Dashboard', 'academy' ),
 			'is_enabled_fd_link_inside_woo_order_page' => true,

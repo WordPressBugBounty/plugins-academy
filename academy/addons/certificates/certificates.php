@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Academy\Interfaces\AddonInterface;
+use AcademyCertificates\Ajax\FontDownloader;
 use WP_Query;
 
 final class Certificates implements AddonInterface {
@@ -43,6 +44,7 @@ final class Certificates implements AddonInterface {
 			return;
 		}
 
+		( new FontDownloader() )->dispatch_actions();
 		if ( is_admin() ) {
 			Admin::init();
 		}

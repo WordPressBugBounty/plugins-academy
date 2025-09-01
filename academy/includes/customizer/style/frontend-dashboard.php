@@ -76,7 +76,7 @@ class FrontendDashboard extends Base implements DynamicStyleInterface {
             }";
 		}
 		if ( $card_border_color ) {
-			$css .= ".academy-analytics-cards--card{
+			$css .= ".academy-analytics-cards a{
                 border-color: $card_border_color;
             }";
 		}

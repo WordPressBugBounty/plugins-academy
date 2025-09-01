@@ -44,7 +44,8 @@ trait Lessons {
 		if ( $lesson_id ) {
 			$video_duration = self::get_lesson_meta( $lesson_id, 'video_duration' );
 			$duration = is_array( $video_duration ) ? $video_duration : (array) json_decode( $video_duration );
-			if ( is_array( $duration ) && ( $duration['hours'] || $duration['minutes'] || $duration['seconds'] ) ) {
+
+			if ( is_array( $duration ) && ( ! empty( $duration['hours'] ) || ! empty( $duration['minutes'] ) || ! empty( $duration['seconds'] ) ) ) {
 				$video_duration = array_map(function ( $number ) {
 					return sprintf( '%02d', $number );
 				}, $duration);

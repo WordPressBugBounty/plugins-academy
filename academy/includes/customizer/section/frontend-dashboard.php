@@ -354,7 +354,7 @@ class FrontendDashboard extends SectionBase implements CustomizerSectionInterfac
 		$wp_customize->selective_refresh->add_partial(
 			$this->get_style_settings_id( 'frontend_dashboard_card_border_color' ),
 			array(
-				'selector'            => '.academy-courses .academy-courses__header',
+				'selector'            => '.academy-analytics-cards a',
 				'container_inclusive' => true,
 				'render_callback'     => '__return_true',
 			)

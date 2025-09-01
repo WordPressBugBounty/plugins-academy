@@ -65,7 +65,7 @@ class Lesson implements Interfaces\Insertable {
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_key'   => $key,
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				'meta_value' => is_array( $value ) ? json_encode( $value ) : $value,
+				'meta_value' => is_array( $value ) ? json_encode( $value, JSON_UNESCAPED_SLASHES ) : $value,
 			] );
 			if ( $res === false ) {
 				throw new Exception( __( 'Error.', 'academy' ) );

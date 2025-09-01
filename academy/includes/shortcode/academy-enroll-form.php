@@ -27,6 +27,7 @@ class AcademyEnrollForm {
 			echo '<div class="academy-enroll-form-shortcode academy-enroll-form-shortcode--legacy">';
 			if ( $course_id ) {
 				do_action( 'academy/templates/shortcode/enroll_form_content', $course_id );
+				do_action( 'academy/templates/shortcode/enroll_price_content', $course_id );
 			} else {
 				echo esc_html__( 'course_id attribute is required.', 'academy' );
 			}

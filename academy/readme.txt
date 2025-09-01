@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.3.3
+Stable tag: 3.3.4
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -322,6 +322,19 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.3.4 - 28/08/2025 =
+* Added - [academy_course_enroll_widget_content] shortcode for single course enroll widget content.  
+* Fixed - Student enrollment not removed when a WooCommerce order is deleted.  
+* Fixed - Lesson post embedded URL not saving issue.  
+* Fixed - Oxygen Builder theme compatibility issue.  
+* Fixed - Lesson content list indentation issue.  
+* Fixed - StoreEngine purchase history not displaying in the frontend dashboard.  
+* Fixed - Academy YouTube player always showing the timeline in fullscreen mode.  
+* Fixed - Frontend dashboard border color issue.  
+* Fixed - WooCommerce order auto-complete issue.  
+* Fixed - WooCommerce product "Add to Cart" button not working without a linked Academy course and active Group Plus addon.  
+* Fixed - Various UI issues.  
 
 = 3.3.3 - 14/08/2025 =
 * Improved - Quiz question maximum attempts allowed in Quiz settings.

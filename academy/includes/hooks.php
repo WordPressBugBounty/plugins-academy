@@ -94,7 +94,9 @@ add_filter( 'academy/templates/canvas_container_class', 'academy_frontend_dashba
 /**
  * Enroll Form Shortcode
  */
+add_action( 'academy/templates/shortcode/enroll_price_content', 'academy_course_pricing_type', 10 );
 add_action( 'academy/templates/shortcode/enroll_form_content', 'academy_course_enroll_form', 15 );
+add_action( 'academy/templates/shortcode/enroll_widget_content', 'academy_single_course_enroll_content' );
 
 
 /**

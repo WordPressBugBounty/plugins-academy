@@ -1265,6 +1265,33 @@ trait Courses {
 		return apply_filters( 'academy/get_course_archive_search_query_args', $args, $data );
 	}
 
+	public static function get_store_orders_by_user_id( int $user_id ) {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$orders = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT
+					orders.id AS ID,
+					orders.customer_id AS post_author,
+					orders.date_created_gmt AS post_date_gmt,
+					orders.date_created_gmt AS post_date,
+					orders.status AS post_status,
+					orders.date_updated_gmt AS post_modified_gmt,
+					orders.total_amount AS amount,
+					orders.currency AS currency,
+					meta.post_id AS course_id
+				FROM {$wpdb->prefix}storeengine_orders AS orders
+				INNER JOIN {$wpdb->prefix}postmeta AS meta
+				ON orders.id = meta.meta_value
+					AND meta.meta_key = 'is_academy_store_order_id'
+				WHERE orders.customer_id = %d",
+				$user_id
+			)
+		);
+		return $orders;
+	}
+
 	public static function get_sample_permalink_args( $id, $new_title = null, $new_slug = null ) {
 		$response = array();
 		$post = get_post( $id );

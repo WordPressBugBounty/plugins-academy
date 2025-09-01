@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Academy\Helper;
 use Academy\Mpdf\HTMLParserMode;
 use Academy\Mpdf\Mpdf;
 use Academy\Mpdf\Output\Destination;
@@ -36,8 +37,10 @@ class Generator extends FileUpload {
 
 		$upload_dir = wp_upload_dir();
 
-		$font_dirs   = ( new \Academy\Mpdf\Config\ConfigVariables() )->getDefaults()['fontDir'];
-		$font_dirs[] = $upload_dir['basedir'] . '/academy/certificate-fonts';
+		$font_dirs   = [
+			$this->get_upload_dir() . '/mpdf/ttfonts',
+			$upload_dir['basedir'] . '/academy/certificate-fonts'
+		];
 
 		$default_font_config = ( new \Academy\Mpdf\Config\FontVariables() )->getDefaults();
 		$fontdata            = $default_font_config['fontdata'];

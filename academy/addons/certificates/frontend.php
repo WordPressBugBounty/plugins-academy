@@ -67,6 +67,10 @@ class Frontend {
 		return $template;
 	}
 	public function render_certificate( $course_id, $template_id, $student_id ) {
+		if ( ! get_option( 'academy_mpdf_fonts_downloaded', false ) ) {
+			$this->send_notice( __( 'Please download the fonts before generating the PDF.', 'academy' ) );
+		}
+
 		$certificate = get_post( $template_id );
 		if ( ! $certificate->post_content ) {
 			return;
@@ -126,5 +130,15 @@ class Frontend {
 		// Generate PDF preview
 		$certificate_pdf = new Generator( $course_id, $student_id, $certificate_template, $cssContent, $pageSize, $pageOrientation );
 		return $certificate_pdf->preview_certificate( get_the_title( $course_id ) );
+	}
+
+	protected function send_notice( string $message ) {
+		?>
+		<p>
+			<?php echo esc_html( $message ); ?>
+			<a href="<?php echo esc_attr( home_url() ); ?>">Back to Home</a>
+		</p>
+		<?php
+		exit;
 	}
 }

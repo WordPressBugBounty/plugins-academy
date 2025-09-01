@@ -48,9 +48,11 @@ class PostLesson extends Base\Lesson {
 	public static function by_id( int $id, bool $skip_meta = false ) : self {
 		return self::get_lesson( get_post( $id, ARRAY_A ), new self(), $skip_meta );
 	}
+
 	public static function by_slug( string $slug, bool $skip_meta = false ) : self {
 		return self::get_lesson( get_page_by_path( $slug, ARRAY_A, 'academy_lessons' ), new self(), $skip_meta );
 	}
+
 	public static function by_title( string $title, bool $skip_meta = false ) : self {
 		$ins = new self();
 		return self::get_lesson( $ins->wpdb->get_row(
@@ -160,12 +162,7 @@ class PostLesson extends Base\Lesson {
 			$this->set_meta_data( $meta );
 		}
 		if ( ! empty( $this->id ) && is_array( $this->meta ) && count( $this->meta ) > 0 ) {
-			foreach ( $this->meta as $key => $value ) {
-				if ( is_array( $value ) || is_object( $value ) ) {
-					$value = wp_json_encode( $value );
-				}
-				update_post_meta( $this->id, $key, $value );
-			}
+			$this->update_meta();
 		}
 	}
 	public function delete() : void {
@@ -173,4 +170,48 @@ class PostLesson extends Base\Lesson {
 			throw new Exception( __( 'Lesson deletion failed. Please try again.', 'academy-pro' ) );
 		}
 	}
+
+	public function update_meta() : void {
+		global $wpdb;
+
+		$table = $wpdb->postmeta;
+
+		$keys = array_keys( $this->meta );
+
+		$placeholders = implode( ',', array_fill( 0, count( $keys ), '%s' ) );
+
+		$existing_keys = $wpdb->get_col( $wpdb->prepare(
+			"SELECT meta_key FROM $table WHERE post_id = %d AND meta_key IN ($placeholders)",
+			$this->id,
+			...$keys
+		) );
+
+		foreach ( $this->meta as $key => $value ) {
+			if ( is_array( $value ) || is_object( $value ) ) {
+				$value = wp_json_encode( $value );
+			}
+			if ( in_array( $key, $existing_keys, true ) ) {
+				// Update
+				$wpdb->update(
+					$table,
+					[ 'meta_value' => $value ],
+					[
+						'post_id' => $this->id,
+						'meta_key' => $key
+					]
+				);
+			} else {
+				// Insert
+				$wpdb->insert(
+					$table,
+					[
+						'post_id'    => $this->id,
+						'meta_key'   => $key,
+						'meta_value' => $value
+					]
+				);
+			}//end if
+		}//end foreach
+	}
+
 }

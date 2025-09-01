@@ -22,6 +22,7 @@ class Integration {
 
 		add_action( 'storeengine/checkout/after_place_order', [ $self, 'save_store_earning_data' ] );
 		add_action( 'storeengine/order/status_changed', [ $self, 'save_store_earning_data_status_changed' ], 10, 3 );
+		add_filter( 'academy/get_courses_purchase_history', [ $self, 'modify_single_courses_purchase_args' ], 11, 2 );
 	}
 
 	public function add_course_line_meta( OrderItemProduct $item ) {
@@ -53,10 +54,6 @@ class Integration {
 
 	public function save_store_earning_data( $order ) {
 		global $wpdb;
-		$is_enabled_earning = (bool) Helper::get_settings( 'is_enabled_earning' );
-		if ( ! Helper::get_addon_active_status( 'multi_instructor' ) || ! $is_enabled_earning ) {
-			return;
-		}
 
 		$item = current( $order->get_items() );
 		$product_id = $item ? $item->get_product_id() : 0;
@@ -72,9 +69,19 @@ class Integration {
 			)
 		);
 
-		if ( ! empty( $integration_id ) ) {
-			Helper::save_instructor_earnings( $integration_id, $order, $order->get_id() );
-		}//end if
+		if ( empty( $integration_id ) ) {
+			return;
+		}
+		if ( empty( $item->get_meta( 'academy_group' ) ) ) {
+			add_post_meta( $integration_id, 'is_academy_store_order_id', $order->get_id() );
+		}
+
+		$is_enabled_earning = (bool) Helper::get_settings( 'is_enabled_earning' );
+		if ( ! Helper::get_addon_active_status( 'multi_instructor' ) || ! $is_enabled_earning ) {
+			return;
+		}
+
+		Helper::save_instructor_earnings( $integration_id, $order, $order->get_id() );
 	}
 
 	public function save_store_earning_data_status_changed( $order_id, $old_status, $new_status ) {
@@ -85,5 +92,31 @@ class Integration {
 		if ( count( Helper::get_earning_by_order_id( $order_id ) ) ) {
 			Helper::update_earning_status_by_order_id( $order_id, $new_status );
 		}
+	}
+
+	public function modify_single_courses_purchase_args( $args, $user_id ) {
+		$orders  = Helper::get_store_orders_by_user_id( $user_id );
+		if ( is_array( $orders ) ) {
+			$results = [];
+			foreach ( $orders as $order ) {
+				$courses = [
+					'ID'        => $order->course_id,
+					'title'     => get_the_title( $order->course_id ),
+					'permalink' => esc_url( get_the_permalink( $order->course_id ) ),
+				];
+				$se_order = \StoreEngine\Utils\Helper::get_order( $order->ID );
+				$price     = $se_order->get_total();
+				$status    = $order->post_status;
+				$results[] = [
+					'ID'      => $order->ID,
+					'courses' => [ $courses ],
+					'price'   => \StoreEngine\Utils\Helper::get_currency_symbol( $se_order->get_currency() ) . $price,
+					'status'  => \Academy\Helper::order_status_context( $status ),
+					'date'    => date_i18n( get_option( 'date_format' ), strtotime( $order->post_date ) ),
+				];
+			}
+			$args['orders'] = array_merge( $args['orders'] ?? [], $results );
+		}//end if
+		return $args;
 	}
 }
