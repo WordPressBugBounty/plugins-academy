@@ -139,8 +139,9 @@ class Lessons extends \WP_REST_Controller {
 
 	public function get_item( $request ) {
 		$ID = (int) $request->get_param( 'id' );
+		$author_id = current_user_can( 'manage_options' ) ? null : get_current_user_id();
 		try {
-			$lesson = LessonApi::get_by_id( $ID );
+			$lesson = LessonApi::get_by_id( $ID, false, $author_id );
 			$response = $this->rest_prepare_item( $lesson->get_data(), $request );
 			return rest_ensure_response( $response );
 		} catch ( Throwable $e ) {
@@ -186,8 +187,10 @@ class Lessons extends \WP_REST_Controller {
 		$prepared_lesson = $this->prepare_item_for_database( $request );
 		$lesson_meta     = (array) $this->prepare_item_meta_for_database( $request );
 		$ID = (int) $request->get_param( 'id' );
+		$author_id = current_user_can( 'manage_options' ) ? null : get_current_user_id();
+
 		try {
-			$lesson = LessonApi::get_by_id( $ID );
+			$lesson = LessonApi::get_by_id( $ID, false, $author_id );
 			$lesson->set_data( (array) $prepared_lesson );
 			$lesson->set_meta_data( (array) $lesson_meta );
 			$response = $this->rest_prepare_item( $lesson->save()->get_data(), $request );
@@ -203,8 +206,10 @@ class Lessons extends \WP_REST_Controller {
 	}
 	public function delete_item( $request ) {
 		$ID = (int) $request->get_param( 'id' );
+		$author_id = current_user_can( 'manage_options' ) ? null : get_current_user_id();
+
 		try {
-			$lesson = LessonApi::get_by_id( $ID );
+			$lesson = LessonApi::get_by_id( $ID, false, $author_id );
 			$lesson->delete();
 			return rest_ensure_response( true );
 		} catch ( Throwable $e ) {

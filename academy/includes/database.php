@@ -4,6 +4,7 @@ namespace Academy;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+use Academy\API\Authorization\{ CourseController, AnnouncementController };
 class Database {
 
 	public static function init() {
@@ -60,7 +61,7 @@ class Database {
 				'show_in_rest'          => true,
 				'rest_base'             => $post_type,
 				'rest_namespace'        => ACADEMY_PLUGIN_SLUG . '/v1',
-				'rest_controller_class' => 'WP_REST_Posts_Controller',
+				'rest_controller_class' => CourseController::CLASS,
 				'capability_type'           => 'post',
 				'capabilities'              => array(
 					'edit_post'             => 'edit_academy_course',
@@ -161,7 +162,7 @@ class Database {
 				'show_in_rest'          => true,
 				'rest_base'             => $post_type,
 				'rest_namespace'        => ACADEMY_PLUGIN_SLUG . '/v1',
-				'rest_controller_class' => 'WP_REST_Posts_Controller',
+				'rest_controller_class' => AnnouncementController::CLASS,
 				'capability_type'           => 'post',
 				'capabilities'              => array(
 					'edit_post'             => 'edit_academy_announcement',
@@ -394,7 +395,7 @@ class Database {
 				'has_archive'           => true,
 				'delete_with_user'      => false,
 				'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'comments', 'post-formats' ),
-				'show_in_rest'          => true,
+				'show_in_rest'          => false,
 				'capability_type'           => 'post',
 				'capabilities'              => array(
 					'edit_post'             => 'edit_academy_lesson',

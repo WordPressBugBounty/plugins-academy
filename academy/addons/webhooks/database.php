@@ -41,7 +41,7 @@ class Database {
 				'show_in_rest'          => true,
 				'rest_base'             => $post_type,
 				'rest_namespace'        => ACADEMY_PLUGIN_SLUG . '/v1',
-				'rest_controller_class' => 'WP_REST_Posts_Controller',
+				'rest_controller_class' => Authorization\WebHookController::CLASS,
 				'capability_type'           => 'post',
 				'capabilities'              => array(
 					'edit_post'             => 'edit_academy_webhook',

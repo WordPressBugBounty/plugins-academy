@@ -32,8 +32,9 @@ class Import {
 
     public function run() : ?int {
         foreach ( $this->platform_data->videos() as $video ) {
+            $exist_lesson = \Academy\Helper::get_lesson_by_title( $video['title'] ?? '' );
             $this->topics[] = [
-                'id' => 
+                'id' => ! empty( $exist_lesson ) ? $exist_lesson['ID'] :
                 ( new LessonImport( [
                     'lesson_title'   => sanitize_text_field( $video['title'] ?? '' ),
                     'lesson_content' => wp_kses_post( $video['description'] ?? '' ),

@@ -16,7 +16,7 @@ class AcademyCourseInstructors {
 
 	public function course_instructors( $attributes, $content = '' ) {
 		global $post;
-		$author_id = $post->post_author;
+		$author_id = isset( $post->post_author ) ? $post->post_author : 0;
 		if ( \Academy\Helper::get_addon_active_status( 'multi_instructor' ) ) {
 			$instructors = (array) \Academy\Helper::get_instructors_by_course_id( $post->ID );
 		} else {

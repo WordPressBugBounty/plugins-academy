@@ -22,7 +22,7 @@ class HpLesson extends Base\Lesson {
 			'lesson_password'     => '',
 			'lesson_modified'     => current_time( 'mysql' ),
 			'lesson_modified_gmt' => current_time( 'mysql' ),
-		]);
+		] );
 	}
 
 	public function is_slug_available() : bool {
@@ -41,37 +41,69 @@ class HpLesson extends Base\Lesson {
 		}
 		return false;
 	}
+	public static function by_id( int $id, bool $skip_meta = false, int $author = null ) : self {
+		$ins = new self();
 
-	public static function by_id( int $id, bool $skip_meta = false ) : self {
-		$ins = new self();
-		return self::get_lesson( $ins->wpdb->get_row(
-			$ins->wpdb->prepare(
-				"SELECT * FROM {$ins->table} WHERE ID = %d",
-				$id
+		$sql = "SELECT * FROM {$ins->table} WHERE ID = %d";
+		$params = [ $id ];
+
+		if ( $author !== null ) {
+			$sql .= ' AND lesson_author = %d';
+			$params[] = $author;
+		}
+
+		return self::get_lesson(
+			$ins->wpdb->get_row(
+				$ins->wpdb->prepare( $sql, ...$params ),
+				ARRAY_A
 			),
-			ARRAY_A
-		), $ins, $skip_meta );
+			$ins,
+			$skip_meta
+		);
 	}
-	public static function by_slug( string $slug, bool $skip_meta = false ) : self {
+
+	public static function by_slug( string $slug, bool $skip_meta = false, int $author = null ) : self {
 		$ins = new self();
-		return self::get_lesson( $ins->wpdb->get_row(
-			$ins->wpdb->prepare(
-				"SELECT * FROM {$ins->table} WHERE lesson_name = %s",
-				$slug
+
+		$sql = "SELECT * FROM {$ins->table} WHERE lesson_name = %s";
+		$params = [ $slug ];
+
+		if ( $author !== null ) {
+			$sql .= ' AND lesson_author = %d';
+			$params[] = $author;
+		}
+
+		return self::get_lesson(
+			$ins->wpdb->get_row(
+				$ins->wpdb->prepare( $sql, ...$params ),
+				ARRAY_A
 			),
-			ARRAY_A
-		), $ins, $skip_meta );
+			$ins,
+			$skip_meta
+		);
 	}
-	public static function by_title( string $title, bool $skip_meta = false ) : self {
+
+	public static function by_title( string $title, bool $skip_meta = false, int $author = null ) : self {
 		$ins = new self();
-		return self::get_lesson( $ins->wpdb->get_row(
-			$ins->wpdb->prepare(
-				"SELECT * FROM {$ins->table} WHERE lesson_title = %s",
-				$title
+
+		$sql = "SELECT * FROM {$ins->table} WHERE lesson_title = %s";
+		$params = [ $title ];
+
+		if ( $author !== null ) {
+			$sql .= ' AND lesson_author = %d';
+			$params[] = $author;
+		}
+
+		return self::get_lesson(
+			$ins->wpdb->get_row(
+				$ins->wpdb->prepare( $sql, ...$params ),
+				ARRAY_A
 			),
-			ARRAY_A
-		), $ins, $skip_meta );
+			$ins,
+			$skip_meta
+		);
 	}
+
 	protected static function get_lesson( ?array $data, self $ins, bool $skip_meta = false ) : self {
 		if ( is_array( $data ) && isset( $data['ID'] ) ) {
 			$meta_data = $skip_meta ? [] : $ins->wpdb->get_results(

@@ -129,8 +129,9 @@ class AcademySingleCourse {
 
 	public function single_course_review_form( $attributes, $content = '' ) {
 		global $current_user;
+		extract( shortcode_atts( [ 'course_id' => get_the_ID() ], $attributes ) );
 		ob_start();
-		$course_id = get_the_ID();
+		$course_id = isset( $course_id ) ? $course_id : get_the_ID();
 		if ( post_password_required() || ! (bool) \Academy\Helper::get_settings( 'is_enabled_course_review', true ) || get_post_meta( $course_id, 'academy_is_disabled_course_review', true ) ) {
 			return;
 		}
