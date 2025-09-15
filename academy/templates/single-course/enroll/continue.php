@@ -5,14 +5,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 $course_id = get_the_ID();
 $total_completed_lessons = \Academy\Helper::get_total_number_of_completed_course_topics_by_course_and_student_id( $course_id );
 $continue_learning = apply_filters( 'academy/templates/start_course_url', \Academy\Helper::get_start_course_permalink( $course_id ), $course_id );
-$course_type = ucfirst( \Academy\Helper::get_course_type( $course_id ) );
+$course_type = \Academy\Helper::get_course_type( $course_id );
 
 ?>
 <div class="academy-widget-enroll__continue">
 	<?php if ( isset( $enrolled ) && 'completed' === $enrolled->enrolled_status ) : ?>
 		<div class="academy-widget-enroll__head">
 			<div class="academy-course-type">
-				<?php echo esc_attr( $course_type ); ?>
+				<?php if ( 'free' === $course_type ) {
+					$type = __( 'Free', 'academy' );
+				} elseif ( 'paid' === $course_type ) {
+					$type = __( 'Paid', 'academy' );
+				} else {
+					$type = __( 'Public', 'academy' );
+				}
+				echo esc_attr( $type ); ?>
 			</div>
 		</div>
 	<?php endif;

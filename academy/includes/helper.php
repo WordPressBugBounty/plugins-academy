@@ -250,6 +250,12 @@ class Helper {
 		return self::is_plugin_active( $academy_pro );
 	}
 
+	public static function is_active_ecm() {
+		$ecm = 'easy-content-manager/easy-content-manager.php';
+
+		return self::is_plugin_active( $ecm );
+	}
+
 	public static function is_active_ablocks() {
 		$ablocks = 'ablocks/ablocks.php';
 
@@ -568,7 +574,7 @@ class Helper {
 
 	public static function calculate_percentage( $total_count, $completed_count ) {
 		if ( $total_count > 0 && $completed_count > 0 ) {
-			return number_format( ( $completed_count * 100 ) / $total_count );
+			return number_format( ( $completed_count / $total_count ) * 100 );
 		}
 
 		return 0;
@@ -622,11 +628,25 @@ class Helper {
 		}
 	}
 
+	public static function gumlet_id_from_url( $url ) {
+		if ( preg_match( '/src="([^"]+)"/', $url, $srcMatch ) ) {
+			$src = $srcMatch[1];
+
+			// Step 2: extract the ID from the src URL after /embed/
+			if ( preg_match( '#/embed/([^?]+)#', $src, $idMatch ) ) {
+				$id = $idMatch[1];
+				return $id;
+			}
+		}
+	}
+
 	public static function generate_video_embed_url( $url ) {
 		if ( strpos( $url, 'youtube' ) > 0 || strpos( $url, 'youtu.be' ) > 0 ) {
 			return 'https://www.youtube.com/embed/' . self::youtube_id_from_url( $url );
 		} elseif ( strpos( $url, 'vimeo' ) > 0 ) {
 			return 'https://player.vimeo.com/video/' . self::vimeo_id_from_url( $url ) . '?title=0&byline=0';
+		} elseif ( strpos( $url, 'gumlet' ) > 0 ) {
+			return 'https://play.gumlet.io/embed/' . self::gumlet_id_from_url( $url );
 		}
 		return $url;
 	}

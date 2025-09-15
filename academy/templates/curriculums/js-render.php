@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$lesson_content_width = \Academy\Helper::get_settings( 'lesson_content_width' );
 		$lesson_content_width_unit = \Academy\Helper::get_settings( 'lesson_content_width_unit' );
 		$is_hp_lesson = \Academy\Helper::get_settings( 'academy_is_hp_lesson_active', false ) ? false : true;
+		$lesson_autoplay = \Academy\Helper::get_settings( 'lesson_self_hosted_video_autoplay', true );
 		$is_topics_accessible = $is_administrator || $enrolled || $is_instructor || $is_public_course;
 ?>
 		<div 
@@ -28,6 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			data-lesson-content-width="<?php echo esc_html( $lesson_content_width ); ?>"
 			data-lesson-content-width-unit="<?php echo esc_html( $lesson_content_width_unit ); ?>"
 			data-enabled-hp-lesson="<?php echo $is_hp_lesson; ?>"
+			data-enabled-lesson-auto-play="<?php echo $lesson_autoplay; ?>"
 			data-course-type="<?php echo esc_attr( \Academy\Helper::get_course_type( $course_id ) ); ?>"
 			data-is-completed-course="<?php echo esc_attr( \Academy\Helper::is_completed_course( get_the_ID(), get_current_user_id() ) ); ?>"
 			data-auto-load-next-lesson="<?php echo esc_attr( \Academy\Helper::is_auto_load_next_lesson() ); ?>"

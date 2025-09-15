@@ -30,6 +30,7 @@ class ScriptsBase {
 			'is_plain_permalink'    => $this->is_plain_permalink(),
 			'menu'                  => wp_json_encode( Helper::get_admin_menu_list() ),
 			'woocommerce_is_active' => Helper::is_active_woocommerce(),
+			'ecm_is_active' => Helper::is_active_ecm(),
 			'current_user_id'       => get_current_user_id(),
 			'is_rtl'                => is_rtl(),
 			'is_admin'              => is_admin(),

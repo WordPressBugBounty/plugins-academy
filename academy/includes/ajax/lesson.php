@@ -142,9 +142,9 @@ class Lesson extends AbstractAjaxHandler {
 		if ( \Academy\Helper::has_permission_to_access_lesson_curriculum( $course_id, $lesson_id, $user_id ) ) {
 			
 			try {
-				$lesson = LessonApi::get_by_id( $lesson_id );
-				$lesson = $lesson->get_data();
+				$lesson = LessonApi::get_by_id( $lesson_id, $meta = false, $auth = null, 'publish' )->get_data();
 				do_action( 'academy/frontend/before_render_lesson', $lesson, $course_id, $lesson_id );
+
 				$lesson['lesson_title'] = stripslashes( $lesson['lesson_title'] );
 				$lesson['lesson_content'] = [
 					'raw' => stripslashes( $lesson['lesson_content'] ),
@@ -186,6 +186,7 @@ class Lesson extends AbstractAjaxHandler {
 					}//end if
 					$lesson['meta']['video_source'] = $video;
 				}//end if
+			
 				wp_send_json_success( $lesson );
 			}
 			catch ( Throwable $e ) {

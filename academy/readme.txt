@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.3.5
+Stable tag: 3.3.6
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -322,6 +322,20 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.3.6 - 15/09/2025 =
+* Added - Lesson HTML5 video AutoPlay settings.
+* Fixed - Lesson Gutenberg editor not working issue.
+* Fixed - Quiz negative marks not working in export/import files.
+* Fixed - Enroll shortcode popup login not functioning.
+* Fixed - Co-instructors unable to edit their assigned courses.
+* Fixed - Quiz attempt results displaying incorrectly.
+* Fixed - Quiz multiple-choice questions with "answer required" enabled causing the submit button to stay disabled.
+* Fixed - All lesson content showing on the learn page regardless of status.
+* Fixed - Single course type translation issues.
+* Fixed - Quiz question fields not resetting when updated.
+* Fixed - Gumlet host embedded video not working issue.
+* Fixed - Color customize issue.
 
 = 3.3.5 - 02/09/2025 =
 * Fixed - API vulnerability issue.

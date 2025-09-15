@@ -32,9 +32,9 @@ class Lesson {
 		return new $class( $page, $per_page, $author_id, $search, $status, $skip_meta, $by_meta );
 	}
 
-	public static function get_by_id( int $id, bool $skip_meta = false, int $author = null ) : LessonBaseModel {
+	public static function get_by_id( int $id, bool $skip_meta = false, int $author = null, $status = null ) : LessonBaseModel {
 		$class = self::is_hp() ? Models\HpLesson::class : Models\PostLesson::class;
-		return $class::by_id( $id, $skip_meta, $author );
+		return $class::by_id( $id, $skip_meta, $author, $status );
 	}
 
 	public static function get_by_slug( string $slug, bool $skip_meta = false, int $author = null ) : LessonBaseModel {

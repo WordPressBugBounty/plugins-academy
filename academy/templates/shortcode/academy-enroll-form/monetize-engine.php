@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $course_type      = \Academy\Helper::get_course_type( $course_id );
+$is_enabled_academy_login = \Academy\Helper::get_settings( 'is_enabled_academy_login' );
 $template_args    = [ 'course_id' => $course_id ];
 $required_levels  = \Academy\Helper::is_plugin_active( 'paid-memberships-pro/paid-memberships-pro.php' ) ? \AcademyProPaidMembershipsPro\Helper::has_course_access( $course_id ) : [];
 
@@ -28,13 +29,25 @@ if ( 'free' !== $course_type || ! empty( $required_levels ) || $is_surecart_inte
 	?>
 <?php else : ?>
 	<div class="academy-enroll-form-shortcode__price">
-		<?php esc_html( ucwords( $course_type ) ); ?>
+		<?php echo esc_html( ucwords( $course_type ) ); ?>
 	</div>
+	
 	<form id="academy_course_enroll_form" class="academy-course-enroll-form" method="post" action="#">
-		<?php wp_nonce_field( 'academy_nonce' ); ?>
-		<input type="hidden" name="course_id" value="<?php echo esc_attr( $course_id ); ?>">
-		<button type="submit" class="academy-btn academy-btn--bg-purple">
+	<?php wp_nonce_field( 'academy_nonce' ); ?>
+	<input type="hidden" name="course_id" value="<?php echo esc_attr( get_the_ID() ); ?>">
+	<?php
+	if ( $is_enabled_academy_login && ! is_user_logged_in() ) :
+		?>
+		<button type="button" class="academy-btn academy-btn--bg-purple academy-btn-popup-login">
 			<?php esc_html_e( 'Enroll Now', 'academy' ); ?>
 		</button>
-	</form>
+	<?php else :
+		?>
+		<button type="submit" class="academy-btn academy-btn--bg-purple">
+				<?php esc_html_e( 'Enroll Now', 'academy' ); ?>
+		</button>
+		<?php
+		endif;
+	?>
+</form>
 <?php endif; ?>

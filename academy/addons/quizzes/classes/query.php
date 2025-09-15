@@ -708,7 +708,7 @@ class Query {
 			foreach ( $IDs as $ID ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$answers   = $wpdb->get_results( $wpdb->prepare( "SELECT is_correct FROM {$wpdb->prefix}academy_quiz_answers WHERE answer_id=%d", $ID ), OBJECT );
-				if ( (bool) current( $answers )->is_correct === true ) {
+				if ( ! empty( $answers ) && (bool) current( $answers )->is_correct === true ) {
 					$correct_answer_count++;
 				} else {
 					$has_wrong_answer = true;

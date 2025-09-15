@@ -41,7 +41,7 @@ class HpLesson extends Base\Lesson {
 		}
 		return false;
 	}
-	public static function by_id( int $id, bool $skip_meta = false, int $author = null ) : self {
+	public static function by_id( int $id, bool $skip_meta = false, ?int $author = null, ?string $status = null ) : self {
 		$ins = new self();
 
 		$sql = "SELECT * FROM {$ins->table} WHERE ID = %d";
@@ -52,14 +52,13 @@ class HpLesson extends Base\Lesson {
 			$params[] = $author;
 		}
 
-		return self::get_lesson(
-			$ins->wpdb->get_row(
-				$ins->wpdb->prepare( $sql, ...$params ),
-				ARRAY_A
-			),
-			$ins,
-			$skip_meta
-		);
+		if ( null !== $status ) {
+			$sql .= ' AND lesson_status = %s';
+			$params[] = $status;
+		}
+
+		$row = $ins->wpdb->get_row( $ins->wpdb->prepare( $sql, ...$params ), ARRAY_A );
+		return self::get_lesson( $row, $ins, $skip_meta );
 	}
 
 	public static function by_slug( string $slug, bool $skip_meta = false, int $author = null ) : self {

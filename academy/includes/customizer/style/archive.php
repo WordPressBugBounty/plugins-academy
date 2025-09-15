@@ -22,33 +22,33 @@ class Archive extends Base implements DynamicStyleInterface {
 		$course_archive_header_sorting_color = ( isset( $settings['course_archive_header_sorting_color'] ) ? $settings['course_archive_header_sorting_color'] : '' );
 
 		if ( $course_archive_header_bg_color ) {
-			$css .= ".academy-courses .academy-courses__header {
+			$css .= ".academy-courses .academy-courses__header, .academy-courses__header {
                 background: $course_archive_header_bg_color;
             }";
 		}
 
 		if ( $course_archive_header_pading ) {
-			$css .= self::generate_dimensions_css( '.academy-courses .academy-courses__header', $course_archive_header_pading );
+			$css .= self::generate_dimensions_css( '.academy-courses .academy-courses__header , .academy-courses__header', $course_archive_header_pading );
 		}
 
 		if ( $course_archive_header_margin ) {
-			$css .= self::generate_dimensions_css( '.academy-courses .academy-courses__header', $course_archive_header_margin, 'margin' );
+			$css .= self::generate_dimensions_css( '.academy-courses .academy-courses__header, .academy-courses__header', $course_archive_header_margin, 'margin' );
 		}
 
 		if ( $course_archive_header_course_count_color ) {
-			$css .= ".academy-courses .academy-courses__header .academy-courses__header-result-count {
+			$css .= ".academy-courses .academy-courses__header .academy-courses__header-result-count, .academy-courses__header {
                 color: $course_archive_header_course_count_color;
             }";
 		}
 
 		if ( $course_archive_header_sorting_bg_color ) {
-			$css .= ".academy-courses .academy-courses__header .academy-courses__header-ordering select {
+			$css .= ".academy-courses .academy-courses__header .academy-courses__header-ordering select , .academy-courses__header .academy-courses__header-ordering select{
                 background: $course_archive_header_sorting_bg_color;
             }";
 		}
 
 		if ( $course_archive_header_sorting_color ) {
-			$css .= ".academy-courses .academy-courses__header .academy-courses__header-ordering select {
+			$css .= ".academy-courses .academy-courses__header .academy-courses__header-ordering select , .academy-courses__header .academy-courses__header-ordering select{
                 color: $course_archive_header_sorting_color;
             }";
 		}
@@ -82,13 +82,13 @@ class Archive extends Base implements DynamicStyleInterface {
 		}
 
 		if ( $course_archive_course_wishlist_bg_color ) {
-			$css .= ".academy-courses .academy-course .academy-course-header-meta .academy-add-to-wishlist-btn {
+			$css .= ".academy-courses .academy-course__header .academy-course-header-meta .academy-course__wishlist {
                 background: $course_archive_course_wishlist_bg_color;
             }";
 		}
 
 		if ( $course_archive_course_wishlist_icon_color ) {
-			$css .= ".academy-courses .academy-course .academy-course-header-meta .academy-add-to-wishlist-btn i {
+			$css .= ".academy-courses .academy-course__header .academy-course-header-meta .academy-course__wishlist i {
                 color: $course_archive_course_wishlist_icon_color;
             }";
 		}
@@ -98,7 +98,7 @@ class Archive extends Base implements DynamicStyleInterface {
 		}
 
 		if ( $course_archive_course_category_color ) {
-			$css .= ".academy-courses .academy-course__meta--categroy a {
+			$css .= ".academy-courses .academy-course__meta--category a {
                 color: $course_archive_course_category_color;
             }";
 		}
@@ -150,13 +150,13 @@ class Archive extends Base implements DynamicStyleInterface {
 		}
 
 		if ( $course_archive_normal_price_text_color ) {
-			$css .= ".academy-courses .academy-course__footer .academy-course__price del .amount {
+			$css .= ".academy-courses .academy-course__footer .academy-course__price del .amount , .academy-courses .academy-course__price del {
                 color: $course_archive_normal_price_text_color;
             }";
 		}
 
 		if ( $course_archive_sale_price_text_color ) {
-			$css .= ".academy-courses .academy-course__footer .academy-course__price ins .amount {
+			$css .= ".academy-courses .academy-course__footer .academy-course__price ins .amount , .academy-courses .academy-course__price span ins{
                 color: $course_archive_sale_price_text_color;
             }";
 		}
@@ -228,13 +228,13 @@ class Archive extends Base implements DynamicStyleInterface {
 		$course_archive_sidebar_filter_item_color = ( isset( $settings['course_archive_sidebar_filter_item_color'] ) ? $settings['course_archive_sidebar_filter_item_color'] : '' );
 
 		if ( $course_archive_sidebar_bg_color ) {
-			$css .= ".academy-courses .academy-courses__sidebar {
+			$css .= ".academy-course-filters {
                 background: $course_archive_sidebar_bg_color;
             }";
 		}
 
 		if ( $course_archive_course_sidebar_padding ) {
-			$css .= self::generate_dimensions_css( '.academy-courses .academy-courses__sidebar', $course_archive_course_sidebar_padding );
+			$css .= self::generate_dimensions_css( '.academy-course-filters', $course_archive_course_sidebar_padding );
 		}
 
 		if ( $course_archive_course_sidebar_filter_margin ) {
@@ -242,43 +242,43 @@ class Archive extends Base implements DynamicStyleInterface {
 		}
 
 		if ( $course_archive_sidebar_searchbox_bg_color ) {
-			$css .= ".academy-courses .academy-courses__sidebar .academy-archive-course-widget--search input.academy-archive-course-search {
+			$css .= ".academy-archive-course-widget--search input.academy-archive-course-search {
                 background: $course_archive_sidebar_searchbox_bg_color;
             }";
 		}
 
 		if ( $course_archive_sidebar_searchbox_placeholder_text_color ) {
-			$css .= ".academy-courses .academy-courses__sidebar .academy-archive-course-widget--search input.academy-archive-course-search::placeholder {
+			$css .= ".academy-archive-course-widget--search input.academy-archive-course-search::placeholder {
                 color: $course_archive_sidebar_searchbox_placeholder_text_color;
             }";
 		}
 
 		if ( $course_archive_sidebar_searchbox_text_color ) {
-			$css .= ".academy-courses .academy-courses__sidebar .academy-archive-course-widget--search input.academy-archive-course-search {
+			$css .= ".academy-archive-course-widget--search input.academy-archive-course-search::placeholder {
                 color: $course_archive_sidebar_searchbox_text_color;
             }";
 		}
 
 		if ( $course_archive_sidebar_filter_heading_color ) {
-			$css .= ".academy-courses .academy-courses__sidebar .academy-archive-course-widget .academy-archive-course-widget__title {
+			$css .= ".academy-archive-course-widget__title {
                 color: $course_archive_sidebar_filter_heading_color;
             }";
 		}
 
 		if ( $course_archive_sidebar_filter_checkbox_bg_color ) {
-			$css .= ".academy-courses .academy-courses__sidebar .academy-archive-course-widget__body label .checkmark {
+			$css .= ".academy-archive-course-widget__body label .checkmark {
                 background: $course_archive_sidebar_filter_checkbox_bg_color;
             }";
 		}
 
 		if ( $course_archive_sidebar_filter_checkbox_border_color ) {
-			$css .= ".academy-courses .academy-courses__sidebar .academy-archive-course-widget__body label .checkmark {
+			$css .= ".academy-archive-course-widget__body label .checkmark {
                 border-color: $course_archive_sidebar_filter_checkbox_border_color;
             }";
 		}
 
 		if ( $course_archive_sidebar_filter_item_color ) {
-			$css .= ".academy-courses .academy-courses__sidebar .academy-archive-course-widget .academy-archive-course-widget__body label {
+			$css .= ".academy-archive-course-widget__body label {
                 color: $course_archive_sidebar_filter_item_color;
             }";
 		}

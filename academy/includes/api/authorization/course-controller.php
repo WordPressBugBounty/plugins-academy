@@ -63,6 +63,12 @@ class CourseController extends WP_REST_Posts_Controller {
 		}
 
 		$user_id = get_current_user_id();
+
+		$course_ids = \Academy\Helper::get_assigned_courses_ids_by_instructor_id( $user_id );
+		if ( 'POST' === $request->get_method() && in_array( $post->ID, $course_ids ) ) {
+			return true;
+		}
+
 		if ( (int) $post->post_author !== $user_id ) {
 			return new WP_Error( 'forbidden', __( 'You are not the owner of this course.', 'academy' ), [ 'status' => 403 ] );
 		}

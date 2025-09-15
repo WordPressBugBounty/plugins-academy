@@ -8,7 +8,8 @@ if ( \Academy\Helper::get_settings( 'is_enabled_lessons_content_title' ) ) {
 	\Academy\Helper::get_template( 'curriculums/lesson/title.php', [ 'lesson' => $lesson ] );
 }
 
-if ( ! empty( $lesson_meta['video_source']['type'] ) ) {
+	$status = isset( $lesson->lesson_status ) ? $lesson->lesson_status : '';
+if ( ! empty( $lesson_meta['video_source']['type'] ) && 'publish' === $status ) {
 	$template_path = '';
 	$template_args = [];
 
@@ -73,10 +74,13 @@ if ( ! empty( $lesson_meta['video_source']['type'] ) ) {
 }//end if
 
 // content
-$content = \Academy\Helper::get_content_html( stripslashes( $lesson->lesson_content ) );
+$content = '';
+if ( 'publish' === $status ) {
+	$content = \Academy\Helper::get_content_html( stripslashes( $lesson->lesson_content ) );
+}
 \Academy\Helper::get_template( 'curriculums/lesson/content.php', [ 'content' => $content ] );
 
 // attachment
-if ( $lesson_meta['attachment'] ?? false ) {
+if ( 'publish' === $status && ! empty( $lesson_meta['attachment'] ) ) {
 	\Academy\Helper::get_template( 'curriculums/lesson/attachment.php', [ 'attachment_id' => $lesson_meta['attachment'] ] );
 }

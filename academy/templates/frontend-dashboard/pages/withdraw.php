@@ -52,7 +52,7 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 						esc_html__( 'Min withdraw %1$s%2$s', 'academy' ),
 						esc_html( $currency ),
 						esc_html( $min_amount )
-                    ); ?>
+															   ); ?>
 				</p>
 				<input name="withdrawMethodType" type="radio" value="paypal" <?php checked( $withdraw_method_type, 'paypal', true ); ?>>
 			</label>
@@ -67,7 +67,7 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 						esc_html__( 'Min withdraw %1$s%2$s', 'academy' ),
 						esc_html( $currency ),
 						esc_html( $min_amount )
-                    ); ?>
+															   ); ?>
 				</p>
 				<input name="withdrawMethodType" type="radio" value="echeck" <?php checked( $withdraw_method_type, 'echeck', true ); ?>>
 			</label>
@@ -82,7 +82,7 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 						esc_html__( 'Min withdraw %1$s%2$s', 'academy' ),
 						esc_html( $currency ),
 						esc_html( $min_amount )
-                    ); ?>
+															   ); ?>
 				</p>
 				</p>
 				<input name="withdrawMethodType" type="radio" value="bank" <?php checked( $withdraw_method_type, 'bank', true ); ?>>

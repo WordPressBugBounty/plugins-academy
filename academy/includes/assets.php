@@ -26,30 +26,30 @@ class Assets extends ScriptsBase {
 			// Remove Notices
 			remove_all_actions( 'admin_notices' );
 			// dequeue third party plugin assets
-			add_action(
-				'wp_print_scripts',
-				function () {
-					$isSkip = apply_filters( 'academy/skip_no_conflict_backend_scripts', Helper::is_dev_mode_enable() );
+			// add_action(
+			// 'wp_print_scripts',
+			// function () {
+			// $isSkip = apply_filters( 'academy/skip_no_conflict_backend_scripts', Helper::is_dev_mode_enable() );
 
-					if ( $isSkip ) {
-						return;
-					}
+			// if ( $isSkip ) {
+			// return;
+			// }
 
-					global $wp_scripts;
-					if ( ! $wp_scripts ) {
-						return;
-					}
+			// global $wp_scripts;
+			// if ( ! $wp_scripts ) {
+			// return;
+			// }
 
-					$pluginUrl = plugins_url();
-					foreach ( $wp_scripts->queue as $script ) {
-						$src = $wp_scripts->registered[ $script ]->src;
-						if ( strpos( $src, $pluginUrl ) !== false && ! strpos( $src, ACADEMY_PLUGIN_SLUG ) !== false ) {
-							wp_dequeue_script( $wp_scripts->registered[ $script ]->handle );
-						}
-					}
-				},
-				1
-			);
+			// $pluginUrl = plugins_url();
+			// foreach ( $wp_scripts->queue as $script ) {
+			// $src = $wp_scripts->registered[ $script ]->src;
+			// if ( strpos( $src, $pluginUrl ) !== false && ! strpos( $src, ACADEMY_PLUGIN_SLUG ) !== false ) {
+			// wp_dequeue_script( $wp_scripts->registered[ $script ]->handle );
+			// }
+			// }
+			// },
+			// 1
+			// );
 
 			$this->load_web_font_and_icon();
 			wp_enqueue_style( 'academy-admin-style', ACADEMY_ASSETS_URI . 'build/backend.css', array( 'wp-components' ), filemtime( ACADEMY_ASSETS_DIR_PATH . 'build/backend.css' ), 'all' );
@@ -72,8 +72,6 @@ class Assets extends ScriptsBase {
 		}//end if
 		$this->add_backend_inline_style();
 	}
-
-
 
 	/**
 	 * Enqueue Files on Start Plugin

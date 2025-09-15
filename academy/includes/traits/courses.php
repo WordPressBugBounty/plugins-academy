@@ -805,14 +805,21 @@ trait Courses {
 				FROM {$wpdb->posts} enrollment
 				LEFT JOIN {$wpdb->posts} course
 					ON enrollment.post_parent = course.ID
-				WHERE course.post_author = %d
+				LEFT JOIN {$wpdb->usermeta} um
+					ON um.meta_key = %s
+					AND um.user_id = %d
+					AND um.meta_value = course.ID
+				WHERE (course.post_author = %d OR um.user_id = %d)
 					AND course.post_type = %s
 					AND course.post_status = %s
 					AND enrollment.post_type = %s",
+				'academy_instructor_course_id',
+				$instructor_id,
+				$instructor_id,
 				$instructor_id,
 				'academy_courses',
 				'publish',
-				'academy_enrolled',
+				'academy_enrolled'
 			)
 		);
 

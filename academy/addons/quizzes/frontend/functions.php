@@ -93,7 +93,6 @@ if ( ! function_exists( 'academy_quizzes_submit_quiz' ) ) {
 		$referer_url = \Academy\Helper::sanitize_referer_url( wp_get_referer() );
 		$answers = isset( $_POST['attempt'] ) ? $_POST['attempt'][ $attempt_id ]['quiz_question'] : 0;
 		$quiz_id = isset( $_POST['quiz_id'] ) ? sanitize_text_field( $_POST['quiz_id'] ) : '';
-
 		if ( ! $attempt_id ) {
 			$args = array(
 				'course_id' => $course_id,
@@ -168,7 +167,7 @@ if ( ! function_exists( 'academy_quizzes_submit_quiz' ) ) {
 				'total_questions' => count( \AcademyQuizzes\Classes\Query::get_questions_by_quid_id( $quiz_id ) ),
 				'total_answered_questions' => count( $answers ),
 			);
-			$total_questions_marks = Query::get_total_questions_marks_by_attempt_id( $quiz_id );
+			$total_questions_marks = Query::get_total_questions_marks_by_attempt_id( $attempt_id );
 			$total_earned_marks = Query::get_quiz_attempt_answers_earned_marks( get_current_user_id(), $attempt_id );
 			$args['total_marks'] = $total_questions_marks;
 			$args['earned_marks'] = $total_earned_marks;

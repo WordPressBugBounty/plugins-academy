@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Academy\Helper;
 class Admin {
 
 	public static function init() {
