@@ -30,13 +30,15 @@ class Integration {
 	}
 
 	public function add_store_dashboard_menu( $menu ) {
-		$menu['store-dashboard'] = array(
-			'label' => Helper::get_settings( 'store_link_label_inside_frontend_dashboard', __( 'Store Dashboard', 'academy' ) ),
-			'icon'  => 'academy-icon academy-icon--calender',
-			'permalink' => \StoreEngine\Utils\Helper::get_page_permalink( 'dashboard_page' ),
-			'public' => true,
-			'priority' => 7,
-		);
+		if ( \Academy\Helper::get_settings( 'store_link_inside_frontend_dashboard', true ) ) {
+			$menu['store-dashboard'] = array(
+				'label' => Helper::get_settings( 'store_link_label_inside_frontend_dashboard', __( 'Store Dashboard', 'academy' ) ),
+				'icon'  => 'academy-icon academy-icon--calender',
+				'permalink' => \StoreEngine\Utils\Helper::get_page_permalink( 'dashboard_page' ),
+				'public' => true,
+				'priority' => 7,
+			);
+		}
 
 		return $menu;
 	}

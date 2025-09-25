@@ -10,7 +10,7 @@ abstract class Lesson extends Db {
 	use Sanitizer;
 	protected ?int $id;
 	protected bool $is_insert = false;
-	protected bool $ignore_slug_check = false;
+	public bool $ignore_slug_check = false;
 	protected array $data = [];
 	protected array $meta = [];
 	public function __construct( array $lesson = [], array $meta = [], bool $ignore_slug_check = false ) {

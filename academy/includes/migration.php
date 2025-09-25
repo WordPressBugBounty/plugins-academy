@@ -49,6 +49,8 @@ class Migration {
 		if ( ! get_option( 'academy_quiz_question_max_allowed' ) ) {
 			$this->migrate_3_3_2();
 		}
+		// woo settings value
+		$this->migrate_woo_settings_3_3_6();
 
 		// Save Version Number, flash role management and save permalink
 		if ( ACADEMY_VERSION !== $academy_version ) {
@@ -376,6 +378,18 @@ class Migration {
 				$wpdb->query( "ALTER TABLE `$table_name` ADD `question_negative_score` DECIMAL(9,2) UNSIGNED NULL DEFAULT 0.00 AFTER `question_score`" );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 			update_option( 'academy_quiz_questions_migrate_3_2_3', true );
+		}
+	}
+
+	public function migrate_woo_settings_3_3_6() {
+		// check WooCommerce engine
+		if ( ! get_option( 'academy_store_dashboard_inside_link_migrate' ) && 'woocommerce' === \Academy\Helper::get_settings( 'monetization_engine' ) ) {
+			$woo_label = \Academy\Helper::get_settings( 'woo_dashboard_fd_link_label' );
+			$woo_label_status = \Academy\Helper::get_settings( 'is_enabled_fd_link_inside_woo_dashboard' );
+			$GLOBALS['academy_settings']->store_link_label_inside_frontend_dashboard = $woo_label;
+			$GLOBALS['academy_settings']->store_link_inside_frontend_dashboard = $woo_label_status;
+			update_option( ACADEMY_SETTINGS_NAME, wp_json_encode( $GLOBALS['academy_settings'] ) );
+			add_option( 'academy_store_dashboard_inside_link_migrate', true );
 		}
 	}
 

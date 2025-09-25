@@ -1,6 +1,8 @@
 <?php
 namespace Academy\Shortcode;
 
+use Academy\Helper;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
@@ -31,6 +33,10 @@ class AcademySingleCourse {
 		add_shortcode( 'academy_course_reviews', [
 			$this,
 			'single_course_user_display_reviews'
+		]);
+		add_shortcode( 'academy_course_featured_image', [
+			$this,
+			'single_course_featured_image'
 		]);
 	}
 
@@ -263,4 +269,67 @@ class AcademySingleCourse {
 		return apply_filters( 'academy/templates/shortcode/single_course_user_rating', ob_get_clean() );
 	}
 
+	public function single_course_featured_image( $attributes, $content = '' ) {
+		$atts = shortcode_atts(
+			[
+				'course_id' => get_the_ID()
+			],
+			$attributes
+		);
+		$course_id = absint( $atts['course_id'] );
+
+		$video_output = self::get_course_preview_videos( $course_id );
+
+		if ( ! empty( $video_output ) ) {
+			return $video_output;
+		}
+
+		if ( has_post_thumbnail() ) {
+			$featured = get_the_post_thumbnail( $course_id, '', [
+				'class' => 'academy-default-featured-image',
+				'loading' => 'lazy'
+			] );
+			return '<div class="academy-courses-featured-image">' . $featured . '</div>';
+		}
+
+		$image_url = ACADEMY_ASSETS_URI . 'images/thumbnail-placeholder.png';
+		return sprintf(
+			'<img src="%s" alt="%s" class="academy-default-featured-image" />',
+			esc_url( $image_url ),
+			esc_attr__( 'Academy Default Featured Image', 'academy' )
+		);
+	}
+
+	public static function get_course_preview_videos( $id ) {
+		$output      = '';
+		$intro_video = get_post_meta( $id, 'academy_course_intro_video', true );
+		if ( $intro_video && is_array( $intro_video ) && count( $intro_video ) > 1 && ! empty( $intro_video[1] ) ) {
+			$type = $intro_video[0];
+			if ( 'html5' === $type ) {
+				$attachment_id = (int) $intro_video[1];
+				$att_url       = wp_get_attachment_url( $attachment_id );
+				$thumb_id      = get_post_thumbnail_id( $attachment_id );
+				$thumb_url     = wp_get_attachment_url( $thumb_id );
+				$output       .= sprintf(
+					'<video class="academy-plyr" id="academyPlayer" playsinline controls data-poster="%s">
+                    <source src="%s" type="video/mp4" />
+                </video>',
+					esc_url( $thumb_url ),
+					esc_url( $att_url )
+				);
+			} elseif ( 'embedded' === $type ) {
+				$embed = Helper::parse_embedded_url( $intro_video[1] );
+				$output .= sprintf( '<div class="academy-embed-responsive"><iframe class="academy-embed-responsive-item" src="%s" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>', esc_url( $embed['url'] ) );
+			} elseif ( 'youtube' === $type || 'vimeo' === $type ) {
+				$embed = Helper::get_basic_url_to_embed_url( $intro_video[1] );
+				$output .= sprintf( '<div class="academy-plyr plyr__video-embed" id="academyPlayer"><iframe src="%s" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>', esc_url( $embed['url'] ) );
+			} elseif ( 'shortcode' === $type ) {
+				$output .= do_shortcode( $intro_video[1] );
+			} else {
+				$embed = Helper::get_basic_url_to_embed_url( $intro_video[1] );
+				$output .= sprintf( '<div class="academy-embed-responsive academy-embed-responsive-16by9"><iframe class="academy-embed-responsive-item" src="%s" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>', esc_url( $embed['url'] ) );
+			}//end if
+		}//end if
+		return $output;
+	}
 }

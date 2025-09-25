@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.3.6
+Stable tag: 3.3.7
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -322,6 +322,14 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.3.7 - 24/09/2025 =
+* Added - Student and Instructor data export feature.
+* Added - Single course featured image shortcode ['academy_course_featured_image'].
+* Improved - Quiz generation with ChatGPT on an individual basis.
+* Fixed - StoreEngine dashboard settings tab issue.
+* Fixed - LearnPage topbar shortcode attribute not working.
+* Fixed - Various UI/UX design issues.
 
 = 3.3.6 - 15/09/2025 =
 * Added - Lesson HTML5 video AutoPlay settings.

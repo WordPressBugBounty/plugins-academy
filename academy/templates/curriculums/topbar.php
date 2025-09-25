@@ -44,7 +44,7 @@ if ( ! $course_id ) {
 				</span>
 			</div>
 			<div class="academy-course-progress__label">
-				<p><?php echo esc_html_e( 'Your Progress', 'academy' ); ?></p>
+				<p><?php echo esc_html( $progress_ber_text ); ?></p>
 				<span class="academy-icon academy-icon--angle-down"></span>
 			</div>
 		</div>

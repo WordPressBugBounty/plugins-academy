@@ -28,6 +28,8 @@ class Init extends AbstractAjaxHandler {
 		'shorten'          => Prompts\ShortenPrompt::class,
 		'lengthen'         => Prompts\LengthenPrompt::class,
 		'course_generation' => Prompts\CourseGenerationPrompt::class,
+		'assignment_generation' => Prompts\CourseAssignmentGenerationPrompt::class,
+		'quiz_generation'   => Prompts\CourseQuizGenerationPrompt::class,
 		'img:create_img'    => Prompts\CreateImgPrompt::class,
 	];
 

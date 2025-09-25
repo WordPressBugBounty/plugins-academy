@@ -35,10 +35,15 @@ class AcademyCourseCurriculum {
 	}
 
 	public function course_topbar( $attributes, $content = '' ) {
+		extract( shortcode_atts([
+			'progress_ber_text' => __( 'Your Progress', 'academy' ),
+		], $attributes ) );
+
 		ob_start();
 
 		\Academy\Helper::get_template('curriculums/topbar.php', [
 			'course_id' => \Academy\Helper::get_the_current_course_id(),
+			'progress_ber_text' => $progress_ber_text,
 		]);
 
 		return apply_filters( 'academy/templates/shortcode/course_topbar', ob_get_clean() );

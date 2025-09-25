@@ -243,7 +243,7 @@ class Integration {
 
 	public function add_frontend_dashboard_menu_item( $menu_links ) {
 		$allow_fontend_dashbaord = (bool) \Academy\Helper::get_settings( 'is_enabled_fd_link_inside_woo_dashboard' );
-		$fontend_dashbaord_label = (string) \Academy\Helper::get_settings( 'woo_dashboard_fd_link_label' );
+		$fontend_dashbaord_label = (string) \Academy\Helper::get_settings( 'store_link_label_inside_frontend_dashboard' );
 		if ( ! $allow_fontend_dashbaord || empty( $fontend_dashbaord_label ) ) {
 			return $menu_links;
 		}
@@ -414,8 +414,6 @@ class Integration {
 	}
 
 	public function academy_courses_linked_with_woo_product() {
-		global $post;
-
 		$courses = get_posts( [
 			'post_type' => 'academy_courses',
 			'posts_per_page' => -1,
@@ -435,13 +433,22 @@ class Integration {
 	}
 
 	public function save_academy_courses_meta( $product ) {
-		if ( isset( $_POST['_linked_academy_courses'] ) && isset( $_POST['_academy_product'] ) ) {
-			$course_id = absint( $_POST['_linked_academy_courses'] );
-			$product_id = absint( $product->id );
+		if ( empty( $_POST['_linked_academy_courses'] ) ) {
+			return;
+		}
+
+		$course_id  = absint( $_POST['_linked_academy_courses'] );
+		$product_id = absint( $product->get_id() );
+
+		if ( ! empty( $_POST['_academy_product'] ) ) {
+			// Paid course
 			$product->update_meta_data( '_linked_academy_courses', $course_id );
 			update_post_meta( $course_id, 'academy_course_product_id', $product_id );
 			update_post_meta( $course_id, 'academy_course_type', 'paid' );
+		} else {
+			// Free course
+			update_post_meta( $course_id, 'academy_course_product_id', 0 );
+			update_post_meta( $course_id, 'academy_course_type', 'free' );
 		}
 	}
-
 }

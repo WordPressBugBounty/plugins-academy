@@ -78,7 +78,6 @@ class Course implements Interfaces\Insertable {
 			throw new Exception( __( 'Error.', 'academy' ) );
 		}
 		$this->id = $id;
-		update_user_meta( get_current_user_id(), 'academy_instructor_course_id', $this->id );
 		if ( $this->thumbnail_id > 0 ) {
 			set_post_thumbnail( $this->id, $this->thumbnail_id );
 		}
@@ -106,6 +105,24 @@ class Course implements Interfaces\Insertable {
 		}
 		return $topics;
 	}
+
+	protected function insert_assignments( array $assignments ) : array {
+		$topics = [];
+		foreach ( $assignments as $assignment ) {
+			try {
+				$id = ( new Assignment( $assignment, 0 ) )->insert();
+				$topics[] = [
+					'id' => $id,
+					'name' => $assignment['title'] ?? '',
+					'type' => 'assignment',
+				];
+			} catch ( Exception $e ) {
+				// do nothing
+			}
+		}
+		return $topics;
+	}
+
 	protected function insert_quizzes( array $quizzes ) : array {
 		if ( empty( $quizzes ) || ! Helper::get_addon_active_status( 'quizzes' ) ) {
 			return [];
@@ -133,6 +150,7 @@ class Course implements Interfaces\Insertable {
 				'topics'  => array_merge(
 					$this->insert_lessons( $module['lessons'] ?? [] ),
 					$this->insert_quizzes( $module['quiz'] ?? [] ),
+					$this->insert_assignments( $module['assignments'] ?? [] ),
 				),
 			];
 		}

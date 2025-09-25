@@ -191,6 +191,7 @@ class Lessons extends \WP_REST_Controller {
 
 		try {
 			$lesson = LessonApi::get_by_id( $ID, false, $author_id );
+			$lesson->ignore_slug_check = true;
 			$lesson->set_data( (array) $prepared_lesson );
 			$lesson->set_meta_data( (array) $lesson_meta );
 			$response = $this->rest_prepare_item( $lesson->save()->get_data(), $request );

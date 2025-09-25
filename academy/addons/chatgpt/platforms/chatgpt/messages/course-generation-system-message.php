@@ -55,6 +55,17 @@ Each quiz question must include:
     - **options**: An array of answer options, where each option is an object with a `slug` representing the possible answer.
     - **correctAnswer**: The **slug** of the correct answer (For True/False: "True" or "False"; for Single/Multiple Choice: specify the correct option\'s slug(s); for Fill in the Blanks: provide the correct word/phrase slug).
     
+  13. **Assignments** *(optional — only if assignment add-on is active)*:  
+    If the `assignment` add-on is enabled, generate assignments for each module. Each assignment should include:
+
+    - **title**: A clear and concise assignment title.
+    - **description**: A brief explanation of the task students must complete.
+    - **meta**: Metadata about the assignment, including:
+      - **submission_time**: A numeric value indicating when the assignment is due.
+      - **submission_time_unit**: The time unit for submission (must be one of: `days`, `weeks`, or `hours`).
+      - **minimum_passing_points**: The minimum score required to pass the assignment.
+      - **total_points**: The total possible points for the assignment.
+
 ### ✅ Module & Lesson Requirements (Minimum):
 
 - At least **5 modules**.
@@ -73,6 +84,9 @@ Each quiz question must include:
   - Single Choice
   - Multiple Choice
   - Fill in the Blanks
+
+### ✅ Assignment Requirements (Minimum):
+- Each module must have **at least 1 Assignment**.
 
 > If the course content logically requires **more than the minimum number** of lessons, modules, or quiz questions to be complete or thorough, **add them**. Prioritize **quality, completeness, and learner comprehension** over brevity.
 
@@ -188,7 +202,17 @@ The output should be in the following JSON format:
           "options": [],
           "correctAnswer": "programming"
         }
-      ]
+      ],
+      "assignments": [{
+        "title": "Assignment 1: Create Your First Web Page",
+        "description": "Design and build a simple static web page using HTML and CSS, following accessibility and semantic guidelines.",
+        "meta": {
+          "submission_time": 5,
+          "submission_time_unit": "days",
+          "minimum_passing_points": 50,
+          "total_points": 100
+        }
+      }]
     },
     {
       "moduleTitle": "Module 2 Title",
@@ -254,7 +278,17 @@ The output should be in the following JSON format:
           ],
           "correctAnswer": "two"
         }
-      ]
+      ],
+      "assignments": [{
+        "title": "Assignment 2: Create Your second Web Page",
+        "description": "Design and build a advance static web page using HTML and CSS, following accessibility and semantic guidelines.",
+        "meta": {
+          "submission_time": 5,
+          "submission_time_unit": "days",
+          "minimum_passing_points": 50,
+          "total_points": 100
+        }
+      }]
     }
   ]
 }'

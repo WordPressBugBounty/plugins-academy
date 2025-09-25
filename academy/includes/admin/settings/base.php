@@ -103,8 +103,6 @@ class Base {
 				'processing',
 				'completed'
 			],
-			'is_enabled_fd_link_inside_woo_dashboard' => true,
-			'woo_dashboard_fd_link_label' => esc_html__( 'Courses Dashboard', 'academy' ),
 			'is_enabled_fd_link_inside_woo_order_page' => true,
 			'woo_order_page_fd_link_label' => esc_html__( 'Courses Dashboard', 'academy' ),
 			'store_link_inside_frontend_dashboard' => true,
