@@ -49,10 +49,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			// Display message if no courses with certificates are found
 			if ( ! $has_certificate_course ) : ?>
-				<h3 class="academy-not-found"><?php esc_html_e( 'You have not downloadable certificate course yet.', 'academy' ); ?></h3>
+				<h3 class="academy-not-found"><?php esc_html_e( 'You have not yet completed a course that offers a downloadable certificate.', 'academy' ); ?></h3>
 			<?php endif; ?>
 		<?php else : ?>
-			<h3 class="academy-not-found"><?php esc_html_e( 'You have not downloadable certificate course yet.', 'academy' ); ?></h3>
+			<h3 class="academy-not-found"><?php esc_html_e( 'You have not yet completed a course that offers a downloadable certificate.', 'academy' ); ?></h3>
 		<?php endif; ?>
 	</div>
 </div>

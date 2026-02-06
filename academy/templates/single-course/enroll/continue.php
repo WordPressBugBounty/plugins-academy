@@ -9,15 +9,15 @@ $course_type = \Academy\Helper::get_course_type( $course_id );
 
 ?>
 <div class="academy-widget-enroll__continue">
-	<?php if ( isset( $enrolled ) && 'completed' === $enrolled->enrolled_status ) : ?>
+	<?php if ( ! empty( $enrolled ) && 'completed' === $enrolled->enrolled_status ) : ?>
 		<div class="academy-widget-enroll__head">
 			<div class="academy-course-type">
 				<?php if ( 'free' === $course_type ) {
-					$type = __( 'Free', 'academy' );
+					$type = __( 'Free', 'academy' );// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				} elseif ( 'paid' === $course_type ) {
-					$type = __( 'Paid', 'academy' );
+					$type = __( 'Paid', 'academy' );// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				} else {
-					$type = __( 'Public', 'academy' );
+					$type = __( 'Public', 'academy' );// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				}
 				echo esc_attr( $type ); ?>
 			</div>

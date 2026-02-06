@@ -21,6 +21,8 @@ class Register {
 	public function add_sections( $wp_customize ) {
 		new Section\ArchiveCourse( $wp_customize );
 		new Section\SingleCourse( $wp_customize );
+		new Section\ArchiveTutorBooking( $wp_customize );
+		new Section\SingleBooking( $wp_customize );
 		new Section\LearnPage( $wp_customize );
 		new Section\FrontendDashboard( $wp_customize );
 	}

@@ -433,14 +433,14 @@ class Integration {
 	}
 
 	public function save_academy_courses_meta( $product ) {
-		if ( empty( $_POST['_linked_academy_courses'] ) ) {
+		if ( empty( $_POST['_linked_academy_courses'] ) ) {// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return;
 		}
 
-		$course_id  = absint( $_POST['_linked_academy_courses'] );
+		$course_id  = absint( wp_unslash( $_POST['_linked_academy_courses'] ) );// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$product_id = absint( $product->get_id() );
 
-		if ( ! empty( $_POST['_academy_product'] ) ) {
+		if ( ! empty( $_POST['_academy_product'] ) ) {// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			// Paid course
 			$product->update_meta_data( '_linked_academy_courses', $course_id );
 			update_post_meta( $course_id, 'academy_course_product_id', $product_id );

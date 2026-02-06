@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$is_hp_lesson = \Academy\Helper::get_settings( 'academy_is_hp_lesson_active', false ) ? false : true;
 		$lesson_autoplay = \Academy\Helper::get_settings( 'lesson_self_hosted_video_autoplay', true );
 		$is_topics_accessible = $is_administrator || $enrolled || $is_instructor || $is_public_course;
+		$is_reviewed = \Academy\Helper::get_review_by_user( $user_id, $course_id ) ? true : false;
 ?>
 		<div 
 			id="academyLessonsWrap" 
@@ -28,8 +29,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			data-enabled-course-lesson-comment="<?php echo esc_attr( \Academy\Helper::get_settings( 'is_enabled_academy_lessons_comment', true ) ); ?>"
 			data-lesson-content-width="<?php echo esc_html( $lesson_content_width ); ?>"
 			data-lesson-content-width-unit="<?php echo esc_html( $lesson_content_width_unit ); ?>"
-			data-enabled-hp-lesson="<?php echo $is_hp_lesson; ?>"
-			data-enabled-lesson-auto-play="<?php echo $lesson_autoplay; ?>"
+			data-enabled-hp-lesson="<?php echo esc_attr( $is_hp_lesson ); ?>"
+			data-enabled-lesson-auto-play="<?php echo esc_attr( $lesson_autoplay ); ?>"
 			data-course-type="<?php echo esc_attr( \Academy\Helper::get_course_type( $course_id ) ); ?>"
 			data-is-completed-course="<?php echo esc_attr( \Academy\Helper::is_completed_course( get_the_ID(), get_current_user_id() ) ); ?>"
 			data-auto-load-next-lesson="<?php echo esc_attr( \Academy\Helper::is_auto_load_next_lesson() ); ?>"
@@ -38,8 +39,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			data-topbar-logo="<?php echo esc_attr( is_array( $topbar_logo ) ? $topbar_logo[0] : '' ); ?>"
 			data-topics-accessible="<?php echo esc_attr( $is_topics_accessible ); ?>"
 			data-enabled-academy-player="<?php echo esc_attr( \Academy\Helper::get_settings( 'is_enabled_academy_player', false ) ); ?>"
+			data-enabled-academy-lesson-video-skip="<?php echo esc_attr( \Academy\Helper::get_settings( 'is_disabled_lessons_video_skip', true ) ); ?>"
 			data-enabled-header-footer="<?php echo esc_attr( \Academy\Helper::get_settings( 'is_enabled_lessons_theme_header_footer', false ) ); ?>"
 			data-is-enabled-course-popup-review="<?php echo esc_attr( \Academy\Helper::get_settings( 'is_enabled_course_popup_review', false ) ); ?>"
+			data-minimum-course-completion-on-review="<?php echo esc_attr( \Academy\Helper::get_settings( 'minimum_course_completion_on_review', 0 ) ); ?>"
+			data-is-user-reviewed-on-course="<?php echo esc_attr( $is_reviewed ); ?>"
 		>
 			<?php
 				$preloader = apply_filters( 'academy/preloader', academy_get_preloader_html() );

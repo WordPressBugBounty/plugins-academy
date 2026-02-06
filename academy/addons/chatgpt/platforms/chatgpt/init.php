@@ -65,7 +65,8 @@ class Init extends AbstractAjaxHandler {
 	}
 
 	public function key_test( array $payload_data ) : void {
-		if ( empty( $key = $payload_data['key'] ?? '' ) ) {
+		$key = $payload_data['key'] ?? '';
+		if ( empty( $key ) ) {
 			wp_send_json_error( __( 'Key field is required.', 'academy' ), 500 );
 		}
 		$this->api = $key;
@@ -83,20 +84,20 @@ class Init extends AbstractAjaxHandler {
 		if ( ! array_key_exists( $this->model, $this->models ) ) {
 			wp_send_json_error( __( 'Model is Not Assigned.', 'academy' ), 500 );
 		}
-
-		if ( empty( $handler_class = $this->prompts[ $prompt_handler ] ?? '' ) ) {
+		$handler_class = $this->prompts[ $prompt_handler ] ?? '';
+		if ( empty( $handler_class ) ) {
 			wp_send_json_error( __( 'Prompt handler is Not Assigned.', 'academy' ), 500 );
 		}
 
 		if ( empty( $this->api ) ) {
 			wp_send_json_error( __( 'API key is required.', 'academy' ), 422 );
 		}
-
+		$model = new $this->models[ $this->model ](
+			$this->api,
+			new $handler_class( $payload_data )
+		);
 		try {
-			$response = ( $model = new $this->models[ $this->model ](
-				$this->api,
-				new $handler_class( $payload_data )
-			) )->request();
+			$response = ( $model )->request();
 			wp_send_json_success( $model->content );
 		} catch ( Exception $e ) {
 			wp_send_json_error( $e->getMessage(), 500 );
@@ -114,20 +115,20 @@ class Init extends AbstractAjaxHandler {
 		if ( ! array_key_exists( $this->img_model . ':' . $type, $this->models ) ) {
 			wp_send_json_error( __( 'Model is Not Assigned.', 'academy' ), 500 );
 		}
-
-		if ( empty( $handler_class = $this->prompts[ $prompt_handler ] ?? '' ) ) {
+		$handler_class = $this->prompts[ $prompt_handler ] ?? '';
+		if ( empty( $handler_class ) ) {
 			wp_send_json_error( __( 'Prompt handler is Not Assigned.', 'academy' ), 500 );
 		}
 
 		if ( empty( $this->api ) ) {
 			wp_send_json_error( __( 'API key is required.', 'academy' ), 422 );
 		}
-
+		$model = new $this->models[ $this->img_model() . ':' . $type ](
+			$this->api,
+			new $handler_class( $payload_data )
+		);
 		try {
-			$response = ( $model = new $this->models[ $this->img_model() . ':' . $type ](
-				$this->api,
-				new $handler_class( $payload_data )
-			) )->request();
+			$response = ( $model )->request();
 			wp_send_json_success( $model->content );
 		} catch ( Exception $e ) {
 			wp_send_json_error( $e->getMessage(), 500 );

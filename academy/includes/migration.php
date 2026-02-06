@@ -1,11 +1,11 @@
 <?php
 namespace Academy;
 
+use Academy\Admin\Settings;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-use Academy\Admin\Settings;
 
 class Migration {
 
@@ -16,61 +16,55 @@ class Migration {
 
 	public function run_migration() {
 		$academy_version = get_option( 'academy_version' );
-		// Migration for addon WooCommerce. when all users come to v2.0.7 then it will be deleted
+
+		// Migration for addon WooCommerce
 		if ( version_compare( $academy_version, '2.0.7', '<=' ) && Helper::is_active_woocommerce() ) {
-			// Enable WooCommerce Addon
 			$saved_addons = (array) json_decode( get_option( ACADEMY_ADDONS_SETTINGS_NAME ), true );
 			$saved_addons['woocommerce'] = true;
 			update_option( ACADEMY_ADDONS_SETTINGS_NAME, wp_json_encode( $saved_addons ) );
 		}
 
-		// Fix Lesson Status Issue - when all users come to v1.3.5 then it will be deleted
+		// Version-specific migrations
 		$this->migrate_1_3_5( $academy_version );
-
-		// Fix Course Wishlist Issue - when all users come to v1.4.0 then it will be deleted
 		$this->migrate_1_4_0( $academy_version );
-
-		// Course Announcement data to migration global announcement -  when all users come to v1.8.2 then it will be deleted
 		$this->migrate_1_8_2( $academy_version );
-
-		// Customizer settings move to main settings
 		$this->migrate_1_9_0( $academy_version );
-
-		// Set default value for form customization
 		$this->migrate_1_9_14( $academy_version );
-
-		// enable course preview
 		$this->migrate_2_3_1( $academy_version );
-
-		// new column add in quiz_questions table
 		$this->migrate_3_2_3();
+		$this->migrate_3_3_11( $academy_version );
 
-		// quiz max question allowed for displaying
+		// Quiz max question allowed
 		if ( ! get_option( 'academy_quiz_question_max_allowed' ) ) {
 			$this->migrate_3_3_2();
 		}
-		// woo settings value
+
+		// Woo settings migration
 		$this->migrate_woo_settings_3_3_6();
 
-		// Save Version Number, flash role management and save permalink
+		// Save version number, flash role, and permalinks
 		if ( ACADEMY_VERSION !== $academy_version ) {
 			Settings::save_settings();
 			update_option( 'academy_version', ACADEMY_VERSION );
 			update_option( 'academy_flash_role_management', true );
-			update_option( 'academy_required_rewrite_flush', Helper::get_time() );
+			\Academy\Helper::flush_rewrite_rules();
+			$this->loco_translate_sync();
 		}
+
 		// Flash Role
 		if ( get_option( 'academy_flash_role_management' ) ) {
-			$Installer = new \Academy\Installer();
-			$Installer->add_role();
+			$installer = new \Academy\Installer();
+			$installer->add_role();
 			delete_option( 'academy_flash_role_management' );
 		}
-		// current user have administrator role and not have instructor role then assign instructor role
+
+		// Assign instructor role to admin if missing
 		$user = new \WP_User( get_current_user_id() );
 		if ( in_array( 'administrator', $user->roles, true ) && ! in_array( 'academy_instructor', $user->roles, true ) ) {
 			$user->add_role( 'academy_instructor' );
 		}
-		// lesson gutenberg editor support for instructor
+
+		// Lesson Gutenberg editor support for instructor
 		if ( version_compare( $academy_version, '3.2.2', '>' ) ) {
 			$role = get_role( 'manage_academy_instructor' );
 			if ( $role ) {
@@ -80,72 +74,98 @@ class Migration {
 		}
 	}
 
+	public function loco_translate_sync() : void {
+		if ( ! is_plugin_active( 'loco-translate/loco.php' ) ) {
+			return;
+		}
+
+		if ( ! wp_next_scheduled( 'academy_loco_translate_sync' ) ) {
+			wp_schedule_single_event(
+				time() + 5,
+				'academy_loco_translate_sync'
+			);
+		}
+	}
+
 	public function migrate_1_3_5( $academy_version ) {
 		if ( version_compare( $academy_version, '1.2.15', '>=' ) && version_compare( $academy_version, '1.3.5', '<' ) ) {
 			global $wpdb;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}academy_lessons SET lesson_status=%s WHERE lesson_status= %s", 'publish', 'draft' ) );
+			$wpdb->query(
+				$wpdb->prepare(
+					"UPDATE {$wpdb->prefix}academy_lessons SET lesson_status=%s WHERE lesson_status=%s",
+					'publish',
+					'draft'
+				)
+			);
 		}
 	}
 
 	public function migrate_1_4_0( $academy_version ) {
 		$user_id = get_current_user_id();
-		if ( ! get_user_meta( $user_id, 'academy_is_user_migrate_completed_topics', true ) ) {
-			global $wpdb;
-			// if current user have no enrolled course then return it.
-			$enrolled_course_ids = \Academy\Helper::get_enrolled_courses_ids_by_user( $user_id );
-			if ( ! count( $enrolled_course_ids ) ) {
-				update_user_meta( $user_id, 'academy_is_user_migrate_completed_topics', true );
-				return;
-			}
+		if ( get_user_meta( $user_id, 'academy_is_user_migrate_completed_topics', true ) ) {
+			return;
+		}
 
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$topic_lists = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT meta_key, meta_value FROM $wpdb->usermeta WHERE meta_key LIKE %s AND user_id = %d",
-					'academy_completed_topic_id_%',
-					$user_id
-				)
+		global $wpdb;
+
+		$enrolled_course_ids = \Academy\Helper::get_enrolled_courses_ids_by_user( $user_id );
+		if ( empty( $enrolled_course_ids ) ) {
+			update_user_meta( $user_id, 'academy_is_user_migrate_completed_topics', true );
+			return;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$topic_lists = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT meta_key, meta_value FROM $wpdb->usermeta WHERE meta_key LIKE %s AND user_id = %d",
+				'academy_completed_topic_id_%',
+				$user_id
+			)
+		);
+
+		$quiz   = [];
+		$lesson = [];
+
+		foreach ( $topic_lists as $topic_item ) {
+			$topic_id = (int) str_replace( 'academy_completed_topic_id_', '', $topic_item->meta_key );
+			if ( 'academy_quiz' === get_post_type( $topic_id ) ) {
+				$quiz[ $topic_id ] = $topic_item->meta_value;
+			} else {
+				$lesson[ $topic_id ] = $topic_item->meta_value;
+			}
+		}
+
+		if ( ! count( $quiz ) && ! count( $lesson ) ) {
+			update_user_meta( $user_id, 'academy_is_user_migrate_completed_topics', true );
+			return;
+		}
+
+		foreach ( $enrolled_course_ids as $enrolled_course_id ) {
+			$curriculums = wp_list_pluck(
+				get_post_meta( $enrolled_course_id, 'academy_course_curriculum', true ),
+				'topics'
 			);
+			$curriculums = call_user_func_array( 'array_merge', $curriculums );
+			$option_name = 'academy_course_' . $enrolled_course_id . '_completed_topics';
+			$saved_topics_lists = (array) json_decode( get_user_meta( $user_id, $option_name, true ), true );
 
-			$quiz = [];
-			$lesson = [];
-			foreach ( $topic_lists as $topic_item ) {
-				$topic_id = (int) str_replace( 'academy_completed_topic_id_', '', $topic_item->meta_key );
-				if ( 'academy_quiz' === get_post_type( $topic_id ) ) {
-					$quiz[ $topic_id ] = $topic_item->meta_value;
-				} else {
-					$lesson[ $topic_id ] = $topic_item->meta_value;
-				}
-			}
-
-			// if current user have no completed lesson or quiz then return it
-			if ( ! count( $quiz ) && ! count( $lesson ) ) {
-				update_user_meta( $user_id, 'academy_is_user_migrate_completed_topics', true );
-				return;
-			}
-
-			// Saved user meta to get enrolled course id then update user meta.
-			foreach ( $enrolled_course_ids as $enrolled_course_id ) {
-				$curriculums = wp_list_pluck( get_post_meta( $enrolled_course_id, 'academy_course_curriculum', true ), 'topics' );
-				$curriculums = call_user_func_array( 'array_merge', $curriculums );
-				$option_name = 'academy_course_' . $enrolled_course_id . '_completed_topics';
-				$saved_topics_lists = (array) json_decode( get_user_meta( $user_id, $option_name, true ), true );
-				foreach ( $curriculums as $curriculum ) {
-					if ( isset( $lesson[ $curriculum['id'] ] ) && 'lesson' === $curriculum['type'] ) {
-						if ( ! isset( $saved_topics_lists['lesson'][ $curriculum['id'] ] ) ) {
-							$saved_topics_lists['lesson'][ $curriculum['id'] ] = $lesson[ $curriculum['id'] ];
-						}
-					} elseif ( isset( $quiz[ $curriculum['id'] ] ) && 'quiz' === $curriculum['type'] ) {
-						if ( ! isset( $saved_topics_lists['quiz'][ $curriculum['id'] ] ) ) {
-							$saved_topics_lists['quiz'][ $curriculum['id'] ] = $quiz[ $curriculum['id'] ];
-						}
+			foreach ( $curriculums as $curriculum ) {
+				if ( isset( $lesson[ $curriculum['id'] ] ) && 'lesson' === $curriculum['type'] ) {
+					if ( ! isset( $saved_topics_lists['lesson'][ $curriculum['id'] ] ) ) {
+						$saved_topics_lists['lesson'][ $curriculum['id'] ] = $lesson[ $curriculum['id'] ];
+					}
+				} elseif ( isset( $quiz[ $curriculum['id'] ] ) && 'quiz' === $curriculum['type'] ) {
+					if ( ! isset( $saved_topics_lists['quiz'][ $curriculum['id'] ] ) ) {
+						$saved_topics_lists['quiz'][ $curriculum['id'] ] = $quiz[ $curriculum['id'] ];
 					}
 				}
-				update_user_meta( $user_id, $option_name, wp_json_encode( $saved_topics_lists ) );
 			}
-			update_user_meta( $user_id, 'academy_is_user_migrate_completed_topics', true );
-		}//end if
+
+			update_user_meta( $user_id, $option_name, wp_json_encode( $saved_topics_lists ) );
+		}//end foreach
+
+		update_user_meta( $user_id, 'academy_is_user_migrate_completed_topics', true );
 	}
 
 	public function migrate_1_9_14( $academy_version ) {
@@ -237,6 +257,7 @@ class Migration {
 			add_option( 'academy_form_builder_settings', wp_json_encode( $form_settings ) );
 		}//end if
 	}
+
 	public function migrate_1_8_2( $academy_version ) {
 		if ( version_compare( $academy_version, '1.8.2', '<' ) ) {
 			global $wpdb;
@@ -351,6 +372,7 @@ class Migration {
 				}
 			}
 			add_option( 'academy_is_migrate_lessons_slug', true );
+			return;
 		}
 	}
 
@@ -378,6 +400,27 @@ class Migration {
 				$wpdb->query( "ALTER TABLE `$table_name` ADD `question_negative_score` DECIMAL(9,2) UNSIGNED NULL DEFAULT 0.00 AFTER `question_score`" );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 			update_option( 'academy_quiz_questions_migrate_3_2_3', true );
+		}
+	}
+
+	public function migrate_3_3_11( $academy_version ) {
+		if ( ! \Academy\Helper::get_addon_active_status( 'quizzes' ) || version_compare( $academy_version, '3.4.0', '<' ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$table_name = esc_sql( $wpdb->prefix . ACADEMY_PLUGIN_SLUG . '_quiz_questions' );
+
+		$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE 'question_image_id'" );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// Add column if missing
+		if ( ! $column_exists ) {
+			$wpdb->query(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"ALTER TABLE `{$table_name}`
+				ADD `question_image_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL
+				AFTER `question_negative_score`"
+			); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 	}
 

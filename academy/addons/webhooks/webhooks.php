@@ -36,6 +36,8 @@ final class Webhooks implements AddonInterface {
 	public function init_addon() {
 		// fire addon activation hook
 		add_action( "academy/addons/activated_{$this->addon_name}", array( $this, 'addon_activation_hook' ) );
+		add_action( "academy/addons/deactivated_{$this->addon_name}", array( $this, 'addon_deactivation_hook' ) );
+
 		// if disable then stop running addons
 		if ( ! \Academy\Helper::get_addon_active_status( $this->addon_name ) ) {
 			return;
@@ -46,6 +48,11 @@ final class Webhooks implements AddonInterface {
 	}
 
 	public function addon_activation_hook() {
-		flush_rewrite_rules();
+		Database::init();
+		\Academy\Helper::flush_rewrite_rules();
+	}
+
+	public function addon_deactivation_hook() {
+		\Academy\Helper::flush_rewrite_rules();
 	}
 }

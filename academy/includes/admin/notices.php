@@ -25,7 +25,7 @@ class Notices {
 			self::add_notice('pro_upgrade_discount_offer', [
 				'type'      => 'discount_offer',
 				'coupon_code'   => 'i9hE7i',
-				'message'   => wp_kses_post( 'Up to 40% Off' ),
+				'message'   => wp_kses_post( __( 'Up to 40% Off', 'academy' ) ),
 				'button_text' => __( 'Claim Discount', 'academy' ),
 				'button_action' => 'https://academylms.net/pricing/',
 				'dismissible' => true
@@ -35,7 +35,7 @@ class Notices {
 		if ( ! current_user_can( 'manage_options' ) || ! get_option( 'users_can_register' ) ) {
 			self::add_notice('users_can_register', [
 				'type'      => 'info',
-				'message'   => wp_kses_post( 'Membership option is turned off, students and instructors will not be able to sign up. <strong>Press Enable</strong> or go to <strong>Settings > General > Membership</strong> and enable "Anyone can register".' ),
+				'message'   => wp_kses_post( __( 'Membership option is turned off, students and instructors will not be able to sign up. <strong>Press Enable</strong> or go to <strong>Settings > General > Membership</strong> and enable "Anyone can register".', 'academy' ) ),
 				'button_text' => __( 'Enable Registration', 'academy' ),
 				'button_action' => esc_url(add_query_arg(array(
 					'academy-registration' => 'enable',

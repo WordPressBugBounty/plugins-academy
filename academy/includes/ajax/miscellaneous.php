@@ -64,6 +64,18 @@ class Miscellaneous extends AbstractAjaxHandler {
 				'callback'   => array( $this, 'get_lesson_comment' ),
 				'capability' => 'read'
 			),
+			'hide_zencommunity_ads' => array(
+				'callback' => array( $this, 'hide_zencommunity_ads' ),
+				'capability' => 'manage_options'
+			),
+			'fetch_roles' => array(
+				'callback' => array( $this, 'get_roles' ),
+				'capability' => 'manage_options'
+			),
+			'fetch_courses' => array(
+				'callback' => array( $this, 'fetch_courses' ),
+				'capability' => 'manage_options'
+			)
 		);
 	}
 
@@ -173,7 +185,18 @@ class Miscellaneous extends AbstractAjaxHandler {
 		}
 
 		do_action( 'academy/frontend/before_mark_topic_complete', $topic_type, $course_id, $topic_id, $user_id );
+		$is_skip_disabled = \Academy\Helper::get_settings( 'is_disabled_lessons_video_skip' ) && \Academy\Helper::get_settings( 'is_enabled_academy_player' );
 
+		if ( $is_skip_disabled && 'lesson' === $topic_type && 'youtube' === \Academy\Helper::get_lesson_meta( $topic_id, 'video_source' )['type'] ) {
+			$meta_key     = "academy_{$course_id}lesson_video_{$topic_id}_completed";
+			$is_completed = get_user_meta( $user_id, $meta_key, true );
+
+			if ( ! $is_completed ) {
+				wp_send_json_error(
+					__( 'Please complete the lesson video before marking the topic as completed.', 'academy' )
+				);
+			}
+		}
 		$option_name        = 'academy_course_' . $course_id . '_completed_topics';
 		$is_complete = true;
 		$saved_topics_lists = (array) json_decode( get_user_meta( $user_id, $option_name, true ), true );
@@ -395,5 +418,51 @@ class Miscellaneous extends AbstractAjaxHandler {
 		wp_die( 'You do not have the permission to do this.' );
 	}
 
+	public function hide_zencommunity_ads( $payload_data ) {
+		update_option( 'academy_is_hide_zencommunity_menu', true, false );
+	}
 
+	public function get_roles() {
+		global $wp_roles;
+
+		$roles = $wp_roles->roles;
+		$results[] = [
+			'label' => 'All Roles',
+			'value' => 'all'
+		];
+		if ( is_array( $roles ) && ! empty( $roles ) ) {
+			foreach ( $roles as $role_key => $role ) {
+				$results[] = array(
+					'label' => $role['name'],
+					'value' => $role_key
+				);
+			}
+		}
+		wp_send_json_success( $results );
+	}
+
+	public function fetch_courses( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload([
+			'keyword' => 'string',
+		], $payload_data );
+
+		$keyword = $payload['keyword'] ?? '';
+
+		$courses = get_posts( [
+			'post_type' => 'academy_courses',
+			'post_status' => 'publish',
+			's' => $keyword,
+			'posts_per_page' => 10,
+		] );
+		$results = [];
+		if ( is_array( $courses ) ) {
+			foreach ( $courses as $course ) {
+				$results[] = array(
+					'label' => $course->post_title,
+					'ID' => (string) $course->ID,
+				);
+			}
+		}
+		wp_send_json_success( $results );
+	}
 }

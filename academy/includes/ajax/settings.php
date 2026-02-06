@@ -42,6 +42,9 @@ class Settings extends AbstractAjaxHandler {
 			'course_card_style' => 'string',
 			'is_enabled_course_single_enroll_count' => 'boolean',
 			'is_opened_course_single_first_topic' => 'boolean',
+			'minimum_course_completion_on_review' => 'integer',
+			'is_enabled_course_coming_soon' => 'boolean',
+			'is_show_course_excerpt' => 'boolean',
 			// Course Certificate
 			'academy_primary_certificate_id' => 'integer',
 			// dashboard
@@ -61,6 +64,7 @@ class Settings extends AbstractAjaxHandler {
 			'is_disabled_lessons_right_click' => 'boolean',
 			'is_enabled_academy_player' => 'boolean',
 			'is_enabled_academy_lessons_comment' => 'boolean',
+			'is_disabled_lessons_video_skip' => 'boolean',
 			'auto_load_next_lesson' => 'boolean',
 			'auto_complete_topic' => 'boolean',
 			'frontend_dashboard_page' => 'integer',
@@ -71,6 +75,7 @@ class Settings extends AbstractAjaxHandler {
 			'is_enabled_instructor_review' => 'boolean',
 			'frontend_student_reg_page' => 'string',
 			'is_student_can_upload_files' => 'boolean',
+			'is_reset_academy_enrolled_course_progress' => 'boolean',
 			'password_reset_page' => 'integer',
 			'tutor_booking_page' => 'integer',
 			// eCommerce
@@ -109,15 +114,19 @@ class Settings extends AbstractAjaxHandler {
 			'allow_instructor_to_use_chatgpt' => 'boolean',
 			// editor type
 			'academy_editor_type' => 'string',
+			// after registration course enroll settings
+			'enable_auto_enroll_after_registration' => 'boolean',
+			'after_registration_auto_enroll_courses_id' => 'array',
+			'user_roles_for_auto_enroll' => 'array',
 		]), $payload_data );
+
+		$default = BaseSettings::get_default_data();
 
 		$redirect_login_url = $payload['academy_frontend_dashboard_redirect_login_url'] ?? $default['academy_frontend_dashboard_redirect_login_url'];
 		$redirect_login_page = $payload['academy_frontend_dashboard_redirect_login_page'] ?? $default['academy_frontend_dashboard_redirect_login_page'];
 		if ( 'custom_login' === $redirect_login_page ) {
 			self::check_redirect_login_url_is_valid( $redirect_login_url );
 		}
-
-		$default = BaseSettings::get_default_data();
 
 		$is_update = BaseSettings::save_settings( apply_filters( 'academy/admin/settings/save', [
 			'is_enabled_academy_web_font' => $payload['is_enabled_academy_web_font'] ?? $default['is_enabled_academy_web_font'],
@@ -140,6 +149,9 @@ class Settings extends AbstractAjaxHandler {
 			'course_card_style' => $payload['course_card_style'] ?? $default['course_card_style'],
 			'is_enabled_course_single_enroll_count' => $payload['is_enabled_course_single_enroll_count'] ?? $default['is_enabled_course_single_enroll_count'],
 			'is_opened_course_single_first_topic' => $payload['is_opened_course_single_first_topic'] ?? $default['is_opened_course_single_first_topic'],
+			'minimum_course_completion_on_review' => $payload['minimum_course_completion_on_review'] ?? $default['minimum_course_completion_on_review'],
+			'is_enabled_course_coming_soon' => $payload['is_enabled_course_coming_soon'] ?? $default['is_enabled_course_coming_soon'],
+			'is_show_course_excerpt'  => $payload['is_show_course_excerpt'] ?? $default['is_show_course_excerpt'],
 			// Course Certificate
 			'academy_primary_certificate_id' => $payload['academy_primary_certificate_id'] ?? $default['academy_primary_certificate_id'],
 			// Dashboard
@@ -160,6 +172,7 @@ class Settings extends AbstractAjaxHandler {
 			'is_disabled_lessons_right_click' => $payload['is_disabled_lessons_right_click'] ?? $default['is_disabled_lessons_right_click'],
 			'is_enabled_academy_player' => $payload['is_enabled_academy_player'] ?? $default['is_enabled_academy_player'],
 			'is_enabled_academy_lessons_comment' => $payload['is_enabled_academy_lessons_comment'] ?? $default['is_enabled_academy_lessons_comment'],
+			'is_disabled_lessons_video_skip' => $payload['is_disabled_lessons_video_skip'] ?? $default['is_disabled_lessons_video_skip'],
 			'frontend_dashboard_page' => $payload['frontend_dashboard_page'] ?? $default['frontend_dashboard_page'],
 			'frontend_instructor_reg_page' => $payload['frontend_instructor_reg_page'] ?? $default['frontend_instructor_reg_page'],
 			'is_show_public_profile' => $payload['is_show_public_profile'] ?? $default['is_show_public_profile'],
@@ -168,6 +181,7 @@ class Settings extends AbstractAjaxHandler {
 			'is_enabled_instructor_review' => $payload['is_enabled_instructor_review'] ?? $default['is_enabled_instructor_review'],
 			'frontend_student_reg_page' => $payload['frontend_student_reg_page'] ?? $default['frontend_student_reg_page'],
 			'is_student_can_upload_files' => $payload['is_student_can_upload_files'] ?? $default['is_student_can_upload_files'],
+			'is_reset_academy_enrolled_course_progress' => $payload['is_reset_academy_enrolled_course_progress'] ?? $default['is_reset_academy_enrolled_course_progress'],
 			'password_reset_page' => $payload['password_reset_page'] ?? $default['password_reset_page'],
 			'tutor_booking_page' => $payload['tutor_booking_page'] ?? $default['tutor_booking_page'],
 			// eCommerce
@@ -204,6 +218,11 @@ class Settings extends AbstractAjaxHandler {
 			'allow_instructor_to_use_chatgpt' => $payload['allow_instructor_to_use_chatgpt'] ?? $default['allow_instructor_to_use_chatgpt'] ?? false,
 			// editor type
 			'academy_editor_type' => $payload['academy_editor_type'] ?? $default['academy_editor_type'],
+			// after registration course enroll settings
+			'enable_auto_enroll_after_registration' => $payload['enable_auto_enroll_after_registration'] ?? $default['enable_auto_enroll_after_registration'],
+			'after_registration_auto_enroll_courses_id' => $payload['after_registration_auto_enroll_courses_id'] ?? $default['after_registration_auto_enroll_courses_id'],
+			'user_roles_for_auto_enroll' => $payload['user_roles_for_auto_enroll'] ?? $default['user_roles_for_auto_enroll'],
+
 		], $payload, $default ) );
 		do_action( 'academy/admin/after_save_settings', $is_update, 'base', $payload_data );
 		wp_send_json_success( $is_update );

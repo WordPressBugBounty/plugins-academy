@@ -21,7 +21,7 @@ class Dale2editImg extends Dale2createImg {
 		$image = $_FILES['image'];
 		$mask  = $_FILES['mask'];
 
-		if ( ! in_array( $image['type'], self::SUPPORTED_FILE_TYPES ) || ! in_array( $mask['type'], self::SUPPORTED_FILE_TYPES ) ) {
+		if ( ! in_array( $image['type'], self::SUPPORTED_FILE_TYPES, true ) || ! in_array( $mask['type'], self::SUPPORTED_FILE_TYPES, true ) ) {
 			throw new Exception( __( 'Only PNG Image is allowed.', 'academy' ) );
 		}
 		return [

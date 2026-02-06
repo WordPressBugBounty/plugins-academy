@@ -27,6 +27,7 @@ class Base {
 			'is_enabled_academy_web_font' => true,
 			'frontend_student_reg_page' => '',
 			'is_student_can_upload_files' => true,
+			'is_reset_academy_enrolled_course_progress' => false,
 			'monetization_engine' => '',
 			// Password Reset
 			'password_reset_page' => '',
@@ -43,12 +44,16 @@ class Base {
 			'lessons_topic_length'   => 0,
 			'is_enabled_academy_player'   => false,
 			'is_enabled_academy_lessons_comment' => false,
+			'is_disabled_lessons_video_skip' => true,
 			// Course Archive
 			'course_page' => '',
 			'is_enabled_course_share' => true,
 			'is_enabled_course_wishlist' => true,
 			'is_enabled_course_review' => true,
 			'is_enabled_course_popup_review' => false,
+			'minimum_course_completion_on_review' => 0,
+			'is_enabled_course_coming_soon' => false,
+			'is_show_course_excerpt' => false,
 			'course_archive_sidebar_position' => 'right',
 			'course_archive_filters' => [
 				[
@@ -116,6 +121,10 @@ class Base {
 			'allow_instructor_to_use_chatgpt' => false,
 			// editor type
 			'academy_editor_type' => 'quill',
+			// after registration course enroll settings
+			'enable_auto_enroll_after_registration' => false,
+			'after_registration_auto_enroll_courses_id' => [],
+			'user_roles_for_auto_enroll' => [],
 		]);
 	}
 

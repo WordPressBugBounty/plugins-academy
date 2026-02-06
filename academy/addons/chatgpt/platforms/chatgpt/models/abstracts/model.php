@@ -30,7 +30,8 @@ abstract class Model {
 		$this->http->set_payload( $this->payload() );
 
 		$res = $this->http->post();
-		if ( $msg = ( $res->as_array()['error']['message'] ?? false ) ) {
+		$msg = ( $res->as_array()['error']['message'] ?? false );
+		if ( $msg ) {
 			throw new InvalidResponseException( $msg );
 		}
 		$this->content = $res->as_array()['choices'][0]['message']['content'] ?? '';

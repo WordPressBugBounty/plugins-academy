@@ -142,8 +142,8 @@ class AcademyCourses {
 
 		$grid_class = \Academy\Helper::get_responsive_column( array(
 			'desktop' => $column_per_row,
-			'tablet' => 2,
-			'mobile' => 1,
+			'tablet' => $courses_per_row->tablet,
+			'mobile' => $courses_per_row->mobile,
 		) );
 
 		$attr_str = '';

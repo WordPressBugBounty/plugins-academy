@@ -57,6 +57,11 @@ class CourseExport extends ExportBase {
 			$course_type = isset( $meta['academy_course_type'][0] ) ? $meta['academy_course_type'][0] : '';
 			$meta = get_post_meta( $course->ID );
 
+			$serialized_keys = [ 'academy_rcp_membership_levels', 'academy_course_duration', 'academy_course_intro_video', 'academy_course_curriculum' ];
+			foreach ( $serialized_keys as $key ) {
+				$meta[ $key ] = array_map( fn ( $item ) => wp_json_encode( maybe_unserialize( $item ) ?? [] ), $meta[ $key ] ?? array() );
+			}
+
 			$product_id = 0;
 			$download_id = 0;
 			$regular_price = 0;
@@ -69,7 +74,7 @@ class CourseExport extends ExportBase {
 				$sale_price = get_post_meta( $product_id, '_sale_price', true );
 				$edd_price = get_post_meta( $download_id, 'edd_price', true );
 			}
-			$curriculums = maybe_unserialize( $meta['academy_course_curriculum'][0] ?? array() );
+			$curriculums = json_decode( $meta['academy_course_curriculum'][0] ?? '', true ) ?? [];
 			$course_array[] = $this->extract_post_data( $course );
 			$course_array[] = array_merge(
 				$this->extract_meta_data( $meta ),
@@ -225,9 +230,9 @@ class CourseExport extends ExportBase {
 			|| isset( $flattenRow['assignment_title'] )
 			|| ( isset( $flattenRow['answer_title'] ) && ! isset( $previousItem['answer_title'] ) ) ) {
 				$row_header = array_keys( $flattenRow );
-				fputcsv( $fp, $row_header );
+				fputcsv( $fp, $row_header, ',', '"', '\\' );
 			}
-			fputcsv( $fp, $flattenRow );
+			fputcsv( $fp, $flattenRow, ',', '"', '\\' );
 			$previousItem = $row;
 		}
 	}

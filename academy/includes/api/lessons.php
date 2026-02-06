@@ -125,8 +125,8 @@ class Lessons extends \WP_REST_Controller {
 
 		$data = [];
 		$lessons = LessonApi::get( $page, $per_page, $author_id, $search_keyword, $lesson_status );
-
-		if ( ( $total = count( $lessons ) ) > 0 ) {
+		$total = count( $lessons );
+		if ( $total > 0 ) {
 			foreach ( $lessons as $lesson ) {
 				$data[] = $this->rest_prepare_item( $lesson->get_data(), $request );
 			}

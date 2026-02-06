@@ -148,3 +148,15 @@ add_action( 'academy_frontend_dashboard_withdraw-bank_endpoint', 'academy_fronte
 
 // add iframe support in cpt: academy_lessons
 add_filter( 'wp_kses_allowed_html', 'academy_allow_iframe_in_cpt_content', 10, 2 );
+// third party plugin scripts allow
+add_filter( 'academy/allowed_third_party_plugins_assets', 'academy_allowed_third_party_assets', 10, 1 );
+// add custom reset link
+add_filter( 'retrieve_password_message', 'academy_custom_reset_password_message', 10, 4 );
+// set password
+add_action( 'init', 'academy_handle_password_reset' );
+
+// after registration enroll course
+add_action( 'user_register', 'academy_auto_enroll_after_registration', 20 );
+add_action( 'academy/admin/update_instructor_status', 'academy_auto_enroll_after_registration', 20 );
+
+add_action( 'academy_loco_translate_sync', 'academy_loco_translate_sync' );

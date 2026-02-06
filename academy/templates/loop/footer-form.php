@@ -28,7 +28,13 @@ $is_active_woo            = Academy\Helper::is_plugin_active( 'woocommerce/wooco
 	);
 endif; ?>
 
-<?php if ( 'public' === $course_type && empty( $required_levels ) ) : ?>
+<?php if ( 'coming-soon' === $course_type ) : ?>
+	<div class="academy-enroll-widget__coming-soon">
+		<span class="academy-enroll-widget__coming-soon-status">
+			<?php esc_html_e( 'Coming Soon', 'academy' ); ?>
+		</span>
+	</div>
+<?php elseif ( 'public' === $course_type && empty( $required_levels ) ) : ?>
 	<div class="academy-widget-enroll__continue">
 		<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $continue_learning ); ?>">
 			<?php echo esc_html__( 'Start Course', 'academy' ); ?>

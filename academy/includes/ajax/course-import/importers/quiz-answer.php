@@ -30,16 +30,16 @@ class QuizAnswer implements Interfaces\Insertable {
 			'question_id'         => $this->quiz_question->id,
 			'question_type'       => $this->type,
 			'answer_title'        => $this->answer_title(),
-			'answer_content'      => $this->type === 'fillInTheBlanks' ? $this->answer[0] : '',
-			'is_correct'          => ( in_array( $this->slug, $this->answer ) && $this->type !== 'fillInTheBlanks' ) ? 1 : 0,
+			'answer_content'      => 'fillInTheBlanks' === $this->type ? $this->answer[0] : '',
+			'is_correct'          => ( in_array( $this->slug, $this->answer ) && 'fillInTheBlanks' !== $this->type ) ? 1 : 0,
 			'view_format'       => 'text',
 			'answer_order'      => 0,
 			'answer_created_at' => current_time( 'mysql' ),
 			'answer_updated_at' => current_time( 'mysql' ),
 		] );
 
-		if ( $res === false ) {
-			throw new Exception( __( 'Error.', 'academy-pro' ) );
+		if ( false === $res ) {
+			throw new Exception( __( 'Error.', 'academy' ) );
 		}
 
 		$this->id = $this->wpdb->insert_id;
@@ -47,7 +47,7 @@ class QuizAnswer implements Interfaces\Insertable {
 		return $this->id;
 	}
 	protected function answer_title() : string {
-		if ( $this->type !== 'fillInTheBlanks' ) {
+		if ( 'fillInTheBlanks' !== $this->type ) {
 			return $this->title;
 		}
 		if ( ! preg_match( '|\{dash\}|im', $this->quiz_question->title ) ) {

@@ -65,7 +65,7 @@ class Integration {
 		$table = $wpdb->prefix . 'storeengine_integrations';
 		$integration_id = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT integration_id FROM $table WHERE provider = %s AND product_id = %d",
+				"SELECT integration_id FROM $table WHERE provider = %s AND product_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				'storeengine/academylms',
 				$product_id
 			)

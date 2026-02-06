@@ -25,29 +25,33 @@ class HpLesson extends Base\Lesson {
 		] );
 	}
 
-	public function is_slug_available() : bool {
-		$id = absint( $this->wpdb->get_row(
-			$this->wpdb->prepare(
-				"SELECT ID
-					FROM {$this->table} 
-					WHERE lesson_name = %s",
-				$this->data['lesson_name']
-			),
-			ARRAY_A
-		)['ID'] ?? 0 );
+	public function is_slug_available(): bool {
+		$lesson_name = sanitize_title( $this->data['lesson_name'] ?? '' );
 
-		if ( $id === 0 || $id === $this->id ) {
-			return true;
+		if ( empty( $lesson_name ) ) {
+			return false;
 		}
-		return false;
+		$table = $this->table;
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$sql = $this->wpdb->prepare(
+			"SELECT ID
+			FROM {$table} WHERE lesson_name = %s AND ID != %d LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$lesson_name,
+			absint( $this->id )
+		);
+
+		$existing_id = absint( $this->wpdb->get_var( $sql ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		return 0 === $existing_id;
 	}
+
 	public static function by_id( int $id, bool $skip_meta = false, ?int $author = null, ?string $status = null ) : self {
 		$ins = new self();
 
 		$sql = "SELECT * FROM {$ins->table} WHERE ID = %d";
 		$params = [ $id ];
 
-		if ( $author !== null ) {
+		if ( null !== $author ) {
 			$sql .= ' AND lesson_author = %d';
 			$params[] = $author;
 		}
@@ -57,7 +61,7 @@ class HpLesson extends Base\Lesson {
 			$params[] = $status;
 		}
 
-		$row = $ins->wpdb->get_row( $ins->wpdb->prepare( $sql, ...$params ), ARRAY_A );
+		$row = $ins->wpdb->get_row( $ins->wpdb->prepare( $sql, ...$params ), ARRAY_A );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return self::get_lesson( $row, $ins, $skip_meta );
 	}
 
@@ -67,14 +71,14 @@ class HpLesson extends Base\Lesson {
 		$sql = "SELECT * FROM {$ins->table} WHERE lesson_name = %s";
 		$params = [ $slug ];
 
-		if ( $author !== null ) {
+		if ( null !== $author ) {
 			$sql .= ' AND lesson_author = %d';
 			$params[] = $author;
 		}
 
 		return self::get_lesson(
 			$ins->wpdb->get_row(
-				$ins->wpdb->prepare( $sql, ...$params ),
+				$ins->wpdb->prepare( $sql, ...$params ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				ARRAY_A
 			),
 			$ins,
@@ -88,14 +92,14 @@ class HpLesson extends Base\Lesson {
 		$sql = "SELECT * FROM {$ins->table} WHERE lesson_title = %s";
 		$params = [ $title ];
 
-		if ( $author !== null ) {
+		if ( null !== $author ) {
 			$sql .= ' AND lesson_author = %d';
 			$params[] = $author;
 		}
 
 		return self::get_lesson(
 			$ins->wpdb->get_row(
-				$ins->wpdb->prepare( $sql, ...$params ),
+				$ins->wpdb->prepare( $sql, ...$params ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				ARRAY_A
 			),
 			$ins,
@@ -106,9 +110,9 @@ class HpLesson extends Base\Lesson {
 	protected static function get_lesson( ?array $data, self $ins, bool $skip_meta = false ) : self {
 		if ( is_array( $data ) && isset( $data['ID'] ) ) {
 			$meta_data = $skip_meta ? [] : $ins->wpdb->get_results(
-				$ins->wpdb->prepare(
-					"SELECT meta_key, meta_value FROM {$ins->meta_table} WHERE lesson_id = %d",
-					$data['ID']
+				$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					"SELECT meta_key, meta_value FROM {$ins->meta_table} WHERE lesson_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$data['ID']// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				),
 				ARRAY_A
 			);
@@ -116,7 +120,7 @@ class HpLesson extends Base\Lesson {
 			$ins->set_meta_data( is_array( $meta_data ) ? array_column( $meta_data, 'meta_value', 'meta_key' ) : [] );
 			return $ins;
 		}
-		throw new Exception( __( 'Invalid Lesson ID.', 'academy-pro' ) );
+		throw new Exception( __( 'Invalid Lesson ID.', 'academy' ) );
 	}
 	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ) : int {
 		$ins = new self();
@@ -135,19 +139,29 @@ class HpLesson extends Base\Lesson {
 	public static function get_slug_by_id( int $id ) : ?string {
 		$ins = new self();
 		return $ins->wpdb->get_row(
-			$ins->wpdb->prepare(
-				"SELECT lesson_name FROM {$ins->table} WHERE ID = %d",
-				$id
+			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT lesson_name FROM {$ins->table} WHERE ID = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$id// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			),
 			ARRAY_A
 		)['lesson_name'] ?? null;
 	}
+	public static function get_title_by_id( int $id ) : ?string {
+		$ins = new self();
+		return $ins->wpdb->get_row(
+			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT lesson_title FROM {$ins->table} WHERE ID = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$id// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			),
+			ARRAY_A
+		)['lesson_title'] ?? null;
+	}
 	public static function get_lesson_meta_data( int $id ) : array {
 		$ins = new self();
 		return $ins->set_meta_data( array_column( $ins->wpdb->get_results(
-			$ins->wpdb->prepare(
-				"SELECT meta_key, meta_value FROM {$ins->meta_table} WHERE lesson_id = %d",
-				$id
+			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT meta_key, meta_value FROM {$ins->meta_table} WHERE lesson_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$id// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			),
 			ARRAY_A
 		) ?? [], 'meta_value', 'meta_key' ) )->get_data()['meta'] ?? [];
@@ -155,10 +169,9 @@ class HpLesson extends Base\Lesson {
 	public static function get_lesson_meta( int $id, string $key ) {
 		$ins = new self();
 		$value = $ins->wpdb->get_row(
-			$ins->wpdb->prepare(
-				"SELECT meta_value FROM {$ins->meta_table} WHERE lesson_id = %d AND meta_key = %s ",
-				$id,
-				$key
+			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT meta_value FROM {$ins->meta_table} WHERE lesson_id = %d AND meta_key = %s ", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$id, $key// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			),
 			ARRAY_A
 		)['meta_value'] ?? null;
@@ -174,8 +187,8 @@ class HpLesson extends Base\Lesson {
 	public function save_data() : void {
 		$this->data['lesson_name'] = sanitize_title( empty( $this->data['lesson_name'] ?? '' ) ? $this->data['lesson_title'] : $this->data['lesson_name'] );
 
-		if ( $this->ignore_slug_check === false && ! $this->is_slug_available() ) {
-			throw new Exception( __( 'Slug is not available.', 'academy-pro' ) );
+		if ( false === $this->ignore_slug_check && ! $this->is_slug_available() ) {
+			throw new Exception( __( 'Slug is not available.', 'academy' ) );
 		}
 
 		if ( ! empty( $this->id ) ) {
@@ -186,8 +199,8 @@ class HpLesson extends Base\Lesson {
 				$this->data,
 				[ 'ID' => $this->id ]
 			);
-			if ( $saved === false ) {
-				throw new Exception( __( 'Lesson update failed. An unexpected error occurred.', 'academy-pro' ) );
+			if ( false === $saved ) {
+				throw new Exception( __( 'Lesson update failed. An unexpected error occurred.', 'academy' ) );
 			}
 		} else {
 			$this->data['lesson_date']     = current_time( 'mysql' );
@@ -199,8 +212,8 @@ class HpLesson extends Base\Lesson {
 				$this->table,
 				$this->data
 			);
-			if ( $saved === false ) {
-				throw new Exception( __( 'Failed to create Lesson.', 'academy-pro' ) );
+			if ( false === $saved ) {
+				throw new Exception( __( 'Failed to create Lesson.', 'academy' ) );
 			}
 			$this->is_insert = true;
 			$this->id = $this->wpdb->insert_id;
@@ -208,19 +221,20 @@ class HpLesson extends Base\Lesson {
 	}
 
 	public function save_meta_data() : void {
-		if ( $this->is_insert && ! empty( $meta = apply_filters( 'academy/lesson/set_meta_data', [] ) ) ) {
+		$meta = apply_filters( 'academy/lesson/set_meta_data', [] );
+		if ( $this->is_insert && ! empty( $meta ) ) {
 			$this->set_meta_data( $meta );
 		}
 		if ( ! empty( $this->id ) && is_array( $this->meta ) && count( $this->meta ) > 0 ) {
 			$meta_keys = $this->wpdb->get_col(
-				$this->wpdb->prepare(
-					"SELECT meta_key FROM {$this->meta_table} WHERE lesson_id = %d",
-					$this->id
+				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					"SELECT meta_key FROM {$this->meta_table} WHERE lesson_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$this->id// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				)
 			);
 			foreach ( $this->meta as $key => $value ) {
 				if ( is_array( $value ) || is_object( $value ) ) {
-					$value = json_encode( $value, JSON_UNESCAPED_SLASHES );
+					$value = wp_json_encode( $value, JSON_UNESCAPED_SLASHES );
 				}
 
 				if ( in_array( $key, $meta_keys ) ) {
@@ -259,8 +273,8 @@ class HpLesson extends Base\Lesson {
 			[ 'lesson_id' => $this->id ]
 		);
 
-		if ( $is_lesson_delete === false || $is_lesson_meta_delete === false ) {
-			throw new Exception( __( 'Lesson deletion failed. Please try again.', 'academy-pro' ) );
+		if ( false === $is_lesson_delete || false === $is_lesson_meta_delete ) {
+			throw new Exception( __( 'Lesson deletion failed. Please try again.', 'academy' ) );
 		}
 	}
 }

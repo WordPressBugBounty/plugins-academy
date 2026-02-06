@@ -47,8 +47,8 @@ class Lesson implements Interfaces\Insertable {
 			'lesson_date_gmt'     => current_time( 'mysql' ),
 		] );
 
-		if ( $res === false ) {
-			throw new Exception( __( 'Error.', 'academy-pro' ) );
+		if ( false === $res ) {
+			throw new Exception( __( 'Error.', 'academy' ) );
 		}
 
 		$this->id = $this->wpdb->insert_id;
@@ -64,10 +64,10 @@ class Lesson implements Interfaces\Insertable {
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_key'   => $key,
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				'meta_value' => is_array( $value ) ? json_encode( $value ) : $value,
+				'meta_value' => is_array( $value ) ? wp_json_encode( $value ) : $value,
 			] );
-			if ( $res === false ) {
-				throw new Exception( __( 'Error.', 'academy-pro' ) );
+			if ( false === $res ) {
+				throw new Exception( __( 'Error.', 'academy' ) );
 			}
 		}
 	}

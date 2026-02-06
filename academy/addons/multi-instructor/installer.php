@@ -27,6 +27,7 @@ class Installer {
 		if ( get_option( ACADEMY_MULTI_INSCTUCTOR_VERSION_NAME ) !== ACADEMY_MULTI_INSCTUCTOR_VERSION ) {
 			update_option( ACADEMY_MULTI_INSCTUCTOR_VERSION_NAME, ACADEMY_MULTI_INSCTUCTOR_VERSION );
 		}
-		update_option( 'academy_required_rewrite_flush', Helper::get_time() );
+
+		\Academy\Helper::flush_rewrite_rules();
 	}
 }

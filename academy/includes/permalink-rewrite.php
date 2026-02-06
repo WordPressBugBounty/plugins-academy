@@ -19,6 +19,7 @@ class PermalinkRewrite {
 		$query_vars[] = 'course_name';
 		$query_vars[] = 'academy_dashboard_page';
 		$query_vars[] = 'academy_dashboard_sub_page';
+		$query_vars[] = 'academy_retrieve_password';
 		return $query_vars;
 	}
 	public function add_rewrite_rules( $wp_rewrite ) {
@@ -36,6 +37,8 @@ class PermalinkRewrite {
 			$course_rewrite_slug . '/(.+?)/zoom/(.+?)/?$' => 'index.php?curriculum_type=zoom&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
 			$course_rewrite_slug . '/(.+?)/meeting/(.+?)/?$' => 'index.php?curriculum_type=meeting&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
 		];
+		// Reset Password permalink
+		$new_rules['^academy-retrieve-password/?$'] = 'index.php?academy_retrieve_password=1';
 
 		// Frontend Dashboard
 		$dashboard_page_id = (int) Helper::get_settings( 'frontend_dashboard_page' );

@@ -38,6 +38,7 @@ $academy_comments_count = get_comments_number();
 			$args = array(
 				'post_id' => get_the_ID(),
 				'status'  => 'approve',
+				'type'    => 'academy_courses',
 				'number'  => $comments_per_page,
 				'paged'   => $paged,
 			);

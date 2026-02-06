@@ -15,9 +15,10 @@ abstract class Prompt {
 	public function get() : array {
 		$messages = [];
 		foreach ( $this->message_classes as $message ) {
+			$ins = new $message();
 			if (
 				class_exists( $message ) &&
-				( ( $ins = new $message() ) instanceof Message )
+				( $ins instanceof Message )
 			) {
 				$messages[] = $ins->get( $this->input );
 			}

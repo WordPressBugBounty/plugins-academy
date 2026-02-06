@@ -22,7 +22,6 @@ class Admin {
 		// Add a post display state for special Academy pages.
 		add_filter( 'allowed_redirect_hosts', array( $this, 'add_white_listed_redirect_hosts' ) );
 		add_filter( 'display_post_states', array( $this, 'add_display_post_states' ), 10, 2 );
-		add_action( 'admin_init', array( $this, 'flush_rewrite_rules' ) );
 		add_action( 'current_screen', array( $this, 'conditional_loaded' ) );
 		add_filter( 'plugin_action_links_' . ACADEMY_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
 		add_filter( 'plugin_row_meta', array( $this, 'add_plugin_links' ), 10, 2 );
@@ -58,14 +57,8 @@ class Admin {
 		if ( (int) \Academy\Helper::get_settings( 'lessons_page' ) === $post->ID ) {
 			$post_states['academy_page_for_lessons'] = __( 'Academy Learn Page', 'academy' );
 		}
-		return $post_states;
-	}
 
-	public function flush_rewrite_rules() {
-		if ( get_option( 'academy_required_rewrite_flush' ) ) {
-			delete_option( 'academy_required_rewrite_flush' );
-			flush_rewrite_rules();
-		}
+		return $post_states;
 	}
 
 	public function conditional_loaded() {
@@ -187,4 +180,5 @@ class Admin {
 			exit;
 		}
 	}
+
 }

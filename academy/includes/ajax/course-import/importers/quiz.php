@@ -41,7 +41,7 @@ class Quiz implements Interfaces\Insertable {
 		] );
 
 		if ( is_wp_error( $id ) ) {
-			throw new Exception( __( 'Error.', 'academy-pro' ) );
+			throw new Exception( __( 'Error.', 'academy' ) );
 		}
 
 		$this->id = $id;

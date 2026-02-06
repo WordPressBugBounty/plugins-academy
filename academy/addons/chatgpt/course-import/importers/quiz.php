@@ -76,7 +76,7 @@ class Quiz implements Interfaces\Insertable {
 
 	public static function delete( int $id ) : bool {
 		if ( ! empty( wp_delete_post( $id, true ) ) ) {
-			return $this->delete_question( $id );
+			return self::delete_question( $id );
 		}
 		return false;
 	}

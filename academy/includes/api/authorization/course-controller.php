@@ -42,9 +42,6 @@ class CourseController extends WP_REST_Posts_Controller {
 		return $this->check_academy_course_action( $request, __FUNCTION__ );
 	}
 
-	/**
-	 * Check permission based on action and ownership.
-	 */
 	private function check_academy_course_action( $request, $perm_method ) {
 
 		if ( current_user_can( 'manage_options' ) ) {
@@ -76,9 +73,6 @@ class CourseController extends WP_REST_Posts_Controller {
 		return true;
 	}
 
-	/**
-	 * Filter the collection query to limit non-admins to their own posts.
-	 */
 	public function prepare_items_query( $prepared_args = [], $request = null ) {
 		$prepared_args = parent::prepare_items_query( $prepared_args, $request );
 

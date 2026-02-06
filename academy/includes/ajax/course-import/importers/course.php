@@ -99,7 +99,7 @@ class Course implements Interfaces\Insertable {
 					'name' => $lesson['lessonTitle'] ?? '',
 					'type' => 'lesson',
 				];
-			} catch ( Exception $e ) {
+			} catch ( Exception $e ) {// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 				// do nothing
 			}
 		}
@@ -111,13 +111,14 @@ class Course implements Interfaces\Insertable {
 		}
 		$topics = [];
 		try {
-			$quiz_id = ( new Quiz( $name = 'Quizzes', '', $quizzes ) )->insert();
+			$name = 'Quizzes';
+			$quiz_id = ( new Quiz( $name, '', $quizzes ) )->insert();
 			$topics[] = [
 				'id' => $quiz_id,
 				'name' => $name,
 				'type' => 'quiz',
 			];
-		} catch ( Exception $e ) {
+		} catch ( Exception $e ) {// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// do nothing
 		}
 

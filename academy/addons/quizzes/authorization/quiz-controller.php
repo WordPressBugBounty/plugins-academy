@@ -47,6 +47,10 @@ class QuizController extends WP_REST_Posts_Controller {
 
 	/**
 	 * Check permission based on action and ownership.
+	 *
+	 * @param array  $request      Request payload.
+	 * @param string $perm_method  Permission method to check.
+	 * @return bool True if permission granted, false otherwise.
 	 */
 	private function check_academy_quiz_action( $request, $perm_method ) {
 
@@ -75,6 +79,10 @@ class QuizController extends WP_REST_Posts_Controller {
 
 	/**
 	 * Filter the collection query to limit non-admins to their own posts.
+	 *
+	 * @param array                 $prepared_args Prepared query arguments.
+	 * @param \WP_REST_Request|null $request       Optional request object.
+	 * @return array Modified query arguments.
 	 */
 	public function prepare_items_query( $prepared_args = [], $request = null ) {
 		$prepared_args = parent::prepare_items_query( $prepared_args, $request );

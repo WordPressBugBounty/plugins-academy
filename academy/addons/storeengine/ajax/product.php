@@ -35,7 +35,7 @@ class Product extends AbstractAjaxHandler {
 	public function get_product_list( array $payload ) {
 		if ( ! isset( $payload['integration_id'] ) ) {
 			wp_send_json_error( [
-				'message' => __( 'integration_id is required', 'storeengine' )
+				'message' => __( 'integration_id is required', 'academy' )
 			] );
 		}
 
@@ -70,7 +70,7 @@ class Product extends AbstractAjaxHandler {
 		$product->save();
 
 		if ( ! $product->get_id() ) {
-			wp_send_json_error( [ 'message' => __( 'Could not create product!', 'storeengine' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Could not create product!', 'academy' ) ] );
 		}
 
 		return $product;

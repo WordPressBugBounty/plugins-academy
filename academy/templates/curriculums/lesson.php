@@ -8,7 +8,7 @@ if ( \Academy\Helper::get_settings( 'is_enabled_lessons_content_title' ) ) {
 	\Academy\Helper::get_template( 'curriculums/lesson/title.php', [ 'lesson' => $lesson ] );
 }
 
-	$status = isset( $lesson->lesson_status ) ? $lesson->lesson_status : '';
+$status = isset( $lesson->lesson_status ) ? $lesson->lesson_status : '';// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 if ( ! empty( $lesson_meta['video_source']['type'] ) && 'publish' === $status ) {
 	$template_path = '';
 	$template_args = [];
@@ -66,11 +66,21 @@ if ( ! empty( $lesson_meta['video_source']['type'] ) && 'publish' === $status ) 
 			$template_path = 'curriculums/lesson/shortcode.php';
 			$template_args = [ 'shortcode' => $short_code ];
 			break;
+		case 'offline':
+		case 'online':
+			$template_path = 'curriculums/lesson/online.php';
+			$meta = ! empty( $lesson_meta['video_source']['url'] ) ? $lesson_meta['video_source']['url'] : \Academy\Helper::get_settings( 'lesson_offline_class_address' );
+			$template_args = [ 'meta' => $meta ];
+			break;
 	}//end switch
 
 	if ( $template_path ) {
 		\Academy\Helper::get_template( $template_path, $template_args );
 	}
+
+	// featured image
+} elseif ( 'publish' === $status && ! empty( $lesson_meta['featured_media'] ) ) {
+	\Academy\Helper::get_template( 'curriculums/lesson/featured-image.php', [ 'url' => wp_get_attachment_url( $lesson_meta['featured_media'] ) ] );
 }//end if
 
 // content

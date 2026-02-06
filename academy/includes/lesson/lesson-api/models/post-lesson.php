@@ -28,24 +28,26 @@ class PostLesson extends Base\Lesson {
 	}
 
 	public function is_slug_available() : bool {
-		$id = absint( $this->wpdb->get_row(
-			$this->wpdb->prepare(
-				"SELECT ID
-					FROM {$this->wpdb->posts} 
-					WHERE post_name = %s",
-				$this->data['post_name'] ?? sanitize_title( $this->data['post_title'] ?? '' )
-			),
-			ARRAY_A
-		)['ID'] ?? 0 );
+		$slug = $this->data['post_name']
+			?? sanitize_title( $this->data['post_title'] ?? '' );
 
-		if ( $id === 0 || $id === $this->id ) {
-			return true;
-		}
-		return false;
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$sql = "SELECT ID
+				FROM {$this->wpdb->posts} 
+				WHERE post_name = %s
+				LIMIT 1";
+
+		$found_id = (int) $this->wpdb->get_var(
+			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$sql, $slug// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			)
+		);
+
+		return ( 0 === $found_id || $found_id === (int) $this->id );
 	}
 
 	public static function by_id( int $id, bool $skip_meta = false, ?int $author = null, ?string $status = null ) : self {
-		if ( $author !== null ) {
+		if ( null !== $author ) {
 			$posts = get_posts( [
 				'post_type' => 'academy_lessons',
 				'p'         => $id,
@@ -62,7 +64,7 @@ class PostLesson extends Base\Lesson {
 	}
 
 	public static function by_slug( string $slug, bool $skip_meta = false, ?int $author = null ) : self {
-		if ( $author !== null ) {
+		if ( null !== $author ) {
 			$posts = get_posts( [
 				'post_type'   => 'academy_lessons',
 				'name'        => $slug,
@@ -83,14 +85,14 @@ class PostLesson extends Base\Lesson {
 		$sql = "SELECT * FROM {$ins->wpdb->posts} WHERE post_title = %s";
 		$params = [ $title ];
 
-		if ( $author !== null ) {
+		if ( null !== $author ) {
 			$sql .= ' AND post_author = %d';
 			$params[] = $author;
 		}
 
 		return self::get_lesson(
 			$ins->wpdb->get_row(
-				$ins->wpdb->prepare( $sql, ...$params ),
+				$ins->wpdb->prepare( $sql, ...$params ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				ARRAY_A
 			),
 			$ins,
@@ -99,11 +101,11 @@ class PostLesson extends Base\Lesson {
 	}
 
 	public static function get_lesson( ?array $data, self $ins, bool $skip_meta = false ) : self {
-		if ( is_array( $data ) && isset( $data['ID'] ) && $data['post_type'] === 'academy_lessons' ) {
+		if ( is_array( $data ) && isset( $data['ID'] ) && 'academy_lessons' === $data['post_type'] ) {
 			$meta_data = $skip_meta ? [] : $ins->wpdb->get_results(
-				$ins->wpdb->prepare(
-					"SELECT meta_key, meta_value FROM {$ins->wpdb->postmeta} WHERE post_id = %d",
-					$data['ID']
+				$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					"SELECT meta_key, meta_value FROM {$ins->wpdb->postmeta} WHERE post_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$data['ID']// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				),
 				ARRAY_A
 			);
@@ -111,12 +113,12 @@ class PostLesson extends Base\Lesson {
 			$ins->set_meta_data( is_array( $meta_data ) ? array_column( $meta_data, 'meta_value', 'meta_key' ) : [] );
 			return $ins;
 		}
-		throw new Exception( __( 'Invalid Lesson ID.', 'academy-pro' ) );
+		throw new Exception( __( 'Invalid Lesson ID.', 'academy' ) );
 	}
 
 	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ) : int {
 		$ins = new self();
-		$query = $ins->wpdb->prepare( "SELECT COUNT(*) FROM {$ins->wpdb->posts} WHERE post_type = %s ", 'academy_lessons' );
+		$query = $ins->wpdb->prepare( "SELECT COUNT(*) FROM {$ins->wpdb->posts} WHERE post_type = %s ", 'academy_lessons' );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( 'any' !== $status ) {
 			$query .= $ins->wpdb->prepare( ' AND post_status = %s', $status );
 		}
@@ -129,19 +131,29 @@ class PostLesson extends Base\Lesson {
 	public static function get_slug_by_id( int $id ) : ?string {
 		$ins = new self();
 		return $ins->wpdb->get_row(
-			$ins->wpdb->prepare(
-				"SELECT post_name FROM {$ins->wpdb->posts} WHERE ID = %d",
-				$id
+			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT post_name FROM {$ins->wpdb->posts} WHERE ID = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$id// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			),
 			ARRAY_A
 		)['post_name'] ?? null;
 	}
+	public static function get_title_by_id( int $id ) : ?string {
+		$ins = new self();
+		return $ins->wpdb->get_row(
+			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT post_title FROM {$ins->wpdb->posts} WHERE ID = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$id// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			),
+			ARRAY_A
+		)['post_title'] ?? null;
+	}
 	public static function get_lesson_meta_data( int $id ) : array {
 		$ins = new self();
 		return $ins->set_meta_data( array_column( $ins->wpdb->get_results(
-			$ins->wpdb->prepare(
-				"SELECT meta_key, meta_value FROM {$ins->wpdb->postmeta} WHERE post_id = %d",
-				$id
+			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT meta_key, meta_value FROM {$ins->wpdb->postmeta} WHERE post_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$id// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			),
 			ARRAY_A
 		) ?? [], 'meta_value', 'meta_key' ) )->get_data()['meta'] ?? [];
@@ -179,20 +191,21 @@ class PostLesson extends Base\Lesson {
 			$this->data['post_name'] = sanitize_title( $this->data['post_name'] );
 		}
 
-		if ( $this->ignore_slug_check === false && ! $this->is_slug_available() ) {
-			throw new Exception( __( 'Slug is not available.', 'academy-pro' ) );
+		if ( false === $this->ignore_slug_check && ! $this->is_slug_available() ) {
+			throw new Exception( __( 'Slug is not available.', 'academy' ) );
 		}
 
 		$id = wp_insert_post( $this->data );
 
 		if ( is_wp_error( $id ) ) {
-			throw new Exception( ( $this->data['ID'] ?? false ) > 0 ? __( 'Lesson update failed. An unexpected error occurred.', 'academy-pro' ) : __( 'Failed to create Lesson.', 'academy-pro' ) );
+			throw new Exception( ( $this->data['ID'] ?? false ) > 0 ? __( 'Lesson update failed. An unexpected error occurred.', 'academy' ) : __( 'Failed to create Lesson.', 'academy' ) );
 		}
 		$this->id = $id;
 	}
 
 	public function save_meta_data() : void {
-		if ( $this->is_insert && ! empty( $meta = apply_filters( 'academy/lesson/set_meta_data', [] ) ) ) {
+		$meta = apply_filters( 'academy/lesson/set_meta_data', [] );
+		if ( $this->is_insert && ! empty( $meta ) ) {
 			$this->set_meta_data( $meta );
 		}
 		if ( ! empty( $this->id ) && is_array( $this->meta ) && count( $this->meta ) > 0 ) {
@@ -201,7 +214,7 @@ class PostLesson extends Base\Lesson {
 	}
 	public function delete() : void {
 		if ( empty( wp_delete_post( $this->id, true ) ) ) {
-			throw new Exception( __( 'Lesson deletion failed. Please try again.', 'academy-pro' ) );
+			throw new Exception( __( 'Lesson deletion failed. Please try again.', 'academy' ) );
 		}
 	}
 
@@ -214,10 +227,9 @@ class PostLesson extends Base\Lesson {
 
 		$placeholders = implode( ',', array_fill( 0, count( $keys ), '%s' ) );
 
-		$existing_keys = $wpdb->get_col( $wpdb->prepare(
-			"SELECT meta_key FROM $table WHERE post_id = %d AND meta_key IN ($placeholders)",
-			$this->id,
-			...$keys
+		$existing_keys = $wpdb->get_col( $wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			"SELECT meta_key FROM $table WHERE post_id = %d AND meta_key IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$this->id, ...$keys// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		) );
 
 		foreach ( $this->meta as $key => $value ) {

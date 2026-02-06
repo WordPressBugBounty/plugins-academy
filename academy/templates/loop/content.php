@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		 */
 		do_action( 'academy/templates/before_course_loop_content_inner' );
 		$course_id  = get_the_ID();
+		$enable_course_excerpt = \Academy\Helper::get_settings( 'is_show_course_excerpt', false );
 		$raw_categories = \Academy\Helper::get_the_course_category( $course_id );
 		$categories = apply_filters( 'academy/templates/course_categories', ! empty( $raw_categories ) ? array_slice( $raw_categories, 0, 1 ) : '', $course_id, $raw_categories );
 	if ( ! empty( $categories ) ) {
@@ -22,6 +23,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 	}
 	?>
 	<h4 class="academy-course__title"><a href="<?php echo esc_url( get_the_permalink() ); ?>"><?php the_title(); ?></a></h4>
+		<?php if ( $enable_course_excerpt ) { ?>
+			<div class="academy-entry-content">
+				<?php
+					$course = get_post( $course_id );
+					$limit   = 100;
+					$excerpt = trim( $course->post_excerpt );
+				if ( mb_strlen( $excerpt ) > $limit ) {
+					$excerpt = rtrim( mb_substr( $excerpt, 0, $limit ) ) . '...';
+				}
+					echo esc_html( $excerpt );
+				?>
+			</div>
+		<?php } ?>
 	<div class="academy-course__author-meta academy-mt-4">
 		<div class="academy-course__author">
 			<span class="author"><?php esc_html_e( 'BY -', 'academy' ); ?>

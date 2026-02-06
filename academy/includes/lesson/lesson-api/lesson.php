@@ -28,7 +28,7 @@ class Lesson {
 		array $by_meta = []
 	) : Collection\Base\Collection {
 		$class = self::is_hp() ? Collection\HpLessonCollection::class : Collection\PostLessonCollection::class;
-		$status = $status === 'any' ? null : $status;
+		$status = 'any' === $status ? null : $status;
 		return new $class( $page, $per_page, $author_id, $search, $status, $skip_meta, $by_meta );
 	}
 
@@ -60,6 +60,10 @@ class Lesson {
 	public static function get_lesson_slug( int $id ) : ?string {
 		$class = self::is_hp() ? Models\HpLesson::class : Models\PostLesson::class;
 		return $class::get_slug_by_id( $id );
+	}
+	public static function get_lesson_title( int $id ) : ?string {
+		$class = self::is_hp() ? Models\HpLesson::class : Models\PostLesson::class;
+		return $class::get_title_by_id( $id );
 	}
 	public static function get_lesson_meta_data( int $id ) : array {
 		$class = self::is_hp() ? Models\HpLesson::class : Models\PostLesson::class;

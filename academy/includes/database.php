@@ -4,16 +4,44 @@ namespace Academy;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
 use Academy\API\Authorization\{ CourseController, AnnouncementController };
+
 class Database {
 
 	public static function init() {
 		$self = new self();
-		add_action( 'init', [ $self, 'create_academy_courses_post_type' ] );
-		add_action( 'init', [ $self, 'create_academy_announcement_post_type' ] );
-		add_action( 'init', [ $self, 'create_academy_lesson_post_type' ] );
+		add_action( 'init', [ $self, 'create_academy_courses_post_type' ], 5 );
+		add_action( 'init', [ $self, 'create_academy_announcement_post_type' ], 5 );
+		add_action( 'init', [ $self, 'create_academy_lesson_post_type' ], 5 );
+
+		// Allow all post type to be registered before flushing permalink (priority 6).
+		// Addons should use init with priority 5 to register post type before scheduling a permalink-flush.
+		add_action( 'init', [ $self, 'maybe_flush_rewrite_rules' ], 6 );
+
 		add_action( 'rest_api_init', [ $self, 'register_academy_courses_meta' ] );
 		add_action( 'rest_api_init', [ $self, 'register_academy_announcement_meta' ] );
+	}
+
+	/**
+	 * Executes scheduled rewrite rule flushing.
+	 *
+	 * This function intended to be used with `init` action hook
+	 * after registering all cpt and taxonomies.
+	 *
+	 * To schedule rewrite rule flush call the static helper method.
+	 *
+	 * Example
+	 *  `\Academy\Helper::flush_rewrite_rules();`
+	 *
+	 * @return void
+	 * @since 3.3.8
+	 */
+	public function maybe_flush_rewrite_rules() {
+		if ( 'yes' === get_option( 'academy_required_rewrite_flush' ) ) {
+			update_option( 'academy_required_rewrite_flush', 'no' );
+			flush_rewrite_rules();
+		}
 	}
 
 	public static function create_initial_custom_table() {
@@ -197,7 +225,12 @@ class Database {
 			'academy_is_disabled_course_review'         => 'boolean',
 			'academy_course_certificate_id'             => 'integer',
 			'academy_course_enable_certificate'         => 'boolean',
+			'academy_courses_mempr_membership_id'       => 'integer',
 		];
+
+		if ( \Academy\Helper::get_settings( 'is_enabled_course_coming_soon' ) ) {
+			$course_meta['academy_course_coming_soon_end_date']  = 'string';
+		}
 
 		foreach ( $course_meta as $meta_key => $meta_value_type ) {
 			register_meta(

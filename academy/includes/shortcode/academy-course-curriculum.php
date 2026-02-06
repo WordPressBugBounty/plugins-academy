@@ -35,6 +35,7 @@ class AcademyCourseCurriculum {
 	}
 
 	public function course_topbar( $attributes, $content = '' ) {
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 		extract( shortcode_atts([
 			'progress_ber_text' => __( 'Your Progress', 'academy' ),
 		], $attributes ) );

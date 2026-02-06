@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="academy-lessons__login-header">
 					<div  class="academy-lessons__login-header-left">
 						<h4 ><?php esc_html_e( 'You are not logged in.', 'academy' ); ?></h4>
-						<p class="academy-lessons__login-subtext"><?php esc_html_e( 'Please log in to continue learning.', 'academy' ); ?></p>
+						<p class="academy-lessons__login-subtext"><?php esc_html_e( 'If you want to track your course progress, then you can log in and continue learning.', 'academy' ); ?></p>
 					</div>
 
 					<button type="button" class="academy-btn academy-btn--bg-purple academy-btn-popup-login">
@@ -20,7 +20,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</button>
 				</div>
 			</div>
-			<?php if ( $is_previewable ) {
+			<?php
+			do_action( 'academy/templates/curriculum/' . $type . '_content', $course_id, $id );
+			if ( $is_previewable ) {
 				// Load the content template for the current curriculum type
 				do_action( 'academy/templates/curriculum/' . $type . '_content', $course_id, $id );
 			} ?>

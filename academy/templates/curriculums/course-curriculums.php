@@ -39,7 +39,9 @@ endif;
 										<input type="hidden" name="course_id" value="<?php echo esc_attr( $course_id ); ?>">
 										<input type="hidden" name="topic_type" value="<?php echo esc_attr( $sub_topic['type'] ); ?>">
 										<input type="hidden" name="topic_id" value="<?php echo esc_attr( $sub_topic['id'] ); ?>">
+										<?php if ( is_user_logged_in() ) : ?>
 										<input type="checkbox" class="topic_check" value="<?php echo esc_attr( $sub_topic['id'] ); ?>" <?php echo esc_attr( $sub_topic['is_completed'] ? 'checked' : '' ); ?>>
+										<?php endif; ?>
 									</form>
 								</div>
 								<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $sub_topic ) ); ?>" class="academy-sub-topics-lesson-item__btn">
@@ -63,7 +65,9 @@ endif;
 							<input type="hidden" name="course_id" value="<?php echo esc_attr( $course_id ); ?>">
 							<input type="hidden" name="topic_type" value="<?php echo esc_attr( $topic['type'] ); ?>">
 							<input type="hidden" name="topic_id" value="<?php echo esc_attr( isset( $topic['id'] ) ? $topic['id'] : '' ); ?>">
-							<input type="checkbox" class="topic_check" value="<?php echo esc_attr( isset( $topic['id'] ) ? $topic['id'] : '' ); ?>" <?php echo esc_attr( $topic['is_completed'] ? 'checked' : '' ); ?>>
+							<?php if ( is_user_logged_in() ) : ?>
+							<input type="checkbox" class="topic_check" value="<?php echo esc_attr( $topic['id'] ); ?>" <?php echo esc_attr( $topic['is_completed'] ? 'checked' : '' ); ?>>
+							<?php endif; ?>
 						</form>
 						</div>
 						<a href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $topic ) ); ?>" class="academy-topics-lesson-item__btn">

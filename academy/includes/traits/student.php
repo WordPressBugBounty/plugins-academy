@@ -63,7 +63,7 @@ trait Student {
 				$student_details = get_userdata( $student_id );
 				$student = (object) [ 'ID' => $student ];
 				$student->display_name = $student_details->display_name;
-				$student->registration_date = date( 'F j, Y', strtotime( $student_details->user_registered ) );
+				$student->registration_date = date( 'F j, Y', strtotime( $student_details->user_registered ) );// phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 				$enrolled_info = self::get_total_enrolled_courses_info_by_student_and_instructor_id( $student_id, $instructor_id );
 			}//end if
 
@@ -245,7 +245,8 @@ trait Student {
 			'number_of_tutor_bookings'   => $course_curriculums['total_tutor_bookings'],
 			'number_of_zoom_meetings'    => $course_curriculums['total_zoom_meetings'],
 			'completed_topics'           => \Academy\Helper::get_completed_course_topics_by_course_and_student_id( $course_id, $student_id ),
-			'progress_percentage'        => $percentage . '%'
+			'progress_percentage'        => $percentage . '%',
+			'student_ID'                 => $student_id,
 		];
 		return $response;
 	}

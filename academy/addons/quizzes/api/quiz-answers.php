@@ -215,7 +215,7 @@ class QuizAnswers extends \WP_REST_Controller {
 			);
 		}
 		$prepared_answer = $this->prepare_item_for_database( $request );
-		$answer_id = Query::quiz_answer_insert( wp_unslash( (array) $prepared_answer ) );// previously use wp_slash
+		$answer_id = Query::quiz_answer_insert( (array) $prepared_answer );
 		$answer = Query::get_quiz_answer( $answer_id );
 		return rest_ensure_response( $answer );
 	}
@@ -231,7 +231,7 @@ class QuizAnswers extends \WP_REST_Controller {
 		}
 
 		$prepared_answer = $this->prepare_item_for_database( $request );
-		$answer_id = Query::quiz_answer_insert( wp_unslash( (array) $prepared_answer ) );// previously use wp_slash
+		$answer_id = Query::quiz_answer_insert( (array) $prepared_answer );
 		$answer = Query::get_quiz_answer( $answer_id );
 		return rest_ensure_response( $answer );
 	}

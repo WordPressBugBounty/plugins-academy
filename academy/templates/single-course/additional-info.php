@@ -32,11 +32,11 @@ if ( 0 === count( $tabs_nav ) ) {
 				if ( is_array( $tab_contents ) ) {
 					foreach ( $tab_contents as $tab_content ) {
 						?>
-								<li>
-									<i class="academy-icon academy-icon--check"></i>
-									<span> <?php echo esc_html( $tab_content ); ?></span>
-								</li>
-							<?php
+						<li>
+							<i class="academy-icon academy-icon--check"></i>
+							<span> <?php echo esc_html( $tab_content ); ?></span>
+						</li>
+						<?php
 					}
 				} ?>
 				</ul>

@@ -34,9 +34,6 @@ class CertificateController extends WP_REST_Posts_Controller {
 		return $this->check_academy_course_action( $request, __FUNCTION__ );
 	}
 
-	/**
-	 * Check permission based on action and ownership.
-	 */
 	private function check_academy_course_action( $request, $perm_method, bool $pass = false ) {
 
 		if ( ! is_user_logged_in() ) {

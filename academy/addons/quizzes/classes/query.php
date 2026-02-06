@@ -53,6 +53,7 @@ class Query {
 			'question_type'         => '',
 			'question_score'        => 0,
 			'question_negative_score' => 0,
+			'question_image_id'     => 0,
 			'question_settings'     => '',
 			'question_order'        => 0,
 			'question_created_at'   => current_time( 'mysql' ),
@@ -88,8 +89,9 @@ class Query {
 					'%s',
 					'%s',
 					'%s',
-					'%f',
-					'%f',
+					'%d',
+					'%d',
+					'%d',
 					'%s',
 					'%d',
 					'%s',
@@ -116,6 +118,7 @@ class Query {
 					'question_order' => $question_arr['question_order'],
 					'question_created_at' => $question_arr['question_created_at'],
 					'question_updated_at' => $question_arr['question_updated_at'],
+					'question_image_id' => $question_arr['question_image_id'],
 				),
 				array(
 					'%d',
@@ -131,6 +134,7 @@ class Query {
 					'%d',
 					'%s',
 					'%s',
+					'%d',
 				)
 			);
 			return $wpdb->insert_id;
@@ -844,6 +848,7 @@ class Query {
             quiz_questions.quiz_id,
             quiz_questions.question_title, 
             quiz_questions.question_type,
+			quiz_questions.question_image_id,
 			quiz_attempts.is_manually_reviewed
             FROM {$wpdb->prefix}academy_quiz_attempt_answers as attempt_answers 
             LEFT JOIN {$wpdb->prefix}academy_quiz_questions as quiz_questions ON attempt_answers.question_id = quiz_questions.question_id
@@ -950,6 +955,20 @@ class Query {
 				"SELECT COUNT(quiz_id) FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE attempt_id = %d",
 				array(
 					$attempt_id
+				)
+			)
+		);
+	}
+	public static function get_attempt_id_by_user_and_course_id( $course_id, $user_id ) {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT attempt_id FROM {$wpdb->prefix}academy_quiz_attempts WHERE course_id = %d AND user_id= %d",
+				array(
+					$course_id,
+					$user_id
 				)
 			)
 		);

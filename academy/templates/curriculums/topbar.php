@@ -13,7 +13,8 @@ if ( ! $course_id ) {
 	// calculate how much should cover in the circumference
 	$dashOffset = $dashArray - ( $percentage / 100 * $dashArray );
 	// Lesson topbar logo
-	$topbar_logo = wp_get_attachment_image_src( \Academy\Helper::get_settings( 'lessons_topbar_logo', '' ), array( '80', '80' ) );
+	$logo_id     = (int) \Academy\Helper::get_settings( 'lessons_topbar_logo', 0 );
+	$topbar_logo = wp_get_attachment_image_src( $logo_id, array( 80, 80 ) );
 ?>
 
 <div class="academy-lesson-topbar">

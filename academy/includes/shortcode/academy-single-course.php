@@ -135,6 +135,7 @@ class AcademySingleCourse {
 
 	public function single_course_review_form( $attributes, $content = '' ) {
 		global $current_user;
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 		extract( shortcode_atts( [ 'course_id' => get_the_ID() ], $attributes ) );
 		ob_start();
 		$course_id = isset( $course_id ) ? $course_id : get_the_ID();
@@ -146,8 +147,9 @@ class AcademySingleCourse {
 			'user_id' => $current_user->ID,
 			'post_id' => $course_id,
 		));
-
-		if ( ! $usercomment && \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) ) {
+		$completed_percent = (float) \Academy\Helper::get_percentage_of_completed_topics_by_student_and_course_id( $current_user->ID, $course_id );
+		$required_percent = (float) \Academy\Helper::get_settings( 'minimum_course_completion_on_review', 0 );
+		if ( ! $usercomment && \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) && ( $completed_percent >= $required_percent ) ) {
 			\Academy\Helper::get_template( 'single-course/review-form.php' );
 		}
 
@@ -158,10 +160,12 @@ class AcademySingleCourse {
 		ob_start();
 
 		$course_id = get_the_ID();
-
+		$completed_percent = (float) \Academy\Helper::get_percentage_of_completed_topics_by_student_and_course_id( get_current_user_id(), $course_id );
+		$required_percent = (float) \Academy\Helper::get_settings( 'minimum_course_completion_on_review', 0 );
 		if ( post_password_required() ||
 			! (bool) \Academy\Helper::get_settings( 'is_enabled_course_review', true ) ||
-			get_post_meta( $course_id, 'academy_is_disabled_course_review', true ) ) {
+			get_post_meta( $course_id, 'academy_is_disabled_course_review', true ) ||
+			( $completed_percent < $required_percent && $completed_percent !== $required_percent ) ) {
 			return '';
 		}
 		?>
@@ -171,10 +175,11 @@ class AcademySingleCourse {
 			$comments_per_page = 5;
 
 			$args = array(
-				'post_id' => $course_id,
-				'status'  => 'approve',
-				'number'  => $comments_per_page,
-				'paged'   => $paged,
+				'post_id'      => (int) $course_id,
+				'status'       => 'approve',
+				'type'         => 'academy_courses',
+				'number'       => $comments_per_page,
+				'paged'        => $paged,
 			);
 
 			$comment_query = new \WP_Comment_Query();

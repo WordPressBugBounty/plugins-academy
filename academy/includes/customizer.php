@@ -34,9 +34,13 @@ class Customizer {
 	public function get_common_dynamic_css() {
 		$customizer_css = '';
 		$archiveCourse  = apply_filters( 'academy/course_archive_styles', Customizer\Style\Archive::get_css() );
+		$archiveBooking  = apply_filters( 'academy/booking_archive_styles', Customizer\Style\ArchiveBooking::get_css() );
 		$singleCourse   = apply_filters( 'academy/course_single_course_styles', Customizer\Style\SingleCourse::get_css() );
+		$singleBooking   = apply_filters( 'academy/booking_single_booking_styles', Customizer\Style\SingleBooking::get_css() );
 		$learnPage   = apply_filters( 'academy/course_learn_page_styles', Customizer\Style\LearnPage::get_css() );
 		$customizer_css .= $archiveCourse;
+		$customizer_css .= $archiveBooking;
+		$customizer_css .= $singleBooking;
 		$customizer_css .= $singleCourse;
 		$customizer_css .= $learnPage;
 		return \Academy\Helper::minify_css( $customizer_css );

@@ -8,7 +8,7 @@ class Database {
 
 	public static function init() {
 		$self = new self();
-		add_action( 'init', [ $self, 'create_academy_quiz_post_type' ] );
+		add_action( 'init', [ $self, 'create_academy_quiz_post_type' ], 5 );
 		add_action( 'rest_api_init', [ $self, 'register_academy_quiz_meta' ] );
 	}
 

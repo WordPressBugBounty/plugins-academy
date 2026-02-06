@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	do_action( 'academy/templates/before_course_loop_content_inner' );
 
 	$course_id  = get_the_ID();
+	$course = get_post( $course_id );
+	$enable_course_excerpt = \Academy\Helper::get_settings( 'is_show_course_excerpt', false );
 	$raw_categories = \Academy\Helper::get_the_course_category( $course_id );
 	$categories = apply_filters( 'academy/templates/course_categories', ! empty( $raw_categories ) ? array_slice( $raw_categories, 0, 1 ) : '', $course_id, $raw_categories );
 
@@ -41,7 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	// Get course rating
 	$rating = \Academy\Helper::get_course_rating( $course_id );
 	?>
-	<?php if ( 'alms_course_bundle' !== get_post_type( $course_id ) ) : ?>
+	<?php if ( 'alms_course_bundle' !== $course->post_type ) : ?>
 		<div class="academy-d-flex academy-align-items-center academy-justify-content-between">
 			<div class="academy-course__rating">
 				<?php
@@ -75,4 +77,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php the_title(); ?>
 		</a>
 	</h4>
+		<?php if ( $enable_course_excerpt ) { ?>
+			<div class="academy-entry-content">
+				<?php
+					$limit   = 100;
+					$excerpt = trim( $course->post_excerpt );
+				if ( mb_strlen( $excerpt ) > $limit ) {
+					$excerpt = rtrim( mb_substr( $excerpt, 0, $limit ) ) . '...';
+				}
+					echo esc_html( $excerpt );
+				?>
+			</div>
+		<?php } ?>
 </div>

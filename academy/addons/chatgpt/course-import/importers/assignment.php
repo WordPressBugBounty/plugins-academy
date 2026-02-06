@@ -37,8 +37,7 @@ class Assignment implements Interfaces\Insertable {
 
 		if ( ! empty( $data['academy_assignment_settings'] ?? '' ) ) {
 			$this->meta['academy_assignment_settings'] = $data['academy_assignment_settings'];
-		}
-		else {
+		} else {
 			$this->meta['academy_assignment_settings'] = [
 				'submission_time'        => absint( $data['meta']['submission_time'] ?? 0 ),
 				'submission_time_unit'   => sanitize_text_field( $data['meta']['submission_time_unit'] ?? 'hours' ),

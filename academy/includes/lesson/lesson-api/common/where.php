@@ -53,9 +53,10 @@ class Where {
 	}
 	protected function iterate(): void {
 		foreach ( $this->conditions as $condition ) {
+			$relation = strtoupper( $condition['relation'] );
 			if (
 				isset( $condition['relation'] ) &&
-				in_array( $relation = strtoupper( $condition['relation'] ), [ 'AND', 'OR' ] )
+				in_array( $relation, [ 'AND', 'OR' ] )
 			) {
 				unset( $condition['relation'] );
 				$ins = new static( $condition, $relation, $this->alias );

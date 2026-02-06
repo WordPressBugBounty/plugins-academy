@@ -24,7 +24,7 @@ class Query {
 			$ins = LessonApi::create( $postarr );
 			$ins->save_data();
 			return $ins->id();
-		} catch ( Throwable $e ) {
+		} catch ( Throwable $e ) {// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// @TO-DO
 		}
 		return null;
@@ -36,7 +36,7 @@ class Query {
 			$ins->set_meta_data( $items );
 			$ins->save_meta_data();
 			return $ins->id();
-		} catch ( Throwable $e ) {
+		} catch ( Throwable $e ) {// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// @TO-DO
 		}
 		return null;

@@ -24,6 +24,8 @@ class Installer {
 		}
 		// Save option table data
 		$self->save_option();
+
+		Helper::flush_rewrite_rules();
 	}
 	public function save_main_settings() {
 		Settings::save_settings();
@@ -38,7 +40,8 @@ class Installer {
 		if ( ! get_option( 'academy_first_install_time' ) ) {
 			add_option( 'academy_first_install_time', Helper::get_time() );
 		}
-		update_option( 'academy_required_rewrite_flush', Helper::get_time() );
+
+		\Academy\Helper::flush_rewrite_rules();
 		update_option( 'academy_flash_role_management', true );
 	}
 	public function add_role() {

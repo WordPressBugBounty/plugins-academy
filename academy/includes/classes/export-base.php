@@ -36,7 +36,7 @@ class ExportBase {
 	public function write_nested_csv( $array, $fp ) {
 		foreach ( $array as $row ) {
 			$flattenRow = $this->flatten_array( $row );
-			fputcsv( $fp, $flattenRow );
+			fputcsv( $fp, $flattenRow, ',', '"', '\\' );
 		}
 	}
 
@@ -48,7 +48,7 @@ class ExportBase {
 		// Write the CSV header row
 		if ( $allow_header ) {
 			$headerRow = array_keys( $this->flatten_array( $data[0] ) );
-			fputcsv( $f, $headerRow );
+			fputcsv( $f, $headerRow, ',', '"', '\\' );
 		}
 
 		// Write the nested array data to CSV

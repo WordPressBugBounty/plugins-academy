@@ -34,6 +34,7 @@ class Template {
 	 */
 	public function pre_get_posts( $q ) {
 		$per_page = (int) \Academy\Helper::get_settings( 'course_archive_courses_per_page', 12 );
+
 		if ( $q->is_main_query() && ! $q->is_feed() && ! is_admin() ) {
 			if ( ! empty( $q->query['author_name'] ) && Academy\Helper::get_settings( 'is_show_public_profile' ) ) {
 				$user = get_user_by( 'login', $q->query['author_name'] );
@@ -44,7 +45,7 @@ class Template {
 						$q->set( 'post_type', 'academy_courses' );
 					}
 				}
-			} elseif ( is_post_type_archive( 'academy_courses' ) ) {
+			} elseif ( is_post_type_archive( 'academy_courses' ) && ! $q->is_tax( 'academy_courses_category' ) ) {
 				$paged = ( get_query_var( 'paged' ) ) ? absint( get_query_var( 'paged' ) ) : 1;
 				$orderby = ( get_query_var( 'orderby' ) ) ? get_query_var( 'orderby' ) : Academy\Helper::get_settings( 'course_archive_courses_order' );
 				$q->set( 'post_type', apply_filters( 'academy/course_archive_post_types', array( 'academy_courses' ) ) );
@@ -56,6 +57,8 @@ class Template {
 				} else {
 					$q->set( 'orderby', $orderby );
 				}
+			} elseif ( $q->is_tax( 'academy_courses_category' ) || ( $q->is_search() && isset( $q->query['academy_courses_category'] ) ) ) {
+				$q->set( 'posts_per_page', $per_page );
 			}//end if
 		}//end if
 	}

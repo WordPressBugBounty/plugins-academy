@@ -35,10 +35,11 @@ abstract class Message {
 			$input
 		);
 		$input = array_merge( $this->defaults, $input );
-		if ( ! $this->is_filled && count( $missing_keys = array_diff( $this->placeholders, array_keys( $input ) ) ) === 0 ) {
+		$missing_keys = array_diff( $this->placeholders, array_keys( $input ) );
+		if ( ! $this->is_filled && count( $missing_keys ) === 0 ) {
 			foreach ( $this->placeholders as $placeholder ) {
 				if ( method_exists( $this, "validate_{$placeholder}" ) &&
-					boolval( $msg = call_user_func( [ $this, "validate_{$placeholder}" ], $input[ $placeholder ] ?? '' ) ) === false
+					false === boolval( call_user_func( [ $this, "validate_{$placeholder}" ], $input[ $placeholder ] ?? '' ) )
 				) {
 					throw new InvalidValueException( sprintf( __( 'Invalid value is provided for: %s.', 'academy' ), $placeholder ) );
 				}

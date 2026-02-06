@@ -32,7 +32,8 @@ class QuizQuestion implements Interfaces\Insertable {
 		$this->type  = $quiz_data['slug'] ?? '';
 		$this->quiz  = $quiz;
 		$this->options = $quiz_data['options'] ?? [];
-		$this->answer  = is_array( $ans = $quiz_data['correctAnswer'] ?? '' ) ? $ans : [ $ans ];
+		$ans = $quiz_data['correctAnswer'] ?? '';
+		$this->answer  = is_array( $ans ) ? $ans : [ $ans ];
 		$this->wpdb    = $GLOBALS['wpdb'];
 	}
 
@@ -47,14 +48,14 @@ class QuizQuestion implements Interfaces\Insertable {
 			'question_level'      => $this->level,
 			'question_type'       => $this->type,
 			'question_score'      => $this->score,
-			'question_settings'   => json_encode( $this->settings ),
+			'question_settings'   => wp_json_encode( $this->settings ),
 			'question_order'      => $this->order,
 			'question_created_at' => current_time( 'mysql' ),
 			'question_updated_at' => current_time( 'mysql' ),
 		] );
 
-		if ( $res === false ) {
-			throw new Exception( __( 'Error.', 'academy-pro' ) );
+		if ( false === $res ) {
+			throw new Exception( __( 'Error.', 'academy' ) );
 		}
 
 		$this->id = $this->wpdb->insert_id;
@@ -64,7 +65,7 @@ class QuizQuestion implements Interfaces\Insertable {
 	}
 
 	protected function insert_answers() : void {
-		if ( $this->type === 'fillInTheBlanks' ) {
+		if ( 'fillInTheBlanks' === $this->type ) {
 			( new QuizAnswer( $this->type, [], $this->answer, $this ) )->insert();
 			return;
 		}

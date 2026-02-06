@@ -76,6 +76,7 @@ class Setup {
 		);
 
 		wp_localize_script( 'academy-setup-scripts', 'AcademyGlobal', array_merge( $this->get_setup_scripts_data(), array( 'admin_url'  => admin_url() ) ) );
+		wp_set_script_translations( 'academy-setup-scripts', 'academy', ACADEMY_ROOT_DIR_PATH . 'languages/' );
 		// Enqueue emoji styles to prevent deprecation notices
 		wp_enqueue_emoji_styles();
 

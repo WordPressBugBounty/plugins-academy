@@ -41,13 +41,13 @@ $is_quiz_time_enabled    = $quiz['settings']['quiz_time'];
 		<?php if ( 0 === $is_quiz_time_enabled ) : ?>
 
 			<span class="academy-quiz-time-no-limit">
-				<?php esc_html__( 'No time limit', 'academy' ); ?>
+				<?php esc_html_e( 'No time limit', 'academy' ); ?>
 			</span>
 
 		<?php else : ?>
 
 			<span class="academy-quiz-timer">
-				<?php esc_html__( 'Time Remaining', 'academy' ); ?>
+				<?php esc_html_e( 'Time Remaining', 'academy' ); ?>
 				<span id="academy_quiz_timer" data-time="<?php echo esc_attr( $quiz['settings']['quiz_time'] ); ?>" data-unit="<?php echo esc_attr( $quiz['settings']['quiz_time_unit'] ); ?>">00:00</span>
 			</span>
 

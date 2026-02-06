@@ -24,16 +24,16 @@ class Ajax extends AbstractAjaxHandler {
 		header( 'Content-Type: text/event-stream' );
 		header( 'Cache-Control: no-cache' );
 		header( 'Connection: keep-alive' );
-
+		$flow = sanitize_title( strtolower( $_GET['lesson_migrator_flow'] ?? '' ) );
 		if ( ! in_array(
-			$flow = sanitize_title( strtolower( $_GET['lesson_migrator_flow'] ?? '' ) ),
+			$flow,
 			[
 				'lesson-to-post',
 				'post-to-lesson'
 			]
 		)
 		) {
-			echo 'data: ' . json_encode( [
+			echo 'data: ' . wp_json_encode( [
 				'type' => 'error',
 				'msg' => __( 'Migration flow can be either  lesson-to-post or post-to-lesson.', 'academy' )
 			] ) . "\n\n";
@@ -42,22 +42,22 @@ class Ajax extends AbstractAjaxHandler {
 
 		$GLOBALS['academy_settings']->lesson_migrator_flow = $flow;
 		$GLOBALS['academy_settings']->lesson_migrator_id   = wp_generate_uuid4();
-		update_option( ACADEMY_SETTINGS_NAME, json_encode( $GLOBALS['academy_settings'] ) );
+		update_option( ACADEMY_SETTINGS_NAME, wp_json_encode( $GLOBALS['academy_settings'] ) );
 
 		while ( true ) {
 			try {
 				$ins = new Migrator();
 				$count = $ins->migrate();
 				$stats = $ins->stats();
-				echo 'data: ' . json_encode( [
+				echo 'data: ' . wp_json_encode( [
 					'type' => 'migrating',
 					'data' => $stats,
 					$GLOBALS['academy_settings']->lesson_migrator_id
 				] ) . "\n\n";
-				if ( $count === 0 ) {
+				if ( 0 === $count ) {
 					do {
 						$count = ( new CourseLessonUpdater() )->update(
-							fn( CourseLessonUpdater $obj ): string =>  'data: ' . json_encode( [
+							fn( CourseLessonUpdater $obj ): string =>  'data: ' . wp_json_encode( [
 								'type' => 'course_updating',
 								'left' => $obj->left(),
 								'updated' => $obj->updated(),
@@ -67,11 +67,11 @@ class Ajax extends AbstractAjaxHandler {
 
 					} while ( $count > 0 );
 
-					echo 'data: ' . json_encode( [ 'type' => 'complete' ] ) . "\n\n";
+					echo 'data: ' . wp_json_encode( [ 'type' => 'complete' ] ) . "\n\n";
 					break;
 				}
 			} catch ( Exception $e ) {
-				echo 'data: ' . json_encode( [
+				echo 'data: ' . wp_json_encode( [
 					'type' => 'error',
 					'msg' => $e->getMessage()
 				] ) . "\n\n";

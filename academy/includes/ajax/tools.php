@@ -19,7 +19,7 @@ class Tools extends AbstractAjaxHandler {
 			),
 			'regenerate_academy_pages' => array(
 				'callback' => array( $this, 'regenerate_academy_pages' )
-			),
+			)
 		);
 	}
 	public function fetch_academy_status() {
@@ -40,4 +40,5 @@ class Tools extends AbstractAjaxHandler {
 		$status = Pages::regenerate_necessary_pages();
 		wp_send_json_success( $status );
 	}
+
 }

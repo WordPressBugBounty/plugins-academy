@@ -154,7 +154,7 @@ class Course extends AbstractAjaxHandler {
 		$courses = new \WP_Query( apply_filters( 'academy/enrolled_courses_args', $course_args ) );
 		ob_start();
 		?>
-		<div class="academy-row"> 
+		<div class="academy-row">
 			<?php
 			if ( count( $post_in ) && $courses && $courses->have_posts() ) :
 				while ( $courses->have_posts() ) :
@@ -169,10 +169,10 @@ class Course extends AbstractAjaxHandler {
 				<div class="academy-mycourse academy-mycourse-<?php the_ID(); ?>">
 					<div class="academy-mycourse__thumbnail">
 						<a href="<?php echo esc_url( get_the_permalink() ); ?>">
-							
-							<?php 
+
+							<?php
 							// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
-							echo '<img class="academy-course__thumbnail-image" src="' . esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ) . '" alt="' . esc_html_e( 'thumbnail', 'academy' ) . '">'; 
+							echo '<img class="academy-course__thumbnail-image" src="' . esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ) . '" alt="' . esc_html__( 'thumbnail', 'academy' ) . '">';
 							?>
 						</a>
 					</div>
@@ -446,6 +446,27 @@ class Course extends AbstractAjaxHandler {
 		// phpcs:ignore WordPress.WP.DiscouragedFunctions.query_posts_query_posts
 		wp_reset_query();
 		wp_reset_postdata();
+		// remove empty values
+		if ( isset( $args['tax_query'] ) ) {
+			foreach ( $args['tax_query'] as $i => $tax ) {
+				if ( isset( $tax['terms'] ) ) {
+
+					$tax['terms'] = array_filter( $tax['terms'], function( $t ) {
+						return ! empty( trim( $t ) );
+					});
+
+					// If terms array is empty, remove filter
+					if ( empty( $tax['terms'] ) ) {
+						unset( $args['tax_query'][ $i ] );
+					} else {
+						$args['tax_query'][ $i ] = $tax;
+					}
+				}
+			}
+
+			// re-index tax_query
+			$args['tax_query'] = array_values( $args['tax_query'] );
+		}
 		$courses_query = new \WP_Query( apply_filters( 'academy_courses_filter_args', $args ) );
 
 		if ( isset( $found_posts ) && ! empty( $found_posts ) ) {
@@ -527,6 +548,7 @@ class Course extends AbstractAjaxHandler {
 
 		$course_id = (int) $payload['course_id'];
 		$course_type = \Academy\Helper::get_course_type( $course_id );
+		$is_enrolled = false;
 		$course_type = apply_filters( 'academy/before_enroll_course_type', $course_type, $course_id );
 		if ( 'free' === $course_type || 'public' === $course_type ) {
 			$is_enrolled = \Academy\Helper::do_enroll( $course_id, $user_id );
@@ -637,10 +659,6 @@ class Course extends AbstractAjaxHandler {
 		$course_id = $payload['course_id'];
 		$user_id = get_current_user_id();
 		$current_user = get_userdata( $user_id );
-
-		if ( ! \Academy\Helper::is_completed_course( $course_id, $user_id ) ) {
-			wp_send_json_error( __( 'Sorry, you have to complete the course first.', 'academy' ) );
-		}
 
 		$rating = (int) $payload['rating'];
 		$review = $payload['review'];
@@ -812,7 +830,7 @@ class Course extends AbstractAjaxHandler {
 					$course_meta_item = array_combine( $course_meta_header, $item );
 					$new_curr_item[] = [
 						'course_id' => $new_course_id ?? $old_course_id,
-						'curriculum' => maybe_unserialize( $course_meta_item['course_curriculum'] )
+						'curriculum' => json_decode( $course_meta_item['course_curriculum'], true )
 					];
 					if ( $new_course_id ) {
 						$this->insert_course_meta_value( $course_meta_item, $new_course_id );
@@ -914,14 +932,14 @@ class Course extends AbstractAjaxHandler {
 		$course_materials = isset( $course_item['course_materials'] ) ? sanitize_text_field( $course_item['course_materials'] ) : '';
 		$course_qa = isset( $course_item['is_enabled_course_qa'] ) ? sanitize_key( $course_item['is_enabled_course_qa'] ) : false;
 		$course_announcement = isset( $course_item['is_enabled_course_announcements'] ) ? sanitize_key( $course_item['is_enabled_course_announcements'] ) : false;
-		$course_duration = isset( $course_item['course_duration'] ) ? maybe_unserialize( sanitize_text_field( $course_item['course_duration'] ) ) : array( 0, 0, 0 );
-		$intro_video = isset( $course_item['course_intro_video'] ) ? maybe_unserialize( sanitize_text_field( $course_item['course_intro_video'] ) ) : array();
-		$course_curriculum = isset( $course_item['course_curriculum'] ) ? maybe_unserialize( sanitize_text_field( $course_item['course_curriculum'] ) ) : array();
+		$course_duration = isset( $course_item['course_duration'] ) ? json_decode( sanitize_text_field( $course_item['course_duration'] ), true ) : array( 0, 0, 0 );
+		$intro_video = isset( $course_item['course_intro_video'] ) ? json_decode( sanitize_text_field( $course_item['course_intro_video'] ), true ) : array();
+		$course_curriculum = isset( $course_item['course_curriculum'] ) ? json_decode( sanitize_text_field( $course_item['course_curriculum'] ), true ) : array();
 		$certificate_id = 0;
 		$product_id = isset( $course_item['course_product_id'] ) ? absint( $course_item['course_product_id'] ) : 0;
 		$download_id = isset( $course_item['course_download_id'] ) ? absint( $course_item['course_download_id'] ) : 0;
 		$course_review = isset( $course_item['is_disabled_course_review'] ) ? sanitize_key( $course_item['is_disabled_course_review'] ) : false;
-		$rcp_membership_levels = isset( $course_item['rcp_membership_levels'] ) ? maybe_unserialize( sanitize_text_field( $course_item['rcp_membership_levels'] ) ) : array();
+		$rcp_membership_levels = isset( $course_item['rcp_membership_levels'] ) ? json_decode( sanitize_text_field( $course_item['rcp_membership_levels'] ), true ) : array();
 		$enable_certificate = isset( $course_item['course_enable_certificate'] ) ? sanitize_key( $course_item['course_enable_certificate'] ) : false;
 		$meta_args = [
 			'academy_course_expire_enrollment'       => $expire_enrollment,
@@ -998,52 +1016,58 @@ class Course extends AbstractAjaxHandler {
 			return '';
 		}
 
-		$user                  = get_user_by( 'login', $item['lesson_author'] );
-		$allowed_tags          = wp_kses_allowed_html( 'post' );
-		$allowed_tags['input'] = array(
+		$user = get_user_by( 'login', $item['lesson_author'] );
+
+		$allowed_tags = wp_kses_allowed_html( 'post' );
+		$allowed_tags['input'] = [
 			'type'  => true,
 			'name'  => true,
 			'value' => true,
 			'class' => true,
-		);
-		$allowed_tags['form']  = array(
+		];
+		$allowed_tags['form'] = [
 			'action' => true,
 			'method' => true,
 			'class'  => true,
-		);
-		$allowed_tags['iframe'] = array(
+		];
+		$allowed_tags['iframe'] = [
 			'src'             => true,
 			'width'           => true,
 			'height'          => true,
 			'frameborder'     => true,
 			'allow'           => true,
 			'allowfullscreen' => true,
-		);
-		$content               = wp_kses( $item['lesson_content'], $allowed_tags );
-		try {				
-			$lesson = LessonApi::create( [
-				'lesson_author'  => $user ? $user->ID : (int) get_current_user_id(),
-				'lesson_title'   => sanitize_text_field( $item['lesson_title'] ),
-				'lesson_name'    => \Academy\Helper::generate_unique_lesson_slug( $item['lesson_title'] ),
-				'lesson_content' => $content,
-				'lesson_status'  => $item['lesson_status'],
-			], [
-				'featured_media' => 0,
-				'attachment'     => 0,
-				'is_previewable' => sanitize_text_field( $item['is_previewable'] ),
-				'video_duration' => sanitize_text_field( $item['video_duration'] ),
-				'video_source'   => wp_json_encode( array(
-					'type' => sanitize_text_field( $item['video_source_type'] ),
-					'url'  => $this->sanitize_video_source( $item['video_source_type'], $item['video_source_url'] ),
-				) ),
-			] );
+		];
+
+		$content = wp_kses( $item['lesson_content'], $allowed_tags );
+
+		try {
+			$lesson = LessonApi::create(
+				[
+					'lesson_author'  => $user ? $user->ID : (int) get_current_user_id(),
+					'lesson_title'   => sanitize_text_field( $item['lesson_title'] ),
+					'lesson_name'    => \Academy\Helper::generate_unique_lesson_slug( $item['lesson_title'] ),
+					'lesson_content' => $content,
+					'lesson_status'  => $item['lesson_status'],
+				],
+				[
+					'featured_media' => 0,
+					'attachment'     => 0,
+					'is_previewable' => sanitize_text_field( $item['is_previewable'] ),
+					'video_duration' => sanitize_text_field( $item['video_duration'] ),
+					'video_source'   => [
+						'type' => sanitize_text_field( $item['video_source_type'] ),
+						'url'  => $this->sanitize_video_source( $item['video_source_type'], $item['video_source_url'] ),
+					],
+				]
+			);
+
 			$lesson->save();
 			return $lesson->id();
-		}
-		catch ( Throwable $e ) {
+		} catch ( Throwable $e ) {
+			// Return false on failure
 			return false;
-		}
-		return false;
+		}//end try
 	}
 
 	public function sanitize_video_source( $source, $url ) {

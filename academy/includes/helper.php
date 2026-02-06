@@ -19,6 +19,16 @@ class Helper {
 	use Traits\Earning;
 	use Traits\Withdrawals;
 
+	/**
+	 * Schedule rewrite rule flushing on next reload.
+	 *
+	 * @return void
+	 * @since 3.3.8
+	 */
+	public static function flush_rewrite_rules() {
+		update_option( 'academy_required_rewrite_flush', 'yes' );
+	}
+
 	public static function get_time() {
 		return time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
 	}
@@ -192,6 +202,13 @@ class Helper {
 			'title'       => __( 'Instructors', 'academy' ),
 			'capability'  => 'manage_options',
 		];
+		if ( self::get_addon_active_status( 'attendance' ) ) {
+			$menu[ ACADEMY_PLUGIN_SLUG . '-attendance' ] = [
+				'parent_slug' => ACADEMY_PLUGIN_SLUG,
+				'title'       => __( 'Attendance', 'academy' ),
+				'capability'  => 'manage_options',
+			];
+		}
 		$menu[ ACADEMY_PLUGIN_SLUG . '-students' ]    = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
 			'title'       => __( 'Students', 'academy' ),
@@ -209,6 +226,13 @@ class Helper {
 			'title'       => __( 'Add-ons', 'academy' ),
 			'capability'  => 'manage_options',
 		];
+		if ( ! self::is_active_zencommunity() && ! get_option( 'academy_is_hide_zencommunity_menu' ) ) {
+			$menu[ ACADEMY_PLUGIN_SLUG . '-community' ]      = [
+				'parent_slug' => ACADEMY_PLUGIN_SLUG,
+				'title'       => __( 'Create Community', 'academy' ),
+				'capability'  => 'manage_options',
+			];
+		}
 		$menu[ ACADEMY_PLUGIN_SLUG . '-tools' ]       = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
 			'title'       => __( 'Tools', 'academy' ),
@@ -266,6 +290,11 @@ class Helper {
 		$storeengine = 'storeengine/storeengine.php';
 
 		return self::is_plugin_active( $storeengine );
+	}
+
+	public static function is_active_zencommunity() {
+		$zencommunity = 'zencommunity/zencommunity.php';
+		return self::is_plugin_active( $zencommunity );
 	}
 
 	public static function is_plugin_active( $basename ) {
@@ -935,6 +964,26 @@ class Helper {
 		return wp_lostpassword_url();
 	}
 
+	public static function get_page_by_slug( $page_slug, $post_type = 'page' ) {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$page = $wpdb->get_var( $wpdb->prepare(
+			"SELECT ID
+			FROM $wpdb->posts
+			WHERE post_name = %s
+			AND post_type = %s",
+			$page_slug,
+			$post_type
+		) );
+
+		if ( $page ) {
+			return get_post( $page, OBJECT );
+		}
+
+		return null;
+	}
+
 	public static function get_page_permalink( $page, $fallback = null ) {
 		$page_id   = self::get_settings( $page );
 		$permalink = 0 < $page_id ? get_permalink( $page_id ) : '';
@@ -1413,18 +1462,48 @@ class Helper {
 		$time_difference = $current_time->diff( $given_time );
 
 		if ( $time_difference->y > 0 ) {
-			return esc_html( $time_difference->y . ' years ago' );
+			return esc_html(
+				sprintf(
+					/* translators: %d: number of years */
+					__( '%d years ago', 'academy' ),
+					$time_difference->y
+				)
+			);
 		} elseif ( $time_difference->m > 0 ) {
-			return esc_html( $time_difference->m . ' months ago' );
+			return esc_html(
+				sprintf(
+					/* translators: %d: number of months */
+					__( '%d months ago', 'academy' ),
+					$time_difference->m
+				)
+			);
 		} elseif ( $time_difference->d > 0 ) {
-			return esc_html( $time_difference->d . ' days ago' );
+			return esc_html(
+				sprintf(
+					/* translators: %d: number of days */
+					__( '%d days ago', 'academy' ),
+					$time_difference->d
+				)
+			);
 		} elseif ( $time_difference->h > 0 ) {
-			return esc_html( $time_difference->h . ' hours ago' );
+			return esc_html(
+				sprintf(
+					/* translators: %d: number of hours */
+					__( '%d hours ago', 'academy' ),
+					$time_difference->h
+				)
+			);
 		} elseif ( $time_difference->i > 0 ) {
-			return esc_html( $time_difference->i . ' minutes ago' );
+			return esc_html(
+				sprintf(
+					/* translators: %d: number of minutes */
+					__( '%d minutes ago', 'academy' ),
+					$time_difference->i
+				)
+			);
 		} else {
-			return esc_html( 'Just now' );
-		}
+			return esc_html__( 'Just now', 'academy' );
+		}//end if
 	}
 	public static function get_course_curriculum_array( $course_id ) {
 		$course_curriculum = get_post_meta( $course_id, 'academy_course_curriculum', true );

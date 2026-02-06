@@ -289,6 +289,13 @@ class QuizQuestions extends \WP_REST_Controller {
 			}
 		}
 
+		// Question Image ID.
+		if ( ! empty( $schema['question_image_id'] ) && isset( $request['question_image_id'] ) ) {
+			if ( is_numeric( $request['question_image_id'] ) ) {
+				$prepared_question->question_image_id = $request['question_image_id'];
+			}
+		}
+
 		// Question Settings.
 		if ( ! empty( $schema['question_settings'] ) && isset( $request['question_settings'] ) ) {
 			if ( is_array( $request['question_settings'] ) ) {

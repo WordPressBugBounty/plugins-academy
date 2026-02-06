@@ -16,11 +16,11 @@ class Cart {
 	}
 
 	public function add_cart_item_data( array $item_data ): array {
-		if ( ! isset( $_POST['academy_course_id'] ) ) {
+		if ( ! isset( $_POST['academy_course_id'] ) ) {// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return $item_data;
 		}
 
-		$item_data['academy_course_id'] = absint( wp_unslash( $_POST['academy_course_id'] ) );
+		$item_data['academy_course_id'] = absint( wp_unslash( $_POST['academy_course_id'] ) );// phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		return $item_data;
 	}

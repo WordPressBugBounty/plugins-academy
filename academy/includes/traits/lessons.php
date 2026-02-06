@@ -33,6 +33,9 @@ trait Lessons {
 	public static function get_lesson_slug( int $ID ) {
 		return LessonApi::get_lesson_slug( $ID );
 	}
+	public static function get_lesson_title( int $ID ) {
+		return LessonApi::get_lesson_title( $ID );
+	}
 	public static function get_lesson_meta_data( int $ID ) : array {
 		return LessonApi::get_lesson_meta_data( $ID );
 	}

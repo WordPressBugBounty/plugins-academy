@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="academy-expand-button-wrapper">
 			<button class="academy-btn--lesson-expand" type="button" id="academy-curriculum-expand">
 				<span class="academy-icon academy-icon--arrow-left"></span>
-				<span class="academy-btn--label"><?php echo esc_html( 'Course content' ); ?></span>
+				<span class="academy-btn--label"><?php echo esc_html__( 'Course content', 'academy' ); ?></span>
 			</button>
 		</div>
 		<div class="academy-course-learn-page-curriculums" id="academy-course-curriculums">

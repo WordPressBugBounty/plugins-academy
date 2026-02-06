@@ -106,11 +106,11 @@ $topic['slug'] = get_query_var( 'name' );
 										<div class="academy-table__row-cell">
 											<?php if ( $attempt_answer_detail->is_correct ) : ?>
 												<span class="academy-passed">
-													<?php echo esc_html( 'Correct' ); ?>
+													<?php echo esc_html__( 'Correct', 'academy' ); ?>
 												</span>
 											<?php else : ?>
 												<span class="academy-failed">
-													<?php echo esc_html( 'Incorrect' ); ?>
+													<?php echo esc_html__( 'Incorrect', 'academy' ); ?>
 												</span>
 											<?php endif; ?>
 										</div>

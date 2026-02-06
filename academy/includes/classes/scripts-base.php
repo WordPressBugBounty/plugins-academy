@@ -42,7 +42,7 @@ class ScriptsBase {
 				'publish_academy_courses'   => current_user_can( 'publish_academy_courses' ),
 				'manage_categories'   => current_user_can( 'manage_categories' ),
 			],
-			'editor_settings' => $this->get_isolated_gutenberg_settings(),
+			// 'editor_settings' => $this->get_isolated_gutenberg_settings(), // Temporary disable it, currently we don't support isolated block editor
 			'toplevel_menu_icon_url'    => $menu->get_toplevel_menu_icon_url(),
 			'toplevel_menu_title'   => $menu->get_toplevel_menu_title(),
 			'logo_url' => $menu->get_logo_url(),
@@ -133,8 +133,11 @@ class ScriptsBase {
 		$flag = false;
 		if (
 			is_post_type_archive( 'academy_courses' ) ||
+			is_post_type_archive( 'academy_booking' ) ||
 			is_tax( 'academy_courses_category' ) ||
 			is_tax( 'academy_courses_tag' ) ||
+			is_tax( 'academy_booking_category' ) ||
+			is_tax( 'academy_booking_tag' ) ||
 			( ! empty( $wp_query->query['author_name'] ) && \Academy\Helper::get_settings( 'is_show_public_profile' ) )
 		) {
 			$flag = true;
@@ -142,7 +145,9 @@ class ScriptsBase {
 			$post &&
 			(
 				get_post_type( $post->ID ) === 'academy_courses' ||
+				get_post_type( $post->ID ) === 'academy_booking' ||
 				(int) \Academy\Helper::get_settings( 'course_page' ) === $post->ID ||
+				(int) \Academy\Helper::get_settings( 'tutor_booking_page' ) === $post->ID ||
 				(int) \Academy\Helper::get_settings( 'frontend_instructor_reg_page' ) === $post->ID ||
 				(int) \Academy\Helper::get_settings( 'frontend_student_reg_page' ) === $post->ID ||
 				(int) \Academy\Helper::get_settings( 'password_reset_page' ) === $post->ID ||

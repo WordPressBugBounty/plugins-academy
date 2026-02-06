@@ -2,10 +2,10 @@
 Contributors: kodezen, academylms, tusharimran
 Donate link: https://www.buymeacoffee.com/academylms
 Tags: learning management system, LMS, course, education, elearning
-Requires at least: 6.4
-Tested up to: 6.8
+Requires at least: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.3.7
+Stable tag: 3.5.3
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -26,8 +26,10 @@ Introducing [Academy LMS](https://academylms.net). The WordPress LMS plugin to c
 
 Academy LMS AI Studio redefines course creation by allowing educators to instantly generate complete course outlines, lessons, quizzes, and eye-catching images with a simple prompt. This powerful AI tool streamlines course content development, saving time and enabling administrators and instructors to focus on delivering engaging, high-quality course creation experiences.
 
-==== Academy LMS 3.0 The All-in-One Learning Ecosystem You’ve Been Waiting For! 🔥 👇 ====
-https://www.youtube.com/watch?v=Z00YHdTv_1o
+==== Introducing Our Community Building Plugin ZenCommunity with Support Ticketing and Live Chat for WordPress Websites 🔥 ====
+**👇 Watch [ZenCommunity](https://wordpress.org/plugins/zencommunity) Walkthrough**
+
+https://www.youtube.com/watch?v=CXvOteOKg4o
 
 == Why Choose Academy LMS? ==
 It offers a user-friendly SPA interface, advanced quiz builder, course builder, multi-instructor support, lightning-fast performance and free of cost. The advanced course creation, quiz management, and student progress tracking features are exceptionally easy for everyone. Even without technical knowledge, Academy LMS is easy to use. No need for advanced coding knowledge to create and offer personalized courses or integrate with various platforms to sell premium courses.
@@ -202,6 +204,16 @@ Look no further than Academy LMS, the ultimate solution to create online courses
 
 **📢 Keep Users Informed with Global Announcements:** Quickly display important announcements throughout the platform to ensure all users are well-informed. Provide transparency, engagement, and a stronger learning environment.
 
+**📈 StoreEngine:** Sell courses with a fast, lightweight built-in eCommerce system.
+
+**👥 ZenCommunity:** Build learner communities and discussions around your courses.
+
+**🌐 aBlocks:** Design LMS pages visually using Gutenberg blocks.
+
+**🔁 Auto Course Enroll After Registration:** Automatically enroll users into courses after signup.
+
+**🔒 Password Reset System:** Allow users to reset passwords directly from the LMS.
+
 **📧 Email Notifications [PRO]:** Automatically send emails to all users, with administrators and instructors having control over the frequency and content. Emails can be customized to specific user groups or sent to all users, providing important details such as course names, assignment descriptions, and due dates.
 
 **📅 Manage Course Content Drip [PRO]:** Instructors can gradually release lessons, quizzes, and assignments. This step by step content drip  helps students learn more efficiently and effectively.
@@ -252,20 +264,23 @@ Look no further than Academy LMS, the ultimate solution to create online courses
 
 **🏫 Google Classroom Integration [PRO]:** Simplify course management with seamless Google Classroom integration.
 
+**📢 SendFox [PRO]:** Sync users and automate email marketing with SendFox integration.
+
+**✓ Attendance [PRO]:** Track student attendance for live or scheduled classes.
+
+**👨‍🏫 MemberPress [PRO]:** Restrict course access using membership-based subscriptions.
+
 
 ## 🔥 WHAT’S NEXT
-If you like Academy LMS, then consider checking out our other WordPress Plugins for FREE:
 
-🔝 [StoreEngine](https://wordpress.org/plugins/storeengine) –  StoreEngine is an all-in-one, next-gen eCommerce plugin for WordPress. It’s designed to make selling digital products, courses, memberships, and even physical goods easier than ever.
-🔝 [aBlocks](https://wordpress.org/plugins/ablocks) –  aBlocks is a powerful Gutenberg-based WordPress website builder and a clean alternative to Elementor. It provides custom blocks and design flexibility while keeping your website fast and bloat-free.
+Now that you’ve set up Academy LMS, you can extend your WordPress site even further with our free solutions:
 
-### Unlock more possibilities with aBlocks: Fully integrated with Academy LMS
+**StoreEngine:** Add a fast, lightweight eCommerce solution to sell courses, digital products, or physical items directly from WordPress website.
 
-Want more spice design on your WordPress eLearning site? Introducing aBlocks, a powerful Gutenberg page builder plugin developed by the team behind Academy LMS. With seamless integration, aBlocks enhances your course pages with 9 custom blocks tailored specifically for Academy LMS, allowing you to design visually engaging and functional course content effortlessly.
+**ZenCommunity:** Build learner communities, discussions, and engagement spaces around your courses. Also have the support ticketing and website live chat widget features.
 
-But that's not all—with aBlocks, you can build any type of amazing website in no time and with minimal effort, making it the perfect tool for both learning platforms and any other website you can imagine.
+**aBlocks:** Create and customize any type of WordPress website using powerful Gutenberg blocks—no coding required. Together, these tools help you build a complete website experience for learning, selling, and community—fully powered by WordPress.
 
-[Try aBlocks now Check Official Sites](https://ablocks.pro/)
 
 
 == Frequently Asked Questions ==
@@ -322,6 +337,73 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.5.3 - 02/02/2026 =
+* Fixed - WordPress default login not working with Google reCAPTCHA.
+* Fixed - PHPCS compliance issues.
+* Fixed - Empty quiz question images showing incorrect border size in older quizzes.
+
+= 3.5.2 - 15/01/2026 =
+* Fixed - Tutor Booking UI Broken issue
+
+= 3.5.1 - 15/01/2026 =
+* Added - "Coming Soon" courses now support setting a release date and time when enrollment is enabled.
+* Fixed - Unnecessary comments appearing on the frontend single course page.
+* Fixed - Translation strings not working after changes.
+* Fixed - Course excerpt not displaying issue.
+* Fixed - Translation issues reported on WordPress ORG.
+* Fixed - Quiz question settings not saving after updates.
+* Fixed - Password reset security vulnerability.
+* Fixed - YouTube videos skipping issue on the Learn page.
+
+= 3.5.0 - 12/01/2026 =
+* Added - Auto-enroll users into selected courses after registration will based on assigned roles.
+* Added - Built-in password reset feature.
+* Improved - Payment settings UI/UX.
+* Fixed - Password reset from dashboard not sending email.
+* Fixed - String translation issues reported on WordPress ORG.
+* Fixed - Public course content not visible without login.
+
+= 3.4.1 - 15/12/2025 =
+* Fixed - Issue where quiz questions could be created without an image.
+* Fixed - Some color settings not working on the Tutor Booking page.
+* Fixed - Shortcode security vulnerability.
+* Fixed - Issue where long content was not displaying properly on the Learn page.
+
+= 3.4.0 - 11/12/2025 =
+* Added - New "Attendance" addon Compatibility
+* Added - New MemberPress integration Compatibility
+* Improved - Quiz question image upload system.
+* Improved - Learnpage "Mark as Complete" and "Add Review" UI/UX design improve.
+
+= 3.3.11 - 04/12/2025 =
+* Added - “Mark as Complete” button in the learn page.
+* Improved - Download Certificate table message in the frontend dashboard.
+* Improved - Lesson featured image now displays on the learn page.
+* Improved - MathJax–LaTeX integration support for quiz questions.
+* Fixed - Migration issue from LearnDash to Academy LMS.
+* Fixed - Category-included Courses pagination filter issue.
+
+= 3.3.10 - 24/11/2025 =
+* Added - Option to regenerate default certificates from the Tools page.
+* Added - New certificate variables: total topics, "What You Will Learn," "Course Requirements," and "Course Materials Included."
+* Fixed - "Next Topic" button alignment issue on the course learning page (mobile view).
+* Fixed - Incorrect total topic count in the Enrolled Courses section of the frontend     dashboard.
+* Fixed - Various translation issues.
+* Fixed - Enrolled course status display issue in the Students table.
+* Fixed - Setup page "Skip" button not functioning.
+* Fixed - User profile and cover photo were not updating on the frontend dashboard.
+* Fixed - Course archive page "courses per row" settings not working on tablet and mobile.
+
+= 3.3.9 - 04/11/2025 =
+* Fixed - Import data security vulnerability.
+* Fixed - PHP deprecation warnings.
+* Fixed - Unclear message displayed when visiting public courses without login.
+* Fixed - Incorrect course completion date shown on certificates (PDF).
+
+= 3.3.8 - 06/10/2025 =
+* * Added - Academy Player – “Prevent Video Skipping” setting.
+* Improved: Form builder registration info now correctly displays on user profiles and can be edited.
 
 = 3.3.7 - 24/09/2025 =
 * Added - Student and Instructor data export feature.
@@ -462,489 +544,6 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 * Fixed - Default settings filter not working on course archive pages.
 * Fixed - Admin unable to view courses in the frontend dashboard after changing the primary instructor.
 * Fixed - Sorting issue in the "Note" feature list.
-
-= 2.9.0 - 14/05/2025 =
-* Added - New Addon ChatGPT Integration (beta)
-* Added - Take Note features
-* Added - Detection function for fake WooCommerce course orders.
-* Improved - Manual enrollment with support for selecting multiple courses and students.
-* Fixed - Issue with retrieving WooCommerce products in course editor.
-* Fixed - Issue with exporting course progress to CSV.
-
-= 2.8.3 - 28/04/2025 =
-* Added - Settings for frontend dashboard login page redirection.
-* Fixed - Issue with course tag search functionality.
-* Fixed - "Add to Cart" button redirect issue on the course archive page.
-* Fixed - Responsive display issue with course lesson topics on mobile devices.
-* Fixed - Webhooks not functioning when Academy Pro is deactivated.
-* Fixed - No message displayed after clicking the course completion button.
-* Fixed - Blank Quiz Attempt table page on Admin and Instructor dashboards.
-* Fixed - Alert message appearing when closing unsaved course content.
-* Fixed - All selected categories not showing in single courses page.
-
-
-= 2.8.2 - 23/04/2025 =
-* Added - Academy video player support for YouTube lessons with enhanced PHP rendering
-* Fixed - Certificate date format not matches the WordPress date format.
-* Fixed - Certificate filenames not dynamically include the course name.
-* Fixed - Issue where answers for single choice quiz questions were not updating.
-* Fixed - Lesson content color styling not applying correctly.
-* Fixed - Issue with renaming sub-curriculum items in courses.
-
-= 2.8.1 - 17/04/2025 =
-* Fixed - Resolved PHP CodeSniffer (PHPCS) compliance issues.
-* Fixed - Issue with Membership not saving in Courses.
-* Fixed - Resolved a bug where instructors couldn’t set prices in the frontend course dashboard using StoreEngine.
-* Fixed - Course archive filters not functioning when reCAPTCHA credentials were configured.
-* Fixed - Addressed translation issues on the LearnPage QA and Announcement section when PHP rendering was enabled.
-* Fixed - Lesson per page selection not updating properly.
-
-= 2.8.0 - 07/04/2025 =
-* Added - Native payment integration.
-* Added - Redux Toolkit
-* Added - MathJax-LaTeX integration.
-* Removed - Old legacy redux 
-* Removed - Academy Pro React Code
-* Fixed - Course export functionality issue.
-* Fixed - "Answer Required" option for quiz questions not working during PHP rendering.
-* Fixed - Course Q&A and Announcement features not functioning properly during PHP rendering.
-* Fixed - Instructor feedback not displaying on submitted quiz  during PHP rendering.
-
-= 2.7.0 - 20/03/2025 =
-* Added - Added the ability to create courses directly from a YouTube video playlist.
-* Improved - Included the 'All Levels' option for course difficulty settings.
-* Fixed - Resolved category URL pagination issues in course listings.
-* Fixed - Error messages now display correctly when a user attempts to register with an already existing email.
-* Fixed - Unlimited quiz attempts issue related to PHP rendering.
-* Fixed - Learn page top bar now remains sticky when an FSE theme is activated.
-
-= 2.6.0 - 09/03/2025 =
-* Improved - Frontend dashboard responsiveness.
-* Fixed - QA section translation issue.
-* Fixed - Missing message after clicking the "Course Complete" button.
-* Fixed - UI issue with the "Add to Cart" button.
-* Fixed - Static results in the Academy table.
-* Fixed - PHP rendering issue with the submitted assignment icon.
-* Fixed - Tutor LMS course topics migration and slug issue.
-* Fixed - Table border bottom display issue.
-* Fixed - Sub-curriculum lesson topics bar closure issue on the Learnpage.
-* Fixed - Academy Player video not showing issue in Astra theme.
-
-= 2.5.3 - 03/03/2025 =
-* Fixed - Astra Theme conflict issue
-
-= 2.5.2 - 20/02/2025 =
-* Fixed - Missing end date in the Enrolled Courses graph.
-* Fixed - Profile image not displaying in the QA section for both PHP and JS rendering.
-
-= 2.5.1 - 13/02/2025 =
-* Fixed - Issue with YouTube video title, share, and icon display in the Academy Player.
-
-= 2.5.0 - 06/02/2025 =
-* Added - New Academy Pro Device Login Restriction Addon Compatibility
-
-= 2.4.2 - 04/02/2025 =
-* Fixed - Issue with curriculum topic icons on the single course page.
-* Fixed - Translation issues.
-* Fixed - Instructor ID was not properly set when importing courses.
-* Fixed - Frontend AJAX call handling issue.
-
-= 2.4.1 - 27/01/2025 =
-* Fixed - User reviews for single courses were not displaying in the FSE theme.
-* Fixed - Quill editor ui issue.
-
-= 2.4.0 - 14/01/2025 =
-* Added - Course Preview Addon.
-* Added - FSE theme integration.
-* Added - Password Protection and Scheduled Dates for Courses.
-* Added - Certificate Downloads menu in the Student Dashboard.
-* Fixed - The course Import feature is not properly setting the curriculum and course data.
-
-= 2.3.0 - 24/12/2024 =
-* Added - Course Export-Import feature.
-* Added - Single course review disable option.
-* Fixed - Translate issue.
-* Fixed - After login redirect url issue in different languages.
-* Fixed - Quiz topic Auto complete issue in learnpage.
-* Fixed - Quiz question-answer sorting issue in Quiz-Builder.
-* Fixed - After Course complete button click then not changes button status.
-* Fixed - Frontend Dashboard Color Customization issue.
-* Fixed - Gradebook functionality show without de-active addon.
-* Fixed - lesson preview url issue in php rendering.
-
-= 2.2.5 - 05/12/2024 =
-* Fixed - User details API Endpoint security issue.
-* Fixed - Question & Answer table pagination issue.
-* Fixed - Course title not working html tag.
-
-= 2.2.4 - 30/11/2024 =
-* Fixed - Embedded Video not worked issue
-
-= 2.2.3 - 26/11/2024 =
-* Added - Course Review Popup modal disable-enable option.
-* Fixed - UI issue.
-* Fixed - Quill Editor text font size properly not working in Frontend.
-* Fixed - External & Embed video Auto Complete Topic and Auto Load Next Lesson not working.
-* Fixed - Quiz Attempt table Vulnerability issue.
-* Fixed - Academy settings instructor default earning value not showing issue.
-
-= 2.2.2 - 17/11/2024 =
-* Fixed - Submitted Quizzes feedback save issue.
-* Fixed - All Instructors Quizzes Export issue.
-* Fixed - Lesson Database syntax error.
-* Fixed - Frontend Dashboard Instructor total earning can't show in Withdrawal.
-* Fixed - Learn Page Quiz details Answer text alignment issue.
-* Fixed - Courses table course link ui issue.
-* Fixed - Instructor Dashboard Profile all field show without data.
-* Fixed - Withdrawal currency sign not changes dynamically.
-* Fixed - Certificate Font file missing.
-* Fixed - String Translation issue.
-* Fixed - New Lesson create time get slug insufficient permission message.
-* Fixed - Click Student details then blank page.
-* Fixed - LearnDash Migration issue.
-
-= 2.2.1 - 03/11/2024 =
-* Fixed - Course Learn page first sub-curriculum topics slug issue.
-* Fixed - Taxonomy slug issue in Arabic Language.
-* Fixed - Social Icon Github, Website not showing in Instructor Profile Page.
-* Fixed - Wishlist button can't work in Course Single page.
-* Fixed - Course name issue in PHP rendering.
-
-= 2.2.0 - 23/10/2024 =
-* Fixed - Course Card space issue.
-* Fixed - Quiz Answer required issue.
-* Fixed - Pending Instructor Permission issue.
-* Fixed - PHP rendering learn page url and content not loading issue.
-* Fixed - Course Publish Notification issue.
-* Fixed - Learnpage Quiz Question next button issue.
-* Fixed - Course QA & Announcement not Disable issue.
-* Fixed - Table Markup change.
-* Fixed - UI issue.
-* Fixed - Question & Answer table total data count issue.
-* Fixed - Text Domain change & Pro condition remove.
-* Fixed - Certificate Table search issue.
-* Fixed - After Topic completed Up next topics title show wrong.
-
-= 2.1.2 - 09/10/2024 =
-* Fixed - Quiz Fill in the blanks question insert answer issue.
-
-= 2.1.1 - 08/10/2024 =
-* Added - Lesson Content iframe support.
-* Added - New Filter Hook for course grid ajax
-* Fixed - Unused Image Remove.
-* Fixed - Pagination not working in single Course page review Section.
-* Fixed - Quiz Fill in the blanks question insert answer issue.
-* Fixed - Quiz after fail download Certificate issue.
-* Fixed - Table data multiple time fetch issue.
-
-= 2.1.0 - 06/10/2024 =
-* Added - New Certificate addon.
-* Added - Course Card 4 layout style.
-* Added - Became an Instructor Hide option.
-* Added - Some new filter hook.
-* Fixed - Translation issue
-* Fixed - Review button multiple time click then give error message.
-* Fixed - Learn Page Topics Customize color issue.
-
-= 2.0.17 - 24/09/2024 =
-* Fixed - Frontend Dashboard List Table filter issue
-* Fixed - After reset Password Automatically logout issue.
-* Fixed - Instructor dashboard Course edit description not available.
-* Fixed - Dashboard Shortcode default login not working issue.
-* Fixed - Instructor can't upload image issue.
-* Added - Advance Analytics Student & Courses add pagination
-* Fixed - Form Builder settings page blank issue & UI issue.
-* Added - Student details modal phone data missing.
-* Added - Student table student progress analytics option
-* Fixed - Quiz-attempts table total data count issue.
-* Added - Quill Edidor Audio, Video, PDF support
-* Fixed - Academy Courses shortcode pagination issue.
-* Fixed - Translate issue.
-
-= 2.0.16 - 11/09/2024 =
-* Fixed - Improve integration issues
-
-= 2.0.15 - 09/09/2024 =
-* Added - Private Course
-* Added - Became an instructor option
-* Added - Learn Page UI break issue
-* Added - Some Filter hook
-* Fixed - Quiz fill in the blank issue
-* Fixed - Course search shortcode UI issue
-* Fixed - Multiple time course complete issue
-* Fixed - Revamped Quill editor
-* Fixed - After reset Password Automatically logout issue
-* Fixed - Settings UI Duplicate CSS issue 
-* Fixed - Course Grid shortcode column issue
-
-= 2.0.14 - 02/09/2024 =
-* Fixed - Translate Issue
-* Fixed - Popup Modal Table Column UI Break Issue
-* Fixed - Mark as Complete Issue
-* Fixed - UI Issues
-* Fixed - Table Re-Render Issue
-* Fixed - Withdraw Method Missing
-
-= 2.0.13 - 22/08/2024 =
-* Fixed - Quiz Step Break issue.
-* Fixed - Frontend Dashboard UI issue.
-* Fixed - Pagination Issue of Course Grid Shortcode and Archive page.
-* Fixed - Frontend Dashboard Start Course should Redirect to Learn Page.
-* Fixed - PHP rendering issue in Expired Assignment.
-* Fixed - PHP Rendering issue in Learn Page.
-
-= 2.0.12 - 18/08/2024 =
-* Fixed - Vulnerability issue
-* Fixed - Embedded UI issue fixed
-* Fixed - Course Term assign issue
-* Fixed - Instructor Role issue
-* Fixed - Quill Editor height issue
-
-= 2.0.11 - 08/08/2024 =
-* Fixed - Fixed Announcement pagination
-* Fixed - Webhook table delivery url ui issue
-* Fixed - Settings Earning page not show 
-* Fixed - Course Duplicate notification issue
-* Fixed - Settings data saved issue
-* Fixed - Translation issue
-* Fixed - Lesson Data Export issue
-
-= 2.0.10 - 06/08/2024 =
-* Fixed - List Table Search & Pagination issue
-* Fixed - Student list table enrolled course info issue
-* Fixed - Announcement list table issue
-* Fixed - Lesson Attachment UI issue
-* Fixed - Quiz Attempt per page issue
-* Fixed - lesson slug conflicts with post slug
-* Fixed - Learn Page Next/Prev issue
-
-= 2.0.9 - 18/07/2024 =
-* Fixed - Quill Editor alignment issue
-* Fixed - Learn Page UI issues
-* Fixed - instructor table all data fetch issue
-* Added - Quill Editor Image uploading option
-
-= 2.0.8 - 17/07/2024 =
-* Fixed - WooCommerce addon not keep active for old user
-* Removed - Temporary Disable Isolated Block Editor Due to a compatibility issue with WordPress 6.6
-* Added - New Quill Editor
-
-= 2.0.7 - 16/07/2024 =
-* Fixed - Some ajax request permission issue
-* Fixed - Enrolled Course analytic not showing issue
-* Fixed - PHP Render Learn Page Responsive issues
-* Fixed - Remove Default eCommerce engine
-* Added - Complete topic checkbox will be disable by default
-
-= 2.0.6 - 15/07/2024 =
-* Fixed - UI Notice issue fixed
-* Fixed - Frontend Dashboard Tabs UI issue
-* Fixed - List Table Multiple time data fetch issue
-* Fixed - Frontend Dashboard Table Header Issue
-* Fixed - Total Lesson count issue
-* Fixed - Withdraw Payment option not showing in frontend dashboard
-* Fixed - Complete Course Button Error message not showing
-* Added - New Easy Digital Download Addon
-
-= 2.0.5 - 10/07/2024 =
-* Fixed - Frontend Dashboard UI issues
-* Fixed - Get Help Components UI issues
-* Fixed - React Console ESLint error issues
-* Fixed - Category & Tags UI
-* Fixed - Public Course Quiz Loading issues
-* Fixed - Vulnerability Issue fixed for capabilities issues
-
-= 2.0.4 - 04/07/2024 =
-* Fixed - Fix PHP Render Course Share not worked issues
-* Fixed - Paid Membership Pro addon enroll conflict
-* Fixed - Setup Page UI Break issues
-* Fixed - Quiz Question error message delay issues
-* Fixed - Instructor publish course not not saved issues
-* Fixed - Multi Instructions Modal Close issues
-* Fixed - Instructor Course Trash issues
-* Fixed - Quiz Attempt manual review not worked
-* Fixed - Admin Panel Notification UI Improved
-* Improvement - Update Modal UI
-* Improvement - Lesson Preview Checkbox components update
-* Improvement - Show info for lesson shortcode support
-* Improvement - Update Academy Select Component
-
-
-= 2.0.3 - 27/06/2024 =
-* Fixed - Course Archive page conflicts with WooCommerce Shop page 
-* Fixed - Attachment Component UI issues 
-* Fixed - Button Component UI issues 
-* Fixed - Quiz Builder questions Sortable not worked issue
-* Fixed - Course Duration UI issue
-* Fixed - Course Term UI issue
-* Fixed - Register Form Responsive issues
-* Fixed - Quiz Question correct answer notification issues
-* Fixed - Addons Docs Missing link
-* Fixed - Setup Screen UI issues
-* Fixed - Course Editor UI improved
-* Fixed - Webhook Table UI
-* Fixed - Frontend Dashboard UI issues
-* Fixed - Complete Course UI issues
-* Fixed - Frontend Dashboard Total Student count issues
-
-= 2.0.2 - 16/06/2024 =
-* Fixed - Course archive per page not worked 
-* Fixed - Student Role assign issues 
-* Fixed - After register student didn't redirect to course single page.
-* Fixed - Frontend Dashboard multi instructor withdraw & withdrawal page not worked properly issue.
-
-= 2.0.1 - 13/06/2024 =
-* Added - Quiz Types Delete button color
-* Added - All input has hover and focus color
-* Update - Tutor Booking Frontend Dashboard UI.
-* Update - Table border bottom.
-* Fixed - Learn Page PHP Render Permalink issue
-* Fixed - Learn Page template conflict with Academy Elementor addon
-* Fixed - Quiz List scrolling.
-* Fixed - Quiz builder true/false page blank issue
-* Fixed - Course Taxonomy Add Item width
-* Fixed - Course Taxonomy Add Item width
-* Fixed - Tutor booking trash issue fixing
-* Fixed - Empty Q&A submit issue fixing 
-* Fixed - Lot's of minor bug fixing
-
-
-= 2.0 - 11/06/2024 =
-* Added - Brand new UI
-* Added - New Fronted Dashboard For Students & Instructors
-* Added - Frontend Dashboard Revamped by PHP Rendering
-* Added - New Learn Page Builder
-* Added - One-click switcher from Legacy to Gutenberg Learn Page
-* Added - Full control over the frontend dashboard and Learn Page
-* Added - New settings save option to reduce server load
-* Added - Lesson comes with more default Gutenberg blocks support
-* Added - Added new shortcode for course curriculum
-* Added - Table column Sorting 
-* Added - Table column hide/show
-* Added - Modal Expandable option
-* Revamped - Table Ui
-* Revamped - Notification UI
-* Revamped - Dashboard Analytics
-* Revamped - Add new course 
-* Revamped - Lesson modal 
-* Revamped - Quiz modal 
-* Revamped - Announcement Modal
-* Revamped - Add new student modal
-* Revamped - Add new instructor modal
-* Revamped - Bulk import modal
-* Revamped - Tools page
-* Revamped - Settings page
-* Revamped - Dashboard Admin menu
-* Revamped - Topbar 
-* Revamped - Setup page
-* Fixed - A lot of UI Glitches has been fixed
-* Fixed - Performance issue has been fixed
-* Fixed - Question / Answer role bases issues has been fixed
-* Fixed - Improved overall security
-* Fixed - Form builder Checkbox & Radio button issue has been fixed
-* Fixed-  Required plugins' fatal error issue has been fixed
-
-= 1.9.27 - 08/04/2024 =
-* Fixed - Order auto complete not working issue
-
-= 1.9.27 - 08/04/2024 =
-* Fixed - Intro Video validation issue
-* Fixed - Quiz Answer endpoint Vulnerability issue
-
-= 1.9.25 - 03/04/2024 =
-* Fixed - Course Filter Accessibility Issue
-* Fixed - Notification Icon Wrong Position Issue
-* Fixed - If any student has deleted, admin can add them using same email
-* Fixed - After registration users can't redirect (Issue Fixed)
-* Fixed - Wrong data shows on Quiz Result Issue
-* Added - New Eye Button on Password & Confirm Password field.
-
-= 1.9.24 - 19/03/2024 =
-* Fixed - Reset Password confirmation msg 'undefined' issue
-* Fixed - Link validation for course intro video issue
-* Fixed - Quiz answer, Frontend instructor, Enrolled courses title Special character issue
-* Fixed - WooCommerce Payment On Hold Enroll Issue
-* Fixed - Minor Spelling Mistake Issue
-
-= 1.9.23 - 11/03/2024 =
-* Fixed - HTTP Referer issues
-
-= 1.9.22 - 07/03/2024 =
-* Added - Student enrolled course details analytics option
-* Added - Analytics card clickable
-* Fixed - Lesson Content Duplicate not worked
-* Fixed - Pagination not worked properly
-* Fixed - WooCommerce purchase issue
-* Fixed - Revamped QA Rest API
-* Removed - QA Create, Update and Delete endpoint
-* Removed - Registration Form Redirect
-
-
-= 1.9.21 - 22/02/2024 =
-* Fixed - Registration form template before submit hook not worked 
-
-= 1.9.20 - 19/02/2024 =
-* Fixed - Assignment time conflict with Translation
-* Fixed - Vulnerability issue
-
-= 1.9.19 - 15/02/2024 =
-* Fixed - Quiz attempt pagination not worked properly
-* Added - Quiz attempt rest end point for students
-
-= 1.9.18 - 13/02/2024 =
-* Added - Course Intro video deselect option
-* Fixed - Category, Tag special character issue
-* Fixed - Lesson delete issue
-* Fixed - Topic Select lesson, Quiz, Assignment, Zoom, Tutor booking pagination issue
-* Fixed - Topic Select lesson, Quiz, Assignment, Zoom, Tutor booking search issue
-* Updated - Academy help document list
-
-= 1.9.17 - 07/02/2024 =
-* Fixed - Lesson Double Notification issue
-* Fixed - Lesson update status conflicts with lesson content
-* Fixed - Lesson Restore issue
-* Fixed - Quiz Duplicate issue
-* Fixed - Quiz Attempt Answer not worked properly
-* Fixed - Paid Course Enroll issue
-* Fixed - Student Search not worked properly
-
-= 1.9.16 - 04/02/2024 =
-* Fixed - Lesson Content Update not worked
-
-= 1.9.15 - 01/02/2024 =
-* Fixed - Course trash status issue
-* Fixed - Instructor submit button infinite loading issue
-* Fixed - Student submit button infinite loading issue
-* Fixed - Instructor 'Removed' status deleted
-* Fixed - Instructor status update glitch
-* Fixed - Bulk import (Instructor & Student) file choosing infinite loading issue
-* Fixed - Course Bundle, Zoom, QA, Lesson, Webhook, Assignment minor glitch issue
-* Fixed - Lesson trash notification issue
-* Fixed - Quiz blank trash status issue
-* Fixed - Quiz notification issue
-
-= 1.9.14 - 30/01/2024 =
-* Added - Table Filter Options for all list table
-* Added - Form Builder Settings
-* Added - If enable Earning button then withdraw option will be show on Instructor Dashboard, otherwise it will be hide from Instructor Dashboard
-* Added - Customizer Options Updated (Enroll Information Color Control, Share Button Text Control)
-* Added - SiteGround Cache Plugin Compatibility
-* Fixed - Course Bundle Menu Showing on Free Version issue
-* Fixed - Login Popup Responsive Issue
-* Fixed - Quiz Bypass Issue
-* Fixed - Select Items List Responsive Issue
-* Fixed - Course Rating Start Icon Color Issue
-* Fixed - Frontend dashboard mobile responsive issue
-* Fixed - When there is no lesson and quiz data then export you will get empty csv file
-* Fixed - Review comments do not stay sequentially on the course page
-* Fixed - When trying to remove options from Multiple Questions, it not removing
-* Fixed - Rest API delete method not worked issue
-
-
-= 1.9.13 - 04/01/2024 =
-* Added - 16 New Webhook Events(Total 27 Events)
-* Fixed - Course Builder Topic title overflow issues
-* Fixed - Quiz Question title HTML tag Support issues
 
 Are you want to see more changelog? please [visit here](https://academylms.net/changelog/)
 

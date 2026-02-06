@@ -4,6 +4,8 @@ namespace AcademyCertificates\Ajax;
 
 use Academy\Classes\AbstractAjaxHandler;
 use Academy\Classes\EventStreamServer;
+use AcademyCertificates\Helper;
+use AcademyCertificates\Installer;
 
 class FontDownloader extends AbstractAjaxHandler {
 
@@ -17,6 +19,12 @@ class FontDownloader extends AbstractAjaxHandler {
 				'capability' => 'manage_options',
 				'callback'   => [ $this, 'download_fonts' ],
 			],
+			'fetch_academy_certificates' => array(
+				'callback' => array( $this, 'fetch_academy_certificates' )
+			),
+			'regenerate_academy_certificates' => array(
+				'callback' => array( $this, 'regenerate_academy_certificates' )
+			)
 		];
 	}
 
@@ -25,11 +33,71 @@ class FontDownloader extends AbstractAjaxHandler {
 		self::$sse->listen( function () {
 			$this->fonts_download();
 			update_option( 'academy_mpdf_fonts_downloaded', true );
-			self::$sse->emitEvent( [
+			self::$sse->emit_event( [
 				'type'    => 'complete',
 				'message' => esc_html__( 'Fonts download completed successfully!', 'academy' ),
 			], true );
 		} );
+	}
+
+	public function fetch_academy_certificates() {
+		$certificates = Helper::necessary_certificates();
+		$post_type    = 'academy_certificate';
+		$certificate_args = [];
+		if ( ! empty( $certificates ) ) {
+			foreach ( $certificates as $certificate ) {
+				$title = $certificate['title'] ?? '';
+
+				if ( '' === $title ) {
+					continue;
+				}
+				$post_slug = sanitize_title( $title );
+				$existing = \Academy\Helper::get_page_by_slug( $post_slug, $post_type );
+
+				if ( $existing instanceof \WP_Post ) {
+					$certificate_args[] = (object) [
+						'ID' => $existing->ID,
+						'title' => $certificate['title'],
+						'slug' => $post_slug,
+					];
+				}
+			}
+		}
+		wp_send_json_success( $certificate_args );
+	}
+
+	public function regenerate_academy_certificates() {
+		$certificates = Helper::necessary_certificates();
+		$post_type    = 'academy_certificate';
+
+		if ( ! empty( $certificates ) ) {
+			foreach ( $certificates as $certificate ) {
+				$title = $certificate['title'] ?? '';
+
+				if ( '' === $title ) {
+					continue;
+				}
+
+				$post_slug = sanitize_title( $title );
+				$existing = \Academy\Helper::get_page_by_slug( $post_slug, $post_type );
+
+				if ( $existing instanceof \WP_Post ) {
+					wp_delete_post( $existing->ID, true );
+				}
+			}
+		}
+
+		// Recreate certificates & update options
+		$installer = new Installer();
+		if ( method_exists( $installer, 'insert_default_certificate' ) ) {
+			$installer->insert_default_certificate();
+		}
+
+		if ( method_exists( $installer, 'save_option' ) ) {
+			$installer->save_option();
+		}
+
+		wp_send_json_success( __( 'Successfully Re-generated certificates.', 'academy' ) );
 	}
 
 	private function fonts_download(): void {
@@ -43,7 +111,7 @@ class FontDownloader extends AbstractAjaxHandler {
 
 		if ( ! is_dir( $fonts_dir ) ) {
 			if ( ! wp_mkdir_p( $fonts_dir ) ) {
-				$sse->emitEvent( [
+				$sse->emit_event( [
 					'type'    => 'message',
 					'message' => esc_html__( 'Failed to create fonts directory.', 'academy' ),
 				], true );
@@ -51,15 +119,15 @@ class FontDownloader extends AbstractAjaxHandler {
 		}
 
 		$filepath = trailingslashit( $fonts_dir ) . $filename;
-
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
 		$fp = fopen( $filepath, 'w+' );
 		if ( ! $fp ) {
-			$sse->emitEvent( [
+			$sse->emit_event( [
 				'type'    => 'message',
 				'message' => esc_html__( 'Failed to open file for writing.', 'academy' ),
 			], true );
 		}
-		fclose( $fp );
+		fclose( $fp );// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
 
 		add_action( 'requests-curl.before_send', [ __CLASS__, 'percentage_callback' ] );
 		$result = wp_remote_get( $font_zip_url, [
@@ -71,12 +139,12 @@ class FontDownloader extends AbstractAjaxHandler {
 		remove_action( 'requests-curl.before_send', [ __CLASS__, 'percentage_callback' ] );
 
 		if ( wp_remote_retrieve_response_code( $result ) >= 400 ) {
-			$sse->emitEvent( [
+			$sse->emit_event( [
 				'type'    => 'message',
 				'message' => esc_html__( 'Failed to download zip file.', 'academy' ),
 			], true );
 		}
-		$sse->emitEvent( [
+		$sse->emit_event( [
 			'type'    => 'message',
 			'message' => esc_html__( 'Download complete. Extracting...', 'academy' ),
 		] );
@@ -90,7 +158,7 @@ class FontDownloader extends AbstractAjaxHandler {
 
 		$unzip_result = unzip_file( $filepath, $fonts_dir );
 		if ( is_wp_error( $unzip_result ) ) {
-			$sse->emitEvent( [
+			$sse->emit_event( [
 				'type'    => 'message',
 				'message' => sprintf( __( 'Failed to extract zip file: %s', 'academy' ), $unzip_result->get_error_message() ),
 			], true );
@@ -99,14 +167,14 @@ class FontDownloader extends AbstractAjaxHandler {
 		if ( $wp_filesystem->is_dir( $fonts_dir . 'alms-ttfonts' ) ) {
 			$result = $wp_filesystem->move( $fonts_dir . 'alms-ttfonts', $fonts_dir . 'ttfonts', true );
 			if ( ! $result ) {
-				$sse->emitEvent( [
+				$sse->emit_event( [
 					'type'    => 'message',
 					'message' => esc_html__( 'Failed to rename directory.', 'academy' ),
 				], true );
 			}
 		}
 
-		$sse->emitEvent( [
+		$sse->emit_event( [
 			'type'    => 'message',
 			'message' => esc_html__( 'Unzip complete!', 'academy' ),
 		] );
@@ -114,7 +182,7 @@ class FontDownloader extends AbstractAjaxHandler {
 		// Delete the zip file
 		if ( file_exists( $filepath ) ) {
 			unlink( $filepath );
-			$sse->emitEvent( [
+			$sse->emit_event( [
 				'type'    => 'message',
 				'message' => esc_html__( 'Zip file deleted.', 'academy' ),
 			] );
@@ -126,7 +194,7 @@ class FontDownloader extends AbstractAjaxHandler {
 		curl_setopt( $args, CURLOPT_PROGRESSFUNCTION, function ( $resource, $download_size, $downloaded ) {
 			if ( $download_size > 0 ) {
 				$percent = round( ( $downloaded / $download_size ) * 100 );
-				self::$sse->emitEvent( [
+				self::$sse->emit_event( [
 					'type'    => 'percentage',
 					'message' => $percent,
 				] );

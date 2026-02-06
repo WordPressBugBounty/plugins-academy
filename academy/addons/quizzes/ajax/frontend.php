@@ -293,8 +293,10 @@ class Frontend extends AbstractAjaxHandler {
 				$attempt_item->is_correct = (bool) $attempt_item->is_correct;
 				$attempt_item->correct_answer = \AcademyQuizzes\Helper::prepare_correct_answer( $attempt_item->question_type, $attempt_item );
 				$attempt_item->question_title = html_entity_decode( $attempt_item->question_title );
+				$attempt_item->question_image_url = ! empty( $attempt_item->question_image_id ) ? wp_get_attachment_url( $attempt_item->question_image_id ) : '';
 				$prepare_response[ $attempt_item->attempt_answer_id ] = $attempt_item;
 			}
+
 			wp_send_json_success( array_values( $prepare_response ) );
 		}
 		wp_send_json_error( esc_html__( 'Access Denied', 'academy' ) );

@@ -20,7 +20,7 @@ trait Courses {
 		$ratings = array(
 			'rating_count'   => 0,
 			'rating_sum'     => 0,
-			'rating_avg'     => 0.00,
+			'rating_avg'     => number_format( 0, 1 ),
 			'count_by_value' => array(
 				5 => 0,
 				4 => 0,
@@ -201,7 +201,9 @@ trait Courses {
 	}
 
 	public static function do_enroll( $course_id, $user_id, $order_id = 0 ) {
-		if ( ! $course_id || ! $user_id || self::is_enrolled( $course_id, $user_id, 'any' ) ) {
+		$enrolled = self::is_enrolled( $course_id, $user_id, 'any' );
+
+		if ( ! $course_id || ! $user_id || ( ! empty( $enrolled ) && 'cancel' !== $enrolled->enrolled_status ) ) {
 			return false;
 		}
 
@@ -226,8 +228,29 @@ trait Courses {
 			)
 		);
 
-		// Insert the post into the database
-		$enroll_id = wp_insert_post( $enroll_data );
+		// Insert or update
+		if ( ! $enrolled ) {
+			$enroll_id = wp_insert_post( $enroll_data, true );
+		} else {
+			$enroll_data['ID']           = $enrolled->ID;
+			$enroll_data['post_date']    = current_time( 'mysql' );
+			$enroll_data['post_date_gmt'] = current_time( 'mysql', 1 );
+			$enroll_id = wp_update_post( $enroll_data, true );
+
+			if ( \Academy\Helper::get_settings( 'is_reset_academy_enrolled_course_progress' ) ) {
+				self::reset_re_enroll_course_progress( $course_id, $user_id );
+			}
+		}
+
+		// Handle errors
+		if ( is_wp_error( $enroll_id ) ) {
+			error_log( 'Enrollment failed: ' . $enroll_id->get_error_message() );
+			return false;
+		}
+
+		// Clear cache to ensure fresh post object next time
+		clean_post_cache( $enroll_id );
+
 		if ( $enroll_id ) {
 			// Make Current User as Students
 			update_user_meta( $user_id, 'is_academy_student', self::get_time() );
@@ -250,6 +273,72 @@ trait Courses {
 			return $enroll_id;
 		}//end if
 		return false;
+	}
+
+	public static function reset_re_enroll_course_progress( $course_id, $user_id ) {
+		global $wpdb;
+		$option_name        = 'academy_course_' . $course_id . '_completed_topics';
+		update_user_meta( $user_id, $option_name, wp_json_encode( [] ) );
+		$attempt_items = \AcademyQuizzes\Classes\Query::get_attempt_id_by_user_and_course_id( $course_id, $user_id );
+		if ( ! empty( $attempt_items ) ) {
+			foreach ( $attempt_items as $attempt_item ) {
+				\AcademyQuizzes\Classes\Query::delete_quiz_attempt( $attempt_item->attempt_id );
+			}
+		}
+		$wpdb->delete(
+			$wpdb->prefix . 'comments',
+			array(
+				'comment_agent'   => 'academy',
+				'comment_type'    => 'course_completed',
+				'comment_post_ID' => $course_id,
+				'user_id'         => $user_id,
+			),
+			array(
+				'%s',
+				'%s',
+				'%d',
+				'%d',
+			)
+		);
+
+		$wpdb->delete(
+			$wpdb->comments,
+			[
+				'comment_agent'  => 'academy',
+				'comment_type'   => 'academy_assignments',
+				'comment_parent' => $course_id,
+				'user_id'        => $user_id,
+			],
+			[ '%s', '%s', '%d', '%d' ]
+		);
+	}
+
+	public static function get_topic_item_by_course_id( $course_id, $type = null ) {
+		$topics = self::get_course_curriculum_array( $course_id );
+		if ( empty( $topics ) ) {
+			return null;
+		}
+		foreach ( $topics as $key => $value ) {
+			if ( $type === $value['type'] ) {
+				return $value;
+			}
+		}
+		return null;
+	}
+
+	public static function get_course_curriculum_array( $course_id ) {
+		$course_curriculum = get_post_meta( $course_id, 'academy_course_curriculum', true );
+		$prepare_curriculum = array();
+		if ( is_array( $course_curriculum ) ) {
+			foreach ( $course_curriculum as $curriculum ) {
+				if ( is_array( $curriculum['topics'] ) ) {
+					foreach ( $curriculum['topics'] as $topic ) {
+						$prepare_curriculum[] = $topic;
+					}
+				}
+			}
+		}
+		return $prepare_curriculum;
 	}
 
 	public static function is_enrolled( $course_id, $user_id, $status = 'completed' ) {
@@ -340,8 +429,8 @@ trait Courses {
 		return false;
 	}
 
-	public static function is_completed_course( $course_id, $user_id, $allow_details = false ) {
-		if ( ! is_user_logged_in() ) {
+	public static function is_completed_course( $course_id, $user_id, $allow_details = false, $verification_id = '' ) {
+		if ( ! is_user_logged_in() && ! $verification_id ) {
 			return apply_filters( 'academy/is_completed_course', false, $course_id, $user_id );
 		}
 
@@ -507,14 +596,14 @@ trait Courses {
 			$student_id
 		), ARRAY_A);
 
-		return $results ?: [];
+		return $results ?? [];
 	}
 
 	public static function get_wishlist_courses_by_user( $user_id, $post_status = 'publish' ) {
 		$course_ids = self::get_wishlist_courses_ids_by_user( $user_id );
 		if ( count( $course_ids ) ) {
 			$course_args = array(
-				'post_type'      => 'academy_courses',
+				'post_type'      => [ 'academy_courses', 'alms_course_bundle' ],
 				'post_status'    => $post_status,
 				'post__in'       => $course_ids,
 				'posts_per_page' => -1,
@@ -538,11 +627,26 @@ trait Courses {
 		$count      = 0;
 		$curriculum = get_post_meta( $course_id, 'academy_course_curriculum', true );
 		$topics     = wp_list_pluck( $curriculum, 'topics' );
-		if ( is_array( $topics ) ) {
-			foreach ( $topics as $topics_lists ) {
-				$count += count( $topics_lists );
+
+		if ( ! is_array( $topics ) ) {
+			return $count;
+		}
+
+		foreach ( $topics as $topics_lists ) {
+			if ( ! is_array( $topics_lists ) ) {
+				continue;
+			}
+
+			foreach ( $topics_lists as $list ) {
+				if ( isset( $list['topics'] ) && is_array( $list['topics'] ) ) {
+					$count += count( $list['topics'] );
+					continue;
+				}
+
+				$count++;
 			}
 		}
+
 		return apply_filters(
 			'academy/count_total_topics_in_course',
 			(int) $count,
@@ -906,6 +1010,14 @@ trait Courses {
 		return (array) $results;
 	}
 
+	public static function get_review_by_user( $user_id, $course_id ) {
+		return get_comments( array(
+			'user_id'      => $user_id,
+			'post_id'      => $course_id,
+			'comment_type' => 'academy_courses',
+		) );
+	}
+
 	public static function get_assigned_courses_ids_by_instructor_id( $user_id ) {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -988,12 +1100,17 @@ trait Courses {
 				foreach ( $curriculum as $topic ) {
 					if ( isset( $topic['topics'] ) && is_array( $topic['topics'] ) && count( $topic['topics'] ) ) {
 						foreach ( $topic['topics'] as $topic_item ) {
-							if ( isset( $topic_item['type'] ) && 'lesson' === $topic_item['type'] ) {
+							$type = isset( $topic_item['type'] ) ? $topic_item['type'] : '';
+							if ( empty( $type ) ) {
+								continue;
+							}
+
+							if ( $type && 'lesson' === $type ) {
 								// phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 								$total_lessons += 1;
 								$total_file += (int) \Academy\Helper::get_lesson_meta( $topic_item['id'], 'featured_media' );
 							}
-							if ( 'sub-curriculum' === $topic_item['type'] ) {
+							if ( 'sub-curriculum' === $type ) {
 								foreach ( $topic_item['topics'] as $sub_topic ) {
 									if ( isset( $sub_topic['type'] ) && 'lesson' === $sub_topic['type'] ) {
 										// phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
@@ -1002,9 +1119,9 @@ trait Courses {
 									}
 								}
 							}
-						}
-					}
-				}
+						}//end foreach
+					}//end if
+				}//end foreach
 			}//end if
 		}//end if
 		return $total_lessons;
@@ -1029,18 +1146,18 @@ trait Courses {
 					continue;
 				}
 
-				if ( $item['type'] === 'lesson' && ! empty( $item['id'] ) ) {
+				if ( 'lesson' === $item['type'] && ! empty( $item['id'] ) ) {
 					if ( \Academy\Helper::get_lesson_meta( $item['id'], 'attachment' ) ) {
 						++$total;
 					}
 				}
 
 				// Nested sub-curriculum lessons
-				if ( $item['type'] === 'sub-curriculum' && ! empty( $item['topics'] ) ) {
+				if ( 'sub-curriculum' === $item['type'] && ! empty( $item['topics'] ) ) {
 					foreach ( $item['topics'] as $sub_item ) {
 						if (
 							! empty( $sub_item['type'] ) &&
-							$sub_item['type'] === 'lesson' &&
+							'lesson' === $sub_item['type'] &&
 							! empty( $sub_item['id'] ) &&
 							\Academy\Helper::get_lesson_meta( $sub_item['id'], 'attachment' )
 						) {
@@ -1056,9 +1173,10 @@ trait Courses {
 
 	public static function get_course_duration( $ID ) {
 		$duration = get_post_meta( $ID, 'academy_course_duration', true );
-		if ( is_array( $duration ) && count( $duration ) && ( $duration[0] || $duration[1] ) ) {
-			$hours   = intval( $duration[0] );
-			$minutes = intval( $duration[1] );
+		if ( is_array( $duration ) && count( $duration ) && ( $duration[0] || $duration[1] || $duration[2] ) ) {
+			$hours   = isset( $duration[0] ) ? intval( $duration[0] ) : 0;
+			$minutes = isset( $duration[1] ) ? intval( $duration[1] ) : 0;
+			$seconds = isset( $duration[2] ) ? intval( $duration[2] ) : 0;
 
 			$parts = [];
 
@@ -1070,8 +1188,12 @@ trait Courses {
 				$parts[] = $minutes . ' mins';
 			}
 
+			if ( $seconds > 0 ) {
+				$parts[] = $seconds . ' sec';
+			}
+
 			return implode( ' ', $parts );
-		}
+		}//end if
 		return '';
 	}
 
@@ -1424,6 +1546,10 @@ trait Courses {
 				$temp_topic = [];
 				if ( is_array( $curriculum['topics'] ) ) {
 					foreach ( $curriculum['topics'] as $topic ) {
+						if ( ! isset( $topic['type'] ) || empty( $topic['type'] ) ) {
+							continue;
+						}
+
 						if ( 'quiz' === $topic['type'] && ! Helper::get_addon_active_status( 'quizzes' ) ) {
 							continue;
 						}
@@ -1706,6 +1832,45 @@ trait Courses {
 			$course_id
 		);
 		return $curriculum_counts;
+	}
+
+	public static function get_total_topic_title_by_course_id( $course_id ) {
+		$curriculums = self::get_course_curriculums( $course_id );
+		if ( empty( $curriculums ) ) {
+			return __( 'No topics list found', 'academy' );
+		}
+		$topics_title = array_column( $curriculums, 'name' );
+		$string = '';
+		foreach ( $topics_title as $key => $item ) {
+			$string .= ( $key + 1 ) . '. ' . $item . ' ';
+		}
+
+		return $string;
+	}
+
+	public static function get_course_curriculums( $course_id ) {
+		$course_curriculum = get_post_meta( $course_id, 'academy_course_curriculum', true );
+		$prepare_curriculum = array();
+
+		if ( empty( $course_curriculum ) || ! is_array( $course_curriculum ) ) {
+			return $prepare_curriculum;
+		}
+
+		foreach ( $course_curriculum as $curriculum ) {
+			if ( empty( $curriculum['topics'] ) || ! is_array( $curriculum['topics'] ) ) {
+				continue;
+			}
+
+			foreach ( $curriculum['topics'] as $topic ) {
+				if ( ! empty( $topic['topics'] ) && is_array( $topic['topics'] ) ) {
+					$prepare_curriculum = array_merge( $prepare_curriculum, $topic['topics'] );
+				} else {
+					$prepare_curriculum[] = $topic;
+				}
+			}
+		}
+
+		return $prepare_curriculum;
 	}
 
 	public static function get_course_download_id( $course_id ) {

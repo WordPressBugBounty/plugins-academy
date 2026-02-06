@@ -341,7 +341,7 @@
 			class="academy-btn academy-btn--md academy-btn--bg-purple academy-btn-popup-login" 
 			type="button"
 		>
-			<span class="academy-btn--label"><?php echo esc_html( 'Login' ); ?></span>
+			<span class="academy-btn--label"><?php echo esc_html__( 'Login', 'academy' ); ?></span>
 		</button>
 		<div id="academy-btn-popup-login"></div>
 	</div>

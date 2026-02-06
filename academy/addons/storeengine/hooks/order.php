@@ -9,8 +9,12 @@ class Order {
 
 	public static function init() {
 		$self = new self();
-
-		add_action( 'storeengine/order/create_order_line_item', [ $self, 'save_course_id_in_order_line_item' ], 10, 2 );
+		// order
+		if ( version_compare( STOREENGINE_VERSION, '1.6.7', '<' ) ) {
+			add_action( 'storeengine/order/create_order_line_item', [ $self, 'save_course_id_in_order_line_item' ], 10, 2 );
+		} else {
+			add_action( 'storeengine/checkout/create_order_line_item', [ $self, 'save_course_id_in_order_line_item' ], 10, 2 );
+		}
 		add_filter( 'storeengine/order/item_image_post_id', [ $self, 'replace_image_post_id' ], 10, 2 );
 		add_filter( 'storeengine/order/item_name', [ $self, 'replace_item_name' ], 10, 2 );
 		add_filter( 'storeengine/order/item_permalink', [ $self, 'replace_permalink' ], 10, 2 );

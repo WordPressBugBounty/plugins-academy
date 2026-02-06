@@ -23,12 +23,16 @@ class AcademyTabs {
 			'academy_tabs'
 		);
 
-		$title_lists = explode( ',', $attributes['render_title'] );
-		$shortcode_lists = explode( ',', $attributes['render_shortcode'] );
+		$render_title     = sanitize_text_field( $attributes['render_title'] );
+		$render_shortcode = sanitize_text_field( $attributes['render_shortcode'] );
+
+		$title_lists     = explode( ',', $render_title );
+		$shortcode_lists = explode( ',', $render_shortcode );
 
 		$shortcode_lists_with_title = [];
 
 		foreach ( $title_lists as $key => $title ) {
+			$title = sanitize_text_field( $title );
 			switch ( $title ) {
 				case 'Course Content':
 					$display_title = __( 'Course Content', 'academy' );
@@ -46,7 +50,7 @@ class AcademyTabs {
 			$display_titles[] = $display_title;
 			$shortcode_lists_with_title[] = [
 				'title' => $title,
-				'shortcode' => $shortcode_lists[ $key ] ?? ''
+				'shortcode' => isset( $shortcode_lists[ $key ] ) ? sanitize_key( $shortcode_lists[ $key ] ) : '',
 			];
 		}//end foreach
 
@@ -59,5 +63,3 @@ class AcademyTabs {
 		return apply_filters( 'academy/templates/shortcode/tabs', ob_get_clean() );
 	}
 }
-
-

@@ -8,7 +8,7 @@ class Database {
 
 	public static function init() {
 		$self = new self();
-		add_action( 'init', [ $self, 'create_academy_certificate_post_type' ] );
+		add_action( 'init', [ $self, 'create_academy_certificate_post_type' ], 5 );
 	}
 
 	public function create_academy_certificate_post_type() {

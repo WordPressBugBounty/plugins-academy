@@ -27,46 +27,47 @@ class Assets extends ScriptsBase {
 			remove_all_actions( 'admin_notices' );
 			// dequeue third party plugin assets
 			add_action(
-			'wp_print_scripts',
-			function () {
-				$isSkip = apply_filters( 'academy/skip_no_conflict_backend_scripts', Helper::is_dev_mode_enable() );
+				'wp_print_scripts',
+				function () {
+					$isSkip = apply_filters( 'academy/skip_no_conflict_backend_scripts', Helper::is_dev_mode_enable() );
 
-				if ( $isSkip ) {
-					return;
-				}
+					if ( $isSkip ) {
+						return;
+					}
 
-				global $wp_scripts;
+					global $wp_scripts;
 					if ( ! $wp_scripts ) {
-					return;
-				}
+						return;
+					}
 
-				$pluginUrl = plugins_url();
-				 // Allowlist of plugin slugs (yours is already included by default)
-				$allowed_plugins = apply_filters(
-					'academy/allowed_third_party_plugins_assets',
-					[ ACADEMY_PLUGIN_SLUG ]
-				);
+					$pluginUrl = plugins_url();
+					// Allowlist of plugin slugs (yours is already included by default)
+					$allowed_plugins = apply_filters(
+						'academy/allowed_third_party_plugins_assets',
+						[ ACADEMY_PLUGIN_SLUG ]
+					);
 
-				foreach ( $wp_scripts->queue as $script ) {
-					$src = $wp_scripts->registered[ $script ]->src;
+					foreach ( $wp_scripts->queue as $script ) {
+						$src = $wp_scripts->registered[ $script ]->src;
 
-					if ( strpos( $src, $pluginUrl ) !== false ) {
-						// Check if this script matches any allowed plugin slug
-						$is_allowed = false;
-						foreach ( $allowed_plugins as $slug ) {
-							if ( strpos( $src, $slug ) !== false ) {
-								$is_allowed = true;
-								break;
+						if ( strpos( $src, $pluginUrl ) !== false ) {
+							// Check if this script matches any allowed plugin slug
+							$is_allowed = false;
+							foreach ( $allowed_plugins as $slug ) {
+								if ( strpos( $src, $slug ) !== false ) {
+									$is_allowed = true;
+									break;
+								}
+							}
+
+							// Dequeue if not allowed
+							if ( ! $is_allowed ) {
+								wp_dequeue_script( $wp_scripts->registered[ $script ]->handle );
 							}
 						}
-
-						// Dequeue if not allowed
-						if ( ! $is_allowed ) {
-							wp_dequeue_script( $wp_scripts->registered[ $script ]->handle );
-						}
 					}
-				}
-			},1);
+				}, 1
+			);
 
 			$this->load_web_font_and_icon();
 			wp_enqueue_style( 'academy-admin-style', ACADEMY_ASSETS_URI . 'build/backend.css', array( 'wp-components' ), filemtime( ACADEMY_ASSETS_DIR_PATH . 'build/backend.css' ), 'all' );

@@ -5,8 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Academy\Admin\Settings;
-use Academy\Helper;
+use AcademyCertificates\Helper;
 
 class Installer {
 
@@ -27,46 +26,10 @@ class Installer {
 		}
 	}
 
-
-	private function necessary_certificates() {
-		$default_certificates = array(
-			array(
-				'title' => esc_html__( 'Certificate 1', 'academy' ),
-				'file' => 'certificates/dummy-certificate/certificate-1.php',
-			),
-			array(
-				'title' => esc_html__( 'Certificate 2', 'academy' ),
-				'file' => 'certificates/dummy-certificate/certificate-2.php',
-			),
-			array(
-				'title' => esc_html__( 'Certificate 3', 'academy' ),
-				'file' => 'certificates/dummy-certificate/certificate-3.php',
-			),
-			array(
-				'title' => esc_html__( 'Certificate 4', 'academy' ),
-				'file' => 'certificates/dummy-certificate/certificate-4.php',
-			),
-			array(
-				'title' => esc_html__( 'Certificate 5', 'academy' ),
-				'file' => 'certificates/dummy-certificate/certificate-5.php',
-			),
-			array(
-				'title' => esc_html__( 'Certificate 6', 'academy' ),
-				'file' => 'certificates/dummy-certificate/certificate-6.php',
-			),
-			array(
-				'title' => esc_html__( 'Certificate 7', 'academy' ),
-				'file' => 'certificates/dummy-certificate/certificate-7.php',
-			),
-		);
-
-		return $default_certificates;
-	}
-
 	public function insert_default_certificate() {
 		$post_type = 'academy_certificate';
 
-		$certificates = self::necessary_certificates();
+		$certificates = Helper::necessary_certificates();
 
 		foreach ( $certificates as $certificate ) {
 			$title = $certificate['title'];

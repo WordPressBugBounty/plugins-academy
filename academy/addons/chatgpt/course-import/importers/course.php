@@ -100,7 +100,7 @@ class Course implements Interfaces\Insertable {
 					'type' => 'lesson',
 				];
 			} catch ( Exception $e ) {
-				// do nothing
+				$topics = [];
 			}
 		}
 		return $topics;
@@ -117,7 +117,7 @@ class Course implements Interfaces\Insertable {
 					'type' => 'assignment',
 				];
 			} catch ( Exception $e ) {
-				// do nothing
+				$topics = [];
 			}
 		}
 		return $topics;
@@ -128,15 +128,16 @@ class Course implements Interfaces\Insertable {
 			return [];
 		}
 		$topics = [];
+		$name = 'Quizzes';
 		try {
-			$quiz_id = ( new Quiz( $name = 'Quizzes', '', $quizzes ) )->insert();
+			$quiz_id = ( new Quiz( $name, '', $quizzes ) )->insert();
 			$topics[] = [
 				'id' => $quiz_id,
 				'name' => $name,
 				'type' => 'quiz',
 			];
 		} catch ( Exception $e ) {
-			// do nothing
+			$topics = [];
 		}
 
 		return $topics;

@@ -20,6 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	$academy_cover_photo = esc_html( get_user_meta( $user_id, 'academy_cover_photo', true ) );
 
+	$user_info = get_userdata( $user_id );
+	$user_role = in_array( 'academy_instructor', $user_info->roles ) ? 'instructor' : 'student';
+	$user_fields = \Academy\Helper::get_form_builder_fields( $user_role );
+	$user_meta = \Academy\Helper::prepare_user_meta_data( $user_fields, $user_id );
+	$user_data = array_column( $user_meta, null, 'type' );
 	?>
 
 <div id="tab-panel-1-profile-view" role="tabpanel" aria-labelledby="tab-panel-1-profile" class="components-tab-panel__tab-content">
@@ -93,6 +98,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<label for="linkedin_url"><?php esc_html_e( 'LinkedIn URL', 'academy' ); ?></label>
 					<input name="academy_linkedin_url" id="linkedin_url" type="url" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_linkedin_url', true ) ); ?>">
 				</div>
+				<?php	foreach ( $user_data as $data ) {
+					echo '<div class="academy-column-items">'
+								. '<label for="' . esc_attr( $data['type'] ) . '">' . esc_html( $data['label'] ) . '</label>'
+								. '<input name="academy_' . esc_attr( $data['type'] ) . '-field" '
+										. 'id="' . esc_attr( $data['type'] ) . '" '
+										. 'type="text" '
+										. 'placeholder="" '
+										. 'class="academy-input" '
+										. 'value="' . esc_attr( $data['value'] ) . '">'
+							. '</div>';
+				} ?>
 				<input class="academy-btn academy-btn--bg-purple academy-btn--save-settings" type="submit" value="<?php echo esc_html__( 'Save Settings', 'academy' ); ?>">
 			</form>
 		</div>

@@ -62,9 +62,9 @@ class PostLessonCollection extends Base\Collection {
 		}
 		$placeholder = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 		$meta_data = $this->skip_meta ? [] : $this->wpdb->get_results(
-			$this->wpdb->prepare(
-				"SELECT * FROM {$this->wpdb->postmeta} WHERE post_id IN ({$placeholder}) ",
-				...$ids,
+			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT * FROM {$this->wpdb->postmeta} WHERE post_id IN ({$placeholder}) ", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				...$ids, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			),
 			ARRAY_A
 		) ?? [];

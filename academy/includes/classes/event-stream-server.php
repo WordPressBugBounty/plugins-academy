@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * ```php
  * $sse = new EventStreamServer();
  * $sse->listen(function () use ($sse) {
- *     $sse->emitEvent([
+ *     $sse->emit_event([
  *         'event'   => 'ping',
  *         'message' => 'hello',
  *         'time'    => current_time('mysql'),
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  *     // Optionally close stream under a condition
  *     if ( some_condition() ) {
- *         $sse->emitEvent([
+ *         $sse->emit_event([
  *             'event'   => 'end',
  *             'message' => 'done',
  *         ], true);
@@ -57,7 +57,7 @@ class EventStreamServer {
 	 *
 	 * Disables buffering and compression, sets correct headers, and ends any existing output buffers.
 	 */
-	protected function setupHeaders(): void {
+	protected function setup_headers(): void {
 		// phpcs:disable
 		$previous = error_reporting( error_reporting() ^ E_WARNING ); // Disable warnings temporarily
 
@@ -82,7 +82,6 @@ class EventStreamServer {
 			header( 'Content-Encoding: none' );
 		}
 
-
 		$this->id = intval( wp_unslash( $_SERVER['HTTP_LAST_EVENT_ID'] ?? 0 ) );
 		$this->is_reconnect = isset( $_SERVER['HTTP_LAST_EVENT_ID'] );
 
@@ -106,14 +105,15 @@ class EventStreamServer {
 	/**
 	 * Starts the event stream and repeatedly invokes the provided callback.
 	 *
-	 * The callback should use emitEvent() to send data to the client.
+	 * The callback should use emit_event() to send data to the client.
 	 *
 	 * @param callable $callback The function that emits events. Called continuously while connected.
 	 */
 	public function listen( callable $callback ): void {
-		$this->setupHeaders();
+		$this->setup_headers();
 
 		// Initial padding to prevent browser-side buffering (especially in IE)
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo ':' . str_repeat( ' ', 2048 ) . "\n\n";
 		flush();
 
@@ -124,9 +124,10 @@ class EventStreamServer {
 		while ( $this->connected ) {
 			$upTime = ( time() - $start );
 
-			if ( $upTime % 300 === 0 ) {
+			if ( 0 === $upTime % 300 ) {
 				// No updates needed, send a comment to keep the connection alive.
 				// From https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo ': ' . sha1( mt_rand() ) . "\n\n";
 			}
 
@@ -134,7 +135,7 @@ class EventStreamServer {
 				call_user_func( $callback );
 			} catch ( \Exception $e ) {
 
-				$this->emitEvent( [
+				$this->emit_event( [
 					'event'   => 'error',
 					'message' => $e->getMessage(),
 					'code'    => $e->getCode(),
@@ -175,16 +176,16 @@ class EventStreamServer {
 	 *
 	 * @return void
 	 */
-	public function emitEvent( array $data = [], bool $terminate = false ): void {
+	public function emit_event( array $data = [], bool $terminate = false ): void {
 		$event = $data['event'] ?? 'message';
 		unset( $data['event'] );
 
-		echo "id: {$this->getNewId()}\n";
-		echo "event: {$event}\n";
+		echo "id: {$this->get_new_id()}\n";// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo "event: {$event}\n";// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo 'data: ' . wp_json_encode( $data ) . "\n\n";
 
 		// Browser padding for IE
-		echo ':' . str_repeat( ' ', 2048 ) . "\n\n";
+		echo ':' . str_repeat( ' ', 2048 ) . "\n\n";// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		@ob_flush();
 		flush();
@@ -194,7 +195,7 @@ class EventStreamServer {
 		}
 	}
 
-	public function getNewId(): int {
+	public function get_new_id(): int {
 		return $this->id ++;
 	}
 }

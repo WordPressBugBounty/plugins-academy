@@ -4,8 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use \Academy\Helper;
-
+use Academy\Helper;
+use Academy\Classes\LocoTranslateSync;
 /**
  * Academy Templates Related all functions write here
  */
@@ -291,8 +291,8 @@ if ( ! function_exists( 'academy_course_loop_enroll' ) ) {
 
 if ( ! function_exists( 'academy_course_loop_footer_inner_price' ) ) {
 	function academy_course_loop_footer_inner_price( $card_style ) {
-		if ( 'layout_two' !== $card_style ) {
-			$course_id = get_the_ID();
+		$course_id = get_the_ID();
+		if ( 'layout_two' !== $card_style && 'alms_course_bundle' !== get_post( $course_id )->post_type ) {
 			$course_type   = Helper::get_course_type( $course_id );
 			$is_paid   = Helper::is_course_purchasable( $course_id );
 			$price     = '';
@@ -611,8 +611,8 @@ if ( ! function_exists( 'academy_course_enroll_form' ) ) {
 					'download_id'                => $download_id,
 					'force_login_before_enroll' => $force_login_before_enroll
 				) );
-			} elseif ( 'storeengine' === Helper::monetization_engine() && Helper::is_course_purchasable( get_the_ID() ) ) {
-
+			} elseif ( 'storeengine' === Helper::monetization_engine() && Helper::is_course_purchasable( get_the_ID() ) ) {// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedElseif
+				// phpcs:ignore PSR2.ControlStructures.ElseIfDeclaration.NotAllowed
 			} else {
 				$is_enabled_academy_login = Helper::get_settings( 'is_enabled_academy_login', true );
 				Helper::get_template( 'single-course/enroll/enroll-form.php', array(
@@ -1202,8 +1202,9 @@ function academy_frontend_dashboard_become_an_instructor_page() {
 function academy_frontend_dashboard_profile_page() {
 	$user_id = get_current_user_id();
 	$user_info = get_userdata( $user_id );
-	$instructor_fields = \Academy\Helper::get_form_builder_fields( 'instructor' );
-	$student_fields = \Academy\Helper::get_form_builder_fields( 'student' );
+	$user_role = in_array( 'academy_student', $user_info->roles ) ? 'student' : 'instructor';
+	$user_fields = \Academy\Helper::get_form_builder_fields( $user_role );
+	$user_meta = \Academy\Helper::prepare_user_meta_data( $user_fields, $user_id );
 
 	$user_data = [
 		'registration_date' => [
@@ -1268,12 +1269,12 @@ function academy_frontend_dashboard_profile_page() {
 		return ! empty( $data['value'] );
 	});
 
+	$user_data = array_merge( $user_data, array_column( $user_meta, null, 'type' ) );
+
 	\Academy\Helper::get_template(
 		'frontend-dashboard/pages/my-profile.php', [
 			'user_id' => $user_id,
 			'user_data' => $user_data,
-			'instructor_fields' => $instructor_fields,
-			'student_fields' => $student_fields,
 		]
 	);
 }
@@ -1520,9 +1521,8 @@ function academy_frontend_dashboard_withdraw_bank_page() {
 	);
 }
 
-// add iframe support in cpt: academy_lessons
 function academy_allow_iframe_in_cpt_content( $tags, $context ) {
-	if ( $context === 'post' ) {
+	if ( 'post' === $context ) {
 		$tags['iframe'] = array(
 			'src'             => true,
 			'width'           => true,
@@ -1533,4 +1533,139 @@ function academy_allow_iframe_in_cpt_content( $tags, $context ) {
 		);
 	}
 	return $tags;
+}
+
+if ( ! function_exists( 'academy_allowed_third_party_assets' ) ) {
+	function academy_allowed_third_party_assets( $allowed ) {
+		if ( \Academy\Helper::is_plugin_active( 'mathjax-latex/mathjax-latex.php' ) ) {
+			$obj = new MathJax_Latex();
+			$obj->add_script();
+			$allowed[] = 'mathjax-latex';
+		}
+
+		return $allowed;
+	}
+}
+
+if ( ! function_exists( 'academy_custom_reset_password_message' ) ) {
+	function academy_custom_reset_password_message( $message, $key, $user_login, $user_data ) {
+		$reset_url = add_query_arg(
+			[
+				'reset_key'   => $key,
+				'login' => rawurlencode( $user_login ),
+			],
+			site_url( '/academy-retrieve-password/' )
+		);
+
+		$message  = sprintf(
+			/* translators: %s: user display name */
+			__( 'Hello %s,', 'academy' ),
+			$user_data->display_name
+		);
+		$message .= "\n\n";
+		$message .= __( 'Someone requested a password reset for your account.', 'academy' );
+		$message .= "\n\n";
+		$message .= __( 'Click the link below to reset your password:', 'academy' );
+		$message .= "\n\n";
+		$message .= $reset_url;
+		$message .= "\n\n";
+		$message .= __( 'If you did not request this, you can safely ignore this email.', 'academy' );
+
+		return $message;
+	}
+}//end if
+
+if ( ! function_exists( 'academy_handle_password_reset' ) ) {
+	function academy_handle_password_reset() {
+		if ( ! isset( $_POST['academy_reset_submit'] ) ) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( $_POST['security'], 'academy_nonce' ) ) {
+			wp_die( 'Invalid request' );
+		}
+
+		$key   = sanitize_text_field( $_GET['reset_key'] ?? '' );
+		$login = sanitize_text_field( $_GET['login'] ?? '' );
+
+		// 🔒 This is the magic line
+		$user = check_password_reset_key( $key, $login );
+
+		if ( is_wp_error( $user ) ) {
+			wp_die( 'Invalid or expired reset link' );
+		}
+
+		$pass1 = $_POST['new_password'];
+		$pass2 = $_POST['confirm_new_password'];
+
+		if ( $pass1 !== $pass2 || empty( $pass1 ) ) {
+			wp_die( 'Passwords do not match' );
+		}
+
+		// Reset securely
+		reset_password( $user, $pass1 );
+
+		// Auto-login
+		wp_set_current_user( $user->ID );
+		wp_set_auth_cookie( $user->ID );
+
+		wp_safe_redirect( \Academy\Helper::get_frontend_dashboard_endpoint_url( 'dashboard' ) );
+		exit;
+	}
+}//end if
+
+if ( ! function_exists( 'academy_auto_enroll_after_registration' ) || \Academy\Helper::get_settings( 'enable_auto_enroll_after_registration' ) ) {
+	function academy_auto_enroll_after_registration( $user_id ) {
+
+		$courses        = (array) \Academy\Helper::get_settings( 'after_registration_auto_enroll_courses_id' );
+		$selected_roles = (array) \Academy\Helper::get_settings( 'user_roles_for_auto_enroll' );
+
+		if ( empty( $courses ) || empty( $selected_roles ) ) {
+			return;
+		}
+
+		$user = get_userdata( $user_id );
+
+		if ( ! $user || empty( $user->roles ) ) {
+			return;
+		}
+
+		$roles = (array) $user->roles;
+
+		// Check if user has at least one allowed role
+		$role_values = array_values( $selected_roles );
+		$matched_roles = array_intersect( $roles, $role_values );
+
+		if ( empty( $matched_roles ) && ! in_array( 'all', $role_values ) ) {
+			return;
+		}
+
+		foreach ( $courses as $course_id ) {
+
+			$course_id = absint( $course_id );
+
+			if ( ! $course_id ) {
+				continue;
+			}
+
+			\Academy\Helper::do_enroll( $course_id, $user_id );
+		}
+	}
+}//end if
+
+if ( ! function_exists( 'academy_loco_translate_sync' ) ) {
+	function academy_loco_translate_sync() : void {
+		if (
+			empty( get_current_user_id() ) &&
+			! defined( 'LOCO_TEST' )
+		) {
+			define( 'LOCO_TEST', false );
+		}
+
+		ob_start();
+		LocoTranslateSync::start(
+			'academy/academy.php'
+		);
+		ob_end_flush();
+	}
 }

@@ -64,7 +64,7 @@ class Learndash extends Migration implements MigrationInterface {
 	public function migrate_course_topics( $course ) {
 		global $wpdb;
 		$course_id = $course->ID;
-		$sections = learndash_30_get_course_sections( $course_id );
+		$sections = learndash_course_get_sections( $course_id );
 		if ( $sections ) {
 			$new_curriculums = [];
 			foreach ( $sections as $section ) {

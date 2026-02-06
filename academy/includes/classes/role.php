@@ -111,6 +111,14 @@ class Role {
 			'publish_academy_meetings',
 			'read_private_academy_meetings',
 			'edit_academy_meetings',
+			// Attendance
+			'edit_academy_attendance',
+			'read_academy_attendance',
+			'delete_academy_attendance',
+			'edit_others_academy_attendances',
+			'publish_academy_attendances',
+			'read_private_academy_attendances',
+			'edit_academy_attendances',
 			// common
 			'edit_post',
 			'edit_post_meta',
@@ -143,6 +151,7 @@ class Role {
 			$administrator->add_cap( 'delete_academy_quizzes' );
 			$administrator->add_cap( 'delete_academy_zooms' );
 			$administrator->add_cap( 'delete_academy_assignments' );
+			$administrator->add_cap( 'delete_academy_attendances' );
 			$administrator->add_cap( 'delete_academy_bookings' );
 			$administrator->add_cap( 'delete_academy_announcements' );
 			$administrator->add_cap( 'delete_academy_course_bundles' );

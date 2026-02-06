@@ -34,7 +34,8 @@ class Dale2createImg extends Abstracts\Model {
 	}
 	public function image_url_to_base64() : HttpResponse {
 		$res = $this->http->post();
-		if ( $msg = ( $res->as_array()['error']['message'] ?? false ) ) {
+		$msg = ( $res->as_array()['error']['message'] ?? false );
+		if ( $msg ) {
 			throw new InvalidResponseException( $msg );
 		}
 		$this->content = $res->as_array()['data'][0]['url'] ?? '';
@@ -44,13 +45,13 @@ class Dale2createImg extends Abstracts\Model {
 		}
 
 		$this->content = file_get_contents( $this->content );
-		if ( $this->content === false ) {
+		if ( false === $this->content ) {
 			throw new InvalidResponseException( __( 'Unable to fetch image data', 'academy' ) );
 		}
 		$image_info = getimagesizefromstring( $this->content );
 		$mime_type = $image_info['mime'];
 
-		$base64_image = base64_encode( $this->content );
+		$base64_image = base64_encode( $this->content );// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$this->content = 'data:' . $mime_type . ';base64,' . $base64_image;
 		return $res;
 	}
