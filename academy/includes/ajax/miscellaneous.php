@@ -90,18 +90,48 @@ class Miscellaneous extends AbstractAjaxHandler {
 	}
 
 	public function change_post_status( $payload_data ) {
-		$payload = Sanitizer::sanitize_payload( [
-			'post_id' => 'integer',
-			'status'  => 'string',
-		], $payload_data );
+		$payload = Sanitizer::sanitize_payload(
+			[
+				'post_id' => 'integer',
+				'status'  => 'string',
+			],
+			$payload_data
+		);
 
-		$post_id   = $payload['post_id'];
-		$status    = $payload['status'];
-		$is_update = wp_update_post( array(
-			'ID'          => $post_id,
-			'post_status' => $status,
-		), true, true );
-		wp_send_json_success( $is_update );
+		$post_id = (int) ( $payload['post_id'] ?? 0 );
+		$status  = $payload['status'] ?? '';
+
+		if ( ! $post_id || empty( $status ) ) {
+			wp_send_json_error( esc_html__( 'Invalid payload data.', 'academy' ) );
+		}
+
+		$post = get_post( $post_id );
+
+		if ( ! $post ) {
+			wp_send_json_error( esc_html__( 'Post not found.', 'academy' ) );
+		}
+
+		$current_user_id = (int) get_current_user_id();
+		$post_author_id  = (int) $post->post_author;
+
+		// Permission check
+		if ( ! current_user_can( 'manage_options' ) && $post_author_id !== $current_user_id ) {
+			wp_send_json_error( esc_html__( 'You are not allowed to update this post.', 'academy' ) );
+		}
+
+		$result = wp_update_post(
+			[
+				'ID'          => $post_id,
+				'post_status' => $status,
+			],
+			true
+		);
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( $result->get_error_message() );
+		}
+
+		wp_send_json_success( $result );
 	}
 
 	public function fetch_posts( $payload_data ) {

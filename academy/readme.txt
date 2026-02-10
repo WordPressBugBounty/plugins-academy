@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.5.3
+Stable tag: 3.5.4
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -337,6 +337,13 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.5.4 - 10/02/2026 =
+* Improved - Quiz attempt table UI on the Academy quiz learning page.
+* Fixed - PHP version compatibility issues.
+* Fixed - Error occurring when WooCommerce is deactivated.Fixed: PHP version compatibility issues.
+* Fixed - Password reset form vulnerability and added request limits.
+* Fixed - Academy Courses shortcode category filter issue.
 
 = 3.5.3 - 02/02/2026 =
 * Fixed - WordPress default login not working with Google reCAPTCHA.

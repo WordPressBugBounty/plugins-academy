@@ -46,33 +46,43 @@ class AcademyPasswordReset {
 		return apply_filters( 'academy/shortcode/password-reset', ob_get_clean() );
 	}
 	public function password_reset_handler() {
-		if ( isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'academy_reset_nonce' ) ) {
-			$username = sanitize_text_field( $_POST['username'] );
-			$user = get_user_by( 'login', $username );
 
-			if ( ! $user ) {
-				// If the user is not found by username, try by email
-				$user = get_user_by( 'email', $username );
-			}
+		if ( ! isset( $_REQUEST['_wpnonce'] ) ||
+			! wp_verify_nonce( $_REQUEST['_wpnonce'], 'academy_reset_nonce' ) ) {
+			wp_die( 'Security check failed' );
+		}
 
-			if ( ! $user ) {
-				wp_send_json_error( __( ' There is no account with that username or email address.', 'academy' ) );
-			}
+		$username = sanitize_text_field( $_POST['username'] );
 
-			do_action( 'academy/shortcode/before_password_reset', $user );
+		$ip = $_SERVER['REMOTE_ADDR'];
+		$key = 'academy_reset_limit_' . md5( $ip . $username );
 
-			// Send the password reset link.
-			$results = retrieve_password( $user->user_login );
+		if ( get_transient( $key ) ) {
+			wp_send_json_error( __( 'Too many requests. Try later.', 'academy' ) );
+		}
 
-			if ( true === $results ) {
-				wp_send_json_success(
-					/* translators: %s: User's display name. */
-					__( 'Check your email for the confirmation link, then visit the login page.', 'academy' )
-				);
-			}
+		set_transient( $key, 1, 60 );
 
-			wp_send_json_error( $results->get_error_message() );
-		}//end if
-		wp_die( esc_html__( 'Security check', 'academy' ) );
+		$user = get_user_by( 'login', $username );
+
+		if ( ! $user ) {
+			$user = get_user_by( 'email', $username );
+		}
+
+		// Hide user existence
+		if ( ! $user ) {
+			wp_send_json_success(
+				__( 'If the account exists, you will receive an email.', 'academy' )
+			);
+		}
+
+		do_action( 'academy/shortcode/before_password_reset', $user );
+
+		retrieve_password( $user->user_login );
+
+		wp_send_json_success(
+			__( 'If the account exists, you will receive an email.', 'academy' )
+		);
 	}
+
 }
