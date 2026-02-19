@@ -65,7 +65,7 @@ class HpLesson extends Base\Lesson {
 		return self::get_lesson( $row, $ins, $skip_meta );
 	}
 
-	public static function by_slug( string $slug, bool $skip_meta = false, int $author = 0 ) : self {
+	public static function by_slug( string $slug, bool $skip_meta = false, ?int $author = null ) : self {
 		$ins = new self();
 
 		$sql = "SELECT * FROM {$ins->table} WHERE lesson_name = %s";

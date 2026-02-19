@@ -72,8 +72,8 @@ class Migrator extends Db {
                 FROM {$table} l
                 WHERE NOT EXISTS (
                     SELECT 1
-                    FROM {$wpdb->posts} p
-                    INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+                    FROM {$this->wpdb->posts} p
+                    INNER JOIN {$this->wpdb->postmeta} pm ON p.ID = pm.post_id
                     WHERE pm.meta_key = %s
                     AND pm.meta_value = l.ID
                 )

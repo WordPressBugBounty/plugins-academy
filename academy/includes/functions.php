@@ -1252,7 +1252,7 @@ function academy_frontend_dashboard_profile_page() {
 			'value' => get_user_meta( $user_id, 'academy_facebook_url', true )
 		],
 		'twitter_url' => [
-			'label' => esc_html__( 'Twitter URL', 'academy' ),
+			'label' => esc_html__( 'Twitter / X URL', 'academy' ),
 			'value' => get_user_meta( $user_id, 'academy_twitter_url', true )
 		],
 		'linkedin_url' => [

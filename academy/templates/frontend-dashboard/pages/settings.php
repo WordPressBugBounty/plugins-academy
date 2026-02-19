@@ -91,7 +91,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<input name="academy_facebook_url" id="facebook_url" type="url" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_facebook_url', true ) ); ?>">
 				</div>
 				<div class="academy-column-items">
-					<label for="twitter_url"><?php esc_html_e( 'Twitter URL', 'academy' ); ?></label>
+					<label for="twitter_url"><?php esc_html_e( 'Twitter / X URL', 'academy' ); ?></label>
 					<input name="academy_twitter_url" id="twitter_url" type="url" placeholder="" class="academy-input" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_twitter_url', true ) ); ?>">
 				</div>
 				<div class="academy-column-items">

@@ -669,6 +669,31 @@ class Helper {
 		}
 	}
 
+	/**
+	 * Extract ScreenPal video ID from embed markup or URL.
+	 *
+	 * @param string $content Embed markup or URL.
+	 * @return string|null Video ID on success, null on failure.
+	 */
+	public static function screenpal_id_from_url( $content ) {
+
+		if ( empty( $content ) || ! is_string( $content ) ) {
+			return null;
+		}
+
+		$pattern = '#data-id="([^"]+)"|(?:player|watch)/([A-Za-z0-9]+)#';
+
+		if ( preg_match( $pattern, $content, $matches ) ) {
+
+			// First capturing group (data-id) OR second (player/)
+			$video_id = ! empty( $matches[1] ) ? $matches[1] : $matches[2];
+
+			return sanitize_text_field( $video_id );
+		}
+
+		return null;
+	}
+
 	public static function generate_video_embed_url( $url ) {
 		if ( strpos( $url, 'youtube' ) > 0 || strpos( $url, 'youtu.be' ) > 0 ) {
 			return 'https://www.youtube.com/embed/' . self::youtube_id_from_url( $url );
@@ -676,6 +701,8 @@ class Helper {
 			return 'https://player.vimeo.com/video/' . self::vimeo_id_from_url( $url ) . '?title=0&byline=0';
 		} elseif ( strpos( $url, 'gumlet' ) > 0 ) {
 			return 'https://play.gumlet.io/embed/' . self::gumlet_id_from_url( $url );
+		} elseif ( strpos( $url, 'screenpal' ) > 0 ) {
+			return 'https://go.screenpal.com/player/' . self::screenpal_id_from_url( $url );
 		}
 		return $url;
 	}
