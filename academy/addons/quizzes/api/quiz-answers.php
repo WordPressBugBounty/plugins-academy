@@ -261,6 +261,10 @@ class QuizAnswers extends \WP_REST_Controller {
 			$data['question_content'] = $comment->question_content;
 		}
 
+		if ( isset( $schema['properties']['question_explanation'] ) ) {
+			$data['question_explanation'] = $comment->question_explanation;
+		}
+
 		return $data;
 	}
 

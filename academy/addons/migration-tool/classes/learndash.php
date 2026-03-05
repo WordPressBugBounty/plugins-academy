@@ -374,6 +374,7 @@ class Learndash extends Migration implements MigrationInterface {
 						'quiz_id' => $quiz_id,
 						'question_title' => $question->title,
 						'question_content' => (string) $question->question,
+						'question_explanation' => '',
 						'question_status' => 'publish',
 						'question_type' => $question_type,
 						'question_score' => (int) $question->points,

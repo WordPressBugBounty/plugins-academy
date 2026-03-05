@@ -24,7 +24,6 @@ class Installer {
 		}
 		// Save option table data
 		$self->save_option();
-
 		Helper::flush_rewrite_rules();
 	}
 	public function save_main_settings() {
@@ -49,6 +48,8 @@ class Installer {
 		Role::add_student_role();
 		// instructor role
 		Role::add_instructor_role();
+		// instructor role
+		Role::add_existing_administrator_instructor_role();
 	}
 	public function create_initial_pages() {
 		Pages::regenerate_necessary_pages();

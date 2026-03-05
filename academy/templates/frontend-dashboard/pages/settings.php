@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	$user_fields = \Academy\Helper::get_form_builder_fields( $user_role );
 	$user_meta = \Academy\Helper::prepare_user_meta_data( $user_fields, $user_id );
 	$user_data = array_column( $user_meta, null, 'type' );
-	?>
+?>
 
 <div id="tab-panel-1-profile-view" role="tabpanel" aria-labelledby="tab-panel-1-profile" class="components-tab-panel__tab-content">
 	<div class="academy-tab-content">

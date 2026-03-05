@@ -55,8 +55,13 @@ class Settings extends AbstractPostHandler {
 			}
 			update_user_meta( $user_id, $key, $value );
 		}
-		update_user_meta( $user_id, 'academy_cover_photo', $payload['academy-cover-photo-url'] );
-		update_user_meta( $user_id, 'academy_profile_photo', $payload['academy-profile-photo-url'] );
+		if ( isset( $payload['academy-cover-photo-url'] ) && ! empty( $payload['academy-cover-photo-url'] ) ) {
+			update_user_meta( $user_id, 'academy_cover_photo', $payload['academy-cover-photo-url'] );
+		}
+		
+		if ( isset( $payload['academy-profile-photo-url'] ) && ! empty( $payload['academy-profile-photo-url'] ) ) {
+			update_user_meta( $user_id, 'academy_profile_photo', $payload['academy-profile-photo-url'] );
+		}
 
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 		wp_safe_redirect( $referer_url );

@@ -257,6 +257,7 @@ class Masterstudy extends Migration implements MigrationInterface {
 					'quiz_id' => $quiz_id,
 					'question_title' => $question->post_title,
 					'question_content' => $question->post_content,
+					'question_explanation' => '',
 					'question_status' => 'publish',
 					'question_type' => $question_type,
 					'question_score' => 1,

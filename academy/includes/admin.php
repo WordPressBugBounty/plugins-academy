@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Academy\Helper;
+
 class Admin {
 
 	public static function init() {
@@ -26,6 +26,7 @@ class Admin {
 		add_filter( 'plugin_action_links_' . ACADEMY_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
 		add_filter( 'plugin_row_meta', array( $this, 'add_plugin_links' ), 10, 2 );
 		add_filter( 'admin_init', array( $this, 'redirect_academy_course' ) );
+		add_action( 'set_user_role', array( $this, 'handle_administrator_role_change' ), 10, 3 );
 	}
 	public function add_white_listed_redirect_hosts( $hosts ) {
 		$hosts[] = 'academylms.net';
@@ -179,6 +180,19 @@ class Admin {
 			wp_safe_redirect( $new_url );
 			exit;
 		}
+	}
+
+	/**
+	 * Handle role changes.
+	 *
+	 * @param int    $user_id   User ID.
+	 * @param string $new_role  New role.
+	 * @param array  $old_roles Previous roles.
+	 *
+	 * @return void
+	 */
+	public static function handle_administrator_role_change( $user_id, $new_role, $old_roles ) {
+		\Academy\Classes\Role::administrator_role_change_handler( $user_id, $new_role, $old_roles );
 	}
 
 }

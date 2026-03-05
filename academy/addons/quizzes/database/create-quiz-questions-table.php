@@ -15,6 +15,7 @@ class CreateQuizQuestionsTable {
 			question_title text NOT NULL,
             question_name varchar(200) NOT NULL,
             question_content longtext NULL,
+			question_explanation longtext NULL,
 			question_status varchar(20) NOT NULL default 'publish',
 			question_level varchar(20) NOT NULL,
 			question_type varchar(20) NOT NULL,

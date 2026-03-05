@@ -72,6 +72,10 @@ class Migration {
 				$role->add_cap( 'edit_others_academy_lessons' );
 			}
 		}
+		// add question explanation column
+		if ( \Academy\Helper::get_addon_active_status( 'quizzes' ) && version_compare( $academy_version, '3.5.6', '<=' ) ) {
+			$this->migrate_add_question_explanation_column();
+		}
 	}
 
 	public function loco_translate_sync() : void {
@@ -453,5 +457,28 @@ class Migration {
 			)
 		);
 		add_option( 'academy_quiz_question_max_allowed', true );
+	}
+
+	public function migrate_add_question_explanation_column() {
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'academy_quiz_questions';
+
+		// Check if column exists
+		$column_exists = $wpdb->get_results(
+			$wpdb->prepare(
+				"SHOW COLUMNS FROM `$table_name` LIKE %s",
+				'question_explanation'
+			)
+		);
+
+		// If column does not exist → add it
+		if ( empty( $column_exists ) ) {
+			$wpdb->query(
+				"ALTER TABLE `$table_name`
+				ADD `question_explanation` LONGTEXT NULL 
+				AFTER `question_content`"
+			);
+		}
 	}
 }

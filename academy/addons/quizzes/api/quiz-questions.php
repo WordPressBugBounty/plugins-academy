@@ -225,6 +225,10 @@ class QuizQuestions extends \WP_REST_Controller {
 			$data['question_content'] = $question->question_content;
 		}
 
+		if ( isset( $schema['properties']['question_explanation'] ) ) {
+			$data['question_explanation'] = $question->question_explanation;
+		}
+
 		return $data;
 	}
 
@@ -258,6 +262,13 @@ class QuizQuestions extends \WP_REST_Controller {
 		if ( ! empty( $schema['question_content'] ) && isset( $request['question_content'] ) ) {
 			if ( is_string( $request['question_content'] ) ) {
 				$prepared_question->question_content = $request['question_content'];
+			}
+		}
+
+		// Question Explanation
+		if ( ! empty( $schema['question_explanation'] ) && isset( $request['question_explanation'] ) ) {
+			if ( is_string( $request['question_explanation'] ) ) {
+				$prepared_question->question_explanation = $request['question_explanation'];
 			}
 		}
 

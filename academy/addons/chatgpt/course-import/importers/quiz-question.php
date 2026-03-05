@@ -10,6 +10,7 @@ class QuizQuestion implements Interfaces\Insertable {
 	public string $title;
 	protected string $name = '';
 	protected string $content = '';
+	protected string $explanation = '';
 	protected string $status = 'publish';
 	protected string $level = '';
 	protected string $type;
@@ -44,6 +45,7 @@ class QuizQuestion implements Interfaces\Insertable {
 			'question_title'      => str_replace( '{dash}', '______', $this->title ),
 			'question_name'       => $this->name,
 			'question_content'    => $this->content,
+			'question_explanation' => $this->explanation,
 			'question_status'     => $this->status,
 			'question_level'      => $this->level,
 			'question_type'       => $this->type,

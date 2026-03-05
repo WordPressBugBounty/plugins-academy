@@ -35,6 +35,10 @@ trait QuizQuestionSchema {
 					'description'  => esc_html__( 'The content for the question.', 'academy' ),
 					'type'         => 'string',
 				),
+				'question_explanation' => array(
+					'description'  => esc_html__( 'The explanation for the question.', 'academy' ),
+					'type'         => 'string',
+				),
 				'question_status' => array(
 					'description'  => esc_html__( 'The status for the question.', 'academy' ),
 					'type'         => 'string',
@@ -99,7 +103,12 @@ trait QuizQuestionSchema {
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',
 			],
-			'question_content'         => [
+			'question_content'      => [
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'validate_callback' => 'rest_validate_request_arg',
+			],
+			'question_explanation'  => [
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',

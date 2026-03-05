@@ -44,10 +44,11 @@ class Query {
 
 		global $wpdb;
 		$defaults = array(
-			'quiz_id'               => '',
+			'quiz_id'               => 0,
 			'question_title'        => '',
 			'question_name'         => '',
 			'question_content'      => '',
+			'question_explanation'  => '',
 			'question_status'       => 'publish',
 			'question_level'        => '',
 			'question_type'         => '',
@@ -89,8 +90,9 @@ class Query {
 					'%s',
 					'%s',
 					'%s',
-					'%d',
-					'%d',
+					'%s',
+					'%f',
+					'%f',
 					'%d',
 					'%s',
 					'%d',
@@ -109,6 +111,7 @@ class Query {
 					'question_title' => $question_arr['question_title'],
 					'question_name' => $question_arr['question_name'],
 					'question_content' => $question_arr['question_content'],
+					'question_explanation' => $question_arr['question_explanation'],
 					'question_status' => $question_arr['question_status'],
 					'question_level' => $question_arr['question_level'],
 					'question_type' => $question_arr['question_type'],
@@ -122,6 +125,7 @@ class Query {
 				),
 				array(
 					'%d',
+					'%s',
 					'%s',
 					'%s',
 					'%s',
@@ -847,6 +851,7 @@ class Query {
 			quiz_answers.is_correct as is_correct_answer,
             quiz_questions.quiz_id,
             quiz_questions.question_title, 
+            quiz_questions.question_explanation, 
             quiz_questions.question_type,
 			quiz_questions.question_image_id,
 			quiz_attempts.is_manually_reviewed
