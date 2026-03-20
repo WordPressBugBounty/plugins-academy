@@ -30,12 +30,24 @@ class ScriptsBase {
 			'is_plain_permalink'    => $this->is_plain_permalink(),
 			'menu'                  => wp_json_encode( Helper::get_admin_menu_list() ),
 			'woocommerce_is_active' => Helper::is_active_woocommerce(),
-			'ecm_is_active' => Helper::is_active_ecm(),
+			'ecm_is_active'         => Helper::is_active_ecm(),
 			'current_user_id'       => get_current_user_id(),
 			'is_rtl'                => is_rtl(),
 			'is_admin'              => is_admin(),
 			'is_pro'                => Helper::is_active_academy_pro(),
 			'addons'                => $academy_addons,
+			'active_plugins'        => [
+				'loco_is_active'        => Helper::is_plugin_active( 'loco-translate/loco.php' ),
+				'bricks_is_active'       => Helper::is_plugin_active( 'bricks/bricks.php' ),
+				'ae_addons_is_active'    => Helper::is_plugin_active( 'academy-elementor-addons/academy-elementor-addons.php' ),
+				'gemcrm_is_active'       => Helper::is_plugin_active( 'gemcrm/gemcrm.php' ),
+				'zencommunity_is_active' => Helper::is_plugin_active( 'zencommunity/zencommunity.php' ),
+				'ablocks_is_active'       => Helper::is_plugin_active( 'ablocks/ablocks.php' ),
+				'divi_modules_is_active'   => Helper::is_plugin_active( 'academy-divi-modules/academy-divi-modules.php' ),
+				'bricks_is_active'       => Helper::is_plugin_active( 'academy-bricks-addons/academy-bricks-addons.php' ),
+				'storeengine_is_active'       => Helper::is_plugin_active( 'storeengine/storeengine.php' ),
+				'ecm_is_active'         => Helper::is_plugin_active( 'easy-content-manager/easy-content-manager.php' ),
+			],
 			'current_user_can'      => [
 				'manage_options'            => current_user_can( 'manage_options' ),
 				'manage_academy_instructor' => current_user_can( 'manage_academy_instructor' ),
@@ -74,6 +86,7 @@ class ScriptsBase {
 	public function get_frontend_scripts_data() {
 		global $wp;
 		$site_url = site_url();
+		$image_id = get_post_meta( get_the_ID(), '_thumbnail_id', true );
 		$args = array(
 			'route_path' => wp_parse_url( $site_url, PHP_URL_PATH ),
 			'dashboard'  => trim( get_permalink( Helper::get_settings( 'frontend_dashboard_page' ) ), $site_url ),
@@ -91,6 +104,7 @@ class ScriptsBase {
 			'is_enabled_academy_lesson_note' => \Academy\Helper::get_settings( 'is_enabled_academy_lesson_note' ),
 			'auto_load_next_lesson' => \Academy\Helper::get_settings( 'auto_load_next_lesson' ),
 			'auto_complete_topic' => \Academy\Helper::get_settings( 'auto_complete_topic' ),
+			'featured_image_link' => $image_id ? wp_get_attachment_image_url( $image_id ) : '',
 		);
 
 		return apply_filters(

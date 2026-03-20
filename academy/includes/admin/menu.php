@@ -70,6 +70,10 @@ class Menu {
 			#adminmenu li.toplevel_page_academy ul.wp-submenu li a[href^="admin.php?page=academy-addons"] {
 				color: #FDB022;
 			}
+			#adminmenu li.toplevel_page_academy ul.wp-submenu li a[href*="admin.php?page=academy-whats-new"],
+			#adminmenu li.toplevel_page_academy ul.wp-submenu li a[href^="admin.php?page=academy-whats-new"] {
+				color: #55F05B;
+			}
 			#adminmenu li.toplevel_page_academy ul.wp-submenu li a[href*="admin.php?page=academy-community"],
 			#adminmenu li.toplevel_page_academy ul.wp-submenu li a[href^="admin.php?page=academy-community"] {
 				color: #11C5FF;

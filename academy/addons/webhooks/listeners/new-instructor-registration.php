@@ -11,7 +11,7 @@ use AcademyWebhooks\Classes\Payload;
 class NewInstructorRegistration implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
-			'academy/shortcode/after_instructor_registration',
+			'academy/api/auth/after_instructor_registration',
 			function( $instructor_id ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,

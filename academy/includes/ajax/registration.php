@@ -24,8 +24,8 @@ class Registration extends AbstractAjaxHandler {
 				'callback' => array( $this, 'save_student_form_settings' )
 			),
 		);
-		add_filter( 'academy/shortcode/after_register_instructor_redirect', [ $this, 'set_redirect_url_after_register' ] );
-		add_filter( 'academy/shortcode/after_register_student_redirect', [ $this, 'set_redirect_url_after_register' ] );
+		add_filter( 'academy/api/auth/after_register_instructor_redirect', [ $this, 'set_redirect_url_after_register' ] );
+		add_filter( 'academy/api/auth/after_register_student_redirect', [ $this, 'set_redirect_url_after_register' ] );
 	}
 
 	public function register_student( $payload_data ) {

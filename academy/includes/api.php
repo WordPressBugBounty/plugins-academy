@@ -12,6 +12,8 @@ class API {
 		API\Settings::init();
 		API\Lessons::init();
 		API\QuestionAnswer::init();
+		API\CourseFilterHandler::init();
+		API\Auth::init();
 		add_action( 'rest_after_insert_academy_courses', array( $self, 'course_instructor_meta_data_save' ), 10, 2 );
 	}
 	public function course_instructor_meta_data_save( $post, $request ) {

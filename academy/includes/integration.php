@@ -21,6 +21,7 @@ class Integration {
 		Integration\WpRocket::init();
 		Integration\WpSuperCache::init();
 		Integration\SiteGroundCache::init();
+		Integration\BerqWp::init();
 	}
 
 }

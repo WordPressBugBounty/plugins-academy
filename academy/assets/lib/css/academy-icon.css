@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'academy-icon';
-  src:  url('fonts/academy-icon.eot?a9cna');
-  src:  url('fonts/academy-icon.eot?a9cna#iefix') format('embedded-opentype'),
-    url('fonts/academy-icon.ttf?a9cna') format('truetype'),
-    url('fonts/academy-icon.woff?a9cna') format('woff'),
-    url('fonts/academy-icon.svg?a9cna#academy-icon') format('svg');
+  src:  url('fonts/academy-icon.eot?314kvi');
+  src:  url('fonts/academy-icon.eot?314kvi#iefix') format('embedded-opentype'),
+    url('fonts/academy-icon.ttf?314kvi') format('truetype'),
+    url('fonts/academy-icon.woff?314kvi') format('woff'),
+    url('fonts/academy-icon.svg?314kvi#academy-icon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,73 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.academy-icon--custom-field:before {
+  content: "\ea46";
+}
+.academy-icon--bricks .path1:before {
+  content: "\ea3a";
+  color: rgb(255, 213, 62);
+}
+.academy-icon--bricks .path2:before {
+  content: "\ea3c";
+  margin-left: -1em;
+  color: rgb(33, 33, 33);
+}
+.academy-icon--ablocks .path1:before {
+  content: "\ea34";
+  color: rgb(29, 29, 31);
+}
+.academy-icon--ablocks .path2:before {
+  content: "\ea36";
+  margin-left: -1em;
+  color: rgb(234, 234, 235);
+}
+.academy-icon--ablocks .path3:before {
+  content: "\ea37";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.academy-icon--attachments:before {
+  content: "\ea38";
+  color: #9383f1;
+}
+.academy-icon--divi-module:before {
+  content: "\ea3b";
+  color: #6b35b6;
+}
+.academy-icon--storeengine .path1:before {
+  content: "\ea3d";
+  color: rgb(0, 141, 255);
+}
+.academy-icon--storeengine .path2:before {
+  content: "\ea3e";
+  margin-left: -1em;
+  color: rgb(255, 80, 0);
+}
+.academy-icon--zencommunity .path1:before {
+  content: "\ea40";
+  color: rgb(42, 59, 238);
+}
+.academy-icon--zencommunity .path2:before {
+  content: "\ea41";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.academy-icon--zencommunity .path3:before {
+  content: "\ea42";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.academy-icon--zencommunity .path4:before {
+  content: "\ea44";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.academy-icon--zencommunity .path5:before {
+  content: "\ea45";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
 .academy-icon--rotate:before {
   content: "\ea3f";
 }

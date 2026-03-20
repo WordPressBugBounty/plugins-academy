@@ -38,6 +38,10 @@ class AcademySingleCourse {
 			$this,
 			'single_course_featured_image'
 		]);
+		 add_shortcode('academy_single_course_attachment_files', [
+			$this,
+			'single_course_attachment_file',
+		] );
 	}
 
 	public function single_course_additional_info( $attributes, $content = '' ) {
@@ -336,5 +340,32 @@ class AcademySingleCourse {
 			}//end if
 		}//end if
 		return $output;
+	}
+
+	public function single_course_attachment_file( $attributes, $content = '' ) {
+
+		$course_id = get_the_ID();
+
+		if ( ! \Academy\Helper::is_enrolled( $course_id, get_current_user_id() ) || ! \Academy\Helper::is_active_academy_pro() ) {
+			return '';
+		}
+
+		$attachments = get_post_meta( $course_id, 'academy_course_attachments', true );
+
+		ob_start();
+
+		\AcademyPro\Helper::get_template(
+			'multimedia-attachment/attachment-file.php',
+			[
+				'attachments' => $attachments,
+			]
+		);
+
+		$output = ob_get_clean();
+
+		return apply_filters(
+			'academy/templates/shortcode/single_course_attachments',
+			$output
+		);
 	}
 }

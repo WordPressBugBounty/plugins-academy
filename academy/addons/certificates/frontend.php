@@ -15,6 +15,7 @@ class Frontend {
 		add_action( 'academy/templates/single_course/enroll_complete_form', [ $self, 'download_certificate_link' ] );
 		add_filter( 'template_include', array( $self, 'download_certificate' ), 40 );
 		add_action( 'template_include', array( $self, 'preview_certificate' ) );
+		add_filter( 'academy/assets/frontend_scripts_data', array( $self, 'get_download_certificate_link' ) );
 	}
 
 	public function download_certificate_link( $is_complete ) {
@@ -67,5 +68,16 @@ class Frontend {
 		}//end if
 
 		return $template;
+	}
+	public function get_download_certificate_link( $args ) {
+		$permalink = get_permalink( get_the_ID() );
+
+		if ( $permalink ) {
+			$args['download_link'] = esc_url(
+				add_query_arg( 'source', 'certificate', $permalink )
+			);
+		}
+
+		return $args;
 	}
 }

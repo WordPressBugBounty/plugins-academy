@@ -9,8 +9,6 @@ class AcademySearch {
 	public function __construct() {
 		add_shortcode( 'academy_course_search', array( $this, 'search_form' ) );
 		add_action( 'wp_ajax_academy/shortcode/search_form_handler', array( $this, 'search_form_handler' ) );
-		add_action( 'wp_ajax_nopriv_academy/shortcode/search_form_handler', array( $this, 'search_form_handler' ) );
-		add_action( 'wp_ajax_nopriv_academy/shortcode/academy_course_search', array( $this, 'academy_course_search' ) );
 	}
 
 	public function search_form_handler() {

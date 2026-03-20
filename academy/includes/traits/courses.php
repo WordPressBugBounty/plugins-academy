@@ -276,7 +276,6 @@ trait Courses {
 	}
 
 	public static function reset_re_enroll_course_progress( $course_id, $user_id ) {
-		global $wpdb;
 		$option_name        = 'academy_course_' . $course_id . '_completed_topics';
 		update_user_meta( $user_id, $option_name, wp_json_encode( [] ) );
 		$attempt_items = \AcademyQuizzes\Classes\Query::get_attempt_id_by_user_and_course_id( $course_id, $user_id );
@@ -285,32 +284,7 @@ trait Courses {
 				\AcademyQuizzes\Classes\Query::delete_quiz_attempt( $attempt_item->attempt_id );
 			}
 		}
-		$wpdb->delete(
-			$wpdb->prefix . 'comments',
-			array(
-				'comment_agent'   => 'academy',
-				'comment_type'    => 'course_completed',
-				'comment_post_ID' => $course_id,
-				'user_id'         => $user_id,
-			),
-			array(
-				'%s',
-				'%s',
-				'%d',
-				'%d',
-			)
-		);
-
-		$wpdb->delete(
-			$wpdb->comments,
-			[
-				'comment_agent'  => 'academy',
-				'comment_type'   => 'academy_assignments',
-				'comment_parent' => $course_id,
-				'user_id'        => $user_id,
-			],
-			[ '%s', '%s', '%d', '%d' ]
-		);
+		self::delete_comment_and_review( $course_id, $user_id );
 	}
 
 	public static function get_topic_item_by_course_id( $course_id, $type = null ) {
@@ -318,7 +292,7 @@ trait Courses {
 		if ( empty( $topics ) ) {
 			return null;
 		}
-		foreach ( $topics as $key => $value ) {
+		foreach ( $topics as $value ) {
 			if ( $type === $value['type'] ) {
 				return $value;
 			}
@@ -1989,6 +1963,49 @@ trait Courses {
 
 		$results = $wpdb->get_results( $wpdb->prepare( $sql, ...$params ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return $results;
+	}
+	/**
+	 * Delete course review comments and rating meta.
+	 *
+	 * @param int $course_id Course ID.
+	 * @param int $user_id   User ID.
+	 */
+	public static function delete_comment_and_review( $course_id, $user_id ) {
+		global $wpdb;
+
+		$course_id = (int) $course_id;
+		$user_id   = (int) $user_id;
+
+		// Get comment IDs first.
+		$comment_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT comment_ID 
+				FROM {$wpdb->comments}
+				WHERE comment_post_ID = %d
+				AND user_id = %d
+				AND comment_type IN ( %s, %s, %s, %s )",
+				$course_id,
+				$user_id,
+				'academy_courses',
+				'course_completed',
+				'academy_qa',
+				'academy_assignments'
+			)
+		);
+
+		if ( empty( $comment_ids ) ) {
+			return;
+		}
+
+		$ids = implode( ',', array_map( 'intval', $comment_ids ) );
+
+		$wpdb->query(
+			"DELETE c, cm
+			FROM {$wpdb->comments} AS c
+			LEFT JOIN {$wpdb->commentmeta} AS cm
+			ON cm.comment_id = c.comment_ID
+			WHERE c.comment_ID IN ($ids)"
+		);
 	}
 
 }

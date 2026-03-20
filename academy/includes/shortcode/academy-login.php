@@ -9,7 +9,6 @@ class AcademyLogin {
 
 	public function __construct() {
 		add_shortcode( 'academy_login_form', array( $this, 'login_form' ) );
-		add_action( 'wp_ajax_nopriv_academy/shortcode/login_form_handler', array( $this, 'login_form_handler' ) );
 	}
 
 	public function login_form( $atts ) {
@@ -54,41 +53,6 @@ class AcademyLogin {
 			);
 		}//end if
 		return apply_filters( 'academy/templates/shortcode/login', ob_get_clean() );
-	}
-
-	public function login_form_handler() {
-		if ( isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'academy_login_nonce' ) ) {
-			wp_clear_auth_cookie();
-
-			$username = sanitize_text_field( $_POST['username'] );
-			$password = sanitize_text_field( $_POST['password'] );
-			$remember = (bool) isset( $_POST['remember'] ) ? sanitize_text_field( $_POST['remember'] ) : false;
-			$login_redirect_url = ( isset( $_POST['login_redirect_url'] ) ? esc_url_raw( $_POST['login_redirect_url'] ) : '' );
-
-			do_action( 'academy/shortcode/before_login_signon', $username );
-			$secure_cookie = is_ssl();
-			$user_signon = wp_signon( array(
-				'user_login' => $username,
-				'user_password' => $password,
-				'remember' => $remember,
-			), $secure_cookie );
-
-			if ( is_wp_error( $user_signon ) ) {
-				wp_send_json_error( [ $user_signon->get_error_message() ] );
-			}
-
-			wp_set_current_user( $user_signon->ID );
-
-			do_action( 'set_current_user' );
-
-			$redirect_url = ! empty( $login_redirect_url ) ? $login_redirect_url : \Academy\Helper::get_page_permalink( 'frontend_dashboard_page' );
-
-			wp_send_json_success([
-				'message' => __( 'You have logged in successfully. Redirecting...', 'academy' ),
-				'redirect_url' => esc_url( $redirect_url )
-			]);
-		}//end if
-		wp_die( esc_html__( 'Security check', 'academy' ) );
 	}
 }
 

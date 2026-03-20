@@ -73,7 +73,6 @@ class Lesson extends AbstractAjaxHandler {
 				$count++;
 				continue;
 			}
-
 			$item = array_combine( $link_header, $item );
 
 			if ( empty( $item['title'] ) ) {

@@ -9,7 +9,7 @@ class AcademyPasswordReset {
 
 	public function __construct() {
 		add_shortcode( 'academy_password_reset_form', array( $this, 'password_reset_form' ) );
-		add_action( 'wp_ajax_nopriv_academy/shortcode/password_reset_handler', array( $this, 'password_reset_handler' ) );
+
 	}
 	public function password_reset_form( $atts ) {
 		$attributes = shortcode_atts(array(
@@ -44,45 +44,6 @@ class AcademyPasswordReset {
 			);
 		}//end if
 		return apply_filters( 'academy/shortcode/password-reset', ob_get_clean() );
-	}
-	public function password_reset_handler() {
-
-		if ( ! isset( $_REQUEST['_wpnonce'] ) ||
-			! wp_verify_nonce( $_REQUEST['_wpnonce'], 'academy_reset_nonce' ) ) {
-			wp_die( 'Security check failed' );
-		}
-
-		$username = sanitize_text_field( $_POST['username'] );
-
-		$ip = $_SERVER['REMOTE_ADDR'];
-		$key = 'academy_reset_limit_' . md5( $ip . $username );
-
-		if ( get_transient( $key ) ) {
-			wp_send_json_error( __( 'Too many requests. Try later.', 'academy' ) );
-		}
-
-		set_transient( $key, 1, 60 );
-
-		$user = get_user_by( 'login', $username );
-
-		if ( ! $user ) {
-			$user = get_user_by( 'email', $username );
-		}
-
-		// Hide user existence
-		if ( ! $user ) {
-			wp_send_json_success(
-				__( 'If the account exists, you will receive an email.', 'academy' )
-			);
-		}
-
-		do_action( 'academy/shortcode/before_password_reset', $user );
-
-		retrieve_password( $user->user_login );
-
-		wp_send_json_success(
-			__( 'If the account exists, you will receive an email.', 'academy' )
-		);
 	}
 
 }

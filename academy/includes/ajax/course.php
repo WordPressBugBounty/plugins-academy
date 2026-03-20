@@ -41,10 +41,6 @@ class Course extends AbstractAjaxHandler {
 				'callback' => array( $this, 'course_add_to_wishlist' ),
 				'allow_visitor_action'    => true
 			),
-			'archive_course_filter' => array(
-				'callback' => array( $this, 'archive_course_filter' ),
-				'allow_visitor_action'    => true
-			),
 			'course_add_to_favorite' => array(
 				'callback' => array( $this, 'course_add_to_favorite' ),
 				'capability'    => 'read'
@@ -82,6 +78,7 @@ class Course extends AbstractAjaxHandler {
 				'capability' => 'manage_options',
 			],
 		);
+
 	}
 
 	public function get_course_slug( $payload_data ) {
@@ -364,147 +361,6 @@ class Course extends AbstractAjaxHandler {
 		}
 		add_user_meta( $user_id, 'academy_course_favorite', $course_id );
 		wp_send_json_success( array( 'is_added' => true ) );
-	}
-
-	public function archive_course_filter( $payload_data ) {
-		$payload = Sanitizer::sanitize_payload([
-			'search' => 'string',
-			'category' => 'array',
-			'cat_not_in' => 'array',
-			'tags' => 'array',
-			'tag_not_in' => 'array',
-			'levels' => 'array',
-			'type' => 'array',
-			'orderby' => 'string',
-			'paged' => 'integer',
-			'per_row' => 'integer',
-			'per_page' => 'integer',
-			'ids'   => 'string',
-			'count' => 'integer',
-			'exclude_ids' => 'array',
-		], $payload_data );
-
-		$search      = ( isset( $payload['search'] ) ? $payload['search'] : '' );
-		$category    = ( isset( $payload['category'] ) ? $payload['category'] : [] );
-		$cat_not_in  = ( isset( $payload['cat_not_in'] ) ? $payload['cat_not_in'] : [] );
-		$tags        = ( isset( $payload['tags'] ) ? $payload['tags'] : [] );
-		$tag_not_in  = ( isset( $payload['tag_not_in'] ) ? $payload['tag_not_in'] : [] );
-		$levels      = ( isset( $payload['levels'] ) ? $payload['levels'] : [] );
-		$type        = ( isset( $payload['type'] ) ? $payload['type'] : [] );
-		$orderby     = ( isset( $payload['orderby'] ) ? $payload['orderby'] : 'DESC' );
-		$paged       = ( isset( $payload['paged'] ) ) ? $payload['paged'] : 1;
-		$ids         = ( isset( $payload['ids'] ) ? $payload['ids'] : [] );
-		$exclude_ids = ( isset( $payload['exclude_ids'] ) ? $payload['exclude_ids'] : [] );
-		$count       = ( isset( $payload['count'] ) ? $payload['count'] : 0 );
-		$per_row     = ( isset( $payload['per_row'] ) ? array(
-			'desktop' => $payload['per_row'],
-			'tablet'  => 2,
-			'mobile'  => 1
-		) : Academy\Helper::get_settings( 'course_archive_courses_per_row', array(
-			'desktop' => 3,
-			'tablet'  => 2,
-			'mobile'  => 1
-		) ) );
-		$per_page = ( isset( $payload['per_page'] ) ? $payload['per_page'] : (int) \Academy\Helper::get_settings( 'course_archive_courses_per_page', 12 ) );
-		if ( $count ) {
-			$per_page = $count;
-		}
-		if ( $cat_not_in || $tag_not_in ) {
-			$category = array_diff( $category, $cat_not_in );
-			$tags = array_diff( $tags, $tag_not_in );
-		}
-		$args = \Academy\Helper::prepare_course_search_query_args(
-			[
-				'search'         => $search,
-				'category'       => $category,
-				'tags'           => $tags,
-				'levels'         => $levels,
-				'type'           => $type,
-				'paged'          => $paged,
-				'orderby'        => $orderby,
-				'posts_per_page' => $per_page,
-			]
-		);
-
-		if ( $ids || $exclude_ids ) {
-			$page_num = $paged - 1;
-			$ids = $ids ? (array) explode( ',', $ids ) : [];
-			$exclude_ids = $exclude_ids ? (array) explode( ',', $exclude_ids ) : [];
-			$ids = array_diff( $ids, $exclude_ids );
-			$found_posts = (int) count( $ids );
-			$count = $count ?? 0;
-			if ( $count && $found_posts > $count ) {
-				$ids = array_slice( $ids, - ( $found_posts - ( $count * $page_num ) ) );
-			}
-			$args['post_type'] = [
-				'academy_courses'
-			];
-			$args['post__in'] = $ids;
-			$args['paged'] = $page_num;
-		}
-		$grid_class = \Academy\Helper::get_responsive_column( $per_row );
-		// phpcs:ignore WordPress.WP.DiscouragedFunctions.query_posts_query_posts
-		wp_reset_query();
-		wp_reset_postdata();
-		// remove empty values
-		if ( isset( $args['tax_query'] ) ) {
-			foreach ( $args['tax_query'] as $i => $tax ) {
-				if ( isset( $tax['terms'] ) ) {
-
-					$tax['terms'] = array_filter( $tax['terms'], function( $t ) {
-						return ! empty( trim( $t ) );
-					});
-
-					// If terms array is empty, remove filter
-					if ( empty( $tax['terms'] ) ) {
-						unset( $args['tax_query'][ $i ] );
-					} else {
-						$args['tax_query'][ $i ] = $tax;
-					}
-				}
-			}
-
-			// re-index tax_query
-			$args['tax_query'] = array_values( $args['tax_query'] );
-		}
-		$courses_query = new \WP_Query( apply_filters( 'academy_courses_filter_args', $args ) );
-
-		if ( isset( $found_posts ) && ! empty( $found_posts ) ) {
-			$courses_query->max_num_pages = ceil( $found_posts / $count );
-		}
-		ob_start();
-		?>
-		<div class="academy-row">
-			<?php
-			if ( $courses_query->have_posts() ) {
-				// Load posts loop.
-				while ( $courses_query->have_posts() ) {
-					$courses_query->the_post();
-					/**
-					 * Hook: academy/templates/course_loop.
-					 */
-					do_action( 'academy/templates/course_loop' );
-					\Academy\Helper::get_template( 'content-course.php', array( 'grid_class' => $grid_class ) );
-				}
-				\Academy\Helper::get_template( 'archive/pagination.php', array(
-					'paged' => $paged,
-					'max_num_pages' => $courses_query->max_num_pages,
-				) );
-				wp_reset_query();
-				wp_reset_postdata();
-			} else {
-				\Academy\Helper::get_template( 'archive/course-none.php' );
-			}
-			?>
-		</div>
-		<?php
-		$markup = ob_get_clean();
-		wp_send_json_success(
-			[
-				'markup'      => apply_filters( 'academy/course_filter_markup', $markup ),
-				'found_posts' => $courses_query->found_posts,
-			]
-		);
 	}
 
 	public function get_my_courses() {

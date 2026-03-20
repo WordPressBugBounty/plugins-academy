@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.6.0
+Stable tag: 3.7.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -337,6 +337,13 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.7.0 - 20/03/2026 =
+* Added - What's New page.
+* Added - Compatibility with the BerqWP cache plugin.
+* Improved - Addons page redesign.
+* Fixed - Unnecessary data was not fully removed after canceling course enrollment.
+* Improved - Review modal UI/UX on the learn page after completing topics.
 
 = 3.6.0 - 05/03/2026 =
 * Added - Quizzes question explanation feature.

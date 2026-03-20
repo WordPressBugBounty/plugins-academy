@@ -12,7 +12,7 @@ use AcademyWebhooks\Classes\Payload;
 class NewStudentRegistration implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
-			'academy/shortcode/after_student_registration',
+			'academy/api/auth/after_student_registration',
 			function( $student_id ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,

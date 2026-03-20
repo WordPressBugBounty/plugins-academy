@@ -58,7 +58,7 @@ class Settings extends AbstractPostHandler {
 		if ( isset( $payload['academy-cover-photo-url'] ) && ! empty( $payload['academy-cover-photo-url'] ) ) {
 			update_user_meta( $user_id, 'academy_cover_photo', $payload['academy-cover-photo-url'] );
 		}
-		
+
 		if ( isset( $payload['academy-profile-photo-url'] ) && ! empty( $payload['academy-profile-photo-url'] ) ) {
 			update_user_meta( $user_id, 'academy_profile_photo', $payload['academy-profile-photo-url'] );
 		}

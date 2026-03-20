@@ -15,44 +15,71 @@ class Registration {
 		)[ $type ];
 	}
 
-	protected function check_and_send_error(): void {
+	protected function check_and_send_error( $post_data ) {
+
 		if ( ! get_option( 'users_can_register' ) ) {
-			wp_send_json_error([
-				esc_html__(
-					'Sorry, Admin disabled new user registration',
-					'academy'
+			return new \WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__(
+						'Sorry, Admin disabled new user registration',
+						'academy'
+					),
 				),
-			]);
+				403
+			);
 		}
 
 		if (
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			( isset( $_POST['password'] ) || isset( $_POST['confirm-password'] ) ) && $_POST['password'] !== $_POST['confirm-password']
+			( isset( $post_data['password'] ) || isset( $post_data['confirm-password'] ) ) &&
+			$post_data['password'] !== $post_data['confirm-password']
 		) {
-			wp_send_json_error([
-				esc_html__(
-					'Password and confirm password did not match',
-					'academy'
+			return new \WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__(
+						'Password and confirm password did not match',
+						'academy'
+					),
 				),
-			]);
+				400
+			);
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( get_user_by( 'email', $_POST['email'] ) ) {
-			wp_send_json_error( [ esc_html__( 'Email already exists', 'academy' ) ] );
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		} elseif ( empty( $_POST['email'] ) ) {
-			wp_send_json_error([
-				esc_html__( 'Email is missing or Invalid.', 'academy' ),
-			]);
-		} elseif (
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			! empty( $_POST['confirm-email'] ) && $_POST['confirm-email'] !== $_POST['email']
-		) {
-			wp_send_json_error([
-				esc_html__( 'Your confirm email did not match.', 'academy' ),
-			]);
+		if ( ! empty( $post_data['email'] ) && get_user_by( 'email', $post_data['email'] ) ) {
+			return new \WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__( 'Email already exists', 'academy' ),
+				),
+				409
+			);
 		}
+
+		if ( empty( $post_data['email'] ) ) {
+			return new \WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__( 'Email is missing or Invalid.', 'academy' ),
+				),
+				400
+			);
+		}
+
+		if (
+			! empty( $post_data['confirm-email'] ) &&
+			$post_data['confirm-email'] !== $post_data['email']
+		) {
+			return new \WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__( 'Your confirm email did not match.', 'academy' ),
+				),
+				400
+			);
+		}
+
+		return true;
 	}
 
 	protected function sanitize_and_validate_fields(

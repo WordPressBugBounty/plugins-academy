@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Role {
 
-	public static function add_existing_administrator_instructor_role(){
+	public static function add_existing_administrator_instructor_role() {
 		$admins = get_users(
 			array(
 				'role'   => 'administrator',
@@ -24,7 +24,7 @@ class Role {
 		}
 	}
 
-	public static function administrator_role_change_handler( $user_id, $new_role, $old_roles ){
+	public static function administrator_role_change_handler( $user_id, $new_role, $old_roles ) {
 
 		$user_id   = (int) $user_id;
 		$old_roles = (array) $old_roles;
@@ -63,7 +63,7 @@ class Role {
 		remove_role( 'academy_instructor' );
 
 		add_role( 'academy_instructor', esc_html__( 'Academy Instructor', 'academy' ), array() );
-		
+
 		$role_permission = self::get_instructor_caps();
 		$instructor = get_role( 'academy_instructor' );
 		if ( $instructor ) {

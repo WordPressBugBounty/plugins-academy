@@ -10,6 +10,8 @@ use Academy\Classes\AbstractAjaxHandler;
 use Academy\Classes\Analytics;
 use Academy\Classes\Sanitizer;
 use Academy\Helper;
+use WP_REST_Request;
+use WP_REST_Response;
 
 class Miscellaneous extends AbstractAjaxHandler {
 	public function __construct() {
@@ -27,10 +29,6 @@ class Miscellaneous extends AbstractAjaxHandler {
 			'fetch_posts'               => array(
 				'callback'   => array( $this, 'fetch_posts' ),
 				'capability' => 'manage_academy_instructor'
-			),
-			'render_popup_login'        => array(
-				'callback'             => array( $this, 'render_popup_login' ),
-				'allow_visitor_action' => true
 			),
 			'mark_topic_complete'       => array(
 				'callback'   => array( $this, 'mark_topic_complete' ),
@@ -174,29 +172,6 @@ class Miscellaneous extends AbstractAjaxHandler {
 			}
 		}
 		wp_send_json_success( $results );
-	}
-
-	public function render_popup_login() {
-		if ( is_user_logged_in() ) {
-			wp_die();
-		}
-
-		$payload = Sanitizer::sanitize_payload( [
-			'current_permalink' => 'url',
-		], $_REQUEST ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$current_permalink = Helper::sanitize_referer_url( $payload['current_permalink'] );
-		$register_url      = esc_url( add_query_arg( array(
-			'redirect_to' => $current_permalink
-		), Helper::get_page_permalink( 'frontend_student_reg_page' ) ) );
-		ob_start();
-		echo do_shortcode( '[academy_login_form 
-			form_title="' . esc_html__( 'Hi, Welcome back!', 'academy' ) . '" 
-			show_logged_in_message="false" 
-			student_register_url="' . $register_url . '"
-			login_redirect_url="' . $current_permalink . '"]'
-		);
-		$markup = ob_get_clean();
-		wp_send_json_success( $markup );
 	}
 
 	public function mark_topic_complete( $payload_data ) {

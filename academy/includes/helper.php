@@ -233,6 +233,11 @@ class Helper {
 				'capability'  => 'manage_options',
 			];
 		}
+		$menu[ ACADEMY_PLUGIN_SLUG . '-whats-new' ]       = [
+			'parent_slug' => ACADEMY_PLUGIN_SLUG,
+			'title'       => __( 'What\'s new!', 'academy' ),
+			'capability'  => 'manage_options',
+		];
 		$menu[ ACADEMY_PLUGIN_SLUG . '-tools' ]       = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
 			'title'       => __( 'Tools', 'academy' ),
