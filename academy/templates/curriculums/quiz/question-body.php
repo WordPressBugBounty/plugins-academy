@@ -1,13 +1,21 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
-} ?>
+}
+
+$msg = $is_required ? esc_html__( 'required', 'academy' ) : esc_html__( 'optional', 'academy' );
+$title = sprintf(
+    '%d. %s (%s)',
+    $question_count,
+    $question_with_option['question']->question_title,
+    $msg
+);
+?>
+
 <div class="academy-lesson-quiz__body question-no-<?php echo esc_html(
 	$question_count
 ); ?>">
-	<h3><?php echo esc_html(
-		$question_with_option['question']->question_title
-	); ?></h3>
+	<h3><?php echo $title; ?></h3>
 	<?php // load the short-answer if the question type is short-ans
 	if ( 'shortAnswer' === $question_with_option['question']->question_type ) {
 		\Academy\Helper::get_template(

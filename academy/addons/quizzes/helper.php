@@ -99,9 +99,15 @@ class Helper {
 		if ( $has_permission ) {
 			$question_order = get_post_meta( $quiz_id, 'academy_quiz_questions_order', true );
 			$questions = \AcademyQuizzes\Classes\Query::get_questions_by_quid_id( $quiz_id, $question_order );
+			$layout = get_post_meta( $quiz_id, 'academy_quiz_questions_layout', true );
 			$order = get_post_meta( $quiz_id, 'academy_quiz_questions_order', true );
 			if ( count( $questions ) && $order ) {
 				do_action( 'academy_quizzes/frontend/before_render_quiz', $course_id, $quiz_id );
+				if ( 'all' === $layout ) {
+					foreach ( $questions as &$question ) {
+						$question->answers = \AcademyQuizzes\Classes\Query::get_quiz_answers_by_question_id( $question->question_id, $question->question_type );
+					}
+				}
 				$settings = \AcademyQuizzes\Classes\Query::get_question_settings_by_quiz_id( $quiz_id, $order );
 				return( [
 					'questions' => $questions,

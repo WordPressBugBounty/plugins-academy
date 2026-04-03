@@ -108,6 +108,21 @@ class Database {
 				],
 			)
 		);
+		register_meta(
+			'post',
+			'academy_quiz_questions_layout',
+			array(
+				'object_subtype' => 'academy_quiz',
+				'type'           => 'string',
+				'single'         => true,
+				'show_in_rest'   => array(
+					'schema' => array(
+						'type' => 'string',
+						'enum' => [ 'single', 'all' ],
+					),
+				),
+			)
+		);
 	}
 
 	public static function create_initial_custom_table() {

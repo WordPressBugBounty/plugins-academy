@@ -281,6 +281,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 			'academy_quiz_questions_order' => 'yes' === $random ? 'random' : 'default',
 			'academy_quiz_hide_question_number' => '',
 			'academy_quiz_short_answer_characters_limit' => 200,
+			'academy_quiz_questions_layout' => 'single',
 			'academy_quiz_questions' => [],
 		];
 		foreach ( $quiz_meta as $key => $value ) {

@@ -199,6 +199,7 @@ class Query {
 			'quiz_questions_order' => get_post_meta( $ID, 'academy_quiz_questions_order', true ),
 			'quiz_hide_question_number' => (bool) get_post_meta( $ID, 'academy_quiz_hide_question_number', true ),
 			'quiz_short_answer_characters_limit' => (int) get_post_meta( $ID, 'academy_quiz_short_answer_characters_limit', true ),
+			'quiz_questions_layout' => get_post_meta( $ID, 'academy_quiz_questions_layout', true ),
 		];
 	}
 

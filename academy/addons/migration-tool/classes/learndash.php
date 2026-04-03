@@ -336,6 +336,7 @@ class Learndash extends Migration implements MigrationInterface {
 			'academy_quiz_questions_order' => 'sorting',
 			'academy_quiz_hide_question_number' => isset( $quiz_meta['sfwd-quiz_hideQuestionNumbering'] ) ? $quiz_meta['sfwd-quiz_hideQuestionNumbering'] : false,
 			'academy_quiz_short_answer_characters_limit' => (int) 200,
+			'academy_quiz_questions_layout' => 'single',
 			'academy_quiz_questions' => [],
 		);
 		foreach ( $quiz_meta as $key => $value ) {

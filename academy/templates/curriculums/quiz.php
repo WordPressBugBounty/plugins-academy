@@ -27,11 +27,18 @@ if ( $attempts && count( $attempts ) ) {
 	$last_attempt_id         = ( ! empty( $last_attempt ) ) ? $last_attempt->attempt_id : 0;
 	$is_already_attempt      = \AcademyQuizzes\Classes\Query::get_total_pending_attempt_by_attempt_id( $last_attempt_id );
 	$is_time_expired         = \AcademyQuizzes\Helper::check_if_quiz_time_is_expired_by_quiz_id_and_attempt_id( $course_id, $quiz_id, $last_attempt_id );
+	$layout 				 = get_post_meta( $quiz_id, 'academy_quiz_questions_layout', true );
+	$layout 				 = $layout ? $layout : 'single';
 
 	if ( 'pending' === $last_attempt_status && ! $is_already_attempt ) {
 		if ( ! $is_time_expired ) {
-			$default_template_path = 'curriculums/quiz/question-form.php';
+			if ( 'single' === $layout ) {
+				$default_template_path = 'curriculums/quiz/single-question-form.php';
+			} else {
+				$default_template_path = 'curriculums/quiz/all-question-form.php';
+			}
 			$default_template_args = wp_parse_args( array( 'last_attempt' => $last_attempt ), $default_template_args );
+
 		} else {
 			$quiz_attempt_data = array(
 				'course_id'                => $course_id,

@@ -23,6 +23,7 @@ class Quiz implements Interfaces\Insertable {
 		'academy_quiz_questions_order' => 'rand',
 		'academy_quiz_hide_question_number' => '',
 		'academy_quiz_short_answer_characters_limit' => 0,
+		'academy_quiz_questions_layout' => 'single',
 		'academy_quiz_questions' => []
 	];
 

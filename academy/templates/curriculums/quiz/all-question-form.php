@@ -1,0 +1,59 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+$quiz = \AcademyQuizzes\Helper::render_quiz_by_course_and_quiz_id( $course_id, $quiz_id );
+$questions_with_options = \AcademyQuizzes\Helper::get_questions_with_options_from_quiz_array( $quiz );
+$layout = isset( $quiz['settings']['quiz_questions_layout'] ) ? $quiz['settings']['quiz_questions_layout'] : 'single';
+?>
+
+<form id="academy_quiz_player" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method='post'>
+	<?php wp_nonce_field( 'academy_nonce', 'security' ); ?>
+	<input type="hidden" name="action" value="academy_quizzes_submit_quiz" />
+	<input type="hidden" name="course_id" value="<?php echo esc_attr( $course_id ); ?>" />
+	<input type="hidden" name="quiz_id" value="<?php echo esc_attr( $quiz_id ); ?>" />
+	<div class="academy-lesson-quiz">
+		<div class="academy-lesson-quiz__inner" data-quiz-layout="<?php echo esc_attr( $layout ); ?>">
+            <?php
+				$question_count = 0;
+				foreach ( $questions_with_options as $question_with_option ) :
+					$question_count++;
+					$question_type   = $question_with_option['question']->question_type;
+					$answer_settings = json_decode( $question_with_option['question']->question_settings );
+					$is_required = $answer_settings->answer_required;
+					?>
+
+					<div 
+						class="academy-quiz-single-question__wrapper academy-quiz-question academy-quiz-question-no-<?php echo esc_html( $question_count ); ?>"
+						id="academy-quiz-question-no-<?php echo esc_html( $question_count ); ?>"
+						data-answer-required="<?php echo $is_required ? 'true' : 'false'; ?>"
+						style="display: block;"
+					>
+						<span class="academy-quiz-question__type academy-quiz-<?php echo esc_attr( $question_with_option['question']->question_type ); ?> academy-quiz-ans-required_<?php echo ( $is_required ) ? 'true' : 'false'; ?>" id="academy-quiz-ans-required_<?php echo ( $is_required ) ? 'true' : 'false'; ?>"></span>
+
+					<?php
+						$template_args  = array(
+							'quiz_id'           => $quiz_id,
+							'course_id'         => $course_id,
+							'question_count'    => $question_count,
+							'question_with_option' => $question_with_option,
+							'last_attempt' => $last_attempt,
+							'is_required' => $is_required,
+						);
+						if ( 1 === $question_count ) {
+							\Academy\Helper::get_template( 'curriculums/quiz/questions/question-top.php', $template_args );
+						}
+						// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+						\Academy\Helper::get_template( 'curriculums/quiz/question-body.php', $template_args );
+						?>
+
+                </div>
+
+            <?php
+            endforeach;
+            \Academy\Helper::get_template( 'curriculums/quiz/all-form-control.php', [ 'layout' => $layout, 'is_required' => $is_required ] );
+            ?>
+        </div>
+    </div>
+</form>

@@ -209,6 +209,11 @@ class Payload {
 				'academy_quiz_hide_quiz_time',
 				true
 			),
+			'quiz_questions_layout' => get_post_meta(
+				$quiz->ID,
+				'academy_quiz_questions_layout',
+				true
+			),
 			'feedback_mode' => 'retry' === $feedback_mode ? 'retry' : 'default',
 			'attempts_allowed' => 'default' === $feedback_mode ? 0 : $attempts,
 			'duration' => $duration,

@@ -84,6 +84,7 @@ class LearnPress extends Migration implements MigrationInterface {
 			'academy_quiz_questions_order' => 'default',
 			'academy_quiz_hide_question_number' => false,
 			'academy_quiz_short_answer_characters_limit' => (int) 200,
+			'academy_quiz_questions_layout' => 'single',
 			'academy_quiz_questions' => [],
 		);
 		foreach ( $quiz_meta as $key => $value ) {

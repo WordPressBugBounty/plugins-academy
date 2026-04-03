@@ -13,14 +13,13 @@ use Academy\Ajax\Registration;
 use Academy\Ajax\Student;
 use Academy\Ajax\Miscellaneous;
 use Academy\Ajax\Settings;
-use Academy\Classes\PluginDownloader;
+use Academy\Ajax\PluginDownloader;
 use Academy\Lesson\LessonMigration\Ajax as MigrationAjax;
 
 class Ajax {
 	public static function init() {
 		$self = new self();
 		$self->dispatch_hooks();
-		PluginDownloader::init();
 	}
 	public function dispatch_hooks() {
 		( new Course() )->dispatch_actions();
@@ -32,5 +31,6 @@ class Ajax {
 		( new Miscellaneous() )->dispatch_actions();
 		( new Settings() )->dispatch_actions();
 		( new MigrationAjax() )->dispatch_actions();
+		( new PluginDownloader() )->dispatch_actions();
 	}
 }
