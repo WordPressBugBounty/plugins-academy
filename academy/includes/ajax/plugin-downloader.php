@@ -11,21 +11,21 @@ use Academy\Classes\Sanitizer;
 class PluginDownloader extends AbstractAjaxHandler {
 	public function __construct() {
 		$this->actions = array(
-            'check_installed_plugins' => [
-                'callback' => [ $this, 'check_installed_plugins' ],
-                'capability' => 'manage_options',
-            ],
-            'install_plugins' => [
-                'callback' => [ $this, 'install_plugins' ],
-                'capability' => 'manage_options',
-            ]
-        );
+			'check_installed_plugins' => [
+				'callback' => [ $this, 'check_installed_plugins' ],
+				'capability' => 'manage_options',
+			],
+			'install_plugins' => [
+				'callback' => [ $this, 'install_plugins' ],
+				'capability' => 'manage_options',
+			]
+		);
 	}
 
 	public function check_installed_plugins( $payload_data ) {
-        $payload = Sanitizer::sanitize_payload( [
-            'plugin_slug' => 'string',
-        ], $payload_data );
+		$payload = Sanitizer::sanitize_payload( [
+			'plugin_slug' => 'string',
+		], $payload_data );
 
 		$plugin_slug = isset( $payload['plugin_slug'] ) ? $payload['plugin_slug'] : '';
 
@@ -67,10 +67,10 @@ class PluginDownloader extends AbstractAjaxHandler {
 	}
 
 	public function install_plugins( $payload_data ) {
-        $payload = Sanitizer::sanitize_payload( [
-            'plugin_slug' => 'string',
-        ], $payload_data );
-        $plugin_slug = isset( $payload['plugin_slug'] ) ? $payload['plugin_slug'] : '';
+		$payload = Sanitizer::sanitize_payload( [
+			'plugin_slug' => 'string',
+		], $payload_data );
+		$plugin_slug = isset( $payload['plugin_slug'] ) ? $payload['plugin_slug'] : '';
 
 		if ( empty( $plugin_slug ) ) {
 			wp_send_json_error( [

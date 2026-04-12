@@ -50,6 +50,9 @@ class QuizQuestion implements Interfaces\Insertable {
 			'question_level'      => $this->level,
 			'question_type'       => $this->type,
 			'question_score'      => $this->score,
+			'question_negative_score' => 0,
+			 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			// 'question_image_id' => 0,
 			'question_settings'   => wp_json_encode( $this->settings ),
 			'question_order'      => $this->order,
 			'question_created_at' => current_time( 'mysql' ),

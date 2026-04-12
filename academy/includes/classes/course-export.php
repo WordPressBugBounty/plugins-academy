@@ -159,6 +159,7 @@ class CourseExport extends ExportBase {
 			'is_disabled_course_review' => $meta['academy_is_disabled_course_review'][0] ?? false,
 			'rcp_membership_levels' => $meta['academy_rcp_membership_levels'][0] ?? array(),
 			'course_enable_certificate' => $meta['academy_course_enable_certificate'][0] ?? false,
+			'academy_course_attachments' => $meta['academy_course_attachments'][0] ?? array(),
 		];
 	}
 

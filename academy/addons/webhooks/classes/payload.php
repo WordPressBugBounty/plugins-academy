@@ -209,6 +209,16 @@ class Payload {
 				'academy_quiz_hide_quiz_time',
 				true
 			),
+			'explanation_enabled' => (bool) get_post_meta(
+				$quiz->ID,
+				'academy_quiz_explanation_enabled',
+				true
+			),
+			'skip_question_showing' => (bool) get_post_meta(
+				$quiz->ID,
+				'academy_quiz_skip_question_showing',
+				true
+			),
 			'quiz_questions_layout' => get_post_meta(
 				$quiz->ID,
 				'academy_quiz_questions_layout',

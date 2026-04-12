@@ -74,7 +74,7 @@ class Helper {
 		$cssContent = '';
 		if ( ! empty( $blocks ) ) {
 			foreach ( $blocks as $block ) {
-				$htmlContent = apply_filters( 'the_content', render_block( $block ) );
+				$htmlContent = render_block( $block );
 				preg_match_all( '/<style>(.*?)<\/style>/is', $htmlContent, $matches );
 				if ( ! empty( $matches[1] ) ) {
 					foreach ( $matches[1] as $cssBlock ) {

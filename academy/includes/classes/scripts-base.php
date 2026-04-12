@@ -30,7 +30,7 @@ class ScriptsBase {
 			'is_plain_permalink'    => $this->is_plain_permalink(),
 			'menu'                  => wp_json_encode( Helper::get_admin_menu_list() ),
 			'woocommerce_is_active' => Helper::is_active_woocommerce(),
-			'ecm_is_active'         => Helper::is_active_ecm(),
+			'ecm_is_active'         => ( Helper::is_active_ecm() ),
 			'current_user_id'       => get_current_user_id(),
 			'is_rtl'                => is_rtl(),
 			'is_admin'              => is_admin(),
@@ -46,7 +46,7 @@ class ScriptsBase {
 				'divi_modules_is_active'   => Helper::is_plugin_active( 'academy-divi-modules/academy-divi-modules.php' ),
 				'bricks_is_active'       => Helper::is_plugin_active( 'academy-bricks-addons/academy-bricks-addons.php' ),
 				'storeengine_is_active'       => Helper::is_plugin_active( 'storeengine/storeengine.php' ),
-				'ecm_is_active'         => Helper::is_plugin_active( 'easy-content-manager/easy-content-manager.php' ),
+				'ecm_is_active'         => ( Helper::is_active_ecm() ),
 			],
 			'current_user_can'      => [
 				'manage_options'            => current_user_can( 'manage_options' ),

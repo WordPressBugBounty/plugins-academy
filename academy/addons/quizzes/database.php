@@ -70,6 +70,7 @@ class Database {
 			'academy_quiz_hide_question_number'         => 'boolean',
 			'academy_quiz_short_answer_characters_limit' => 'integer',
 			'academy_quiz_explanation_enabled'          => 'boolean',
+			'academy_quiz_skip_question_showing'        => 'boolean',
 		];
 
 		foreach ( $course_meta as $meta_key => $meta_value_type ) {

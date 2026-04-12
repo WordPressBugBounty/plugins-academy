@@ -22,6 +22,12 @@ $max_attempt    = ( 'retry' === $quiz['settings']['quiz_feedback_mode'] ) ? $qui
 				<h3>
 					<?php echo esc_html( $quiz['title'] ); ?>
 				</h3>
+				<?php if ( ! empty( $quiz['content'] ) ) : ?>
+					<p>
+						<?php echo esc_html__( 'Description: ', 'academy' ); ?>
+						<?php echo esc_html( $quiz['content'] ); ?>
+					</p>
+				<?php endif; ?>
 			</div>
 			<div class="academy-quiz-start__body">
 				<div class="academy-quiz-start__details">

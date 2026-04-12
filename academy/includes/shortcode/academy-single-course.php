@@ -38,7 +38,7 @@ class AcademySingleCourse {
 			$this,
 			'single_course_featured_image'
 		]);
-		 add_shortcode('academy_single_course_attachment_files', [
+		add_shortcode('academy_single_course_attachment_files', [
 			$this,
 			'single_course_attachment_file',
 		] );

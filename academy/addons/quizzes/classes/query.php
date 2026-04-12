@@ -199,6 +199,8 @@ class Query {
 			'quiz_questions_order' => get_post_meta( $ID, 'academy_quiz_questions_order', true ),
 			'quiz_hide_question_number' => (bool) get_post_meta( $ID, 'academy_quiz_hide_question_number', true ),
 			'quiz_short_answer_characters_limit' => (int) get_post_meta( $ID, 'academy_quiz_short_answer_characters_limit', true ),
+			'quiz_explanation_enabled' => (bool) get_post_meta( $ID, 'academy_quiz_explanation_enabled', true ),
+			'quiz_skip_question_showing' => (bool) get_post_meta( $ID, 'academy_quiz_skip_question_showing', true ),
 			'quiz_questions_layout' => get_post_meta( $ID, 'academy_quiz_questions_layout', true ),
 		];
 	}
@@ -534,6 +536,9 @@ class Query {
 
 	public static function get_quiz_all_answer_title_by_ids( $IDs ) {
 		global $wpdb;
+		if ( empty( $IDs ) || ! is_array( $IDs ) ) {
+			return [];
+		}
 		$implode_ids_placeholder = implode( ', ', array_fill( 0, count( $IDs ), '%d' ) );
 		// phpcs:disable
 		$answer   = $wpdb->get_results( $wpdb->prepare( "SELECT answer_title, image_id FROM {$wpdb->prefix}academy_quiz_answers WHERE answer_id IN($implode_ids_placeholder)", $IDs ), OBJECT );
@@ -861,6 +866,56 @@ class Query {
             LEFT JOIN {$wpdb->prefix}academy_quiz_answers as quiz_answers ON attempt_answers.question_id = quiz_answers.question_id
             LEFT JOIN {$wpdb->prefix}academy_quiz_attempts as quiz_attempts ON attempt_answers.attempt_id = quiz_attempts.attempt_id
             WHERE attempt_answers.attempt_id=%d AND attempt_answers.user_id=%d", $attempt_id, $user_id ), OBJECT );
+	}
+
+	public static function get_quiz_attempt_skip_questions( $attempt_id, $user_id, $quiz_id ) {
+		global $wpdb;
+
+		$query = $wpdb->prepare(
+			"SELECT
+				attempt_answers.attempt_answer_id,
+				attempt_answers.attempt_id,
+				attempt_answers.user_id,
+				q.question_id,
+				attempt_answers.is_correct,
+				attempt_answers.answer AS given_answer,
+
+				ans.answer_title AS correct_answer,
+				ans.answer_content,
+				ans.answer_id,
+				ans.is_correct AS is_correct_answer,
+
+				q.quiz_id,
+				q.question_title,
+				q.question_explanation,
+				q.question_type,
+				q.question_image_id,
+
+				attempts.is_manually_reviewed
+
+			FROM {$wpdb->prefix}academy_quiz_questions q
+
+			LEFT JOIN {$wpdb->prefix}academy_quiz_attempt_answers attempt_answers
+				ON attempt_answers.question_id = q.question_id
+				AND attempt_answers.attempt_id = %d
+				AND attempt_answers.user_id = %d
+
+			LEFT JOIN {$wpdb->prefix}academy_quiz_answers ans
+				ON ans.question_id = q.question_id
+				AND ans.is_correct = 1
+
+			LEFT JOIN {$wpdb->prefix}academy_quiz_attempts attempts
+				ON attempts.attempt_id = %d
+
+			WHERE q.quiz_id = %d
+			",
+			$attempt_id,
+			$user_id,
+			$attempt_id,
+			$quiz_id
+		);
+
+		return $wpdb->get_results( $query, OBJECT );
 	}
 
 	public static function delete_quiz_attempt( $attempt_id ) {

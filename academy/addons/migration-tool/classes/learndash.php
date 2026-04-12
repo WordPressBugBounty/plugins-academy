@@ -336,6 +336,8 @@ class Learndash extends Migration implements MigrationInterface {
 			'academy_quiz_questions_order' => 'sorting',
 			'academy_quiz_hide_question_number' => isset( $quiz_meta['sfwd-quiz_hideQuestionNumbering'] ) ? $quiz_meta['sfwd-quiz_hideQuestionNumbering'] : false,
 			'academy_quiz_short_answer_characters_limit' => (int) 200,
+			'academy_quiz_skip_question_showing' => isset( $quiz_meta['sfwd-quiz_skipQuestionShowing'] ) ? $quiz_meta['sfwd-quiz_skipQuestionShowing'] : false,
+			'academy_quiz_explanation_enabled' => isset( $quiz_meta['sfwd-quiz_explanationEnabled'] ) ? $quiz_meta['sfwd-quiz_explanationEnabled'] : false,
 			'academy_quiz_questions_layout' => 'single',
 			'academy_quiz_questions' => [],
 		);
@@ -380,13 +382,16 @@ class Learndash extends Migration implements MigrationInterface {
 						'question_type' => $question_type,
 						'question_score' => (int) $question->points,
 						'question_order' => 0,
-						'question_settings' => wp_json_encode(
-							array(
-								'display_points' => false,
-								'answer_required' => false,
-								'randomize' => false,
-							)
-						),
+						'question_negative_score' => 0,
+						 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+						// 'question_image_id' => 0,
+					'question_settings' => wp_json_encode(
+						array(
+							'display_points' => false,
+							'answer_required' => false,
+							'randomize' => false,
+						)
+					),
 					);
 					$alms_question_id = \AcademyQuizzes\Classes\Query::quiz_question_insert( $question_data );
 					$academy_quiz_question[] = array(

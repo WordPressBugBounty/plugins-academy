@@ -281,6 +281,8 @@ class Lifterlms extends Migration implements MigrationInterface {
 			'academy_quiz_questions_order' => 'yes' === $random ? 'random' : 'default',
 			'academy_quiz_hide_question_number' => '',
 			'academy_quiz_short_answer_characters_limit' => 200,
+			'academy_quiz_explanation_enabled' => false,
+			'academy_quiz_skip_question_showing' => false,
 			'academy_quiz_questions_layout' => 'single',
 			'academy_quiz_questions' => [],
 		];
@@ -325,6 +327,9 @@ class Lifterlms extends Migration implements MigrationInterface {
 					'question_type' => $question_type,
 					'question_score' => isset( $score ) ? $score : 0,
 					'question_order' => $question_order,
+					'question_negative_score' => 0,
+					 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+					 //'question_image_id' => 0,
 					'question_settings' => wp_json_encode([
 						'display_points' => false,
 						'answer_required' => false,

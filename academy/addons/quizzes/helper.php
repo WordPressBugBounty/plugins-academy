@@ -39,8 +39,12 @@ class Helper {
 				)
 			);
 		}//end if
-		$answers = \AcademyQuizzes\Classes\Query::get_quiz_all_answer_title_by_ids( explode( ',', $attempt_item->given_answer ) );
+		$answers = \AcademyQuizzes\Classes\Query::get_quiz_all_answer_title_by_ids( explode( ',', $attempt_item->given_answer ?? '' ) );
 		// convert image id to image url
+		if ( empty( $answers ) ) {
+			return [];
+		}
+
 		foreach ( $answers as $answer ) {
 			if ( $answer->image_id ) {
 				$image = wp_get_attachment_image_src( $answer->image_id );
@@ -113,6 +117,7 @@ class Helper {
 					'questions' => $questions,
 					'settings' => $settings,
 					'title' => get_the_title( $quiz_id ),
+					'content' => get_post_field( 'post_content', $quiz_id ),
 				] );
 			}
 			return( esc_html__( 'Sorry, something went wrong!', 'academy' ) );
@@ -124,11 +129,19 @@ class Helper {
 		$user_id = get_current_user_id();
 		$prepare_attempt_details = [];
 		$attempt_details = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details( $attempt_id, $user_id );
+		$quiz_id = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id )->quiz_id;
+		$is_enable_skip_question = get_post_meta( $quiz_id, 'academy_quiz_skip_question_showing', true );
+		if ( $is_enable_skip_question ) {
+			$skip_questions = \AcademyQuizzes\Classes\Query::get_quiz_attempt_skip_questions( $attempt_id, $user_id, $quiz_id );
+			$attempt_details = array_merge( $attempt_details, $skip_questions );
+		}
 		foreach ( $attempt_details as $attempt_item ) {
 			$attempt_item->given_answer = self::prepare_given_answer( $attempt_item->question_type, $attempt_item );
 			$attempt_item->is_correct = (bool) $attempt_item->is_correct;
 			$attempt_item->correct_answer = self::prepare_correct_answer( $attempt_item->question_type, $attempt_item );
-			$prepare_attempt_details[ $attempt_item->attempt_answer_id ] = $attempt_item;
+			$attempt_answer_id = $attempt_item->attempt_answer_id ? $attempt_item->attempt_answer_id : $attempt_item->question_id;
+			$attempt_item->is_skipped_question = (bool) $attempt_item->attempt_answer_id ? false : true;
+			$prepare_attempt_details[ $attempt_answer_id ] = $attempt_item;
 		}
 
 		return $prepare_attempt_details;

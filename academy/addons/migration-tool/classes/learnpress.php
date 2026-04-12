@@ -84,6 +84,8 @@ class LearnPress extends Migration implements MigrationInterface {
 			'academy_quiz_questions_order' => 'default',
 			'academy_quiz_hide_question_number' => false,
 			'academy_quiz_short_answer_characters_limit' => (int) 200,
+			'academy_quiz_explanation_enabled' => false,
+			'academy_quiz_skip_question_showing' => false,
 			'academy_quiz_questions_layout' => 'single',
 			'academy_quiz_questions' => [],
 		);
@@ -128,6 +130,9 @@ class LearnPress extends Migration implements MigrationInterface {
 					'question_type' => $question_type,
 					'question_score' => $score,
 					'question_order' => $question_order,
+					'question_negative_score' => 0,
+					 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+					// 'question_image_id' => 0,
 					'question_settings' => wp_json_encode(array(
 						'display_points' => false,
 						'answer_required' => false,

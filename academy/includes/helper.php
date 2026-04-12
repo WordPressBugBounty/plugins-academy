@@ -280,9 +280,7 @@ class Helper {
 	}
 
 	public static function is_active_ecm() {
-		$ecm = 'easy-content-manager/easy-content-manager.php';
-
-		return self::is_plugin_active( $ecm );
+		return class_exists( 'EasyContentManager' );
 	}
 
 	public static function is_active_ablocks() {
@@ -939,6 +937,26 @@ class Helper {
 		return null;
 	}
 
+	public static function get_post_by_name( $page_name, $post_type = 'page' ) {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$page = $wpdb->get_var( $wpdb->prepare(
+			"SELECT ID
+			FROM $wpdb->posts
+			WHERE post_name = %s
+			AND post_type = %s",
+			$page_name,
+			$post_type
+		) );
+
+		if ( $page ) {
+			return get_post( $page, OBJECT );
+		}
+
+		return null;
+	}
+
 	public static function generate_unique_username_from_email( $email ) {
 		// Generate a username from the email address
 		$username = sanitize_user( current( explode( '@', $email ) ) );
@@ -1114,45 +1132,25 @@ class Helper {
 		if ( 'lesson' === $topic_type ) {
 			$lesson = self::get_lesson_by_slug( $slug );
 			if ( $lesson ) {
-				return $lesson['ID'];
+				return (int) $lesson['ID'];
 			}
 			return 0;
 		} elseif ( 'quiz' === $topic_type ) {
-			$quiz = get_posts( array(
-				'name' => $slug,
-				'post_type' => 'academy_quiz',
-				'post_status' => 'publish',
-				'numberposts' => 1,
-			) );
+			$quiz = self::get_post_by_name( $slug, 'academy_quiz' );
 
-			return ( ! empty( $quiz ) ) ? current( $quiz )->ID : 0;
+			return $quiz ? $quiz->ID : 0;
 		} elseif ( 'assignment' === $topic_type ) {
-			$assignment = get_posts( array(
-				'name' => $slug,
-				'post_type' => 'academy_assignments',
-				'post_status' => 'publish',
-				'numberposts' => 1,
-			) );
+			$assignment = self::get_post_by_name( $slug, 'academy_assignments' );
 
-			return ( ! empty( $assignment ) ) ? current( $assignment )->ID : 0;
+			return ( ! empty( $assignment ) ) ? $assignment->ID : 0;
 		} elseif ( 'meeting' === $topic_type ) {
-			$meeting = get_posts( array(
-				'name' => $slug,
-				'post_type' => 'academy_meeting',
-				'post-status' => 'publish',
-				'numberposts' => 1,
-			) );
+			$meeting = self::get_post_by_name( $slug, 'academy_meeting' );
 
-			return ( ! empty( $meeting ) ) ? current( $meeting )->ID : 0;
+			return $meeting ? current( $meeting )->ID : 0;
 		} elseif ( 'booking' === $topic_type ) {
-			$booking = get_posts( array(
-				'name' => $slug,
-				'post_type' => 'academy_booking',
-				'post-status' => 'publish',
-				'numberposts' => 1,
-			) );
+			$booking = self::get_post_by_name( $slug, 'academy_booking' );
 
-			return ( ! empty( $booking ) ) ? current( $booking )->ID : 0;
+			return $booking ? $booking->ID : 0;
 		}//end if
 
 		return false;
@@ -1566,5 +1564,14 @@ class Helper {
 			}
 		}
 		return false;
+	}
+
+	public static function minify_js( ?string $js ) : string {
+		$js = preg_replace( '/\/\*.*?\*\//s', '', $js );
+		$js = preg_replace( '/\/\/.*?[\r\n]/', '', $js );
+		$js = preg_replace( '/\s+/', ' ', $js );
+		$js = preg_replace( '/\s*([{}();,:])\s*/', '$1', $js );
+		$js = trim( $js );
+		return $js;
 	}
 }

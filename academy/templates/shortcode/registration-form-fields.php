@@ -17,7 +17,14 @@ foreach ( $fields as $field ) {
 		?>
 			<div class="academy-col academy-form-group">
 			<?php if ( isset( $col['type'] ) && in_array( $col['type'], $common_fields, true ) ) : ?>
-					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>"><?php echo esc_html( $col['label'] ); ?></label>
+					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>">
+						<?php echo esc_html( $col['label'] ); ?>
+						<?php if ( ! empty( $col['add_link'] ) && ! empty( $col['link_label'] ) && ! empty( $col['link_url'] ) ) : ?>
+							<a href="<?php echo esc_url( $col['link_url'] ); ?>" target="_blank" rel="noopener noreferrer" class="academy-field-link">
+								<?php echo esc_html( $col['link_label'] ); ?>
+							</a>
+						<?php endif; ?>
+					</label>
 					<div>
 						<input
 								id="academy_<?php echo esc_attr( $col['name'] ); ?>"
@@ -36,7 +43,14 @@ foreach ( $fields as $field ) {
 						<?php endif; ?>
 					</div>
 				<?php elseif ( isset( $col['type'] ) && 'textarea' === $col['type'] ) : ?>
-					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>"><?php echo esc_html( $col['label'] ); ?></label>
+					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>">
+						<?php echo esc_html( $col['label'] ); ?>
+						<?php if ( ! empty( $col['add_link'] ) && ! empty( $col['link_label'] ) && ! empty( $col['link_url'] ) ) : ?>
+							<a href="<?php echo esc_url( $col['link_url'] ); ?>" target="_blank" rel="noopener noreferrer" class="academy-field-link">
+								<?php echo esc_html( $col['link_label'] ); ?>
+							</a>
+						<?php endif; ?>
+					</label>
 					<textarea
 							id="academy_<?php echo esc_attr( $col['name'] ); ?>"
 							class="academy-form-control"
@@ -47,24 +61,43 @@ foreach ( $fields as $field ) {
 						></textarea>
 
 				<?php elseif ( isset( $col['type'] ) && 'checkbox' === $col['type'] ) : ?>
-					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>"><?php echo esc_html( $col['label'] ); ?></label>
-					<?php foreach ( $col['options'] as $option ) : ?>
-						<div class="academy-form-check">
-							<label class="academy-form-check-label">
-								<input class="academy-form-check-input"
-								type="checkbox"
-								value="<?php echo esc_attr( $option['value'] ); ?>"
-								id="<?php echo esc_attr( $option['value'] ); ?>"
-								name="<?php echo esc_attr( $col['name'] ); ?>"
-								>
-								<?php echo esc_attr( $option['label'] ); ?>
-							</label>
-						</div>
-					<?php endforeach; ?>
+					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>">
+						<?php echo esc_html( $col['label'] ); ?>
+						<?php if ( ! empty( $col['add_link'] ) && ! empty( $col['link_label'] ) && ! empty( $col['link_url'] ) ) : ?>
+							<a href="<?php echo esc_url( $col['link_url'] ); ?>" target="_blank" rel="noopener noreferrer" class="academy-field-link">
+								<?php echo esc_html( $col['link_label'] ); ?>
+							</a>
+						<?php endif; ?>
+					</label>
+					<?php
+					if ( ! empty( $col['options'] ) ) :
+						foreach ( $col['options'] as $option ) : ?>
+								<div class="academy-form-check">
+									<label class="academy-form-check-label">
+										<input class="academy-form-check-input"
+										type="checkbox"
+										value="<?php echo esc_attr( $option['value'] ); ?>"
+										id="<?php echo esc_attr( $option['value'] ); ?>"
+										name="<?php echo esc_attr( $col['name'] ); ?>"
+										>
+										<?php echo esc_attr( $option['label'] ); ?>
+									</label>
+								</div>
+							<?php
+							endforeach;
+						endif;
+					?>
 
 
 				<?php elseif ( isset( $col['type'] ) && 'radio' === $col['type'] ) : ?>
-					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>"><?php echo esc_html( $col['label'] ); ?></label>
+					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>">
+						<?php echo esc_html( $col['label'] ); ?>
+						<?php if ( ! empty( $col['add_link'] ) && ! empty( $col['link_label'] ) && ! empty( $col['link_url'] ) ) : ?>
+							<a href="<?php echo esc_url( $col['link_url'] ); ?>" target="_blank" rel="noopener noreferrer" class="academy-field-link">
+								<?php echo esc_html( $col['link_label'] ); ?>
+							</a>
+						<?php endif; ?>
+					</label>
 					<?php foreach ( $col['options'] as $option ) : ?>
 						<div class="academy-form-check">
 							<label class="academy-form-check-label">
@@ -80,7 +113,14 @@ foreach ( $fields as $field ) {
 					<?php endforeach; ?>
 
 				<?php elseif ( isset( $col['type'] ) && 'select' === $col['type'] ) : ?>
-					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>"><?php echo esc_html( $col['label'] ); ?></label>
+					<label for="academy_<?php echo esc_attr( $col['name'] ); ?>">
+						<?php echo esc_html( $col['label'] ); ?>
+						<?php if ( ! empty( $col['add_link'] ) && ! empty( $col['link_label'] ) && ! empty( $col['link_url'] ) ) : ?>
+							<a href="<?php echo esc_url( $col['link_url'] ); ?>" target="_blank" rel="noopener noreferrer" class="academy-field-link">
+								<?php echo esc_html( $col['link_label'] ); ?>
+							</a>
+						<?php endif; ?>
+					</label>
 					<select class="academy-custom-select"
 							name="<?php echo esc_attr( $col['name'] ); ?>"
 							>

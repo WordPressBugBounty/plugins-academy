@@ -630,7 +630,7 @@ class Course extends AbstractAjaxHandler {
 			$new_curr_item = [];
 			$response = [];
 			// phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-			while ( false !== ( $item = fgetcsv( $file_open ) ) ) {
+			while ( false !== ( $item = fgetcsv( $file_open, null, ',', '"', '\\' ) ) ) {
 				if ( in_array( 'post_title', $item, true ) ) {
 					$course_header = array_map( 'strtolower', $item );
 					$has_course = true;
@@ -664,6 +664,7 @@ class Course extends AbstractAjaxHandler {
 
 				if ( $has_course ) {
 					$has_course = false;
+					$item = self::combine_csv_item( $item, $course_header );
 					$course_item = array_combine( $course_header, $item );
 					if ( empty( $course_item['post_title'] ) ) {
 						$response[] = __( 'Empty Course data', 'academy' );
@@ -683,16 +684,19 @@ class Course extends AbstractAjaxHandler {
 					$course_ids[] = $new_course_id;
 				} elseif ( $has_course_meta && ( $new_course_id || $old_course_id ) ) {
 					$has_course_meta = false;
+					$item = self::combine_csv_item( $item, $course_meta_header );
 					$course_meta_item = array_combine( $course_meta_header, $item );
+					$meta = isset( $course_meta_item['course_curriculum'] ) ? json_decode( $course_meta_item['course_curriculum'], true ) : false;
 					$new_curr_item[] = [
 						'course_id' => $new_course_id ?? $old_course_id,
-						'curriculum' => json_decode( $course_meta_item['course_curriculum'], true )
+						'curriculum' => $meta
 					];
 					if ( $new_course_id ) {
 						$this->insert_course_meta_value( $course_meta_item, $new_course_id );
 					}
 				} elseif ( $has_lesson ) {
 					$has_lesson = false;
+					$item = self::combine_csv_item( $item, $lesson_header );
 					$lesson_item = array_combine( $lesson_header, $item );
 					$exist_lesson = \Academy\Helper::get_lesson_by_title( $lesson_item['lesson_title'] );
 					if ( ! $exist_lesson ) {
@@ -704,6 +708,7 @@ class Course extends AbstractAjaxHandler {
 					if ( ! \Academy\Helper::is_active_academy_pro() ) {
 						continue;
 					}
+					$item = self::combine_csv_item( $item, $quiz_header );
 					$quiz_item = array_combine( $quiz_header, $item );
 					$exist_quiz = \Academy\Helper::get_page_by_title( $quiz_item['quiz_title'], 'academy_quiz' );
 					if ( ! $exist_quiz ) {
@@ -712,11 +717,13 @@ class Course extends AbstractAjaxHandler {
 					$response[] = ! empty( $new_quiz_id ) ? __( 'Successfully Inserted the Quiz - ', 'academy' ) . $quiz_item['quiz_title'] : __( 'Sorry, Already have the Quiz - ', 'academy' ) . $quiz_item['quiz_title'];
 				} elseif ( $has_question && $new_quiz_id ) {
 					$has_question = false;
+					$item = self::combine_csv_item( $item, $question_header );
 					$question_item = array_combine( $question_header, $item );
 					$new_question_id = apply_filters( 'academy_pro/export-import/insert_question_data', $question_item, $new_quiz_id );
 					$response[] = $new_question_id ? __( 'Successfully Inserted the Question - ', 'academy' ) . $question_item['question_title'] : __( 'Sorry, Already have the Question - ', 'academy' ) . $question_item['question_title'];
 				} elseif ( $has_answer && $new_quiz_id && $new_question_id ) {
 					$has_answer = false;
+					$item = self::combine_csv_item( $item, $answer_header );
 					$answer_item = array_combine( $answer_header, $item );
 					apply_filters( 'academy_pro/export-import/insert_answer_data', $answer_item, $new_quiz_id, $new_question_id );
 				} elseif ( $has_assignment ) {
@@ -724,6 +731,7 @@ class Course extends AbstractAjaxHandler {
 					if ( ! \Academy\Helper::is_active_academy_pro() ) {
 						continue;
 					}
+					$item = self::combine_csv_item( $item, $assignment_header );
 					$assignment_item = array_combine( $assignment_header, $item );
 					$exist_assignment = \Academy\Helper::get_page_by_title( $assignment_item['assignment_title'], 'academy_assignments' );
 					if ( ! $exist_assignment ) {
@@ -1003,6 +1011,22 @@ class Course extends AbstractAjaxHandler {
 				}
 				break;
 		}//end switch
+	}
+
+	public function combine_csv_item( $item, $course_header ) {
+		// Validate before combine
+		$header_count = count( $course_header );
+		$row_count    = count( $item );
+
+		if ( $row_count !== $header_count ) {
+			// Fix mismatch (pad or trim)
+			if ( $row_count < $header_count ) {
+				$item = array_pad( $item, $header_count, '' );
+			} else {
+				$item = array_slice( $item, 0, $header_count );
+			}
+		}
+		return $item;
 	}
 
 	public function save_youtube_api_key( $payload_data ) {

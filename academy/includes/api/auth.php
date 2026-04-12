@@ -280,7 +280,11 @@ class Auth extends Registration {
 
 	public function registration_form_handler( WP_REST_Request $request ) {
 		$params = $request->get_params();
-		$this->check_and_send_error( $params );
+		$response = $this->check_and_send_error( $params );
+
+		if ( ! empty( $response ) && $response instanceof WP_REST_Response ) {
+			return $response;
+		}
 
 		$role = $request->get_param( 'role' );
 
@@ -310,7 +314,7 @@ class Auth extends Registration {
 			return new WP_REST_Response(
 				array(
 					'success' => false,
-					'errors'  => $error,
+					'message'  => $error,
 				),
 				400
 			);

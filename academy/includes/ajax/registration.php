@@ -124,8 +124,11 @@ class Registration extends AbstractAjaxHandler {
 								'name' => 'string',
 								'placeholder' => 'string',
 								'type' => 'string',
+								'add_link' => 'boolean',
+								'link_label' => 'string',
+								'link_url' => 'string',
 							), $field_item);
-							if ( $field_item['options'] ) {
+							if ( isset( $field_item['options'] ) && is_array( $field_item['options'] ) ) {
 								$options = [];
 								foreach ( $field_item['options'] as $option ) {
 									$sanitize_option = Sanitizer::sanitize_payload(array(
@@ -136,7 +139,7 @@ class Registration extends AbstractAjaxHandler {
 								}
 								$fields[ $key ]['options'] = $options;
 							}
-						}
+						}//end foreach
 						$settings[]['fields'] = $fields;
 					}//end if
 				}//end foreach
@@ -169,6 +172,9 @@ class Registration extends AbstractAjaxHandler {
 								'name' => 'string',
 								'placeholder' => 'string',
 								'type' => 'string',
+								'add_link' => 'boolean',
+								'link_label' => 'string',
+								'link_url' => 'string',
 							), $field_item);
 							if ( $field_item['options'] ) {
 								$options = [];
@@ -181,7 +187,7 @@ class Registration extends AbstractAjaxHandler {
 								}
 								$fields[ $key ]['options'] = $options;
 							}
-						}
+						}//end foreach
 						$settings[]['fields'] = $fields;
 					}//end if
 				}//end foreach

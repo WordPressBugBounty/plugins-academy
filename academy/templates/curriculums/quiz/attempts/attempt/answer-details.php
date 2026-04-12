@@ -108,6 +108,10 @@ $topic['slug'] = get_query_var( 'name' );
 												<span class="academy-passed">
 													<?php echo esc_html__( 'Correct', 'academy' ); ?>
 												</span>
+											<?php elseif ( $attempt_answer_detail->is_skipped_question ) : ?>
+												<span class="academy-skipped">
+													<?php echo esc_html__( 'Skipped', 'academy' ); ?>
+												</span>
 											<?php else : ?>
 												<span class="academy-failed">
 													<?php echo esc_html__( 'Incorrect', 'academy' ); ?>

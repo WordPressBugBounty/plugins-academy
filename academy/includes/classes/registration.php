@@ -97,7 +97,7 @@ class Registration {
 
 				if (
 					'checkbox' === $column['type'] &&
-					is_array( $submitted_data[ $column['name'] ] )
+					isset( $submitted_data[ $column['name'] ] ) && is_array( $submitted_data[ $column['name'] ] )
 				) {
 					$submitted_data[ $column['name'] ] = implode(
 						',',
@@ -105,12 +105,10 @@ class Registration {
 					);
 				}
 
-				$field_value = sanitize_text_field(
-					$submitted_data[ $column['name'] ]
-				);
+				$field_value = isset( $submitted_data[ $column['name'] ] ) ? sanitize_text_field( $submitted_data[ $column['name'] ] ) : '';
 
 				if ( $column['is_required'] && empty( $field_value ) ) {
-					$error[ $column['name'] ] = sprintf(
+					$error = sprintf(
 						__( '%s is required.', 'academy' ),
 						$column['label']
 					);

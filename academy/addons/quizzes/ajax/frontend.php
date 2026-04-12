@@ -78,6 +78,7 @@ class Frontend extends AbstractAjaxHandler {
 				wp_send_json_success([
 					'questions' => $questions,
 					'settings' => $settings,
+					'content' => get_post_field( 'post_content', $quiz_id ),
 				]);
 			}
 			wp_send_json_error( esc_html__( 'Sorry, something went wrong!', 'academy' ) );
@@ -291,20 +292,29 @@ class Frontend extends AbstractAjaxHandler {
 		$is_instructor    = \Academy\Helper::is_instructor_of_this_course( $user_id, $course_id );
 		$enrolled         = \Academy\Helper::is_enrolled( $course_id, $user_id );
 		$is_public = \Academy\Helper::is_public_course( $course_id );
+
 		if ( $is_administrator || $is_instructor || $enrolled || $is_public ) {
 			$prepare_response = [];
 			$attempt_details = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details( $attempt_id, $user_id );
+			$quiz_id = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id )->quiz_id;
+			$is_enable_skip_question = get_post_meta( $quiz_id, 'academy_quiz_skip_question_showing', true );
+			if ( $is_enable_skip_question ) {
+				$skip_questions = \AcademyQuizzes\Classes\Query::get_quiz_attempt_skip_questions( $attempt_id, $user_id, $quiz_id );
+				$attempt_details = array_merge( $attempt_details, $skip_questions );
+			}
 			foreach ( $attempt_details as $attempt_item ) {
 				$attempt_item->given_answer = \AcademyQuizzes\Helper::prepare_given_answer( $attempt_item->question_type, $attempt_item );
 				$attempt_item->is_correct = (bool) $attempt_item->is_correct;
 				$attempt_item->correct_answer = \AcademyQuizzes\Helper::prepare_correct_answer( $attempt_item->question_type, $attempt_item );
 				$attempt_item->question_title = html_entity_decode( $attempt_item->question_title );
 				$attempt_item->question_image_url = ! empty( $attempt_item->question_image_id ) ? wp_get_attachment_url( $attempt_item->question_image_id ) : '';
-				$prepare_response[ $attempt_item->attempt_answer_id ] = $attempt_item;
+				$attempt_answer_id = $attempt_item->attempt_answer_id ? $attempt_item->attempt_answer_id : $attempt_item->question_id;
+				$attempt_item->is_skipped_question = (bool) $attempt_item->attempt_answer_id ? false : true;
+				$prepare_response[ $attempt_answer_id ] = $attempt_item;
 			}
 
 			wp_send_json_success( array_values( $prepare_response ) );
-		}
+		}//end if
 		wp_send_json_error( esc_html__( 'Access Denied', 'academy' ) );
 		wp_die();
 	}

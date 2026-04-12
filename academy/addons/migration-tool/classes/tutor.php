@@ -539,6 +539,8 @@ class Tutor  extends Migration implements MigrationInterface {
 			'academy_quiz_questions_order'               => $question_order,
 			'academy_quiz_hide_question_number'          => isset( $quiz_meta['hide_question_number_overview'] ),
 			'academy_quiz_short_answer_characters_limit' => isset( $quiz_meta['short_answer_characters_limit'] ) ? (int) $quiz_meta['short_answer_characters_limit'] : 0,
+			'academy_quiz_skip_question_showing'         => isset( $quiz_meta['skip_question_showing'] ) ? (int) $quiz_meta['skip_question_showing'] : 0,
+			'academy_quiz_explanation_enabled'           => isset( $quiz_meta['explanation_enabled'] ) ? (int) $quiz_meta['explanation_enabled'] : 0,
 			'academy_quiz_questions_layout'              => isset( $quiz_meta['quiz_questions_layout'] ) ? sanitize_text_field( $quiz_meta['quiz_questions_layout'] ) : 'single',
 			'academy_quiz_questions'                     => array(),
 		);
@@ -583,13 +585,17 @@ class Tutor  extends Migration implements MigrationInterface {
 					'question_type'     => $new_question_type,
 					'question_score'    => (int) $question->question_mark,
 					'question_order'    => (int) $question->question_order,
-					'question_settings' => wp_json_encode(
-						array(
-							'display_points'  => $display_point,
-							'answer_required' => $answer_required,
-							'randomize'       => $randomize,
-						)
-					),
+					'question_explanation' => '',
+					'question_negative_score' => 0,
+					 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+					// 'question_image_id' => 0,
+				'question_settings' => wp_json_encode(
+					array(
+						'display_points'  => $display_point,
+						'answer_required' => $answer_required,
+						'randomize'       => $randomize,
+					)
+				),
 				);
 
 				$alms_question_id = \AcademyQuizzes\Classes\Query::quiz_question_insert( $array );

@@ -238,6 +238,8 @@ class Masterstudy extends Migration implements MigrationInterface {
 			'academy_quiz_questions_order' => 'default',
 			'academy_quiz_hide_question_number' => false,
 			'academy_quiz_short_answer_characters_limit' => 200,
+			'academy_quiz_explanation_enabled' => false,
+			'academy_quiz_skip_question_showing' => false,
 			'academy_quiz_questions_layout' => 'single',
 			'academy_quiz_questions' => [],
 		);
@@ -263,11 +265,14 @@ class Masterstudy extends Migration implements MigrationInterface {
 					'question_type' => $question_type,
 					'question_score' => 1,
 					'question_order' => $question->menu_order,
-					'question_settings' => wp_json_encode(array(
-						'display_points' => false,
-						'answer_required' => false,
-						'randomize' => false,
-					)),
+					'question_negative_score' => 0,
+					 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+					// 'question_image_id' => 0,
+				'question_settings' => wp_json_encode(array(
+					'display_points' => false,
+					'answer_required' => false,
+					'randomize' => false,
+				)),
 				);
 				$alms_question_id = \AcademyQuizzes\Classes\Query::quiz_question_insert( $array );
 				// quiz questions meta update

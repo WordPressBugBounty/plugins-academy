@@ -5,10 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $msg = $is_required ? esc_html__( 'required', 'academy' ) : esc_html__( 'optional', 'academy' );
 $title = sprintf(
-    '%d. %s (%s)',
-    $question_count,
-    $question_with_option['question']->question_title,
-    $msg
+	'%d. %s (%s)',
+	$question_count,
+	$question_with_option['question']->question_title,
+	$msg
 );
 ?>
 

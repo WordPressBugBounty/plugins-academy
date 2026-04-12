@@ -17,12 +17,12 @@ $layout = isset( $quiz['settings']['quiz_questions_layout'] ) ? $quiz['settings'
 		<div class="academy-lesson-quiz__inner" data-quiz-layout="<?php echo esc_attr( $layout ); ?>">
 			<?php
 				$question_count = 0;
-				foreach ( $questions_with_options as $question_with_option ) :
-					$question_count++;
-					$question_type   = $question_with_option['question']->question_type;
-					$answer_settings = json_decode( $question_with_option['question']->question_settings );
-					$is_required = $answer_settings->answer_required;
-					?>
+			foreach ( $questions_with_options as $question_with_option ) :
+				$question_count++;
+				$question_type   = $question_with_option['question']->question_type;
+				$answer_settings = json_decode( $question_with_option['question']->question_settings );
+				$is_required = $answer_settings->answer_required;
+				?>
 
 					<div 
 						class="academy-quiz-single-question__wrapper  academy-quiz-question academy-quiz-question-no-<?php echo esc_html( $question_count ); ?>"
@@ -32,20 +32,20 @@ $layout = isset( $quiz['settings']['quiz_questions_layout'] ) ? $quiz['settings'
 					>
 						<span class="academy-quiz-question__type academy-quiz-<?php echo esc_attr( $question_with_option['question']->question_type ); ?> academy-quiz-ans-required_<?php echo ( $is_required ) ? 'true' : 'false'; ?>" id="academy-quiz-ans-required_<?php echo ( $is_required ) ? 'true' : 'false'; ?>"></span>
 
-						<?php
-							$template_paths = array( 'curriculums/quiz/questions/question-top.php', 'curriculums/quiz/question-body.php' );
-							$template_args  = array(
-								'quiz_id'           => $quiz_id,
-								'course_id'         => $course_id,
-								'question_count'    => $question_count,
-								'question_with_option' => $question_with_option,
-								'last_attempt' => $last_attempt,
-								'is_required' => $is_required,
-							);
-							// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-							foreach ( $template_paths as $path ) {
-								\Academy\Helper::get_template( $path, $template_args );
-							}
+					<?php
+						$template_paths = array( 'curriculums/quiz/questions/question-top.php', 'curriculums/quiz/question-body.php' );
+						$template_args  = array(
+							'quiz_id'           => $quiz_id,
+							'course_id'         => $course_id,
+							'question_count'    => $question_count,
+							'question_with_option' => $question_with_option,
+							'last_attempt' => $last_attempt,
+							'is_required' => $is_required,
+						);
+						// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+						foreach ( $template_paths as $path ) {
+							\Academy\Helper::get_template( $path, $template_args );
+						}
 						?>
 
 					</div>
@@ -53,7 +53,7 @@ $layout = isset( $quiz['settings']['quiz_questions_layout'] ) ? $quiz['settings'
 					<?php
 					endforeach;
 					\Academy\Helper::get_template( 'curriculums/quiz/single-form-control.php' );
-				?>
+			?>
 		</div>
 	</div>
 </form>
