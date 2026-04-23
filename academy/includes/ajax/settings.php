@@ -45,6 +45,7 @@ class Settings extends AbstractAjaxHandler {
 			'minimum_course_completion_on_review' => 'integer',
 			'is_enabled_course_coming_soon' => 'boolean',
 			'is_show_course_excerpt' => 'boolean',
+			'is_enable_course_review_edit' => 'boolean',
 			// Course Certificate
 			'academy_primary_certificate_id' => 'integer',
 			// dashboard
@@ -152,6 +153,7 @@ class Settings extends AbstractAjaxHandler {
 			'minimum_course_completion_on_review' => $payload['minimum_course_completion_on_review'] ?? $default['minimum_course_completion_on_review'],
 			'is_enabled_course_coming_soon' => $payload['is_enabled_course_coming_soon'] ?? $default['is_enabled_course_coming_soon'],
 			'is_show_course_excerpt'  => $payload['is_show_course_excerpt'] ?? $default['is_show_course_excerpt'],
+			'is_enable_course_review_edit'  => $payload['is_enable_course_review_edit'] ?? $default['is_enable_course_review_edit'],
 			// Course Certificate
 			'academy_primary_certificate_id' => $payload['academy_primary_certificate_id'] ?? $default['academy_primary_certificate_id'],
 			// Dashboard

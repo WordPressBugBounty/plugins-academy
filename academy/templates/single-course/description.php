@@ -6,6 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="academy-single-course__content-item academy-single-course__content-item--description">
 	<h2 class="academy-single-course__content-item--description-title"><?php esc_html_e( 'Course Overview', 'academy' ); ?></h2>
 	<?php
-		the_content();
+		echo apply_filters( 'the_content', get_post_field( 'post_content', get_the_ID() ) );
 	?>
 </div>

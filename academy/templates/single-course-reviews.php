@@ -12,7 +12,7 @@ global $current_user, $post;
 $is_enabled_course_review = (bool) \Academy\Helper::get_settings( 'is_enabled_course_review', true );
 $is_disable_single_course_review = get_post_meta( $post->ID, 'academy_is_disabled_course_review', true );
 
-if ( post_password_required() || ! $is_enabled_course_review || $is_disable_single_course_review ) {
+if ( ! $is_enabled_course_review || $is_disable_single_course_review ) {
 	return;
 }
 $academy_comments_count = get_comments_number();

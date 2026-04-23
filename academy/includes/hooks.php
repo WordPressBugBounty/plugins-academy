@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-use Academy\Helper;
+
 /**
  * Academy Templates Related all Hooks write here
  */
@@ -36,7 +36,9 @@ add_action( 'academy/templates/single_course_enroll_content', 'academy_single_co
 add_action( 'academy/templates/single_course_enroll_content_after', 'academy_course_enroll_wishlist_and_share', 10 );
 
 // handle course password form
-add_filter( 'the_password_form', 'handle_academy_course_password_form' );
+add_filter( 'template_include', 'handle_academy_course_password_form' );
+add_filter( 'post_password_required', 'academy_bypass_password_for_enrolled', 10, 2 );
+add_action( 'login_form_postpass', 'handle_academy_course_password_submit' );
 
 /**
  * Archive Course Page

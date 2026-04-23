@@ -47,7 +47,7 @@ class Course extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_item_topics' ),
-					'permission_callback' => '__return_true',
+					'permission_callback' => array( $this, 'get_topics_permissions_check' ),
 					'args'                => $get_item_args,
 				),
 				'schema' => array( $this, 'get_public_item_schema' ),
@@ -142,4 +142,65 @@ class Course extends \WP_REST_Controller {
 		$item->data['description'] = html_entity_decode( $item->data['description'] );
 		return $item;
 	}
+
+	public function get_topics_permissions_check( $request ) {
+
+		$course_id = (int) $request['id'];
+
+		// 1. Allow admins immediately (full access)
+		if ( current_user_can( 'administrator' ) ) {
+			return true;
+		}
+
+		// 2. Allow instructor of this course
+		if ( is_user_logged_in() && \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), $course_id ) ) {
+			return true;
+		}
+
+		// 3. Get course status
+		$status = get_post_status( $course_id );
+
+		// Block invalid course
+		if ( ! $status ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'Invalid course.', 'academy' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		// 4. Public course (only if published)
+		if ( 'publish' === $status && \Academy\Helper::is_public_course( $course_id ) ) {
+			return true;
+		}
+
+		// 5. Must be logged in beyond this point
+		if ( ! is_user_logged_in() ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'Authentication required.', 'academy' ),
+				array( 'status' => 401 )
+			);
+		}
+
+		$user_id = get_current_user_id();
+
+		// 6. Enrolled users
+		if ( \Academy\Helper::is_enrolled( $course_id, $user_id ) ) {
+			return true;
+		}
+
+		// 7. Private course capability
+		if ( 'private' === $status && current_user_can( 'read_private_academy_courses' ) ) {
+			return true;
+		}
+
+		// 8. Final deny
+		return new \WP_Error(
+			'rest_forbidden',
+			__( 'You are not allowed to access this course.', 'academy' ),
+			array( 'status' => 403 )
+		);
+	}
+	
 }

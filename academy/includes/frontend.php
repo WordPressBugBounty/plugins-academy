@@ -31,7 +31,7 @@ class Frontend {
 			add_filter( 'academy/templates/single_course/enroll_form', array( $this, 'get_course_coming_soon_content' ), 15, 2 );
 			add_filter( 'academy/assets/frontend_scripts_data', array( $this, 'add_course_coming_soon_time' ) );
 			add_filter( 'academy/template/loop/footer_form', array( $this, 'get_course_type' ), 15, 2 );
-			add_filter( 'academy/template/loop/price_args', array( $this, 'get_course_type' ), 15, 2 );
+			add_filter( 'academy/templates/loop/price', array( $this, 'get_course_type' ), 15, 2 );
 		}
 	}
 
@@ -120,10 +120,13 @@ class Frontend {
 			true
 		);
 
-		$datetime  = new \DateTime( $end_at, wp_timezone() );
-		$end_timestamp = $datetime->getTimestamp();
+		if ( empty( $end_at ) ) {
+			return $html;
+		}
 
-		if ( $end_timestamp <= current_time( 'timestamp' ) ) {
+		$end_time     = self::get_time_stamp( $end_at );
+
+		if ( $end_time < time() ) {
 			return $html;
 		}
 		ob_start();
@@ -135,30 +138,49 @@ class Frontend {
 
 	public function add_course_coming_soon_time( $data ) {
 		$course_id = get_the_ID();
+
 		$end_at = get_post_meta(
 			$course_id,
 			'academy_course_coming_soon_end_date',
 			true
 		);
 
-		$datetime  = new \DateTime( $end_at, wp_timezone() );
-		$end_timestamp = $datetime->getTimestamp();
+		if ( empty( $end_at ) ) {
+			return $data;
+		}
 
-		if ( $end_timestamp > current_time( 'timestamp' ) ) {
-			$data['academy_course_coming_soon_time'] = $end_timestamp;
+		$end_time = self::get_time_stamp( $end_at );
+
+		if ( $end_time > time() ) {
+			$data['academy_course_coming_soon_time'] = (int) $end_time;
 		}
 
 		return $data;
 	}
 
-	public function get_course_type( $args, $course_id ) {
+	public function get_course_type( $type, $course_id ) {
 		$end_at = get_post_meta( $course_id, 'academy_course_coming_soon_end_date', true );
-		$datetime  = new \DateTime( $end_at, wp_timezone() );
-		$end_timestamp = $datetime->getTimestamp();
-		if ( $end_timestamp > current_time( 'timestamp' ) ) {
-			$args['course_type'] = 'coming-soon';
+		$end_timestamp  = self::get_time_stamp( $end_at );
+		if ( $end_timestamp > time() ) {
+			$type = esc_html__( 'Coming Soon', 'academy' );
 		}
 
-		return $args;
+		return $type;
+	}
+
+	public static function get_time_stamp( $end_time ) {
+		$timezone = wp_timezone();
+
+		$datetime = date_create_from_format(
+			'Y-m-d\TH:i',
+			$end_time,
+			$timezone
+		);
+
+		if ( ! $datetime ) {
+			return 0;
+		}
+
+		return $datetime->getTimestamp();
 	}
 }

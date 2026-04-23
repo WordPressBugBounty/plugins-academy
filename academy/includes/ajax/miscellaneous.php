@@ -73,7 +73,11 @@ class Miscellaneous extends AbstractAjaxHandler {
 			'fetch_courses' => array(
 				'callback' => array( $this, 'fetch_courses' ),
 				'capability' => 'manage_options'
-			)
+			),
+			'update_review' => array(
+				'callback' => array( $this, 'update_review' ),
+				'capability' => 'read'
+			),
 		);
 	}
 
@@ -247,6 +251,34 @@ class Miscellaneous extends AbstractAjaxHandler {
 			update_user_meta( $user_id, $key, $value );
 		}
 		wp_send_json_success( $user_info );
+	}
+
+	public function update_review( $payload_data) {
+		$payload = Sanitizer::sanitize_payload( [
+			'comment_id' => 'integer',
+			'content'    => 'string',
+			'rating'     => 'integer',
+		], $payload_data );
+		$comment_id = $payload['comment_id'] ?? 0;
+		$content    = $payload['content'] ?? '';
+		$rating	 = $payload['rating'] ?? 0;
+
+		$comment = get_comment( $comment_id );
+
+		if ( ! $comment || (int) $comment->user_id !== get_current_user_id() ) {
+			wp_send_json_error( __( 'Permission denied', 'academy' ) );
+		}
+
+		wp_update_comment( array(
+			'comment_ID'      => $comment_id,
+			'comment_content' => $content,
+		) );
+
+		if ( isset( $payload['rating'] ) ) {
+			update_comment_meta( $comment_id, 'academy_rating', (int) $rating );
+		}
+
+		wp_send_json_success();
 	}
 
 	public function reset_password( $payload_data ) {

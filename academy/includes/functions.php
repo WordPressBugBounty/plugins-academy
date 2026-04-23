@@ -439,11 +439,9 @@ if ( ! function_exists( 'academy_get_rating_html' ) ) {
 
 if ( ! function_exists( 'academy_single_course_enroll' ) ) {
 	function academy_single_course_enroll() {
-		if ( ! post_password_required() ) {
-			Helper::get_template(
-				'single-course/enroll/enroll.php'
-			);
-		}
+		Helper::get_template(
+			'single-course/enroll/enroll.php'
+		);
 	}
 }
 
@@ -452,15 +450,68 @@ if ( ! function_exists( 'academy_single_course_enroll' ) ) {
  */
 if ( ! function_exists( 'handle_academy_course_password_form' ) ) {
 	function handle_academy_course_password_form( $data ) {
-		if ( is_singular( 'academy_courses' ) && ! \Academy\Helper::is_fse_theme() ) {
-			ob_start();
-			Helper::get_template(
+		if ( is_singular( 'academy_courses' ) && post_password_required() && ! \Academy\Helper::is_enrolled( get_the_ID(), get_current_user_id() ) ) {	
+			remove_all_filters( 'template_include' );	
+			return Helper::get_template(
 				'single-course/password-protected.php',
 			);
-
-			return ob_get_clean();
 		}
 		return $data;
+	}
+}
+
+if ( ! function_exists( 'academy_bypass_password_for_enrolled' ) ) {
+	function academy_bypass_password_for_enrolled( $required, $post ) {
+
+		// Validate post object
+		if ( empty( $post ) || empty( $post->post_type ) ) {
+			return $required;
+		}
+
+		if ( 'academy_courses' !== $post->post_type ) {
+			return $required;
+		}
+
+		$user_id = get_current_user_id();
+
+		// If enrolled → bypass password completely
+		if ( $user_id && \Academy\Helper::is_enrolled( $post->ID, $user_id ) ) {
+			return false;
+		}
+
+		// Only store transient when password is actually required
+		if ( $required ) {
+			set_transient(
+				'academy_course_password_post_id_' . $user_id,
+				(int) $post->ID,
+				2 * MINUTE_IN_SECONDS
+			);
+		}
+
+		return $required;
+	}
+}
+
+if ( ! function_exists( 'handle_academy_course_password_submit' ) ) {
+	function handle_academy_course_password_submit() {
+
+		$user_id = get_current_user_id();
+		$post_id = (int) get_transient( 'academy_course_password_post_id_' . $user_id );
+
+		if ( ! $post_id ) {
+			return;
+		}
+
+		if ( post_password_required( $post_id ) ) {
+
+			delete_transient( 'academy_course_password_post_id_' . $user_id );
+
+			set_transient(
+				'academy_course_password_error_' . $user_id,
+				esc_html__( 'Invalid password', 'academy' ),
+				1 * MINUTE_IN_SECONDS
+			);
+		}
 	}
 }
 

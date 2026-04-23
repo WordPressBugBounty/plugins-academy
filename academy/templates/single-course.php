@@ -19,6 +19,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		 * @hook - academy/templates/before_main_content
 		 */
 		do_action( 'academy/templates/before_main_content', 'single-course.php' );
+		if ( post_password_required() ) {
+			return;
+		}
 ?>
 
 		<div class="academy-single-course">

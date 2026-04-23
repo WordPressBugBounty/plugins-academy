@@ -54,6 +54,7 @@ class Base {
 			'minimum_course_completion_on_review' => 0,
 			'is_enabled_course_coming_soon' => false,
 			'is_show_course_excerpt' => false,
+			'is_enable_course_review_edit' => false,
 			'course_archive_sidebar_position' => 'right',
 			'course_archive_filters' => [
 				[
