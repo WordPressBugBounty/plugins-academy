@@ -540,6 +540,7 @@ class Tutor  extends Migration implements MigrationInterface {
 			'academy_quiz_hide_question_number'          => isset( $quiz_meta['hide_question_number_overview'] ),
 			'academy_quiz_short_answer_characters_limit' => isset( $quiz_meta['short_answer_characters_limit'] ) ? (int) $quiz_meta['short_answer_characters_limit'] : 0,
 			'academy_quiz_skip_question_showing'         => isset( $quiz_meta['skip_question_showing'] ) ? (int) $quiz_meta['skip_question_showing'] : 0,
+			'academy_quiz_show_full_answer_content'          => isset( $quiz_meta['hide_see_more_button'] ) ? (int) $quiz_meta['hide_see_more_button'] : 0,
 			'academy_quiz_explanation_enabled'           => isset( $quiz_meta['explanation_enabled'] ) ? (int) $quiz_meta['explanation_enabled'] : 0,
 			'academy_quiz_questions_layout'              => isset( $quiz_meta['quiz_questions_layout'] ) ? sanitize_text_field( $quiz_meta['quiz_questions_layout'] ) : 'single',
 			'academy_quiz_questions'                     => array(),

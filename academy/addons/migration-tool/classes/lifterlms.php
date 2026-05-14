@@ -283,6 +283,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 			'academy_quiz_short_answer_characters_limit' => 200,
 			'academy_quiz_explanation_enabled' => false,
 			'academy_quiz_skip_question_showing' => false,
+			'academy_quiz_show_full_answer_content' => false,
 			'academy_quiz_questions_layout' => 'single',
 			'academy_quiz_questions' => [],
 		];

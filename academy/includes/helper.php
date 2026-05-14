@@ -1574,4 +1574,20 @@ class Helper {
 		$js = trim( $js );
 		return $js;
 	}
+
+	public static function get_course_expire_duration( $course_id ) {
+		$user_id = get_current_user_id();
+		// course expire enrollment time 
+		$expire_enrollment = (int) get_post_meta( $course_id, 'academy_course_expire_enrollment', true );
+		// get extend time
+		$extend_time = 0;
+		if ( \Academy\Helper::is_enrolled( $course_id, $user_id ) ) {
+			$extend_time = (int) get_user_meta( $user_id, "academy_course_extended_expire_time_{$course_id}", true );
+		}
+		// total expire time
+		$total_duration = $expire_enrollment + $extend_time;
+		$current_time = current_time( 'timestamp' );
+		$expire_time = strtotime( "+{$total_duration} days", $current_time );
+		return $expire_time > $current_time ? wp_date( 'M j, Y', $expire_time ) : 0;
+	}
 }

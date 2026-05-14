@@ -276,7 +276,7 @@ trait LessonSchema {
 				'validate_callback' => 'rest_validate_request_arg',
 			),
 			'quiz_id'   => array(
-				'description'       => __( 'Get attemps by quiz_id', 'academy' ),
+				'description'       => __( 'Get attempts by quiz_id', 'academy' ),
 				'type'              => 'integer',
 				'sanitize_callback' => 'absint',
 				'validate_callback' => 'rest_validate_request_arg',

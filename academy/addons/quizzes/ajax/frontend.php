@@ -298,6 +298,7 @@ class Frontend extends AbstractAjaxHandler {
 			$attempt_details = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details( $attempt_id, $user_id );
 			$quiz_id = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id )->quiz_id;
 			$is_enable_skip_question = get_post_meta( $quiz_id, 'academy_quiz_skip_question_showing', true );
+			$is_hide_see_more_button = (bool) get_post_meta( $quiz_id, 'academy_quiz_show_full_answer_content', true );
 			if ( $is_enable_skip_question ) {
 				$skip_questions = \AcademyQuizzes\Classes\Query::get_quiz_attempt_skip_questions( $attempt_id, $user_id, $quiz_id );
 				$attempt_details = array_merge( $attempt_details, $skip_questions );
@@ -310,6 +311,7 @@ class Frontend extends AbstractAjaxHandler {
 				$attempt_item->question_image_url = ! empty( $attempt_item->question_image_id ) ? wp_get_attachment_url( $attempt_item->question_image_id ) : '';
 				$attempt_answer_id = $attempt_item->attempt_answer_id ? $attempt_item->attempt_answer_id : $attempt_item->question_id;
 				$attempt_item->is_skipped_question = (bool) $attempt_item->attempt_answer_id ? false : true;
+				$attempt_item->academy_quiz_show_full_answer_content = $is_hide_see_more_button;
 				$prepare_response[ $attempt_answer_id ] = $attempt_item;
 			}
 

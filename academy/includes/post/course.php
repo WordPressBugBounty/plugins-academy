@@ -77,7 +77,7 @@ class Course extends AbstractPostHandler {
 		if ( current_user_can( 'administrator' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
 			$comment_data = array(
 				'comment_post_ID'      => $course_id,
-				'comment_parent'       => $payload['parent'] ?? '0',
+				'comment_parent'       => $payload['parent'] ?? 0,
 				'comment_content'      => $payload['content'],
 				'comment_approved'     => $payload['status'],
 				'comment_type'         => 'academy_qa',
@@ -91,7 +91,19 @@ class Course extends AbstractPostHandler {
 				)
 			);
 
-			if ( wp_insert_comment( $comment_data ) ) {
+			$comment_id = wp_insert_comment( $comment_data );
+
+			$comment = ( new \Academy\API\QuestionAnswer() )->prepare_comment_for_response( get_comment( $comment_id ) );
+
+			if ( 'waiting_for_answer' === $payload['status'] ) {
+				// insert question
+				do_action( 'academy/frontend/insert_course_qa', $comment );
+			} elseif ( 'answered' === $payload['status'] ) {
+				// reply question
+				do_action( 'academy/frontend/insert_course_qa_answered', $comment );
+			}
+
+			if ( $comment ) {
 				wp_safe_redirect( $referer_url );
 				exit;
 			}
@@ -137,7 +149,7 @@ class Course extends AbstractPostHandler {
 		if ( current_user_can( 'administrator' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
 			$comment_data = array(
 				'comment_post_ID'      => $lesson_id,
-				'comment_parent'       => $payload['parent'] ?? '0',
+				'comment_parent'       => $payload['parent'] ?? 0,
 				'comment_content'      => $payload['content'],
 				'comment_approved'     => true,
 				'comment_type'         => 'comment',
@@ -147,7 +159,7 @@ class Course extends AbstractPostHandler {
 				'comment_author_url'   => $current_user->user_url,
 				'comment_agent'        => 'Academy',
 				'comment_meta'         => array(
-					'academy_comment_course_id' => $course_id ?? '0'
+					'academy_comment_course_id' => $course_id ?? 0
 				)
 			);
 

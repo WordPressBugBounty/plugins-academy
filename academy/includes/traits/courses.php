@@ -1203,7 +1203,7 @@ trait Courses {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$instructors = $wpdb->get_results( $query );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		return ! empty( $instructors ) ? $instructors : false;
+		return ! empty( $instructors ) ? $instructors : [];
 	}
 
 	public static function get_instructor_by_author_id( $author_id ) {

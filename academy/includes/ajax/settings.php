@@ -91,6 +91,7 @@ class Settings extends AbstractAjaxHandler {
 			'woo_order_auto_complete_status' => 'array',
 			'store_link_inside_frontend_dashboard' => 'boolean',
 			'store_link_label_inside_frontend_dashboard' => 'string',
+			'store_force_login_before_enroll' => 'boolean',
 			'is_enabled_fd_link_inside_woo_order_page' => 'boolean',
 			'woo_order_page_fd_link_label' => 'string',
 			// Withdrawal
@@ -195,6 +196,7 @@ class Settings extends AbstractAjaxHandler {
 			'woo_order_auto_complete_status' => $payload['woo_order_auto_complete_status'] ?? $default['woo_order_auto_complete_status'],
 			'store_link_inside_frontend_dashboard' => $payload['store_link_inside_frontend_dashboard'] ?? $default['store_link_inside_frontend_dashboard'],
 			'store_link_label_inside_frontend_dashboard' => $payload['store_link_label_inside_frontend_dashboard'] ?? $default['store_link_label_inside_frontend_dashboard'],
+			'store_force_login_before_enroll' => $payload['store_force_login_before_enroll'] ?? $default['store_force_login_before_enroll'],
 			'is_enabled_fd_link_inside_woo_order_page' => $payload['is_enabled_fd_link_inside_woo_order_page'] ?? $default['is_enabled_fd_link_inside_woo_order_page'],
 			'woo_order_page_fd_link_label' => $payload['woo_order_page_fd_link_label'] ?? $default['woo_order_page_fd_link_label'],
 			// earning

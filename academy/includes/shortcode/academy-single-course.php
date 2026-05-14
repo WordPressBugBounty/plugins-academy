@@ -188,34 +188,34 @@ class AcademySingleCourse {
 			$comment_query = new \WP_Comment_Query();
 			$comments      = $comment_query->query( $args );
 			$current_user_id = get_current_user_id();
-			$edit_permission = \Academy\Helper::get_settings('is_enable_course_review_edit', false );
+			$edit_permission = \Academy\Helper::get_settings( 'is_enable_course_review_edit', false );
 			if ( ! empty( $comments ) ) {
 				?>
 				<ol class="academy-review-list">
-					<?php foreach ( $comments as $comment ) : 
-						$comment_id = $comment->comment_ID;	?>
-						<li <?php comment_class('', $comment_id ); ?>
+					<?php foreach ( $comments as $comment ) :
+						$comment_id = $comment->comment_ID; ?>
+						<li <?php comment_class( '', $comment_id ); ?>
 							id="academy-review-<?php echo esc_attr( $comment_id ); ?>">
 							<div id="comment-<?php echo esc_attr( $comment_id ); ?>" class="academy-review_container">
-								<?php do_action('academy/templates/review_before', $comment); ?>
+								<?php do_action( 'academy/templates/review_before', $comment ); ?>
 								
 								<div class="academy-review_container__top">
 									<div class="academy-review_container__thumbnail">
 										<?php
 										echo get_avatar(
 											$comment->comment_author_email,
-											apply_filters('academy/review_gravatar_size', '80')
+											apply_filters( 'academy/review_gravatar_size', '80' )
 										);
 										?>
 									</div>
 
 									<div class="academy-review_container__profile">
 										<?php
-										if ('0' === $comment->comment_approved) {
+										if ( '0' === $comment->comment_approved ) {
 											?>
 											<p class="academy-review-meta">
 												<em class="academy-review-meta__awaiting-approval">
-													<?php esc_html_e('Your review is awaiting approval', 'academy'); ?>
+													<?php esc_html_e( 'Your review is awaiting approval', 'academy' ); ?>
 												</em>
 											</p>
 											<?php
@@ -226,22 +226,22 @@ class AcademySingleCourse {
 											<div class="academy-column-items">
 												<p class="academy-column-items">
 													<strong class="academy-review_container__author">
-														<?php echo esc_html($comment->comment_author); ?>
+														<?php echo esc_html( $comment->comment_author ); ?>
 													</strong>
 													<time class="academy-review_container__published-date"
-														datetime="<?php echo esc_attr(get_comment_date('c', $comment)); ?>">
-														<?php echo esc_html(get_comment_date(\Academy\Helper::get_date_format(), $comment)); ?>
+														datetime="<?php echo esc_attr( get_comment_date( 'c', $comment ) ); ?>">
+														<?php echo esc_html( get_comment_date( \Academy\Helper::get_date_format(), $comment ) ); ?>
 													</time>
 												</p>
 
 												<div class="academy-review_container__rating">
 													<span class="academy-review_container__rating-label">
-														<?php echo esc_html__('Rating: ', 'academy'); ?>
+														<?php echo esc_html__( 'Rating: ', 'academy' ); ?>
 													</span>
 													<span class="academy-review_container__rating-star">
 														<?php
-															echo esc_html($rating);
-															echo wp_kses_post(\Academy\Helper::single_star_rating_generator($rating));
+															echo esc_html( $rating );
+															echo wp_kses_post( \Academy\Helper::single_star_rating_generator( $rating ) );
 														?>
 													</span>
 												</div>
@@ -262,7 +262,7 @@ class AcademySingleCourse {
 												</button>
 												<?php
 											}
-										}
+										}//end if
 										?>
 									</div>
 								</div>
@@ -275,33 +275,37 @@ class AcademySingleCourse {
 									<?php
 									if (
 										$edit_permission && (int) $comment->user_id === $current_user_id
-									):
+									) :
 										?>
 
 										<div id="academy-review-edit-form" class="academy-review-edit-form academy-review-edit-form academy-mt-6" style="display:none;">
-											<span>
-												<?php echo esc_html__('Select Rating : ', 'academy'); ?>
-											</span>
-											<select id="academy-review-edit-rating" name="academy_review_rating">
-												<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
-													<option value="<?php echo esc_attr( $i ); ?>" 
-														<?php selected( $rating, $i ); ?>>
-														<?php echo esc_html( $i ) . ' ' . esc_html__( 'Star', 'academy' ); ?>
-													</option>
-												<?php endfor; ?>
-											</select>
+											<div class="academy-review-edit-form__select-rating">
+												<span class="academy-review-edit-form__select-rating-label">
+													<?php echo esc_html__( 'Select Rating : ', 'academy' ); ?>
+												</span>
+												<div class="academy-review-select-wrap">
+													<select id="academy-review-edit-rating" name="academy_review_rating">
+														<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
+															<option value="<?php echo esc_attr( $i ); ?>" 
+																<?php selected( $rating, $i ); ?>>
+																<?php echo esc_html( $i ) . ' ' . esc_html__( 'Star', 'academy' ); ?>
+															</option>
+														<?php endfor; ?>
+													</select>
+												</div>
+											</div>
 
 											<textarea id="academy-review-edit-content"
 												class="academy-review-edit-form__textarea"></textarea>
 											<input type="hidden" id="academy-review-edit-id">
 											<div class="academy-review_container__update">
+												<button type="button" id="academy-review-cancel-btn"
+													class="academy-btn academy-btn--preset-white academy-btn--xs">
+													<?php esc_html_e( 'Cancel', 'academy' ); ?>
+												</button>
 												<button id="academy-review-update-btn"
 													class="academy-btn academy-btn--bg-purple academy-btn--xs">
-													<?php esc_html_e('Update Review', 'academy'); ?>
-												</button>
-												<button type="button" id="academy-review-cancel-btn"
-													class="academy-btn academy-btn--preset-gray academy-btn--xs">
-													<?php esc_html_e('Cancel', 'academy'); ?>
+													<?php esc_html_e( 'Update Review', 'academy' ); ?>
 												</button>
 											</div>
 										</div>

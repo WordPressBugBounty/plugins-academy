@@ -21,7 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			</div>
 			<?php
-			do_action( 'academy/templates/curriculum/' . $type . '_content', $course_id, $id );
 			if ( $is_previewable ) {
 				// Load the content template for the current curriculum type
 				do_action( 'academy/templates/curriculum/' . $type . '_content', $course_id, $id );

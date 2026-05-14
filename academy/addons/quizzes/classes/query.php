@@ -201,6 +201,7 @@ class Query {
 			'quiz_short_answer_characters_limit' => (int) get_post_meta( $ID, 'academy_quiz_short_answer_characters_limit', true ),
 			'quiz_explanation_enabled' => (bool) get_post_meta( $ID, 'academy_quiz_explanation_enabled', true ),
 			'quiz_skip_question_showing' => (bool) get_post_meta( $ID, 'academy_quiz_skip_question_showing', true ),
+			'quiz_hide_see_more_button' => (bool) get_post_meta( $ID, 'academy_quiz_show_full_answer_content', true ),
 			'quiz_questions_layout' => get_post_meta( $ID, 'academy_quiz_questions_layout', true ),
 		];
 	}

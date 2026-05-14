@@ -253,7 +253,7 @@ class Miscellaneous extends AbstractAjaxHandler {
 		wp_send_json_success( $user_info );
 	}
 
-	public function update_review( $payload_data) {
+	public function update_review( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload( [
 			'comment_id' => 'integer',
 			'content'    => 'string',
@@ -261,7 +261,7 @@ class Miscellaneous extends AbstractAjaxHandler {
 		], $payload_data );
 		$comment_id = $payload['comment_id'] ?? 0;
 		$content    = $payload['content'] ?? '';
-		$rating	 = $payload['rating'] ?? 0;
+		$rating  = $payload['rating'] ?? 0;
 
 		$comment = get_comment( $comment_id );
 
@@ -393,7 +393,7 @@ class Miscellaneous extends AbstractAjaxHandler {
 		if ( current_user_can( 'administrator' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
 			$comment_data = array(
 				'comment_post_ID'      => $lesson_id,
-				'comment_parent'       => $payload['parent'] ?? '0',
+				'comment_parent'       => $payload['parent'] ?? 0,
 				'comment_content'      => $payload['content'],
 				'comment_approved'     => true,
 				'comment_type'         => 'comment',
@@ -403,14 +403,13 @@ class Miscellaneous extends AbstractAjaxHandler {
 				'comment_author_url'   => $current_user->user_url,
 				'comment_agent'        => 'Academy',
 				'comment_meta'         => array(
-					'academy_comment_course_id' => $course_id ?? '0'
+					'academy_comment_course_id' => $course_id ?? 0
 				)
 			);
 
 			$comment_id = wp_insert_comment( $comment_data );
 			$comment = ( new \Academy\API\QuestionAnswer() )->prepare_comment_for_response( get_comment( $comment_id ) );
 
-			do_action( 'academy/frontend/insert_course_lesson_comments', $comment );
 			wp_send_json_success( $comment );
 
 		}//end if
@@ -445,8 +444,11 @@ class Miscellaneous extends AbstractAjaxHandler {
 			);
 
 			$raw_comments = get_comments( $comment_args );
-			foreach ( $raw_comments as $comment ) {
-				$comment_data[] = ( new \Academy\API\QuestionAnswer() )->prepare_comment_for_response( $comment );
+			$comment_data = [];
+			if ( ! empty( $raw_comments ) ) {
+				foreach ( $raw_comments as $comment ) {
+					$comment_data[] = ( new \Academy\API\QuestionAnswer() )->prepare_comment_for_response( $comment );
+				}
 			}
 
 			wp_send_json_success( $comment_data );

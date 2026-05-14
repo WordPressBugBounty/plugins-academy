@@ -92,6 +92,7 @@ class ScriptsBase {
 			'dashboard'  => trim( get_permalink( Helper::get_settings( 'frontend_dashboard_page' ) ), $site_url ),
 			'login_url' => wp_login_url( add_query_arg( $wp->query_vars, home_url( $wp->request ) ) ),
 			'logout_url' => wp_logout_url( home_url( '/' ) ),
+			'is_block_theme_active'  => Helper::is_fse_theme(),
 			'current_permalink' => esc_url( get_permalink() ),
 			'is_enabled_academy_login' => (bool) \Academy\Helper::get_settings( 'is_enabled_academy_login', false ),
 			'is_disabled_lessons_right_click' => \Academy\Helper::get_settings( 'is_disabled_lessons_right_click', true ),

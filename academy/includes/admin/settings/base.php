@@ -113,6 +113,7 @@ class Base {
 			'woo_order_page_fd_link_label' => esc_html__( 'Courses Dashboard', 'academy' ),
 			'store_link_inside_frontend_dashboard' => true,
 			'store_link_label_inside_frontend_dashboard' => esc_html__( 'Store Dashboard', 'academy' ),
+			'store_force_login_before_enroll' => true,
 			// lesson migration
 			'academy_is_hp_lesson_active'     => true,
 			// chatgpt integration

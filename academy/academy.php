@@ -3,7 +3,7 @@
  * Plugin Name:		Academy LMS
  * Plugin URI:		http://academylms.net
  * Description:		Share your knowledge by launching an online course.
- * Version:			3.7.3
+ * Version:			3.7.4
  * Author:			Academy LMS
  * Author URI:		http://academylms.net
  * License:			GPL-3.0+
@@ -44,7 +44,7 @@ final class Academy {
 		/**
 		 * Defines CONSTANTS for Whole plugins.
 		 */
-		define( 'ACADEMY_VERSION', '3.7.3' );
+		define( 'ACADEMY_VERSION', '3.7.4' );
 		define( 'ACADEMY_DB_VERSION', '1.1' );
 		define( 'ACADEMY_SETTINGS_NAME', 'academy_settings' );
 		define( 'ACADEMY_ADDONS_SETTINGS_NAME', 'academy_addons' );
@@ -120,12 +120,18 @@ final class Academy {
 	}
 
 	public function load_action_scheduler() {
-		require_once ACADEMY_ROOT_DIR_PATH . 'library/action-scheduler/action-scheduler.php';
+		$action_scheduler = ACADEMY_ROOT_DIR_PATH . 'vendor/woocommerce/action-scheduler/action-scheduler.php';
+		if ( file_exists( $action_scheduler ) ) {
+			require_once $action_scheduler;
+		}
 	}
 
 	public function load_dependency() {
 		require_once ACADEMY_INCLUDES_DIR_PATH . 'autoload.php';
-		require_once ACADEMY_ROOT_DIR_PATH . 'library/deps/autoload.php';
+		$prefixed_autoload = ACADEMY_ROOT_DIR_PATH . 'vendor/prefixed/autoload.php';
+		if ( file_exists( $prefixed_autoload ) ) {
+			require_once $prefixed_autoload;
+		}
 		require_once ACADEMY_INCLUDES_DIR_PATH . 'functions.php';
 		require_once ACADEMY_INCLUDES_DIR_PATH . 'hooks.php';
 	}

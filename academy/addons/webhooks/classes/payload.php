@@ -219,6 +219,11 @@ class Payload {
 				'academy_quiz_skip_question_showing',
 				true
 			),
+			'hide_see_more_button' => (bool) get_post_meta(
+				$quiz->ID,
+				'academy_quiz_show_full_answer_content',
+				true
+			),
 			'quiz_questions_layout' => get_post_meta(
 				$quiz->ID,
 				'academy_quiz_questions_layout',

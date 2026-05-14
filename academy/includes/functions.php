@@ -395,6 +395,34 @@ if ( ! function_exists( 'academy_review_display_rating' ) ) {
 	}
 }
 
+if ( ! function_exists( 'academy_review_rating_edit_icon' ) ) {
+	/**
+	 * Display the reviewers star rating
+	 *
+	 * @return void
+	 */
+	function academy_review_rating_edit_icon( $comment ) {
+		if ( post_type_supports( 'academy_courses', 'comments' ) ) {
+			$rating = intval( get_comment_meta( $comment->comment_ID, 'academy_rating', true ) );
+			if ( \Academy\Helper::get_settings( 'is_enable_course_review_edit', false ) && (int) $comment->user_id === get_current_user_id() ) {
+				?>
+				<button class="academy-review_container__edit-btn academy-review-edit-btn"
+					data-comment-id="<?php echo esc_attr( $comment->comment_ID ); ?>"
+					data-comment-rating="<?php echo esc_attr( $rating ); ?>"
+					data-comment-content="<?php echo esc_attr( $comment->comment_content ); ?>">
+
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+						<path d="M9.1665 1.6665H7.49984C3.33317 1.6665 1.6665 3.33317 1.6665 7.49984V12.4998C1.6665 16.6665 3.33317 18.3332 7.49984 18.3332H12.4998C16.6665 18.3332 18.3332 16.6665 18.3332 12.4998V10.8332" stroke="#7B68EE" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						<path d="M13.3666 2.51688L6.7999 9.08354C6.5499 9.33354 6.2999 9.82521 6.2499 10.1835L5.89157 12.6919C5.75823 13.6002 6.3999 14.2335 7.30823 14.1085L9.81657 13.7502C10.1666 13.7002 10.6582 13.4502 10.9166 13.2002L17.4832 6.63354C18.6166 5.50021 19.1499 4.18354 17.4832 2.51688C15.8166 0.850211 14.4999 1.38354 13.3666 2.51688Z" stroke="#7B68EE" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+						<path d="M12.4248 3.4585C12.9831 5.45016 14.5415 7.0085 16.5415 7.57516" stroke="#7B68EE" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+			<?php
+			}
+		}
+	}
+}
+
 if ( ! function_exists( 'academy_review_display_meta' ) ) {
 	/**
 	 * Display the review authors meta (name, verified owner, review date)
@@ -416,6 +444,48 @@ if ( ! function_exists( 'academy_review_display_comment_text' ) ) {
 		echo '<div class="academy-review-description">';
 		comment_text();
 		echo '</div>';
+	}
+}
+
+if ( ! function_exists( 'academy_review_display_comment_text_update_form') ) {
+	function academy_review_display_comment_text_update_form( $comment ) {
+		$edit_permission = \Academy\Helper::get_settings( 'is_enable_course_review_edit', false );
+		$rating = intval( get_comment_meta( $comment->comment_ID, 'academy_rating', true ) );
+		ob_start();
+			if (
+				$edit_permission && (int) $comment->user_id === get_current_user_id()
+			) :
+				?>
+
+				<div id="academy-review-edit-form" class="academy-review-edit-form academy-review-edit-form academy-mt-6" style="display:none;">
+					<span>
+						<?php echo esc_html__( 'Select Rating : ', 'academy' ); ?>
+					</span>
+					<select id="academy-review-edit-rating" name="academy_review_rating">
+						<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
+							<option value="<?php echo esc_attr( $i ); ?>" 
+								<?php selected( $rating, $i ); ?>>
+								<?php echo esc_html( $i ) . ' ' . esc_html__( 'Star', 'academy' ); ?>
+							</option>
+						<?php endfor; ?>
+					</select>
+
+					<textarea id="academy-review-edit-content"
+						class="academy-review-edit-form__textarea"></textarea>
+					<input type="hidden" id="academy-review-edit-id">
+					<div class="academy-review_container__update">
+						<button id="academy-review-update-btn"
+							class="academy-btn academy-btn--bg-purple academy-btn--xs">
+							<?php esc_html_e( 'Update Review', 'academy' ); ?>
+						</button>
+						<button type="button" id="academy-review-cancel-btn"
+							class="academy-btn academy-btn--preset-gray academy-btn--xs">
+							<?php esc_html_e( 'Cancel', 'academy' ); ?>
+						</button>
+					</div>
+				</div>
+			<?php endif;
+		echo ob_get_clean();
 	}
 }
 
@@ -450,8 +520,8 @@ if ( ! function_exists( 'academy_single_course_enroll' ) ) {
  */
 if ( ! function_exists( 'handle_academy_course_password_form' ) ) {
 	function handle_academy_course_password_form( $data ) {
-		if ( is_singular( 'academy_courses' ) && post_password_required() && ! \Academy\Helper::is_enrolled( get_the_ID(), get_current_user_id() ) ) {	
-			remove_all_filters( 'template_include' );	
+		if ( is_singular( 'academy_courses' ) && post_password_required() && ! \Academy\Helper::is_enrolled( get_the_ID(), get_current_user_id() ) ) {
+			remove_all_filters( 'template_include' );
 			return Helper::get_template(
 				'single-course/password-protected.php',
 			);
@@ -490,7 +560,7 @@ if ( ! function_exists( 'academy_bypass_password_for_enrolled' ) ) {
 
 		return $required;
 	}
-}
+}//end if
 
 if ( ! function_exists( 'handle_academy_course_password_submit' ) ) {
 	function handle_academy_course_password_submit() {
@@ -513,7 +583,7 @@ if ( ! function_exists( 'handle_academy_course_password_submit' ) ) {
 			);
 		}
 	}
-}
+}//end if
 
 
 if ( ! function_exists( 'academy_single_course_enroll_content' ) ) {
@@ -529,6 +599,8 @@ if ( ! function_exists( 'academy_single_course_enroll_content' ) ) {
 		$language       = get_post_meta( $course_id, 'academy_course_language', true );
 		$max_students   = (int) get_post_meta( $course_id, 'academy_course_max_students', true );
 		$last_update    = get_the_modified_time( get_option( 'date_format' ), $course_id );
+		$course_expired_date = \Academy\Helper::get_settings( 'is_expire_course_enrollment', false ) ? 
+			\Academy\Helper::get_course_expire_duration( $course_id ) : 0;
 
 		ob_start();
 
@@ -546,6 +618,7 @@ if ( ! function_exists( 'academy_single_course_enroll_content' ) ) {
 					'language'       => $language,
 					'max_students'   => $max_students,
 					'last_update'    => $last_update,
+					'course_expired_date' => $course_expired_date,
 				),
 				$course_id
 			)
@@ -1761,4 +1834,4 @@ if ( ! function_exists( 'academy_allowed_learnpage_content_tags' ) ) {
 
 		return $sanitize_content;
 	}
-}
+}//end if

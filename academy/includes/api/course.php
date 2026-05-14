@@ -170,10 +170,12 @@ class Course extends \WP_REST_Controller {
 		}
 
 		// 4. Public course (only if published)
-		if ( 'publish' === $status && \Academy\Helper::is_public_course( $course_id ) ) {
-			return true;
+		if ( 'publish' === $status ) {
+			if( \Academy\Helper::is_public_course( $course_id ) || \Academy\Helper::get_addon_active_status( 'course-preview' ) ) {
+				return true;
+			}
 		}
-
+		
 		// 5. Must be logged in beyond this point
 		if ( ! is_user_logged_in() ) {
 			return new \WP_Error(
@@ -202,5 +204,5 @@ class Course extends \WP_REST_Controller {
 			array( 'status' => 403 )
 		);
 	}
-	
+
 }

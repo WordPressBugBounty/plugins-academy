@@ -35,7 +35,7 @@ academy_get_header();
 						style="display: none;"></span>
 				</div>
 
-				<?php echo ! empty( $error_message ) ? '<span class="academy-password-error">'.$error_message.'</span>' : '' ; ?>
+				<?php echo ! empty( $error_message ) ? '<span class="academy-password-error">' . $error_message . '</span>' : ''; ?>
 		
 				<button type="submit" class="academy-btn academy-btn--bg-purple academy-btn--password-submit">
 					<?php esc_html_e( 'Unlock', 'academy' ); ?>

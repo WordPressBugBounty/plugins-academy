@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 									</a>
 								</h3>
 								<div class="academy-widget-enroll__continue">
-									<a class="academy-btn academy-btn--bg-light-purple" href="<?php echo esc_url( add_query_arg( array( 'source' => 'certificate' ), $course_permalink ) ); ?>">
+									<a class="academy-btn academy-btn--bg-light-purple" target="_blank" href="<?php echo esc_url( add_query_arg( array( 'source' => 'certificate' ), $course_permalink ) ); ?>">
 										<?php esc_html_e( 'Download Certificate', 'academy' ); ?>
 									</a>
 								</div>

@@ -68,8 +68,10 @@ add_action( 'academy/templates/course_loop_footer_inner', 'academy_course_loop_r
  */
 add_action( 'academy/templates/review_thumbnail', 'academy_review_display_gravatar' );
 add_action( 'academy/templates/review_thumbnail', 'academy_review_display_rating' );
+add_action( 'academy/templates/review_thumbnail', 'academy_review_rating_edit_icon' );
 add_action( 'academy/templates/review_meta', 'academy_review_display_meta' );
 add_action( 'academy/templates/review_comment_text', 'academy_review_display_comment_text' );
+add_action( 'academy/templates/review_comment_text', 'academy_review_display_comment_text_update_form' );
 
 /**
  * Instructor Public Profile
