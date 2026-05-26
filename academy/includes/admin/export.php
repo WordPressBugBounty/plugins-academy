@@ -61,36 +61,41 @@ class Export extends ExportBase {
 
 	public function get_lessons_for_export() {
 		$csv_data = [];
-		$lessons = LessonApi::get( 1, -1 );
-
-		if ( count( $lessons ) > 0 ) {
-			foreach ( $lessons as $lesson ) {
-				$lesson = $lesson->get_data();
-				$author = get_userdata( $lesson['lesson_author'] );
-				$csv_data[] = [
-					'title'                     => $lesson['lesson_title'],
-					'content'                   => $lesson['lesson_content'],
-					'status'                    => $lesson['lesson_status'],
-					'author'                    => $author->user_login,
-					'is_previewable'            => $lesson['meta']['is_previewable'] ?? false,
-					'video_duration'            => wp_json_encode( $lesson['meta'] ),
-					'video_source_type'         => $lesson['meta']['video_source']['type'],
-					'video_source_url'          => $lesson['meta']['video_source']['url'],
-				];
-			}
-			return $csv_data;
+		$lessons  = LessonApi::get( 1, -1 );
+		
+		if ( empty( $lessons ) ) {
+			return [
+				[
+					'title'             => '',
+					'content'           => '',
+					'status'            => '',
+					'author'            => '',
+					'is_previewable'    => '',
+					'video_duration'    => '',
+					'video_source_type' => '',
+					'video_source_url'  => '',
+				],
+			];
 		}
-		return [
-			array(
-				'title'                     => '',
-				'content'                   => '',
-				'status'                    => '',
-				'author'                    => '',
-				'is_previewable'            => '',
-				'video_duration'            => '',
-				'video_source_type'         => '',
-				'video_source_url'          => '',
-			)
-		];
+
+		foreach ( $lessons as $lesson ) {
+			$lesson  = $lesson->get_data();
+			$author  = get_userdata( $lesson['lesson_author'] );
+			$meta    = $lesson['meta'] ?? [];
+			$source  = $meta['video_source'] ?? [];
+
+			$csv_data[] = [
+				'title'             => $lesson['lesson_title'],
+				'content'           => $lesson['lesson_content'],
+				'status'            => $lesson['lesson_status'],
+				'author'            => $author ? $author->user_login : '',
+				'is_previewable'    => $meta['is_previewable'] ?? false,
+				'video_duration'    => wp_json_encode( $meta['video_duration'] ?? [] ),
+				'video_source_type' => $source['type'] ?? '',
+				'video_source_url'  => $source['url'] ?? '',
+			];
+		}
+
+		return $csv_data;
 	}
 }

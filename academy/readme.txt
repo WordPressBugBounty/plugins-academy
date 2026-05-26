@@ -3,9 +3,9 @@ Contributors: kodezen, academylms, tusharimran
 Donate link: https://www.buymeacoffee.com/academylms
 Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.8
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.7.4
+Stable tag: 3.8.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -337,6 +337,17 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.8.0 - 25/05/2026 =
+* Added - Private REST API endpoints for student-facing resources including lessons, notes, certificates, quiz attempts, and courses.
+* Fixed - Multi-media attachment files not loading after page reload.
+* Fixed - Translation and localization issues.
+* Fixed - Enrollment extension option not displaying conditionally based on settings.
+* Fixed - Undefined error when exporting lesson data.
+* Fixed - Undefined comment data error.
+* Fixed - Admin panel UI issues in addon and payment settings.
+* Fixed - PHP compatibility error.
+* Fixed - Power-ups UI — updated icons and conditions.
 
 = 3.7.4 - 13/05/2026 =
 * Added - StoreEngine product purchase button click support before force-login restriction.

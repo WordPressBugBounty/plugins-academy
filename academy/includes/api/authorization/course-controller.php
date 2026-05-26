@@ -66,6 +66,10 @@ class CourseController extends WP_REST_Posts_Controller {
 			return true;
 		}
 
+		if ( 'GET' === $request->get_method() && '/academy/v1/academy_courses/' . $request['id'] === $request->get_route() && current_user_can( 'read_academy_course' ) ) {
+			return true;
+		}
+
 		if ( (int) $post->post_author !== $user_id ) {
 			return new WP_Error( 'forbidden', __( 'You are not the owner of this course.', 'academy' ), [ 'status' => 403 ] );
 		}

@@ -48,6 +48,7 @@ class Addons {
 		}
 
 		$Autoload->add_namespace_directory( 'AcademyStoreEngine', ACADEMY_ADDONS_DIR_PATH . 'storeengine/' );
+		$Autoload->add_namespace_directory( 'AcademyZenApp', ACADEMY_ADDONS_DIR_PATH . 'zen-app/' );
 		Storeengine::init();
 	}
 

@@ -67,7 +67,7 @@ class Lessons extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_item' ),
-					'permission_callback' => array( $this, 'permissions_check' ),
+					'permission_callback' => array( $this, 'student_permission_check' ),
 					'args'                => $get_item_args,
 				),
 				array(
@@ -91,8 +91,37 @@ class Lessons extends \WP_REST_Controller {
 				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
-	}
 
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/topic',
+			array(
+				'args'   => array(
+					'id' => array(
+						'description' => esc_html__( 'Unique identifier for the object.', 'academy' ),
+						'type'        => 'integer',
+					),
+				),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'render_lesson' ),
+					'permission_callback' => array( $this, 'get_topic_permissions_check' ),
+					'args'                => $get_item_args,
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
+	}
+	
+	public function student_permission_check( $request ){
+		$user = wp_get_current_user();
+
+	    return is_user_logged_in() && (
+			in_array( 'academy_student', (array) $user->roles ) || 
+			current_user_can( 'manage_options' ) ||
+			current_user_can( 'manage_academy_instructor' )
+		);
+	}
 
 	public function permissions_check( $request ) {
 		if ( ! current_user_can( 'manage_academy_instructor' ) ) {
@@ -105,6 +134,21 @@ class Lessons extends \WP_REST_Controller {
 		return true;
 	}
 
+	public function get_topic_permissions_check( $request ) {
+        if (
+            current_user_can( 'manage_academy_instructor' ) ||
+            current_user_can( 'read_academy_course' )
+        ) {
+            return true;
+        }
+
+        return new \WP_Error(
+            'forbidden',
+            __( 'You do not have permission to access this resource.', 'academy' ),
+            [ 'status' => 403 ]
+        );
+    }
+
 
 	/**
 	 * Retrieves a collection of posts.
@@ -115,13 +159,11 @@ class Lessons extends \WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error Response object on success, or \WP_Error object on failure.
 	 */
 	public function get_items( $request ) {
-		global $wpdb;
 		$author_id = current_user_can( 'manage_options' ) ? $request->get_param( 'author' ) : get_current_user_id();
 		$page = $request->get_param( 'page' );
 		$per_page = $request->get_param( 'per_page' );
 		$search_keyword = $request->get_param( 'search' );
 		$lesson_status = $request->get_param( 'lesson_status' );
-		$offset = ( $page - 1 ) * $per_page;
 
 		$data = [];
 		$lessons = LessonApi::get( $page, $per_page, $author_id, $search_keyword, $lesson_status );
@@ -131,7 +173,6 @@ class Lessons extends \WP_REST_Controller {
 				$data[] = $this->rest_prepare_item( $lesson->get_data(), $request );
 			}
 		}
-		rest_ensure_response( $data );
 		$response = rest_ensure_response( $data );
 		$response->header( 'x-wp-total', $total );
 		return $response;
@@ -139,7 +180,10 @@ class Lessons extends \WP_REST_Controller {
 
 	public function get_item( $request ) {
 		$ID = (int) $request->get_param( 'id' );
-		$author_id = current_user_can( 'manage_options' ) ? null : get_current_user_id();
+
+		$user = wp_get_current_user();
+
+		$author_id = ( current_user_can( 'manage_options' ) || in_array( 'academy_student', (array) $user->roles ) ) ? null : get_current_user_id();
 		try {
 			$lesson = LessonApi::get_by_id( $ID, false, $author_id );
 			$response = $this->rest_prepare_item( $lesson->get_data(), $request );
@@ -222,6 +266,21 @@ class Lessons extends \WP_REST_Controller {
 		}
 	}
 
+	public function get_topic( $request ) {
+		$ID = absint( $request->get_param( 'id' ) );
+		try {
+			$lesson = LessonApi::get_by_id( $ID, false, null, 'publish' );
+			$response = $this->rest_prepare_item( $lesson->get_data(), $request );
+			return rest_ensure_response( $response );
+		} catch ( Throwable $e ) {
+			return new \WP_Error(
+				'academy_lesson_rest_error',
+				$e->getMessage(),
+				[ 'status' => 404 ]
+			);
+		}
+	}
+
 	protected function rest_prepare_item( $lesson, $request ) {
 		$data = array();
 		$schema = $this->get_public_item_schema();
@@ -268,7 +327,7 @@ class Lessons extends \WP_REST_Controller {
 			$data['comment_status'] = $lesson['comment_status'];
 		}
 		if ( isset( $schema['properties']['comment_count'] ) ) {
-			$data['comment_status'] = $lesson['comment_count'];
+			$data['comment_count'] = $lesson['comment_count'];
 		}
 
 		if ( isset( $schema['properties']['lesson_modified'] ) ) {

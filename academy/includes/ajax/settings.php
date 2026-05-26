@@ -244,13 +244,13 @@ class Settings extends AbstractAjaxHandler {
 				], 400 );
 			}
 
-			if ( is_ssl() && ! str_starts_with( $auth_redirect_url, 'https://' ) ) {
+			if ( is_ssl() && 0 !== strpos( $auth_redirect_url, 'https://' ) ) {
 				wp_send_json_error( [
 					'message' => __( 'Invalid dashboard login redirect URL. Please use secure (https) URL.', 'academy' )
 				], 400 );
 			}
 
-			if ( str_starts_with( $auth_redirect_url, \Academy\Helper::get_page_permalink( 'frontend_dashboard_page' ) ) ) {
+			if ( 0 === strpos( $auth_redirect_url, \Academy\Helper::get_page_permalink( 'frontend_dashboard_page' ) ) ) {
 				// Prevent redirect loop.
 				wp_send_json_error( [
 					'message' => __( 'Dashboard URL is not allowed. Please use academy as auth redirect instead.', 'academy' )

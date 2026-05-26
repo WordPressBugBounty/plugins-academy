@@ -9,7 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php if ( ! empty( $completed_courses ) ) :
 			$has_certificate_course = false; // Flag to check if any course has a certificate
 			foreach ( $completed_courses as $course_id ) :
-				$certificate_id = get_post_meta( $course_id, 'academy_course_certificate_id', true ) ??
+				$course_certificate_id =get_post_meta( $course_id, 'academy_course_certificate_id', true );
+				$certificate_id = $course_certificate_id ? $course_certificate_id :
 				\Academy\Helper::get_settings( 'academy_primary_certificate_id' );
 				$enable_certificate = get_post_meta( $course_id, 'academy_course_enable_certificate', true );
 

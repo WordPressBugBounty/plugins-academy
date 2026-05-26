@@ -87,6 +87,31 @@ class QuizAttempts extends \WP_REST_Controller {
 			)
 		);
 
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/get_student_quiz_attempt_details',
+			array(
+				'args'   => array(
+					'course_id' => array(
+						'description' => esc_html__( 'Course ID.', 'academy' ),
+						'type'        => 'integer',
+					),
+					'student_id' => array(
+						'description' => esc_html__( 'Student ID.', 'academy' ),
+						'type'        => 'integer',
+					),
+				),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_student_quiz_attempt_details' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+					'args'                => $get_item_args,
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+
+			)
+		);
+
 		// Get All Quiz Attempts
 		$quiz_object             = get_post_type_object( 'academy_quiz' );
 		$quiz_rest_base = ! empty( $quiz_object->rest_base ) ? $quiz_object->rest_base : $quiz_object->name;
@@ -114,9 +139,15 @@ class QuizAttempts extends \WP_REST_Controller {
 		$course_id = $request->get_param( 'course_id' );
 		$enrolled    = \Academy\Helper::is_enrolled( $course_id, get_current_user_id() );
 		$is_public = \Academy\Helper::is_public_course( $course_id );
-		if ( current_user_can( 'manage_academy_instructor' ) || $enrolled || $is_public ) {
+		if ( current_user_can( 'manage_academy_instructor' ) || $enrolled || $is_public || current_user_can( 'read_academy_course' ) ) {
 			return true;
 		}
+
+		return new \WP_Error(
+			'rest_forbidden_context',
+			esc_html__( 'Sorry, you are not allowed to get quiz attempt answers.', 'academy' ),
+			array( 'status' => rest_authorization_required_code() )
+		);
 	}
 
 	public function delete_permissions_check() {
@@ -266,6 +297,45 @@ class QuizAttempts extends \WP_REST_Controller {
 		]);
 		$results = apply_filters( 'academy_quizzes/api/before_quiz_attempts', $results );
 		return new \WP_REST_Response( $results, 200 );
+	}
+
+	public function get_student_quiz_attempt_details( $request ) {
+		$attempt_id = $request->get_param( 'id' );
+		$course_id = $request->get_param( 'course_id' );
+		$student_id = $request->get_param( 'user_id' );
+
+		if ( ! $student_id ) {
+			$student_id = get_current_user_id();
+		}
+
+		$is_administrator = current_user_can( 'administrator' );
+		$is_instructor    = \Academy\Helper::is_instructor_of_this_course( $student_id, $course_id );
+		$enrolled         = \Academy\Helper::is_enrolled( $course_id, $student_id );
+		$is_public = \Academy\Helper::is_public_course( $course_id );
+
+		if ( $is_administrator || $is_instructor || $enrolled || $is_public ) {
+			$prepare_response = [];
+			$attempt_details = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details( $attempt_id, $student_id );
+			$quiz_id = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id )->quiz_id;
+			$is_enable_skip_question = get_post_meta( $quiz_id, 'academy_quiz_skip_question_showing', true );
+			if ( $is_enable_skip_question ) {
+				$skip_questions = \AcademyQuizzes\Classes\Query::get_quiz_attempt_skip_questions( $attempt_id, $student_id, $quiz_id );
+				$attempt_details = array_merge( $attempt_details, $skip_questions );
+			}
+			foreach ( $attempt_details as $attempt_item ) {
+				$attempt_item->given_answer = \AcademyQuizzes\Helper::prepare_given_answer( $attempt_item->question_type, $attempt_item );
+				$attempt_item->is_correct = (bool) $attempt_item->is_correct;
+				$attempt_item->correct_answer = \AcademyQuizzes\Helper::prepare_correct_answer( $attempt_item->question_type, $attempt_item );
+				$attempt_item->question_title = html_entity_decode( $attempt_item->question_title );
+				$attempt_item->question_image_url = ! empty( $attempt_item->question_image_id ) ? wp_get_attachment_url( $attempt_item->question_image_id ) : '';
+				$attempt_answer_id = $attempt_item->attempt_answer_id ? $attempt_item->attempt_answer_id : $attempt_item->question_id;
+				$attempt_item->is_skipped_question = (bool) $attempt_item->attempt_answer_id ? false : true;
+				$prepare_response[ $attempt_answer_id ] = $attempt_item;
+			}
+
+			return new \WP_REST_Response( $prepare_response, 200 );
+		}//end if
+		return new \WP_REST_Response( array( 'error' => esc_html__( 'Access Denied', 'academy' ) ), 403 );
 	}
 
 	protected function rest_prepare_item( $attempt, $request ) {

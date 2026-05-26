@@ -226,13 +226,6 @@ class Helper {
 			'title'       => __( 'Add-ons', 'academy' ),
 			'capability'  => 'manage_options',
 		];
-		if ( ! self::is_active_zencommunity() && ! get_option( 'academy_is_hide_zencommunity_menu' ) ) {
-			$menu[ ACADEMY_PLUGIN_SLUG . '-community' ]      = [
-				'parent_slug' => ACADEMY_PLUGIN_SLUG,
-				'title'       => __( 'Create Community', 'academy' ),
-				'capability'  => 'manage_options',
-			];
-		}
 		$menu[ ACADEMY_PLUGIN_SLUG . '-whats-new' ]       = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
 			'title'       => __( 'What\'s new!', 'academy' ),
@@ -632,7 +625,7 @@ class Helper {
 	public static function parse_embedded_url( $string ) {
 		if ( wp_http_validate_url( $string ) ) {
 			$url = '';
-			if ( str_contains( wp_parse_url( $string )['host'], 'canva.com' ) ) {
+			if ( false !== strpos( wp_parse_url( $string )['host'], 'canva.com' ) ) {
 				$url = add_query_arg( 'embed', '', $string );
 			} else {
 				$oembed = _wp_oembed_get_object();

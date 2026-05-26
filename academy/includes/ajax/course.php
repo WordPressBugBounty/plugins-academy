@@ -49,14 +49,6 @@ class Course extends AbstractAjaxHandler {
 				'callback' => array( $this, 'get_my_courses' ),
 				'capability'    => 'manage_academy_instructor'
 			),
-			'enroll_course' => array(
-				'callback' => array( $this, 'enroll_course' ),
-				'allow_visitor_action'    => true
-			),
-			'complete_course' => array(
-				'callback' => array( $this, 'complete_course' ),
-				'capability'    => 'read'
-			),
 			'add_course_review' => array(
 				'callback' => array( $this, 'add_course_review' ),
 				'capability'    => 'read'
@@ -390,120 +382,6 @@ class Course extends AbstractAjaxHandler {
 			wp_reset_query();
 		endif;
 		wp_send_json_success( $response );
-	}
-
-	public function enroll_course( $payload_data ) {
-		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'is_required_logged_in' => true ) );
-		}
-
-		$user_id = get_current_user_id();
-		$payload = Sanitizer::sanitize_payload([
-			'course_id' => 'integer',
-		], $payload_data );
-
-		$course_id = (int) $payload['course_id'];
-		$course_type = \Academy\Helper::get_course_type( $course_id );
-		$is_enrolled = false;
-		$course_type = apply_filters( 'academy/before_enroll_course_type', $course_type, $course_id );
-		if ( 'free' === $course_type || 'public' === $course_type ) {
-			$is_enrolled = \Academy\Helper::do_enroll( $course_id, $user_id );
-		}
-
-		if ( $is_enrolled ) {
-			wp_send_json_success( __( 'Successfully Enrolled.', 'academy' ) );
-		}
-		wp_send_json_error( __( 'Failed to enrolled course.', 'academy' ) );
-	}
-
-	public function complete_course( $payload_data ) {
-		$user_id = get_current_user_id();
-		$payload = Sanitizer::sanitize_payload([
-			'course_id' => 'integer',
-		], $payload_data );
-		$course_id = $payload['course_id'];
-		$has_incomplete_topic = false;
-		$curriculum_lists = \Academy\Helper::get_course_curriculum( $course_id );
-		foreach ( $curriculum_lists as $curriculum_list ) {
-			if ( is_array( $curriculum_list['topics'] ) ) {
-				foreach ( $curriculum_list['topics'] as $topic ) {
-					if ( empty( $topic['is_completed'] ) && 'sub-curriculum' !== $topic['type'] ) {
-						$has_incomplete_topic = true;
-						break;
-					}
-					if ( isset( $topic['topics'] ) && is_array( $topic['topics'] ) ) {
-						foreach ( $topic['topics'] as $child_topic ) {
-							if ( empty( $child_topic['is_completed'] ) ) {
-								$has_incomplete_topic = true;
-								break;
-							}
-						}
-					}
-				}
-			}
-			// found incomplete topic then break loop
-			if ( $has_incomplete_topic ) {
-				break;
-			}
-		}//end foreach
-
-		if ( $has_incomplete_topic ) {
-			wp_send_json_error( __( 'To complete this course, please make sure that you have finished all the topics.', 'academy' ) );
-		}
-
-		do_action( 'academy/admin/course_complete_before', $course_id );
-		global $wpdb;
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$completed = (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(comment_ID) from {$wpdb->comments} 
-				WHERE comment_agent = 'academy' AND comment_type = 'course_completed' 
-				AND comment_post_ID = %d AND user_id = %d",
-				$course_id, $user_id
-			),
-		);
-
-		if ( $completed > 0 ) {
-			wp_send_json_error( __( 'You have already completed this course.', 'academy' ) );
-		}
-
-		$date = gmdate( 'Y-m-d H:i:s', \Academy\Helper::get_time() );
-
-		// hash is unique.
-		do {
-			$hash    = substr( md5( wp_generate_password( 32 ) . $date . $course_id . $user_id ), 0, 16 );
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$hasHash = (int) $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(comment_ID) from {$wpdb->comments} 
-				WHERE comment_agent = 'academy' AND comment_type = 'course_completed' AND comment_content = %s ",
-					$hash
-				)
-			);
-
-		} while ( $hasHash > 0 );
-
-		$data = array(
-			'comment_post_ID'  => $course_id,
-			'comment_author'   => $user_id,
-			'comment_date'     => $date,
-			'comment_date_gmt' => get_gmt_from_date( $date ),
-			'comment_content'  => $hash,
-			'comment_approved' => 'approved',
-			'comment_agent'    => 'academy',
-			'comment_type'     => 'course_completed',
-			'user_id'          => $user_id,
-		);
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$is_complete = $wpdb->insert( $wpdb->comments, $data );
-
-		do_action( 'academy/admin/course_complete_after', $course_id, $user_id );
-
-		if ( $is_complete ) {
-			wp_send_json_success( __( 'Successfully Completed.', 'academy' ) );
-		}
-		wp_send_json_error( __( 'Failed, try again.', 'academy' ) );
 	}
 
 	public function add_course_review( $payload_data ) {

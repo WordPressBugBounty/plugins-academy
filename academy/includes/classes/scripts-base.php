@@ -47,6 +47,8 @@ class ScriptsBase {
 				'bricks_is_active'       => Helper::is_plugin_active( 'academy-bricks-addons/academy-bricks-addons.php' ),
 				'storeengine_is_active'       => Helper::is_plugin_active( 'storeengine/storeengine.php' ),
 				'ecm_is_active'         => ( Helper::is_active_ecm() ),
+				'zaplane_is_active' => Helper::is_plugin_active( 'zaplane/zaplane.php' ),
+				'gameengine_is_active' => Helper::is_plugin_active( 'gameengine/gameengine.php' ),
 			],
 			'current_user_can'      => [
 				'manage_options'            => current_user_can( 'manage_options' ),

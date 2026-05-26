@@ -69,8 +69,14 @@ class Lesson extends AbstractAjaxHandler {
 		// phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 		while ( false !== ( $item = fgetcsv( $file_open ) ) ) {
 			if ( 0 === $count ) {
-				$link_header = array_map( 'strtolower', $item );
+				$link_header = array_map( function( $col ) {
+					return strtolower( trim( str_replace( "\xEF\xBB\xBF", '', $col ) ) );
+				}, $item );
 				$count++;
+				continue;
+			}
+			if ( count( $link_header ) !== count( $item ) ) {
+				$results[] = __( 'Invalid row: column count does not match header', 'academy' );
 				continue;
 			}
 			$item = array_combine( $link_header, $item );
