@@ -297,6 +297,7 @@ class Frontend extends AbstractAjaxHandler {
 			$prepare_response = [];
 			$attempt_details = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details( $attempt_id, $user_id );
 			$quiz_id = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id )->quiz_id;
+			$is_enable_explanation = get_post_meta( $quiz_id, 'academy_quiz_explanation_enabled', true );
 			$is_enable_skip_question = get_post_meta( $quiz_id, 'academy_quiz_skip_question_showing', true );
 			$is_hide_see_more_button = (bool) get_post_meta( $quiz_id, 'academy_quiz_show_full_answer_content', true );
 			if ( $is_enable_skip_question ) {
@@ -304,6 +305,7 @@ class Frontend extends AbstractAjaxHandler {
 				$attempt_details = array_merge( $attempt_details, $skip_questions );
 			}
 			foreach ( $attempt_details as $attempt_item ) {
+				$attempt_item->is_enable_explanation = $is_enable_explanation;
 				$attempt_item->given_answer = \AcademyQuizzes\Helper::prepare_given_answer( $attempt_item->question_type, $attempt_item );
 				$attempt_item->is_correct = (bool) $attempt_item->is_correct;
 				$attempt_item->correct_answer = \AcademyQuizzes\Helper::prepare_correct_answer( $attempt_item->question_type, $attempt_item );

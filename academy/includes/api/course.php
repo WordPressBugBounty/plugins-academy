@@ -330,6 +330,13 @@ class Course extends \WP_REST_Controller {
 	}
 
 	public function check_permission( $request ) {
+		$course_id = absint( $request->get_param( 'id' ) );
+		// public course
+		if ( \Academy\Helper::is_public_course( $course_id ) ) {
+			return true;
+		}
+		
+		// logged in 
 		if ( ! is_user_logged_in() ) {
 			return new \WP_Error(
 				'rest_forbidden',
@@ -338,7 +345,6 @@ class Course extends \WP_REST_Controller {
 			);
 		}
 
-		$course_id = absint( $request->get_param( 'id' ) );
 		$user_id   = get_current_user_id();
 
 		if ( ! $course_id ) {
@@ -1078,7 +1084,6 @@ class Course extends \WP_REST_Controller {
 		if ( current_user_can( 'administrator' )
 			|| \Academy\Helper::is_instructor_of_this_course( $user_id, $course_id )
 			|| \Academy\Helper::is_enrolled( $course_id, $user_id )
-			|| \Academy\Helper::is_public_course( $course_id )
 		) {
 			return true;
 		}

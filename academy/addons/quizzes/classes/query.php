@@ -172,18 +172,58 @@ class Query {
 	public static function get_questions_by_quid_id( $quiz_id, $order = 'rand' ) {
 		global $wpdb;
 
-		$validOrders = [ 'rand', 'ASC', 'DESC' ];
-		$order = in_array( $order, $validOrders, true ) ? $order : 'DESC';
+		$questions = get_post_meta( $quiz_id, 'academy_quiz_questions', true );
 
-		$sql = "SELECT * FROM {$wpdb->prefix}academy_quiz_questions WHERE quiz_id = %d ORDER BY ";
-		$sql .= ( 'rand' === $order ) ? 'RAND()' : 'question_created_at ' . $order;
-		$limit = (int) get_post_meta( $quiz_id, 'academy_quiz_max_questions_for_answer', true );
-		$limit_sql = '';
-		if ( $limit > 0 ) {
-			$sql .= $wpdb->prepare( ' LIMIT %d', $limit );
+		if ( empty( $questions ) || ! is_array( $questions ) ) {
+			return array();
 		}
 
-		return $wpdb->get_results( $wpdb->prepare( $sql, $quiz_id ), OBJECT );// phpcs:ignore
+		$question_ids = array_filter(
+			array_map(
+				static function ( $question ) {
+					return ! empty( $question['id'] ) ? (int) $question['id'] : 0;
+				},
+				$questions
+			)
+		);
+
+		if ( empty( $question_ids ) ) {
+			return array();
+		}
+
+		$order = strtolower( $order );
+
+		switch ( $order ) {
+			case 'desc':
+				$question_ids = array_reverse( $question_ids );
+				break;
+
+			case 'rand':
+			case 'random':
+				shuffle( $question_ids );
+				break;
+
+			default:
+				// keep original order
+				break;
+		}
+
+		$placeholders = implode( ',', array_fill( 0, count( $question_ids ), '%d' ) );
+		$field_order  = implode( ',', array_map( 'intval', $question_ids ) );
+
+		$limit     = (int) get_post_meta( $quiz_id, 'academy_quiz_max_questions_for_answer', true );
+		$limit_sql = $limit > 0 ? ' LIMIT ' . $limit : '';
+
+		$sql = $wpdb->prepare(
+			"SELECT *
+			FROM {$wpdb->prefix}academy_quiz_questions
+			WHERE question_id IN ({$placeholders})
+			ORDER BY FIELD( question_id, {$field_order} ) {$limit_sql}",
+			$question_ids
+		);
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $sql, OBJECT );
 	}
 
 	public static function get_question_settings_by_quiz_id( $ID ) {
@@ -549,10 +589,23 @@ class Query {
 
 	public static function get_quiz_answers_by_question_id( $question_id, $question_type ) {
 		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$question_settings_raw = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT question_settings FROM {$wpdb->prefix}academy_quiz_questions WHERE question_id=%d",
+				$question_id
+			)
+		);
+
+		$question_settings = json_decode( $question_settings_raw ?? '{}', true );
+		$order_by          = false !== $question_settings['randomize'] ? 'RAND()' : 'answer_order ASC';
+	
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT answer_id, quiz_id, answer_title, image_id, view_format, answer_order, answer_created_at, answer_updated_at  FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d AND question_type=%s",
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT answer_id, quiz_id, answer_title, image_id, view_format, answer_order, answer_created_at, answer_updated_at FROM {$wpdb->prefix}academy_quiz_answers WHERE question_id=%d AND question_type=%s ORDER BY {$order_by}",
 				$question_id,
 				$question_type
 			),

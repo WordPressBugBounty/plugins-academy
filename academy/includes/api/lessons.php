@@ -266,7 +266,7 @@ class Lessons extends \WP_REST_Controller {
 		}
 	}
 
-	public function get_topic( $request ) {
+	public function render_lesson( $request ) {
 		$ID = absint( $request->get_param( 'id' ) );
 		try {
 			$lesson = LessonApi::get_by_id( $ID, false, null, 'publish' );

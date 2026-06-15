@@ -21,7 +21,7 @@ $layout = isset( $quiz['settings']['quiz_questions_layout'] ) ? $quiz['settings'
 				$question_count++;
 				$question_type   = $question_with_option['question']->question_type;
 				$answer_settings = json_decode( $question_with_option['question']->question_settings );
-				$is_required = $answer_settings->answer_required;
+				$is_required = $answer_settings->answer_required ?? false;
 				?>
 
 					<div 

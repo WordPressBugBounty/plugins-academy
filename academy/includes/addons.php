@@ -34,6 +34,7 @@ class Addons {
 			'woocommerce' => 'Woocommerce',
 			'course-preview' => 'CoursePreview',
 			'chatgpt' => 'Chatgpt',
+			'gumlet-video' => 'GumletVideo',
 		]);
 
 		foreach ( $addons as $addon_name => $addon_class_name ) {

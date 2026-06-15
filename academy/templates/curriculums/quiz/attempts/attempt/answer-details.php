@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -39,7 +39,11 @@ $topic['slug'] = get_query_var( 'name' );
 							</div>
 							<div class="academy-table__body">
 								<?php
-								$count = 0;
+								$attempt_answer_details = is_array( $attempt_answer_details ?? null ) ? $attempt_answer_details : [];
+								$count               = 0;
+								$first_detail        = reset( $attempt_answer_details );
+								$quiz_id             = $first_detail ? (int) $first_detail->quiz_id : 0;
+								$explanation_enabled = $quiz_id ? (bool) get_post_meta( $quiz_id, 'academy_quiz_explanation_enabled', true ) : false;
 								foreach ( $attempt_answer_details as $attempt_answer_detail ) :
 									$count ++;
 									$question_type = $attempt_answer_detail->question_type;
@@ -119,6 +123,12 @@ $topic['slug'] = get_query_var( 'name' );
 											<?php endif; ?>
 										</div>
 									</div>
+									<?php if ( $explanation_enabled && ! empty( $attempt_answer_detail->question_explanation ) ) : ?>
+										<div class="academy-quiz-attempt-explanation">
+											<strong><?php echo esc_html( sprintf( __( 'Q%d Explanation:', 'academy' ), $count ) ); ?></strong>
+											<?php echo wp_kses_post( $attempt_answer_detail->question_explanation ); ?>
+										</div>
+									<?php endif; ?>
 								<?php endforeach; ?>
 							</div>
 						</div>
@@ -132,7 +142,7 @@ $topic['slug'] = get_query_var( 'name' );
 			<?php esc_html_e( 'Instructor Feedback', 'academy' ); ?>
 		</h3>
 		<p class="academy-quiz-attempt-feedback__message">
-			<?php echo wp_kses_post( $instructor_feedback ); ?>
+			<?php echo wp_kses_post( $instructor_feedback ?? '' ); ?>
 		</p>
 	</div>
 	<a class="academy-btn academy-btn--md academy-btn--preset-purple" href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $topic ) ); ?>">

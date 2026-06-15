@@ -1144,7 +1144,9 @@ if ( ! function_exists( 'academy_curriculum_lesson_content' ) ) {
 		}
 
 		$next_topic_play_url = '';
-		if ( \Academy\Helper::get_settings( 'is_enabled_academy_player' ) ) {
+		$needs_next_url = \Academy\Helper::get_settings( 'is_enabled_academy_player' )
+			|| \Academy\Helper::get_addon_active_status( 'gumlet-video' );
+		if ( $needs_next_url ) {
 			$curriculums = \Academy\Helper::get_course_curriculum_array( $course_id );
 
 			if ( ! empty( $curriculums ) ) {

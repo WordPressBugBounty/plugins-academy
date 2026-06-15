@@ -10,8 +10,16 @@ use AcademyCertificates\PDF\Generator;
 class Helper {
 
 	public static function render_certificate( $course_id, $template_id, $student_id, $verification_id = '' ) {
-		if ( ! get_option( 'academy_mpdf_fonts_downloaded', false ) ) {
-			self::send_notice( __( 'Please download the fonts before generating the PDF.', 'academy' ) );
+		$upload         = wp_upload_dir();
+		$font_dir       = $upload['basedir'] . '/academy_uploads/mpdf/ttfonts';
+		$required_font  = $font_dir . '/DejaVuSansCondensed.ttf';
+		$fonts_on_disk  = file_exists( $required_font );
+
+		if ( ! get_option( 'academy_mpdf_fonts_downloaded', false ) || ! $fonts_on_disk ) {
+			if ( ! $fonts_on_disk ) {
+				delete_option( 'academy_mpdf_fonts_downloaded' );
+			}
+			self::send_notice( __( 'Certificate fonts are missing. Please re-download fonts from Academy > Settings > Certificates.', 'academy' ) );
 		}
 
 		$certificate = get_post( $template_id );

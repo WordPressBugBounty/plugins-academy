@@ -242,9 +242,9 @@ class Integration {
 	}
 
 	public function add_frontend_dashboard_menu_item( $menu_links ) {
-		$allow_fontend_dashbaord = (bool) \Academy\Helper::get_settings( 'is_enabled_fd_link_inside_woo_dashboard' );
-		$fontend_dashbaord_label = (string) \Academy\Helper::get_settings( 'store_link_label_inside_frontend_dashboard' );
-		if ( ! $allow_fontend_dashbaord || empty( $fontend_dashbaord_label ) ) {
+		$allow_frontend_dashboard = (bool) \Academy\Helper::get_settings( 'store_link_inside_frontend_dashboard' );
+		$frontend_dashboard_label = (string) \Academy\Helper::get_settings( 'store_link_label_inside_frontend_dashboard' );
+		if ( ! $allow_frontend_dashboard || empty( $frontend_dashboard_label ) ) {
 			return $menu_links;
 		}
 
@@ -252,7 +252,7 @@ class Integration {
 		foreach ( $menu_links as $key => $value ) {
 			$menu[ $key ] = $value;
 			if ( 'dashboard' === $key ) {
-				$menu['academy_frontend_dashboard'] = esc_html( $fontend_dashbaord_label );
+				$menu['academy_frontend_dashboard'] = esc_html( $frontend_dashboard_label );
 			}
 		}
 		return $menu;

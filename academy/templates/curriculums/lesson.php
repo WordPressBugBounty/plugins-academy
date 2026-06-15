@@ -72,6 +72,22 @@ if ( ! empty( $lesson_meta['video_source']['type'] ) && 'publish' === $status ) 
 			$meta = ! empty( $lesson_meta['video_source']['url'] ) ? $lesson_meta['video_source']['url'] : \Academy\Helper::get_settings( 'lesson_offline_class_address' );
 			$template_args = [ 'meta' => $meta ];
 			break;
+		case 'gumlet':
+			if ( \Academy\Helper::get_addon_active_status( 'gumlet-video' ) && ! empty( $lesson_meta['video_source']['url'] ) ) {
+				try {
+					$token_data    = \AcademyGumletVideo\Token::generate( $lesson_meta['video_source']['url'], get_current_user_id() );
+					$template_path = 'curriculums/lesson/gumlet.php';
+					$template_args = [
+						'src'        => $token_data['signed_url'],
+						'next_lesson' => $next_topic_play_url,
+						'course_id'  => $course_id,
+						'lesson_id'  => $lesson->ID,
+					];
+				} catch ( \Throwable $e ) {
+					// Secret not configured — skip rendering.
+				}
+			}
+			break;
 	}//end switch
 
 	if ( $template_path ) {

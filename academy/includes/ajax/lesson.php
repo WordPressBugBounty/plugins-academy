@@ -232,6 +232,18 @@ class Lesson extends AbstractAjaxHandler {
 						}
 					} elseif ( in_array( $video['type'], [ 'offline', 'online' ] ) ) {
 						$video['url'] = ! empty( $video['url'] ) ? $video['url'] : \Academy\Helper::get_settings( 'lesson_offline_class_address' );
+					} elseif ( 'gumlet' === $video['type'] ) {
+						$gumlet_active = \Academy\Helper::get_addon_active_status( 'gumlet-video' );
+						if ( $gumlet_active && ! empty( $video['url'] ) ) {
+							try {
+								$token_data    = \AcademyGumletVideo\Token::generate( $video['url'], $user_id );
+								$video['url']  = $token_data['signed_url'];
+							} catch ( \Throwable $e ) {
+								$video['url'] = '';
+							}
+						} else {
+							$video['url'] = '';
+						}
 					} else {
 						$video['type'] = 'external';
 						$video['url'] = $video['url'];
@@ -248,11 +260,10 @@ class Lesson extends AbstractAjaxHandler {
 
 	public function get_save_lesson_note( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
-			'user_id'   => 'integer',
 			'course_id' => 'integer',
 		], $payload_data );
 
-		$user_id   = $payload['user_id'] ?? get_current_user_id();
+		$user_id   = get_current_user_id();
 		$course_id = $payload['course_id'] ?? 0;
 
 		$meta_key = "academy_{$course_id}lesson_note_{$user_id}";
@@ -264,13 +275,12 @@ class Lesson extends AbstractAjaxHandler {
 	public function save_lesson_note( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload(
 			array(
-				'user_id'   => 'integer',
 				'course_id' => 'integer',
 			),
 			$payload_data
 		);
 
-		$user_id   = $payload['user_id'] ?? get_current_user_id();
+		$user_id   = get_current_user_id();
 		$course_id = $payload['course_id'] ?? 0;
 		$note      = isset( $payload_data['note'] ) ? wp_kses_post( $payload_data['note'] ) : '';
 
@@ -285,14 +295,13 @@ class Lesson extends AbstractAjaxHandler {
 	public function complete_lesson_video( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload(
 			array(
-				'user_id'   => 'integer',
 				'course_id' => 'integer',
 				'topic_id'  => 'integer',
 			),
 			$payload_data
 		);
 
-		$user_id   = $payload['user_id'] ?? get_current_user_id();
+		$user_id   = get_current_user_id();
 		$course_id = $payload['course_id'] ?? 0;
 		$topic_id  = $payload['topic_id'] ?? 0;
 

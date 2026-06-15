@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8.0
+Stable tag: 3.8.1
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -337,6 +337,18 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.8.1 - 15/06/2026 =
+* Added - Gumlet Video Integration addon.
+* Added - Quiz question explanations are now displayed based on settings.
+* Added - PHP rendering support for quiz question explanations.
+* Fixed - Translation issues.
+* Fixed - AJAX API vulnerability in the Notes feature.
+* Fixed - Quiz question sorting filter issue.
+* Fixed - Question answer randomization sorting issue.
+* Fixed - Lesson API function naming issue.
+* Fixed - Missing font file issue when downloading certificates font file.
+* Fixed - WooCommerce frontend dashboard course menu visibility settings were not working properly.
 
 = 3.8.0 - 25/05/2026 =
 * Added - Private REST API endpoints for student-facing resources including lessons, notes, certificates, quiz attempts, and courses.

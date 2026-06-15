@@ -45,73 +45,82 @@ class Generator extends FileUpload {
 		$default_font_config = ( new \Academy\Mpdf\Config\FontVariables() )->getDefaults();
 		$fontdata            = $default_font_config['fontdata'];
 
-		$this->mpdf = new Mpdf(
-			array(
-				'tempDir'          => $this->get_upload_dir() . '/mpdf',
-				'fontDir'          => $font_dirs,
-				'format'           => $this->page_size,
-				'orientation'      => $this->page_orientation,
-				'margin_left'      => 0,
-				'margin_right'     => 0,
-				'margin_top'       => 0,
-				'margin_bottom'    => 0,
-				'default_font'     => 'Arial, sans-serif',
-				'autoScriptToLang' => true,
-				'autoLangToFont'   => true,
-				'fontdata'         => $fontdata + array(
-					'cinzel'              => array(
-						'R' => 'Cinzel-VariableFont_wght.ttf',
+		try {
+			$this->mpdf = new Mpdf(
+				array(
+					'tempDir'          => $this->get_upload_dir() . '/mpdf',
+					'fontDir'          => $font_dirs,
+					'format'           => $this->page_size,
+					'orientation'      => $this->page_orientation,
+					'margin_left'      => 0,
+					'margin_right'     => 0,
+					'margin_top'       => 0,
+					'margin_bottom'    => 0,
+					'default_font'     => 'Arial, sans-serif',
+					'autoScriptToLang' => true,
+					'autoLangToFont'   => true,
+					'fontdata'         => $fontdata + array(
+						'cinzel'              => array(
+							'R' => 'Cinzel-VariableFont_wght.ttf',
+						),
+						'dejavusanscondensed' => array(
+							'R' => 'DejaVuSansCondensed.ttf',
+							'B' => 'DejaVuSansCondensed-Bold.ttf',
+						),
+						'dmsans'              => array(
+							'R' => 'DMSans-Regular.ttf',
+							'B' => 'DMSans-Bold.ttf',
+							'I' => 'DMSans-Italic.ttf',
+						),
+						'greatvibes'          => array(
+							'R' => 'GreatVibes-Regular.ttf',
+						),
+						'grenzegotisch'       => array(
+							'R' => 'GrenzeGotisch-VariableFont_wght.ttf',
+						),
+						'librebaskerville'    => array(
+							'R' => 'LibreBaskerville-Regular.ttf',
+							'B' => 'LibreBaskerville-Bold.ttf',
+							'I' => 'LibreBaskerville-Italic.ttf',
+						),
+						'lora'                => array(
+							'R' => 'Lora-VariableFont_wght.ttf',
+							'I' => 'Lora-Italic-VariableFont_wght.ttf',
+						),
+						'poppins'             => array(
+							'R' => 'Poppins-Regular.ttf',
+							'B' => 'Poppins-Bold.ttf',
+							'I' => 'Poppins-Italic.ttf',
+						),
+						'roboto'              => array(
+							'R' => 'Roboto-Regular.ttf',
+							'B' => 'Roboto-Bold.ttf',
+							'I' => 'Roboto-Italic.ttf',
+						),
+						'abhayalibre'         => array(
+							'R' => 'AbhayaLibre-Regular.ttf',
+							'B' => 'AbhayaLibre-Bold.ttf',
+						),
+						'adinekirnberg'       => array(
+							'R' => 'AdineKirnberg.ttf',
+						),
+						'alexbrush'           => array(
+							'R' => 'AlexBrush-Regular.ttf',
+						),
+						'allura'              => array(
+							'R' => 'Allura-Regular.ttf',
+						),
 					),
-					'dejavusanscondensed' => array(
-						'R' => 'DejaVuSansCondensed.ttf',
-						'B' => 'DejaVuSansCondensed-Bold.ttf',
-					),
-					'dmsans'              => array(
-						'R' => 'DMSans-Regular.ttf',
-						'B' => 'DMSans-Bold.ttf',
-						'I' => 'DMSans-Italic.ttf',
-					),
-					'greatvibes'          => array(
-						'R' => 'GreatVibes-Regular.ttf',
-					),
-					'grenzegotisch'       => array(
-						'R' => 'GrenzeGotisch-VariableFont_wght.ttf',
-					),
-					'librebaskerville'    => array(
-						'R' => 'LibreBaskerville-Regular.ttf',
-						'B' => 'LibreBaskerville-Bold.ttf',
-						'I' => 'LibreBaskerville-Italic.ttf',
-					),
-					'lora'                => array(
-						'R' => 'Lora-VariableFont_wght.ttf',
-						'I' => 'Lora-Italic-VariableFont_wght.ttf',
-					),
-					'poppins'             => array(
-						'R' => 'Poppins-Regular.ttf',
-						'B' => 'Poppins-Bold.ttf',
-						'I' => 'Poppins-Italic.ttf',
-					),
-					'roboto'              => array(
-						'R' => 'Roboto-Regular.ttf',
-						'B' => 'Roboto-Bold.ttf',
-						'I' => 'Roboto-Italic.ttf',
-					),
-					'abhayalibre'         => array(
-						'R' => 'AbhayaLibre-Regular.ttf',
-						'B' => 'AbhayaLibre-Bold.ttf',
-					),
-					'adinekirnberg'       => array(
-						'R' => 'AdineKirnberg.ttf',
-					),
-					'alexbrush'           => array(
-						'R' => 'AlexBrush-Regular.ttf',
-					),
-					'allura'              => array(
-						'R' => 'Allura-Regular.ttf',
-					),
-				),
-			)
-		);
+				)
+			);
+		} catch ( \Academy\Mpdf\MpdfException $e ) {
+			delete_option( 'academy_mpdf_fonts_downloaded' );
+			wp_die(
+				esc_html__( 'Certificate fonts are missing. Please re-download fonts from Academy > Settings > Certificates.', 'academy' ),
+				esc_html__( 'Font Error', 'academy' ),
+				array( 'response' => 500, 'back_link' => true )
+			);
+		}
 		$this->mpdf->setMBencoding( 'UTF-8' );
 
 	}
@@ -139,7 +148,7 @@ class Generator extends FileUpload {
 	}
 
 	public function preview_certificate( $title ) {
-		$result = $this->prepare_pdf( true );
+		$this->prepare_pdf();
 		$file_name = sanitize_file_name( wp_strip_all_tags( $title ) );
 		$this->mpdf->Output( $file_name . '.pdf', Destination::INLINE );
 		exit;

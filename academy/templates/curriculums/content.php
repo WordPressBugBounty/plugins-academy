@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="academy-lessons-content-wrap academy-lessons-expanded-sidebar academy-lessons-content-scroll">
 	<div class="academy-lessons-content">
-		<?php if ( ! is_user_logged_in() ) : ?>		
+		<?php if ( ! is_user_logged_in() && ! \Academy\Helper::is_public_course( \Academy\Helper::get_the_current_course_id() ) ) : ?>		
 			<div class="academy-lessons__login-container">
 				<div class="academy-lessons__login-header">
 					<div  class="academy-lessons__login-header-left">

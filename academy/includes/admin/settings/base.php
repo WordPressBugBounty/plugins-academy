@@ -127,6 +127,13 @@ class Base {
 			'enable_auto_enroll_after_registration' => false,
 			'after_registration_auto_enroll_courses_id' => [],
 			'user_roles_for_auto_enroll' => [],
+			// Gumlet video integration (managed by gumlet-video addon)
+			'gumlet_token_secret'      => '',
+			'gumlet_collection_id'     => '',
+			'gumlet_token_expiry'      => 3600,
+			'gumlet_drm_enabled'       => false,
+			'gumlet_watermark_enabled' => false,
+			'gumlet_watermark_text'    => '',
 		]);
 	}
 
