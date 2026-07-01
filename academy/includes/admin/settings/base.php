@@ -131,9 +131,7 @@ class Base {
 			'gumlet_token_secret'      => '',
 			'gumlet_collection_id'     => '',
 			'gumlet_token_expiry'      => 3600,
-			'gumlet_drm_enabled'       => false,
-			'gumlet_watermark_enabled' => false,
-			'gumlet_watermark_text'    => '',
+			'gumlet_signed_url_enabled'=> false,
 		]);
 	}
 

@@ -19,9 +19,7 @@ class Bootstrap {
 		$rules['gumlet_token_secret']      = 'string';
 		$rules['gumlet_collection_id']     = 'string';
 		$rules['gumlet_token_expiry']      = 'integer';
-		$rules['gumlet_drm_enabled']       = 'boolean';
-		$rules['gumlet_watermark_enabled'] = 'boolean';
-		$rules['gumlet_watermark_text']    = 'string';
+		$rules['gumlet_signed_url_enabled'] = 'boolean';
 		return $rules;
 	}
 
@@ -30,9 +28,7 @@ class Bootstrap {
 
 		$data['gumlet_collection_id']     = sanitize_text_field( $payload['gumlet_collection_id'] ?? $default['gumlet_collection_id'] );
 		$data['gumlet_token_expiry']      = absint( $payload['gumlet_token_expiry'] ?? $default['gumlet_token_expiry'] );
-		$data['gumlet_drm_enabled']       = $payload['gumlet_drm_enabled'] ?? $default['gumlet_drm_enabled'];
-		$data['gumlet_watermark_enabled'] = $payload['gumlet_watermark_enabled'] ?? $default['gumlet_watermark_enabled'];
-		$data['gumlet_watermark_text']    = sanitize_text_field( $payload['gumlet_watermark_text'] ?? $default['gumlet_watermark_text'] );
+		$data['gumlet_signed_url_enabled'] = $payload['gumlet_signed_url_enabled'] ?? $default['gumlet_signed_url_enabled'];
 
 		$new_secret = trim( $payload['gumlet_token_secret'] ?? '' );
 		if ( ! empty( $new_secret ) ) {
@@ -48,9 +44,7 @@ class Bootstrap {
 		$settings = array_merge( [
 			'gumlet_collection_id'     => '',
 			'gumlet_token_expiry'      => 3600,
-			'gumlet_drm_enabled'       => false,
-			'gumlet_watermark_enabled' => false,
-			'gumlet_watermark_text'    => '',
+			'gumlet_signed_url_enabled'=> false,
 		], $settings );
 
 		$settings['gumlet_token_secret_is_set'] = ! empty( $settings['gumlet_token_secret'] ?? '' );

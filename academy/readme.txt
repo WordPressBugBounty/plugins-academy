@@ -5,7 +5,7 @@ Tags: learning management system, LMS, course, education, elearning
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8.1
+Stable tag: 3.8.2
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -337,6 +337,12 @@ Yes, Academy LMS boasts a frontend SPA interface, making it one of the most adva
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.8.2 - 01/07/2026 =
+* Fixed - Gumlet Video Integration addon settings not compatible with the Gumlet dashboard settings.
+* Fixed - Course import issue with Quizzes and Assignment addon activation checks.
+* Fixed - Translation issues.
+* Fixed - Error when changing the status of old lessons.
 
 = 3.8.1 - 15/06/2026 =
 * Added - Gumlet Video Integration addon.

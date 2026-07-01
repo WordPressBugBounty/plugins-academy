@@ -583,7 +583,7 @@ class Course extends AbstractAjaxHandler {
 					$response[] = ! empty( $new_lesson_id ) ? __( 'Successfully Inserted the Lesson - ', 'academy' ) . $lesson_item['lesson_title'] : __( 'Sorry, Already have the Lesson - ', 'academy' ) . $lesson_item['lesson_title'];
 				} elseif ( $has_quiz ) {
 					$has_quiz = false;
-					if ( ! \Academy\Helper::is_active_academy_pro() ) {
+					if ( ! \Academy\Helper::get_addon_active_status( 'quizzes' ) ) {
 						continue;
 					}
 					$item = self::combine_csv_item( $item, $quiz_header );
@@ -606,7 +606,7 @@ class Course extends AbstractAjaxHandler {
 					apply_filters( 'academy_pro/export-import/insert_answer_data', $answer_item, $new_quiz_id, $new_question_id );
 				} elseif ( $has_assignment ) {
 					$has_assignment = false;
-					if ( ! \Academy\Helper::is_active_academy_pro() ) {
+					if ( ! \Academy\Helper::get_addon_active_status( 'assignments', true ) ) {
 						continue;
 					}
 					$item = self::combine_csv_item( $item, $assignment_header );

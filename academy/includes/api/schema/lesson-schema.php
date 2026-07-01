@@ -80,7 +80,7 @@ trait LessonSchema {
 							'type'   => 'object',
 						],
 						'video_source' => [
-							'type'          => 'object',
+							'type'          => [ 'object', 'null' ],
 						],
 					]
 				],
@@ -238,7 +238,7 @@ trait LessonSchema {
 						]
 					],
 					'video_source' => [
-						'type'          => 'object',
+						'type'          => [ 'object', 'null' ],
 						'properties' => [
 							'type' => [
 								'type'          => 'string',

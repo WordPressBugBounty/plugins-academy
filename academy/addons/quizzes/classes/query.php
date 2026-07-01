@@ -1074,17 +1074,31 @@ class Query {
 			)
 		);
 	}
+	
 	public static function get_attempt_id_by_user_and_course_id( $course_id, $user_id ) {
 		global $wpdb;
+
+		static $table_exists = null;
+
+		$table = $wpdb->prefix . 'academy_quiz_attempts';
+
+		if ( null === $table_exists ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+			$table_exists = $wpdb->get_var(
+				$wpdb->prepare( 'SHOW TABLES LIKE %s', $table )
+			) === $table;
+		}
+
+		if ( ! $table_exists ) {
+			return false;
+		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT attempt_id FROM {$wpdb->prefix}academy_quiz_attempts WHERE course_id = %d AND user_id= %d",
-				array(
-					$course_id,
-					$user_id
-				)
+				"SELECT attempt_id FROM {$table} WHERE course_id = %d AND user_id = %d",
+				$course_id,
+				$user_id
 			)
 		);
 	}
