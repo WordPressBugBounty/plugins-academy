@@ -24,7 +24,8 @@ class Ajax extends AbstractAjaxHandler {
 		header( 'Content-Type: text/event-stream' );
 		header( 'Cache-Control: no-cache' );
 		header( 'Connection: keep-alive' );
-		$flow = sanitize_title( strtolower( $_GET['lesson_migrator_flow'] ?? '' ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$flow = sanitize_title( strtolower( sanitize_text_field( wp_unslash( $_GET['lesson_migrator_flow'] ?? '' ) ) ) );
 		if ( ! in_array(
 			$flow,
 			[

@@ -325,6 +325,8 @@ class LocoTranslateSync {
 	}
 
 	private static function log( string $msg ) : void {
-		error_log( $msg );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( $msg ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		}
 	}
 }

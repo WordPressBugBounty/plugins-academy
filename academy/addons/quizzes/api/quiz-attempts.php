@@ -196,9 +196,18 @@ class QuizAttempts extends \WP_REST_Controller {
 		$offset = ( $page - 1 ) * $per_page;
 		$args['offset'] = $offset;
 		$attempts = [];
-		if ( ! current_user_can( 'manage_options' ) && current_user_can( 'manage_academy_instructor' ) ) {
+		if ( current_user_can( 'manage_options' ) ) {
+			// Site administrators may read every attempt.
+			$attempts = Query::get_quiz_attempts( $args );
+		} elseif ( current_user_can( 'manage_academy_instructor' ) ) {
+			// Instructors are scoped to attempts on their own courses.
 			$attempts = Query::get_quiz_attempts_for_instructors( $args );
 		} else {
+			// Everyone else (e.g. subscribers/students) may only read their own attempts.
+			// Force the user scope on both the main query (restrict_user_id) and the
+			// quiz_id sub-branch (user_id) so a supplied user_id cannot widen access.
+			$args['restrict_user_id'] = get_current_user_id();
+			$args['user_id']          = get_current_user_id();
 			$attempts = Query::get_quiz_attempts( $args );
 		}
 
@@ -221,8 +230,48 @@ class QuizAttempts extends \WP_REST_Controller {
 		if ( empty( $attempt ) ) {
 			return rest_ensure_response( [] );
 		}
+		if ( ! $this->can_access_attempt( $attempt ) ) {
+			return new \WP_Error(
+				'rest_forbidden_context',
+				esc_html__( 'Sorry, you are not allowed to view this quiz attempt.', 'academy' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
 		$response = $this->rest_prepare_item( $attempt, $request );
 		return rest_ensure_response( $response );
+	}
+
+	/**
+	 * Determine whether the current user is allowed to access a specific attempt row.
+	 *
+	 * Access is granted to site administrators, the instructor of the attempt's
+	 * course, and the user who owns the attempt. This is the ownership check that
+	 * the per-request `course_id` permission callback cannot enforce, since the
+	 * attacker controls that parameter.
+	 *
+	 * @param object $attempt Attempt row.
+	 * @return bool
+	 */
+	protected function can_access_attempt( $attempt ) {
+		if ( empty( $attempt ) ) {
+			return false;
+		}
+
+		$current_user_id = get_current_user_id();
+
+		if ( current_user_can( 'manage_options' ) ) {
+			return true;
+		}
+
+		if ( (int) $attempt->user_id === (int) $current_user_id ) {
+			return true;
+		}
+
+		if ( \Academy\Helper::is_instructor_of_this_course( $current_user_id, (int) $attempt->course_id ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 
@@ -255,6 +304,19 @@ class QuizAttempts extends \WP_REST_Controller {
 
 	public function update_item( $request ) {
 		$params = $request->get_params();
+
+		// Only the attempt owner (or an administrator/course instructor) may finalize
+		// or modify an attempt. Without this, any enrolled user could tamper with
+		// another user's attempt by passing its attempt_id.
+		$existing_attempt = Query::get_quiz_attempt( isset( $params['attempt_id'] ) ? $params['attempt_id'] : 0 );
+		if ( empty( $existing_attempt ) || ! $this->can_access_attempt( $existing_attempt ) ) {
+			return new \WP_Error(
+				'rest_forbidden_context',
+				esc_html__( 'Sorry, you are not allowed to update this quiz attempt.', 'academy' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+
 		do_action( 'academy_quizzes/api/before_quiz_attempt_finished', $params );
 		$total_questions_marks = Query::get_total_questions_marks_by_attempt_id( $params['attempt_id'] );
 		$total_earned_marks = Query::get_quiz_attempt_answers_earned_marks( get_current_user_id(), $params['attempt_id'] );
@@ -280,6 +342,18 @@ class QuizAttempts extends \WP_REST_Controller {
 
 	public function delete_item( $request ) {
 		$attempt_id = $request->get_param( 'id' );
+
+		// Scope deletion to the attempt's owner/course. delete_permissions_check only
+		// verifies the caller is an instructor, not that the attempt is theirs to delete.
+		$existing_attempt = Query::get_quiz_attempt( $attempt_id );
+		if ( empty( $existing_attempt ) || ! $this->can_access_attempt( $existing_attempt ) ) {
+			return new \WP_Error(
+				'rest_forbidden_context',
+				esc_html__( 'Sorry, you are not allowed to delete this quiz attempt.', 'academy' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+
 		Query::delete_quiz_attempt( $attempt_id );
 		do_action( 'academy_quizzes/api/after_delete_quiz_attempt', $attempt_id );
 		return new \WP_REST_Response( $attempt_id, 200 );
@@ -301,22 +375,17 @@ class QuizAttempts extends \WP_REST_Controller {
 
 	public function get_student_quiz_attempt_details( $request ) {
 		$attempt_id = $request->get_param( 'id' );
-		$course_id = $request->get_param( 'course_id' );
-		$student_id = $request->get_param( 'user_id' );
 
-		if ( ! $student_id ) {
-			$student_id = get_current_user_id();
-		}
+		// Resolve the real owner from the attempt row rather than trusting the
+		// caller-supplied user_id/course_id. Authorization is then decided against
+		// the current user (owner, course instructor, or administrator).
+		$attempt = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id );
 
-		$is_administrator = current_user_can( 'administrator' );
-		$is_instructor    = \Academy\Helper::is_instructor_of_this_course( $student_id, $course_id );
-		$enrolled         = \Academy\Helper::is_enrolled( $course_id, $student_id );
-		$is_public = \Academy\Helper::is_public_course( $course_id );
-
-		if ( $is_administrator || $is_instructor || $enrolled || $is_public ) {
+		if ( ! empty( $attempt ) && $this->can_access_attempt( $attempt ) ) {
+			$student_id = (int) $attempt->user_id;
 			$prepare_response = [];
 			$attempt_details = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details( $attempt_id, $student_id );
-			$quiz_id = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id )->quiz_id;
+			$quiz_id = $attempt->quiz_id;
 			$is_enable_skip_question = get_post_meta( $quiz_id, 'academy_quiz_skip_question_showing', true );
 			if ( $is_enable_skip_question ) {
 				$skip_questions = \AcademyQuizzes\Classes\Query::get_quiz_attempt_skip_questions( $attempt_id, $student_id, $quiz_id );

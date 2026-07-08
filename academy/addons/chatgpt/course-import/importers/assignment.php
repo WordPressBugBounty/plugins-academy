@@ -24,7 +24,7 @@ class Assignment implements Interfaces\Insertable {
 	public function __construct( array $data, int $assignment_id ) {
 		$this->is_edit = $assignment_id > 0;
 		if ( $this->is_edit && ! get_post( $assignment_id ) ) {
-			throw new Exception( __( 'Course not found.', 'academy' ) );
+			throw new Exception( esc_html__( 'Course not found.', 'academy' ) );
 		}
 
 		$this->id = $assignment_id;
@@ -57,7 +57,7 @@ class Assignment implements Interfaces\Insertable {
 		] ) );
 
 		if ( is_wp_error( $id ) ) {
-			throw new Exception( __( 'Error.', 'academy' ) );
+			throw new Exception( esc_html__( 'Error.', 'academy' ) );
 		}
 		$this->id = $id;
 

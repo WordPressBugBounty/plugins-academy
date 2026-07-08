@@ -204,8 +204,6 @@ class CourseFilterHandler {
 			$args['paged'] = $page_num;
 		}
 		$grid_class = \Academy\Helper::get_responsive_column( $per_row );
-		// phpcs:ignore WordPress.WP.DiscouragedFunctions.query_posts_query_posts
-		wp_reset_query();
 		wp_reset_postdata();
 		// remove empty values
 		if ( isset( $args['tax_query'] ) ) {
@@ -226,6 +224,7 @@ class CourseFilterHandler {
 			}
 
 			// re-index tax_query
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 			$args['tax_query'] = array_values( $args['tax_query'] );
 		}
 		$courses_query = new \WP_Query( apply_filters( 'academy_courses_filter_args', $args ) );
@@ -251,7 +250,6 @@ class CourseFilterHandler {
 					'paged' => $paged,
 					'max_num_pages' => $courses_query->max_num_pages,
 				) );
-				wp_reset_query();
 				wp_reset_postdata();
 			} else {
 				\Academy\Helper::get_template( 'archive/course-none.php' );
@@ -282,7 +280,7 @@ class CourseFilterHandler {
 			's' => $keyword,
 			'post_type' => 'academy_courses',
 		);
-		$query = new \WP_Query( apply_filters( ' academy/course_search_query_args', $args ) );
+		$query = new \WP_Query( apply_filters( 'academy/course_search_query_args', $args ) );
 		$item_markup = '';
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) :

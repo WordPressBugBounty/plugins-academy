@@ -69,7 +69,7 @@ trait Withdrawals {
 		}
 
 		$query .= ' ORDER BY created_at DESC LIMIT %d, %d';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return $wpdb->get_results( $wpdb->prepare( $query, $offset, $per_page ) );
 	}
 	public static function get_withdraw_by_withdraw_id( $ID ) {

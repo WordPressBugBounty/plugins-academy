@@ -50,6 +50,7 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 				<p class="academy-withdraw-method__subheading">
 					<?php
 						echo sprintf(
+							// translators: %1$s is the currency symbol, %2$s is the minimum withdrawal amount.
 							esc_html__( 'Min withdraw %1$s%2$s', 'academy' ),
 							esc_html( $currency ),
 							esc_html( $min_amount )
@@ -67,6 +68,7 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 				<p class="academy-withdraw-method__subheading">
 					<?php
 						echo sprintf(
+							// translators: %1$s is the currency symbol, %2$s is the minimum withdrawal amount.
 							esc_html__( 'Min withdraw %1$s%2$s', 'academy' ),
 							esc_html( $currency ),
 							esc_html( $min_amount )
@@ -84,6 +86,7 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 				<p class="academy-withdraw-method__subheading">
 					<?php
 						echo sprintf(
+							// translators: %1$s is the currency symbol, %2$s is the minimum withdrawal amount.
 							esc_html__( 'Min withdraw %1$s%2$s', 'academy' ),
 							esc_html( $currency ),
 							esc_html( $min_amount )

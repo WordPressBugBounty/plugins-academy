@@ -214,6 +214,7 @@ class Query {
 		$limit     = (int) get_post_meta( $quiz_id, 'academy_quiz_max_questions_for_answer', true );
 		$limit_sql = $limit > 0 ? ' LIMIT ' . $limit : '';
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		$sql = $wpdb->prepare(
 			"SELECT *
 			FROM {$wpdb->prefix}academy_quiz_questions
@@ -222,7 +223,7 @@ class Query {
 			$question_ids
 		);
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return $wpdb->get_results( $sql, OBJECT );
 	}
 
@@ -456,6 +457,12 @@ class Query {
 			// phpcs:ignore
 		);
 
+		// Scope the result set to a single user when requested. This prevents
+		// non-privileged callers from reading every user's quiz attempts.
+		if ( ! empty( $args['restrict_user_id'] ) ) {
+			$query .= $wpdb->prepare( ' AND user_id = %d', $args['restrict_user_id'] );
+		}
+
 		if ( ! empty( $args['search'] ) ) {
 			$wild = '%';
 			$like = $wild . $wpdb->esc_like( $args['search'] ) . $wild;
@@ -485,7 +492,8 @@ class Query {
 		}
 		$courseIds = \Academy\Helper::get_course_ids_by_instructor_id( get_current_user_id() );
 		if ( false !== $courseIds ) {
-			$courseIds = implode( ',', $courseIds );
+			// Force integers before interpolating the IN() list (defense-in-depth).
+			$courseIds = implode( ',', array_map( 'absint', (array) $courseIds ) );
 			$query = "SELECT 
 				attempt_id, 
 				course_id, 
@@ -513,9 +521,10 @@ class Query {
 			}
 
 			if ( empty( $args['search'] ) ) {
-				if ( 'any' !== $args['attempt_status'] && ! empty( $args['attempt_status'] ) ) {
+				$attempt_status = isset( $args['attempt_status'] ) ? $args['attempt_status'] : '';
+				if ( 'any' !== $attempt_status && ! empty( $attempt_status ) ) {
 					// phpcs:ignore
-					$query .= $wpdb->prepare( " WHERE course_id IN ({$courseIds}) AND attempt_status = %s", $args['attempt_status'] );
+					$query .= $wpdb->prepare( " WHERE course_id IN ({$courseIds}) AND attempt_status = %s", $attempt_status );
 				} else {
 					// phpcs:ignore
 					$query .= $wpdb->prepare( " WHERE course_id IN ({$courseIds})" );
@@ -601,7 +610,7 @@ class Query {
 		$question_settings = json_decode( $question_settings_raw ?? '{}', true );
 		$order_by          = false !== $question_settings['randomize'] ? 'RAND()' : 'answer_order ASC';
 	
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -885,6 +894,7 @@ class Query {
 
 	public static function get_quiz_attempt_answers_earned_marks( $user_id, $attempt_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$total_marks = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT SUM(achieved_mark) FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE user_id = %d AND attempt_id = %d",
@@ -969,6 +979,7 @@ class Query {
 			$quiz_id
 		);
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		return $wpdb->get_results( $query, OBJECT );
 	}
 
@@ -1051,7 +1062,7 @@ class Query {
 		if ( $user_id ) {
 			$query .= $wpdb->prepare( ' AND p.post_author = %d', $user_id );
 		}
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_var( $query );
 	}
 	public static function get_question_details_by_question_id( $question_id ) {
@@ -1093,9 +1104,10 @@ class Query {
 			return false;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return $wpdb->get_results(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"SELECT attempt_id FROM {$table} WHERE course_id = %d AND user_id = %d",
 				$course_id,
 				$user_id

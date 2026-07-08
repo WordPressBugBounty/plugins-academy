@@ -48,7 +48,7 @@ class Lesson implements Interfaces\Insertable {
 		] );
 
 		if ( false === $res ) {
-			throw new Exception( __( 'Error.', 'academy' ) );
+			throw new Exception( esc_html__( 'Error.', 'academy' ) );
 		}
 
 		$this->id = $this->wpdb->insert_id;
@@ -67,7 +67,7 @@ class Lesson implements Interfaces\Insertable {
 				'meta_value' => is_array( $value ) ? wp_json_encode( $value ) : $value,
 			] );
 			if ( false === $res ) {
-				throw new Exception( __( 'Error.', 'academy' ) );
+				throw new Exception( esc_html__( 'Error.', 'academy' ) );
 			}
 		}
 	}

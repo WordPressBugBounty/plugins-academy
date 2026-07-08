@@ -74,6 +74,7 @@ trait Instructor {
 	}
 	public static function get_instructor( $ID ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT ID, display_name, user_nicename, user_email
 			FROM {$wpdb->users}
@@ -84,6 +85,7 @@ trait Instructor {
 	}
 	public static function get_all_instructors_by_status( $instructor_status ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, display_name, user_nicename, user_email
@@ -103,6 +105,7 @@ trait Instructor {
 	}
 	public static function get_all_approved_instructors() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, display_name, user_nicename, user_email
@@ -123,6 +126,7 @@ trait Instructor {
 	public static function get_current_instructor() {
 		global $wpdb;
 		$user_id = get_current_user_id();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, display_name, user_nicename, user_email
@@ -203,6 +207,7 @@ trait Instructor {
 
 	public static function get_course_instructor( $course_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$instructor = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT *
@@ -217,6 +222,7 @@ trait Instructor {
 
 	public static function get_all_course_by_instructor( $instructor_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$course_count = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT count(umeta_id)

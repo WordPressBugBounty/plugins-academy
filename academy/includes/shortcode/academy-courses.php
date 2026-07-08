@@ -157,7 +157,7 @@ class AcademyCourses {
 			}
 		}
 
-		wp_reset_query();
+		wp_reset_postdata();
 		// phpcs:ignore WordPress.WP.DiscouragedFunctions.query_posts_query_posts
 		query_posts( apply_filters( 'academy_courses_shortcode_args', $args ) );
 
@@ -186,7 +186,7 @@ class AcademyCourses {
 		echo '</div>';
 
 		$output = ob_get_clean();
-		wp_reset_query();
+		wp_reset_postdata();
 
 		return $output;
 	}

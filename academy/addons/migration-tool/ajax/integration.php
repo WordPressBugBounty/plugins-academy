@@ -75,6 +75,7 @@ class Integration extends AbstractAjaxHandler {
 		}//end switch
 
 		if ( ! \Academy\Helper::is_plugin_active( $pluginBaseName ) ) {
+			// translators: %s is the name of the plugin required for the migration.
 			wp_send_json_error( sprintf( __( 'You need to Activated %s plugin to run this migration.', 'academy' ), $pluginName ) );
 		}
 

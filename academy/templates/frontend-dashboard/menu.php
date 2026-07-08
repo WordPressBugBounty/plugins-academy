@@ -29,6 +29,7 @@ foreach ( $menu_lists as $endpoint => $menu ) : // phpcs:ignore WordPress.WP.Glo
 		<ul class="academy-dashboard-submenu" id="academy-<?php echo esc_attr( $endpoint ); ?>-submenu">
 			<li class="academy-dashboard-menu__child-item-<?php echo esc_attr( $endpoint ); ?> <?php echo get_query_var( 'academy_dashboard_page' ) === $endpoint && get_query_var( 'academy_dashboard_sub_page' ) === '' ? 'academy-dashboard-menu__item-current' : ''; ?>">
 				<a href="<?php echo esc_url( Helper::get_frontend_dashboard_endpoint_url( $endpoint ) ); ?>">
+				<?php /* translators: %s is the menu label (e.g. "Courses"). */ ?>
 				<span><?php echo sprintf( esc_html__( 'All %s', 'academy' ), esc_html( $menu['label'] ) ); ?></span>
 				</a>
 			</li>

@@ -24,7 +24,9 @@ class Instructor extends AbstractAjaxHandler {
 			),
 			'save_instructor_earning_percentage' => array(
 				'callback' => array( $this, 'save_instructor_earning_percentage' ),
-				'capability' => 'manage_academy_instructor',
+				// Earning/commission split is a revenue-control setting: admin only.
+				// (Previously any instructor could set the payout % for any instructor.)
+				'capability' => 'manage_options',
 			),
 			'get_instructor_earning_percentage' => array(
 				'callback' => array( $this, 'get_instructor_earning_percentage' ),

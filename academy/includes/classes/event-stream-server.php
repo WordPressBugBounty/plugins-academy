@@ -128,7 +128,7 @@ class EventStreamServer {
 				// No updates needed, send a comment to keep the connection alive.
 				// From https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo ': ' . sha1( mt_rand() ) . "\n\n";
+				echo ': ' . sha1( wp_rand() ) . "\n\n";
 			}
 
 			try {

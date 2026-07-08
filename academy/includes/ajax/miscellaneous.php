@@ -302,6 +302,7 @@ class Miscellaneous extends AbstractAjaxHandler {
 				// Log-in again.
 				wp_set_auth_cookie( $user->ID );
 				wp_set_current_user( $user->ID );
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				do_action( 'wp_login', $user->user_login, $user );
 				wp_send_json_success( esc_html__( 'Successfully, updated your password.', 'academy' ) );
 				wp_die();

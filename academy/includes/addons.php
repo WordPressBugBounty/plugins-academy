@@ -68,16 +68,18 @@ class Addons {
 			wp_die();
 		}
 
-		$addon_name = ( isset( $_POST['addon_name'] ) ? sanitize_text_field( $_POST['addon_name'] ) : '' );
-		$addon_slug = ( isset( $_POST['addon_slug'] ) ? sanitize_text_field( $_POST['addon_slug'] ) : '' );
-		$status = (bool) ( isset( $_POST['status'] ) ? \Academy\Helper::sanitize_checkbox_field( $_POST['status'] ) : false );
+		$addon_name = ( isset( $_POST['addon_name'] ) ? sanitize_text_field( wp_unslash( $_POST['addon_name'] ) ) : '' );
+		$addon_slug = ( isset( $_POST['addon_slug'] ) ? sanitize_text_field( wp_unslash( $_POST['addon_slug'] ) ) : '' );
+		$status = (bool) ( isset( $_POST['status'] ) ? \Academy\Helper::sanitize_checkbox_field( sanitize_text_field( wp_unslash( $_POST['status'] ) ) ) : false );
 
 		if ( empty( $addon_slug ) ) {
 			wp_send_json_error( __( 'Addon Name missing', 'academy' ) );
 		}
 
 		if ( $status ) {
-			$required_plugin = ( isset( $_POST['required_plugin'] ) ? json_decode( stripslashes( $_POST['required_plugin'] ), true ) : '' );
+			// Individual fields are sanitized after decoding (see below); JSON payload cannot be pre-sanitized without corruption.
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$required_plugin = ( isset( $_POST['required_plugin'] ) ? json_decode( wp_unslash( $_POST['required_plugin'] ), true ) : '' );
 			do_action( 'academy/before_active_addon', $addon_slug, $required_plugin );
 			if ( $required_plugin && is_array( $required_plugin ) ) {
 				foreach ( $required_plugin as $plugin ) {

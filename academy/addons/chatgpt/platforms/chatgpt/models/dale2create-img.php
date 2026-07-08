@@ -36,17 +36,17 @@ class Dale2createImg extends Abstracts\Model {
 		$res = $this->http->post();
 		$msg = ( $res->as_array()['error']['message'] ?? false );
 		if ( $msg ) {
-			throw new InvalidResponseException( $msg );
+			throw new InvalidResponseException( esc_html( $msg ) );
 		}
 		$this->content = $res->as_array()['data'][0]['url'] ?? '';
 
 		if ( empty( $this->content ) ) {
-			throw new InvalidResponseException( __( 'Unable to handle this request.', 'academy' ) );
+			throw new InvalidResponseException( esc_html__( 'Unable to handle this request.', 'academy' ) );
 		}
 
 		$this->content = file_get_contents( $this->content );
 		if ( false === $this->content ) {
-			throw new InvalidResponseException( __( 'Unable to fetch image data', 'academy' ) );
+			throw new InvalidResponseException( esc_html__( 'Unable to fetch image data', 'academy' ) );
 		}
 		$image_info = getimagesizefromstring( $this->content );
 		$mime_type = $image_info['mime'];

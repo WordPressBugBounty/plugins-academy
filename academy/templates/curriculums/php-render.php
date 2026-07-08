@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		$lesson_page = get_post( \Academy\Helper::get_settings( 'lessons_page' ) );
 	if ( $lesson_page ) {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$content = apply_filters( 'the_content', $lesson_page->post_content );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $content;

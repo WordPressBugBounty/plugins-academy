@@ -206,7 +206,14 @@ class API extends Controller {
 		$enrolled         = Helper::is_enrolled( $course_id, $user_id );
 		$is_public        = Helper::is_public_course( $course_id );
 
-		if ( $is_administrator || $is_instructor || $enrolled || $is_public ) {
+		// Ensure the requested question actually belongs to the course being
+		// authorized against. Otherwise an enrolled user could pass their own
+		// course_id but a question_id from a different course (cross-course IDOR).
+		$question = Query::get_quiz_question( $question_id );
+		$question_quiz_id = ! empty( $question ) ? (int) $question->quiz_id : 0;
+		$question_in_course = $question_quiz_id && Helper::is_course_curriculum( $course_id, $question_quiz_id, 'quiz' );
+
+		if ( ( $is_administrator || $is_instructor || $enrolled || $is_public ) && $question_in_course ) {
 			$answers = Query::get_quiz_answers_by_question_id( $question_id, $question_type );
 			foreach ( $answers as &$answer ) {
 				$answer->answer_id = (int) $answer->answer_id;
@@ -237,6 +244,22 @@ class API extends Controller {
 
         // Permission check.
         if ( ! $this->can_attempt_quiz( $user_id, $course_id ) ) {
+            return new Response(
+                array( 'error' => esc_html__( 'Access Denied', 'academy' ) ),
+                403
+            );
+        }
+
+        // The attempt being written to must belong to the current user and match the
+        // quiz/course in the request, so a user cannot inject answers into another
+        // user's attempt or mismatch quiz/course to tamper with scoring.
+        $attempt = Query::get_quiz_attempt( $attempt_id );
+        if (
+            empty( $attempt ) ||
+            (int) $attempt->user_id !== (int) $user_id ||
+            (int) $attempt->quiz_id !== $quiz_id ||
+            (int) $attempt->course_id !== $course_id
+        ) {
             return new Response(
                 array( 'error' => esc_html__( 'Access Denied', 'academy' ) ),
                 403

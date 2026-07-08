@@ -244,7 +244,9 @@ trait Courses {
 
 		// Handle errors
 		if ( is_wp_error( $enroll_id ) ) {
-			error_log( 'Enrollment failed: ' . $enroll_id->get_error_message() );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'Enrollment failed: ' . $enroll_id->get_error_message() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			}
 			return false;
 		}
 
@@ -538,10 +540,11 @@ trait Courses {
 	public static function get_total_enrolled_courses_info_by_student_id( int $user_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT *
-			FROM {$wpdb->posts} 
-			WHERE post_type = %s 
+			FROM {$wpdb->posts}
+			WHERE post_type = %s
 			AND post_author = %d",
 			'academy_enrolled',
 			$user_id
@@ -553,6 +556,7 @@ trait Courses {
 	public static function get_total_enrolled_courses_info_by_student_and_instructor_id( int $student_id, int $instructor_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT DISTINCT p.*
 			FROM {$wpdb->posts} AS p
@@ -877,6 +881,7 @@ trait Courses {
 	public static function get_total_students_by_instructor( $instructor_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$student_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT DISTINCT enrollment.post_author
@@ -1617,6 +1622,7 @@ trait Courses {
 	public static function is_favorite_course( $course_id ) {
 		global $wpdb;
 		$user_id = get_current_user_ID();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$has_data = $wpdb->get_row( $wpdb->prepare( "SELECT * from {$wpdb->usermeta} WHERE user_id = %d AND meta_key = 'academy_course_favorite' AND meta_value = %d;", $user_id, $course_id ) );
 		if ( $has_data ) {
 			return true;
@@ -1961,6 +1967,7 @@ trait Courses {
 
 		$params = array_merge( [ $like, $like ], $post_status );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results( $wpdb->prepare( $sql, ...$params ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return $results;
 	}
@@ -1977,9 +1984,10 @@ trait Courses {
 		$user_id   = (int) $user_id;
 
 		// Get comment IDs first.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$comment_ids = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT comment_ID 
+				"SELECT comment_ID
 				FROM {$wpdb->comments}
 				WHERE comment_post_ID = %d
 				AND user_id = %d
@@ -1999,6 +2007,8 @@ trait Courses {
 
 		$ids = implode( ',', array_map( 'intval', $comment_ids ) );
 
+		// $ids is a comma-separated list of integer-cast comment IDs, safe to interpolate.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		$wpdb->query(
 			"DELETE c, cm
 			FROM {$wpdb->comments} AS c

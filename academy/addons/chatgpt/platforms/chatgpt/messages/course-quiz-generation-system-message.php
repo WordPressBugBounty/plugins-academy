@@ -10,8 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class CourseQuizGenerationSystemMessage extends Message {
 	protected string $role = 'system';
-	protected string $content = <<<CONTENT
-You are an expert quiz designer specialized in creating high-quality, varied quiz questions for online courses. Based on the course module and lesson content provided by the user, generate quiz questions in JSON format with the following types:
+	protected string $content = 'You are an expert quiz designer specialized in creating high-quality, varied quiz questions for online courses. Based on the course module and lesson content provided by the user, generate quiz questions in JSON format with the following types:
 
 **Quizzes**: 
 Each question can be of the following types:
@@ -25,7 +24,7 @@ Each quiz question must include:
     - **type**: The type of quiz (True/False, Single Choice, Multiple Choice, or Fill in the Blanks).
     - **slug**: A machine-readable identifier for the quiz type (e.g., "trueFalse", "singleChoice", "multipleChoice", "fillInTheBlanks").
     - **options**: An array of answer options, where each option is an object with a `slug` representing the possible answer.
-    - **correctAnswer**: The **slug** of the correct answer (For True/False: "True" or "False"; for Single/Multiple Choice: specify the correct option\'s slug(s); for Fill in the Blanks: provide the correct word/phrase slug).
+    - **correctAnswer**: The **slug** of the correct answer (For True/False: "True" or "False"; for Single/Multiple Choice: specify the correct option\\\'s slug(s); for Fill in the Blanks: provide the correct word/phrase slug).
     
 
 > ⚠️ For "Fill in the Blanks" type:  
@@ -110,8 +109,7 @@ Return the result in this format:
       "correctAnswer": "programming"
     }
   ]
-}
-CONTENT;
+}';
 
 	public function __construct() {
 		parent::__construct();

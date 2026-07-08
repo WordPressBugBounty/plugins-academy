@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="academy_dashboard-tabs">
 	<?php
 	foreach ( $menu as $menu_slug => $menu_label ) :
-		$current_url = get_site_url() . $_SERVER['REQUEST_URI'];
+		$current_url = get_site_url() . ( isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' );
 		$endpoint_url = \Academy\Helper::get_frontend_dashboard_endpoint_url( $menu_slug );
 		$class = ( $current_url === $endpoint_url ) ? 'academy_dashboard-tabs__selected' : '';
 		?>

@@ -1,330 +1,185 @@
-=== Academy LMS – WordPress LMS Plugin for Complete eLearning Solution ===
+=== Academy LMS ===
 Contributors: kodezen, academylms, tusharimran
 Donate link: https://www.buymeacoffee.com/academylms
-Tags: learning management system, LMS, course, education, elearning
+Tags: lms, online courses, course builder, elearning, quiz
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8.2
+Stable tag: 3.8.3
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
-Academy LMS is the all-rounder among all WordPress LMS plugins. A complete solution, easy to use, feature-rich and provides powerful integrations. 
+Academy LMS is the top-rated WordPress LMS plugin — create, sell & manage online courses with AI, quizzes, certificates & multi-instructor tools.
 
 == Description ==
 
-### Best LMS Plugin for WordPress with Academic features
-👉 [Academy LMS Site](https://academylms.net)
-👉 [See the live demo](https://demo.academylms.net)
-👉 [Documentation of Academy LMS](https://academylms.net/docs/)
-👉 [Academy LMS Pro](https://academylms.net/pricing/)
-👉 [Public Roadmap](https://trello.com/b/8bFLtVq7/academy-lms-public-roadmap)
-👉 [aBlocks + Academy LMS](https://wordpress.org/plugins/ablocks) = 🔥
-👉 [Native Payment (StoreEngine)](https://wordpress.org/plugins/storeengine) = 🚀
+**Academy LMS — The Top-Rated WordPress LMS Plugin to Create, Sell & Manage Online Courses**
 
-Introducing [Academy LMS](https://academylms.net). The WordPress LMS plugin to create online learning websites. Easy integration with any WordPress site to create and sell courses. With its intuitive interface and swift performance, create the perfect eLearning platform quickly and easily.
+Academy LMS is the top-rated WordPress LMS plugin (4.9★) for building a complete eLearning platform — create, sell, and manage online courses on any WordPress site, with no coding required. From a single course to a full online academy, you get a fast, modern course builder and everything needed to teach, engage, and earn.
 
-Academy LMS AI Studio redefines course creation by allowing educators to instantly generate complete course outlines, lessons, quizzes, and eye-catching images with a simple prompt. This powerful AI tool streamlines course content development, saving time and enabling administrators and instructors to focus on delivering engaging, high-quality course creation experiences.
+And it's powered by AI. Academy LMS AI Studio generates complete course outlines, lessons, quizzes, and images from a single prompt — turning hours of content work into minutes. Behind it runs a lightning-fast React SPA admin that loads instantly, with no laggy reloads.
 
-==== Introducing Our Community Building Plugin ZenCommunity with Support Ticketing and Live Chat for WordPress Websites 🔥 ====
-**👇 Watch [ZenCommunity](https://wordpress.org/plugins/zencommunity) Walkthrough**
+Whether you're launching your first course, running a multi-instructor academy, or selling premium programs worldwide, Academy LMS gives you the full learning management system in one lightweight plugin.
 
-https://www.youtube.com/watch?v=CXvOteOKg4o
-
-== Why Choose Academy LMS? ==
-It offers a user-friendly SPA interface, advanced quiz builder, course builder, multi-instructor support, lightning-fast performance and free of cost. The advanced course creation, quiz management, and student progress tracking features are exceptionally easy for everyone. Even without technical knowledge, Academy LMS is easy to use. No need for advanced coding knowledge to create and offer personalized courses or integrate with various platforms to sell premium courses.
-
-== Overview on Academy LMS 📚 ==
-* Academy LMS, the fastest course builder and management solution.
-* Provides proper tutorials and documentations for the setup process. 
-* State of the art support for its users.  
+👉 [Academy LMS](https://academylms.net) | [Docs](https://academylms.net/docs/) | [Academy LMS Pro](https://academylms.net/pricing/) | [Video Tutorials](https://www.youtube.com/@academylms) | [Public Roadmap](https://trello.com/b/8bFLtVq7/academy-lms-public-roadmap)
 
 ==== Check our overview video of Academy LMS 👇 ====
+
 https://www.youtube.com/watch?v=un5c9A5m-I0
 
-= 🤝 Join the thriving Academy LMS community today! =
-Unlock a dynamic network of educational institution leaders, entrepreneurs, instructors, developers, and LMS specialists upon installing our plugin. Be part of our journey to enhance education based services worldwide.
-
-Connect with us on social media for the latest news and updates: 
-
-👉 [Our Official Facebook Page](https://www.facebook.com/academylmsteam)
-👉 [Join our  Facebook Group](https://www.facebook.com/groups/190191189974852) 
-👉 [Follow us on Twitter](https://twitter.com/academylmsteam)
-👉 [Connect in our Linkedin](https://www.linkedin.com/company/academylmsteam/)
-👉 [Our Official Support](https://academylms.net/support/)
-
-Let's revolutionize e-learning together! 🚀
-
-
-**🌟 Looking for the perfect learning management system for your website?**
-Look no further than Academy LMS, the ultimate solution to create online courses. Upgrade your website into a dynamic eLearning platform. With Academy LMS, you're unlocking the future of learning management systems.
-
-== Features 🔥 ==
-  * Admin SPA interface (build with reactjs)
-  * LMS Analytics/Report
-  * Frontend Course builder 
-  * Frontend dashboard
-  * Video lessons
-  * Multiple video sources (self-hosted, YouTube, Vimeo, embedded video, external server video)
-  * Teacher registration form
-  * Student registration form
-  * Course review and rating system
-  * Video Poster (trailer/teaser)
-  * Tracking course progress
-  * Course Difficulty Level
-  * Define Course Duration
-  * Add course requirement and instruction
-  * Content Security
-  * Course wishlist
-  * Question and Answer 
-  * WooCommerce Integration (paid course selling)
-  * Multi Instructors
-  * Multi Instructors Revenue Sharing option
-  * Earning Management
-  * Withdrawal Management
-  * RTL Ready
-  * Student & Instructor Dashboards	
-  * Public Profiles	
-  * Certificates
-  * Elementor Page Builder Integration
-  * Divi Page Builder Integration
-  * Quiz Builder
-  * Global Announcement
-  * Lessons Import/Export Option From CSV Files
-  * Academy LMS Migration Tools
-  * Webhook
-  * Form Builder (Student & Instructor)
-  * Gutenberg Integration
-  * Course Preview
-  * ChatGPT
-  * Lesson Note
-  * Advanced Quiz Builder **[PRO]**
-  * Email Notification **[PRO]**
-  * Content Drip **[PRO]**
-  * Manual Enrolment **[PRO]**
-  * WooCommerce Subscriptions **[PRO]**
-  * Zoom Integration **[PRO]** 
-  * Advanced Analytics **[PRO]**
-  * Assignments **[PRO]**
-  * Public Course **[PRO]**
-  * Auto WooCommerce Product Creation **[PRO]**
-  * Tutor Booking **[PRO]**
-  * Paid Memberships Pro Integration **[PRO]**
-  * Course Prerequisites **[PRO]**
-  * Google reCAPTCHA **[PRO]**
-  * Lesson, quiz and assignment auto complete **[PRO]**
-  * 2-Step Email Verification **[PRO]**
-  * Duplicate Course, Lesson and Quizzes **[PRO]**
-  * Bulk Enroll Students from CSV **[PRO]**
-  * Bulk Import Students/Instructor from CSV **[PRO]**
-  * Quiz Export/Import from CSV **[PRO]**
-  * White Label **[PRO]**
-  * SCORM **[PRO]**
-  * Course Bundle **[PRO]**
-  * Gradebook **[PRO]**
-  * Notification **[PRO]**
-  * Google Meet Integration Integration **[PRO]**
-  * SureCart Integration **[PRO]**
-  * SureMembers Integration **[PRO]**
-  * FluentCRM Integration **[PRO]**
-  * MailChimp Integration **[PRO]**
-  * Google Classroom Integration **[PRO]**
-  * GamiPress Integration **[PRO]**
-  * WishList Member Integration **[PRO]**
-  * Social Login **[PRO]**
-  * Easy Digital Download Integration **[PRO]**
-  * Restrict Content PRO **[PRO]**
-  * BuddyPress **[PRO]**
-  * BuddyBoss **[PRO]**
-  * Device Login Restriction **[PRO]**
-  * Group Plus **[PRO]**
-  * WPML Integration **[PRO]**
-
-**💻 Admin SPA Interface:** Academy LMS provides a lightning-fast interface designed with React.js. It ensures instant loading of all features and settings. Users can access settings without any delay / loading, making course creation and editing faster.
-
-**📊 Dive into LMS Analytics/Report:** Track statistics including course, lesson, quiz details. Keep track of student and instructor data with advanced reports.
-
-**🛠️ Frontend Course Builder:** Create engaging courses on your existing website with Academy LMS. Instructors can easily add videos, attachments, authors, benefits, prerequisites, and more with its frontend builder. Create a powerful online learning website with a user-friendly interface and essential features.
-
-**🪟 Explore Frontend Dashboard:** Each user role gets a personalized dashboard after logging in. Displays all relevant information in one place: profile, courses, lessons, reviews, and payment details.
-
-**🎦 Enhance Learning with Video Lessons:** Make course contents better with video lessons. Get higher engagement and success rates compared to text-based instruction.
-
-**🎬 Multiple Video Sources:** Academy LMS supports various video sources, including self-hosted, YouTube, Vimeo, HTML5 or embedded videos (external links), providing flexibility in academic course creation.
-
-**📑 Simplified Student Registration and Instructor Registration:** Students and Instructors can register easily through forms. Registration data gets directly forwarded to the backend for admin approval before enrollment.
-
-**⭐ Engaging Course Reviews and Ratings:** Enrolled students can provide course reviews and ratings. Helps instructors to get better understanding and create better courses for your users. Also, helps students to pick the best courses from the list.
-
-**🎴 Showcase Video Posters:** Add trailer/teaser videos to courses to enhance course appeal and engagement. User’s can easily understand what they will get in the course.
-
-**📈 Track Course Progress:** Monitor overall activities and course progress with extensive statistics and an easy-to-use interface, ensuring commitment to course completion.
-
-**🔺 Define Course Difficulty Levels:** Specify course difficulty levels (Beginner, Intermediate, Expert) to help users understand course complexity easily.
-
-**⏲️ Set Course Durations:** Add precise course durations, specifying total hours, minutes, and seconds from the course settings tab. Helps students to understand the proper watch hours.
-
-**📋 Add Course Requirements & Instructions:** Include course prerequisites, benefits, target audience, and other essential information to enhance course clarity and effectiveness.
-
-**🔒 Ensure Content Security:** Maintain control over content to ensure privacy and security with Academy LMS's powerful content security feature.
-
-**💫 Create Course Wishlists:** Let users bookmark favorite courses for future registration. Anyone can check their wishlist anytime to get registered with their favorite courses.
-
-**📝 Foster Q&A Interactions:** Start course-related discussions with a dedicated Q&A tab for enrolled students. Academy LMS helps you to better promote interaction and engagement.
-
-**💪 Harness WooCommerce Integration:** Academy LMS integrates with WooCommerce to let you sell paid courses and unlock revenue opportunities.
-
-**⏫ Embrace Multi-Instructor Functionality:** Expand learning opportunities by assigning multiple instructors to a single course. Ensure expert guidance and support for the learners.
-
-**💱 Enable Revenue Sharing:** Set up commission structures and profit-sharing options to incentivize instructors.
-
-**💵 Manage Earnings Efficiently:** Easily manage course revenues, distribute earnings, and track profits and commissions. Better way to handle instructors and their sharing opportunities.
-
-**💁‍♂️ Streamline Withdrawals:** Allow instructors to withdraw earnings securely from the frontend dashboard. Academy LMS ensures a smooth and reliable withdrawal option; so, no more hassles for instructors.
-
-**⬅️ Support RTL Languages:** Ensure compatibility with RTL languages like Arabic and Hebrew, enhancing accessibility for global users.
-
-**🖥️ Access User-Friendly Dashboards:** Provide students and instructors with intuitive dashboards for seamless navigation and access to essential features and settings.
-
-**👥 Explore Public Profiles:** Discover instructor profiles to access relevant information such as courses taught, reviews, and student enrollment. Helps to create a higher level of transparency and trust.
-
-**📜 Award Certificates:** Enhance course completion recognition with a robust certificate system, enabling easy creation and distribution of certificates to students.
-
-**🔧 Build Engaging Quizzes:** Create interactive quizzes in various formats to make learning enjoyable and effective. Comes with support for multiple quiz types for diverse assessment options.
-
-**📢 Stay Informed with Global Announcements:** Keep all users informed with prominent announcements throughout the platform, ensuring effective communication of important updates and information.
-
-**📋 Quickest Bulk Import/Export:** Efficiently manage course content with bulk import/export options for lessons from CSV files, simplifying content management tasks.
-
-**🌉 Seamlessly Migrate Data:** Perfectly migrate data from other LMS platforms to Academy LMS with the Migration Tool. Zero data loss and a hassle-free experience.
-
-**🌐 Webhooks Support:** Effortlessly send data to any URL upon specific LMS events with Academy LMS Webhook Addon. Integrate with external systems and services, keeping data synchronized and workflows streamlined.
-
-**📋 Customize Registration Forms:** Create custom registration forms for instructors and students with a drag-and-drop Form Builder. Create the perfect form based on your specific requirements.
-
-**📢 Keep Users Informed with Global Announcements:** Quickly display important announcements throughout the platform to ensure all users are well-informed. Provide transparency, engagement, and a stronger learning environment.
-
-**📈 StoreEngine:** Sell courses with a fast, lightweight built-in eCommerce system.
-
-**👥 ZenCommunity:** Build learner communities and discussions around your courses.
-
-**🌐 aBlocks:** Design LMS pages visually using Gutenberg blocks.
-
-**🔁 Auto Course Enroll After Registration:** Automatically enroll users into courses after signup.
-
-**🔒 Password Reset System:** Allow users to reset passwords directly from the LMS.
-
-**📧 Email Notifications [PRO]:** Automatically send emails to all users, with administrators and instructors having control over the frequency and content. Emails can be customized to specific user groups or sent to all users, providing important details such as course names, assignment descriptions, and due dates.
-
-**📅 Manage Course Content Drip [PRO]:** Instructors can gradually release lessons, quizzes, and assignments. This step by step content drip  helps students learn more efficiently and effectively.
-
-**📋 Customize Manual Enrolment [PRO]:** Academy LMS's manual enrolment feature gives administrators greater control over the enrolment process. With this flexible method, administrators can individually add students to courses or programs.
-
-**📷 Enhance Collaboration with Meeting [PRO]:** Academy LMS integrates seamlessly with Google Meet and Zoom, offering features like live video calling, screen sharing, and video recording to facilitate collaboration between instructors and students. Conduct live online classrooms and virtual meetings effortlessly for an enhanced learning experience.
-
-**📊 Access Advanced Analytics [PRO]:** Gain insights into course performance with comprehensive statistics provided by Academy LMS. Track course details, instructor performance, student engagement, earnings, and more, empowering informed decision-making and effective course management.
-
-**✍🏼 Set Assignment Tasks [PRO]:** Instructors can create and provide assignments to students based on course topics. Helps with the learning process while determining how much the students have learned throughout the course.
-
-**👩‍🏫 Public Courses [PRO]:** Expand your reach by creating public courses on Academy LMS. Offer high-quality education based content to learners worldwide. Share your expertise on a range of topics within your LMS website.
-
-**🔧 Advanced Quiz Builder [PRO]:** With Academy LMS's advanced quiz builder, instructors can create interactive quizzes in various formats to make learning enjoyable. FromTrue/False, Single Choice, Multiple Choice, Short Answer, Image answer, and, Fill in The Blank, engage students with diverse assessment options for a dynamic learning experience.
-
-**👨‍🏫 Tutors Booking [PRO]:** The Tutor Booking addon in Academy LMS connects students with expert tutors for personalized one-on-one learning experiences. Careful instruction, flexible scheduling, and progress feedback ensure students unlock their full potential.
-
-**🔒 Guide Learners with Course Prerequisites [PRO]:** Set course prerequisites in Academy LMS to ensure learners meet requirements before enrolling. Facilitate structured learning paths and seamless progression for enhanced learning outcomes.
-
-**ℂ Ensure Security with Google reCAPTCHA [PRO]:** Protect your website's login and registration forms against spam and abuse with the integration of Google reCAPTCHA v2 and v3. Safeguard user experience while enhancing security measures.
-
-**✓ Simplify Learning with Lesson, Quiz, and Assignment Auto-Complete [PRO]:** Academy LMS offers a user-friendly learning experience with auto-complete options for lessons, quizzes, and assignments. Learners can quickly resume where they left off. This eliminates interruptions and ensures a smooth learning experience.
-
-**🛡️ Better Security with 2-Step Email Verification [PRO]:** Enhance platform security with Academy LMS's 2-Step Verification feature. Add an extra layer of protection against unauthorized access and potential breaches. Safeguard user data and ensure a secure learning environment.
-
-**🔁 Save Time with Duplicate Course, Lesson, Quiz [PRO]:** Duplicate existing content with the "Duplicate Courses, Lessons, and Quiz" feature in Academy LMS. Save time and improve content creation processes without wasting extra time.
-
-**📚 Bulk Enroll Students with CSV [PRO]:** Efficiently enroll a large number of students into courses using CSV files with the "Bulk Enroll Students from CSV" feature in Academy LMS. Simplify the enrolment process, especially for institutions or organizations with a large number of students.
-
-**📤 Import Users from CSV [PRO]:** Add multiple students and teachers to the learning platform quickly and easily with the "Bulk Import Students/Teachers from CSV" feature in Academy LMS. Streamline user onboarding processes, particularly for large user bases.
-
-**💾 Export/Import Quizzes [PRO]:** Save time and reuse content with Academy LMS's Quiz Export/Import functionality. Easily import quizzes to your site or create a backup in case of an emergency.
-
-**🏷️ Customize Your Branding with White Label [PRO]:** Personalize your website and reinforce your branding with White Label add-ons. Use your logo, customize appearance, and introduce amazing features uniquely to your customers. Best for agencies who provide LMS-related solutions.
-
-**🏆 Import SCORM Courses [PRO]:** Import, manage, and track SCORM courses effortlessly with Academy LMS SCORM. Add SCORM-compliant courses in your learning platform, ensuring compatibility and flexibility.
-
-**📚 Create Course Bundles [PRO]:** Combine related courses into structured learning programs with Academy LMS course bundles. Better options to achieve learning goals and provide affordable options for students.
-
-**🔔 Push Notification [PRO]:** Enhance your platform with custom notifications for course updates and alerts.
-
-**📊 Grade Book [PRO]:** Track and manage student grades efficiently with advanced grading features.
-
-**📅 Meeting Integration [PRO]:** Schedule and manage meetings for your eLearning platform effortlessly with this addon.
-
-**📬 MailChimp Integration [PRO]:** Integrate MailChimp to automate and manage your email marketing campaigns.
-
-**🏫 Google Classroom Integration [PRO]:** Simplify course management with seamless Google Classroom integration.
-
-**📢 SendFox [PRO]:** Sync users and automate email marketing with SendFox integration.
-
-**✓ Attendance [PRO]:** Track student attendance for live or scheduled classes.
-
-**👨‍🏫 MemberPress [PRO]:** Restrict course access using membership-based subscriptions.
-
-
-## 🔥 WHAT’S NEXT
-
-Now that you’ve set up Academy LMS, you can extend your WordPress site even further with our free solutions:
-
-**StoreEngine:** Add a fast, lightweight eCommerce solution to sell courses, digital products, or physical items directly from WordPress website.
-
-**ZenCommunity:** Build learner communities, discussions, and engagement spaces around your courses. Also have the support ticketing and website live chat widget features.
-
-**aBlocks:** Create and customize any type of WordPress website using powerful Gutenberg blocks—no coding required. Together, these tools help you build a complete website experience for learning, selling, and community—fully powered by WordPress.
-
-
+= 🎯 Built for everyone who teaches online =
+* Course creators & educators — build and sell courses without writing code
+* Coaches & solopreneurs — turn your expertise into a paid online academy
+* Training businesses & academies — run multi-instructor courses with built-in revenue sharing
+* Agencies & developers — white-label and build LMS sites for clients
+* Membership & community sites — gate courses and add discussions natively
+* Schools & institutions — SCORM, certificates, and attendance for structured learning
+
+= 🤖 Build Entire Courses in Minutes with AI Studio =
+Academy LMS AI Studio redefines course creation. Generate full course outlines, lessons, quizzes, and eye-catching images from a simple prompt, then refine and publish — so you spend less time building and more time delivering high-quality learning experiences.
+
+= 🎓 A Complete Course Builder — No Code Required =
+* Frontend course builder — add videos, attachments, prerequisites, and benefits right from your live site
+* Video lessons from multiple sources — self-hosted, YouTube, Vimeo, HTML5, or embedded video
+* Video posters & trailers to preview courses and lift enrollments
+* Difficulty levels & precise durations so learners know exactly what to expect
+* Course requirements, instructions & lesson notes for clarity and structure
+* Content security to protect your premium course content
+* Course preview & wishlists to drive sign-ups
+* Content drip to release lessons step by step [Pro]
+* SCORM support to import and track compliant courses [Pro]
+* Duplicate courses, lessons & quizzes to save build time [Pro]
+* Course bundles to package related courses into learning programs [Pro]
+* Easy Content Manager — organize, update, and manage courses, lessons, and learning content from one centralized interface.
+
+Design every course page visually with aBlocks, our native Gutenberg builder — or use Elementor and Divi, all fully supported.
+
+= 📝 Quizzes, Assignments & Certificates =
+* Built-in quiz builder with multiple question types — free
+* Award completion certificates with easy creation and distribution — free
+* Advanced quiz builder — True/False, single & multiple choice, short answer, image answer, and fill-in-the-blank
+* Assignments tied to course topics to measure real learning [Pro]
+* Gradebook to track and manage student grades [Pro]
+* Auto-complete for lessons, quizzes, and assignments [Pro]
+
+Want assessments at the next level? QuizPress, our native quiz and exam engine, adds 20+ question types, polls, surveys, timed exams, instant scoring, and certification — all inside WordPress.
+
+= 💰 Sell Courses & Earn — Monetization Built In =
+* Native checkout via StoreEngine — sell courses, memberships, and digital products through a fast, lightweight commerce engine built for the same ecosystem — free
+* Sell paid courses with native WooCommerce and Easy Digital Downloads, and SureCart integration — free
+* Multi-instructor support with revenue sharing and commission structures — free
+* Earnings management & frontend withdrawals for instructors — free
+* Recurring course access with WooCommerce subscriptions [Pro]
+* Membership-based access control to gate premium content [Pro]
+
+= 📊 Track Progress & Keep Students Engaged =
+* LMS analytics & reports on courses, lessons, quizzes, and earnings — free
+* Course progress tracking with detailed statistics to drive completion
+* Q&A discussions, course reviews & ratings to boost interaction
+* Student & instructor dashboards plus public instructor profiles for trust
+* Global announcements to keep every user informed
+* Advanced analytics for deeper performance insights [Pro]
+* Attendance tracking for live or scheduled classes [Pro]
+
+Boost completion rates with GameEngine, our native gamification plugin — award points, badges, and levels that keep learners motivated and coming back.
+
+= 🎥 Live Classes & Communication =
+* Live classes via Zoom & Google Meet — video calling, screen sharing, and recording [Pro]
+* Automated, customizable email notifications for courses, assignments, and due dates [Pro]
+* Push notifications for course updates and alerts [Pro]
+* GemCRM — run email marketing and nurture students with our native WordPress CRM, with FluentCRM, MailChimp, and SendFox also supported
+* ZenCommunity — build learner communities, discussions, support tickets, and live chat around your courses
+* Tutor Booking integration — schedule and manage one-to-one coaching sessions, consultations, and tutoring appointments.
+
+= 📱 Turn Your Academy Into a Mobile App =
+Publish a dedicated mobile app for your courses with ZenAppBuilder — give students a native Android and iOS learning experience built directly from your Academy LMS site, no separate development team required.
+
+= 🔌 Some Additional Integrations =
+* Native Gutenberg design with aBlocks, plus full Elementor and Divi support
+* Community: ZenCommunity, Buddyboss, BuddyPress, FluentCommunity.
+* Email, CRM & marketing — GemCRM (Native), with FluentCRM, MailChimp, and SendFox [Pro]
+* Google Classroom, GamiPress & social login for extended workflows [Pro]
+* Membership plugins — MemberPress, Paid Memberships Pro, Restrict Content Pro, WishList Member, Group Plus, and more. [Pro]
+* WPML for fully multilingual course sites [Pro]
+
+= 🛠️ Admin & Developer Tools =
+* Lightning-fast React SPA admin — instant loading with no reloads
+* Migration tool to move from any LMS platform with zero data loss
+* Manual student enrollment — enroll learners individually with complete admin control.
+* CSV import/export for lessons — free; bulk enroll and import students [Pro]
+* Webhooks to sync LMS events with external systems and automations
+* Drag-and-drop form builder for custom student and instructor registration
+* RTL-ready for Arabic, Hebrew, and other right-to-left languages
+* White label to brand the platform as your own [Pro]
+* Security — Google reCAPTCHA, 2-step email verification, and device login restriction [Pro]
+
+= 💎 Why Academy LMS =
+* Top-rated, by a clear margin — a 4.9★ rating that reflects how satisfied our users are
+* A free version that simply goes further — tools like multi-instructor revenue sharing, certificates, and the quiz builder come standard here, where comparable platforms often reserve them for paid tiers
+* AI-powered course creation built right in with AI Studio
+* Genuinely fast — a React SPA admin instead of a sluggish dashboard
+* A complete native ecosystem — everything connects, so you never stack mismatched plugins
+
+= Get Started With Academy LMS =
+Whether you're launching your first course or scaling a full online academy, Academy LMS gives you the complete WordPress LMS toolkit — course builder, quizzes, certificates, selling, and AI — in one fast plugin. Install Academy LMS today and create your first course in minutes.
+
+Join the thriving Academy LMS community of educators, instructors, entrepreneurs, and developers building the future of online learning.
+
+= 🔥 The KodeZen Ecosystem — Everything Your Academy Needs, Natively =
+Academy LMS works seamlessly with our family of WordPress plugins, so your whole platform speaks the same language:
+
+* **StoreEngine** — sell courses, memberships, and digital products with a fast, lightweight eCommerce engine
+* **aBlocks** — design lightning-fast course pages with 100+ Gutenberg blocks, no code
+* **ZenCommunity** — communities, discussions, support ticketing, and live chat around your courses
+* **QuizPress** — advanced quizzes, polls, surveys, exams, and certification with 20+ question types
+* **GameEngine** — gamify learning with points, badges, levels, and rewards
+* **GemCRM** — a complete WordPress CRM and email marketing solution to nurture your students
+* **ZenAppBuilder** — turn your Academy LMS site into a native mobile app
+* **GemBooking** — accept, manage, and automate bookings for appointments, coaching sessions, rentals, and services with one complete booking system.
+* **GemBoards** — manage projects, tasks, teams, and workflows with a modern Kanban board.
+* **Easy Content Manager (ECM)** — create and manage custom post types, fields, taxonomies, and structured content with complete visual control—no code required.
+* **Zaplane** — automate WordPress workflows by connecting your favorite apps, plugins, and services without writing code.
 
 == Frequently Asked Questions ==
 
-= What is Academy LMS? = 
+= What is Academy LMS? =
+Academy LMS is a top-rated WordPress LMS plugin for creating, selling, and managing online courses. It turns any WordPress site into a complete eLearning platform with a course builder, quizzes, certificates, multi-instructor tools, and AI-powered course creation.
 
-Academy LMS is a WordPress plugin designed for creating and selling online courses directly from your WordPress website. It offers a comprehensive e-learning solution with a user-friendly interface and high-speed performance.
+= Is Academy LMS free? =
+Yes. The free version covers everything you need to build, run, and sell courses — including the course builder, quiz builder, certificates, multi-instructor revenue sharing, and course selling. A Pro version adds advanced tools like live classes, content drip, SCORM, and more.
 
+= What's the difference between the free and Pro versions? =
+The free version handles full course creation, selling, and management. Pro unlocks advanced features such as Zoom and Google Meet live classes, the advanced quiz builder, assignments, content drip, SCORM, gradebook, white label, CRM integrations, and bulk student management.
 
-= Is the Academy LMS plugin free? = 
+= Can I create courses with AI? =
+Yes. Academy LMS AI Studio generates complete course outlines, lessons, quizzes, and images from a single prompt, letting you build a full course in minutes.
 
-Yes, Academy LMS offers a free version that enables you to create and deliver courses on your WordPress site. Additionally, there's a Pro version available with enhanced features and integration options.
+= Can I sell courses on my WordPress site? =
+Yes. Academy LMS includes free course selling through native WooCommerce integration and StoreEngine's fast, lightweight checkout, plus multi-instructor revenue sharing and instructor withdrawals.
 
+= Does Academy LMS support multiple instructors and revenue sharing? =
+Yes, and it's free. Assign multiple instructors to a course, set commission and profit-sharing structures, manage earnings, and let instructors withdraw directly from their dashboard.
 
-= What are the differences between the free and Pro versions of Academy LMS? = 
+= Can I issue course completion certificates? =
+Yes. The built-in certificate system lets you create and award completion certificates to students for free, with even more advanced quizzes and certification available through QuizPress.
 
-The free version provides essential features for course creation and delivery, while the Pro version offers advanced functionalities like Zoom Integration, in-depth analytics, and integration with WooCommerce for selling membership-based courses.
+= Does Academy LMS provide analytics and progress tracking? =
+Yes. Track course, lesson, and quiz statistics, monitor student progress, and review instructor performance and earnings with built-in reports. Advanced analytics is available in Pro.
 
+= Can I run live classes? =
+Yes. With Pro, Academy LMS integrates with Zoom and Google Meet for live video classes with screen sharing and recording.
 
-= Can I use Academy LMS with any WordPress site? =
+= Can I turn my courses into a mobile app? =
+Yes. ZenAppBuilder lets you publish a native Android and iOS app built directly from your Academy LMS site.
 
-Absolutely, Academy LMS seamlessly integrates with any WordPress website, making it convenient to utilize with your existing site.
+= Can I migrate from another LMS platform? =
+Yes. The built-in migration tool moves your existing course data into Academy LMS with zero data loss.
 
+= Can I use Academy LMS with any WordPress site and theme? =
+Yes. Academy LMS works with standard WordPress themes and integrates with aBlocks, Elementor, and Divi, and is RTL-ready for global audiences.
 
-= Can I use Academy LMS to sell courses on my WordPress site? =
-
-Yes, Academy LMS allows you to integrate with WooCommerce, enabling you to sell courses and generate revenue directly from your WordPress site.
-
-
-= Does Academy LMS provide analytics and reporting on student progress? =
-
-Yes, Academy LMS offers comprehensive analytics and reporting features to track and evaluate student progress effectively throughout your courses.
-
-
-= Can I easily modify quizzes and courses with Academy LMS? =
-
-Certainly, thanks to its intuitive course builder and frontend SPA interface, Academy LMS facilitates easy creation, modification, and management of quizzes and courses.
-
-
-= Does Academy LMS have a frontend interface? =
-
-Yes, Academy LMS boasts a frontend SPA interface, making it one of the most advanced free WordPress LMS plugins available. You can effortlessly build, modify, and administer courses, while also monitoring student progress with detailed overviews.
-
-
+= Does Academy LMS have a frontend course builder? =
+Yes. Instructors can build and edit courses directly from the frontend, and every user role gets a personalized dashboard for courses, lessons, reviews, and payments.
 
 == Screenshots ==
 

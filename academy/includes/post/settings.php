@@ -68,7 +68,7 @@ class Settings extends AbstractPostHandler {
 	}
 
 	public function save_frontend_dashboard_reset_password() {
-		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( $_POST['security'], 'academy_nonce' ) ) {
+		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'academy_nonce' ) ) {
 			wp_die( esc_html__( 'Security check failed.', 'academy' ) );
 		}
 

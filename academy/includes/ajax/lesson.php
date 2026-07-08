@@ -41,11 +41,13 @@ class Lesson extends AbstractAjaxHandler {
 	}
 
 	public function import_lessons() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( ! isset( $_FILES['upload_file'] ) ) {
 			wp_send_json_error( __( 'Upload File is empty.', 'academy' ) );
 		}
 
-		$file = $_FILES['upload_file'];
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$file = array_map( 'sanitize_text_field', wp_unslash( $_FILES['upload_file'] ) );
 
 		if ( 'csv' !== pathinfo( $file['name'], PATHINFO_EXTENSION ) ) {
 			wp_send_json_error(
@@ -55,7 +57,7 @@ class Lesson extends AbstractAjaxHandler {
 
 		$link_header = array();
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		$file_open = fopen( $file['tmp_name'], 'r' );
 
 		if ( false === $file_open ) {
@@ -148,7 +150,7 @@ class Lesson extends AbstractAjaxHandler {
 			}//end try
 		}//end while
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		fclose( $file_open );
 
 		wp_send_json_success( $results );

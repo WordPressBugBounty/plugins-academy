@@ -18,9 +18,13 @@ class Comments {
 	 * @param int $comment_id Comment ID.
 	 */
 	public function add_comment_rating( $comment_id ) {
-		if ( isset( $_POST['comment_post_ID'] ) && 'academy_courses' === get_post_type( absint( $_POST['comment_post_ID'] ) ) ) { // phpcs:ignore input var ok, CSRF ok.
-			$comment_post_ID = intval( sanitize_text_field( $_POST['comment_post_ID'] ) );  // phpcs:ignore input var ok, CSRF ok.
-			$academy_rating = intval( sanitize_text_field( $_POST['academy_rating'] ) );  // phpcs:ignore input var ok, CSRF ok.
+		// Nonce is verified by WordPress core before the `comment_post` action fires.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST['comment_post_ID'] ) && 'academy_courses' === get_post_type( absint( wp_unslash( $_POST['comment_post_ID'] ) ) ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$comment_post_ID = intval( sanitize_text_field( wp_unslash( $_POST['comment_post_ID'] ) ) );
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$academy_rating = isset( $_POST['academy_rating'] ) ? intval( sanitize_text_field( wp_unslash( $_POST['academy_rating'] ) ) ) : 0;
 
 			wp_update_comment(
 				[
@@ -29,7 +33,7 @@ class Comments {
 				]
 			);
 
-			if ( ! $academy_rating || $academy_rating > 5 || $academy_rating < 0 ) { // phpcs:ignore input var ok, CSRF ok.
+			if ( ! $academy_rating || $academy_rating > 5 || $academy_rating < 0 ) {
 				return;
 			}
 

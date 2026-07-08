@@ -57,7 +57,7 @@ class QuizQuestion implements Interfaces\Insertable {
 		] );
 
 		if ( false === $res ) {
-			throw new Exception( __( 'Error.', 'academy' ) );
+			throw new Exception( esc_html__( 'Error.', 'academy' ) );
 		}
 
 		$this->id = $this->wpdb->insert_id;

@@ -15,9 +15,13 @@ class Miscellaneous {
 	public function delete_quiz_data( $post ) {
 		global $wpdb;
 		$quiz_id = $post->ID;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( $wpdb->prefix . 'academy_quiz_questions', array( 'quiz_id' => $quiz_id ), array( '%d' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( $wpdb->prefix . 'academy_quiz_answers', array( 'quiz_id' => $quiz_id ), array( '%d' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( $wpdb->prefix . 'academy_quiz_attempts', array( 'quiz_id' => $quiz_id ), array( '%d' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( $wpdb->prefix . 'academy_quiz_attempt_answers', array( 'quiz_id' => $quiz_id ), array( '%d' ) );
 	}
 

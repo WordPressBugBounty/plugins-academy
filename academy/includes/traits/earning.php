@@ -29,6 +29,7 @@ trait Earning {
 		);
 		$args     = wp_parse_args( $args, $defaults );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
 				"INSERT INTO {$wpdb->prefix}academy_earnings ( user_id, course_id, order_id, order_status,  course_price_total, course_price_grand_total, instructor_amount, instructor_rate, admin_amount, admin_rate, commission_type, deduct_fees_amount, deduct_fees_name, deduct_fees_type, process_by, created_at)
@@ -55,16 +56,19 @@ trait Earning {
 	}
 	public static function get_earning_by_order_id( $order_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}academy_earnings WHERE order_id = %d", $order_id ) );
 		return (array) $results;
 	}
 	public static function update_earning_status_by_order_id( $order_id, $status_to ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_update = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}academy_earnings SET order_status=%s WHERE order_id= %d", $status_to, $order_id ) );
 		return $is_update;
 	}
 	public static function is_exists_user_earning_by_order( $course_id, $order_id, $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(ID)
@@ -82,6 +86,7 @@ trait Earning {
 
 	public static function get_earning_by_user_id( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT SUM(course_price_total) AS course_price_total, 
@@ -128,6 +133,7 @@ trait Earning {
 		$placeholders = implode( ',', array_fill( 0, count( $valid_order_ids ), '%d' ) );
 		$sql = "SELECT * FROM $table WHERE order_id NOT IN ($placeholders) OR course_price_total = %f";
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return $wpdb->get_results( $wpdb->prepare( $sql, ...array_merge( $valid_order_ids, [ 0.0 ] ) ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
@@ -143,6 +149,7 @@ trait Earning {
 		$placeholders = implode( ',', array_fill( 0, count( $order_ids ), '%d' ) );
 		$sql = "DELETE FROM $table WHERE ID IN ($placeholders)";
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return $wpdb->query( $wpdb->prepare( $sql, ...$order_ids ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 

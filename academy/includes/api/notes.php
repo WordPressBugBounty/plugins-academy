@@ -104,6 +104,7 @@ class Notes extends \WP_REST_Controller {
 		$user_id = get_current_user_id();
 
 		// Match both per-course (academy_NNNlesson_note_UID) and per-lesson (academy_NNN_lesson_NNN_note_UID)
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT meta_key, meta_value FROM {$wpdb->usermeta}

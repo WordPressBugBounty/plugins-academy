@@ -18,7 +18,7 @@ abstract class AbstractPostHandler {
 	}
 
 	public function handle_admin_post_request() {
-		$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : '';
+		$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '';
 		$action = explode( $this->namespace . '/', $action )[1];
 		if ( ! isset( $this->actions[ $action ] ) ) {
 			wp_die( esc_html__( 'Invalid POST action.', 'academy' ) );
@@ -26,9 +26,9 @@ abstract class AbstractPostHandler {
 
 		$details = $this->actions[ $action ];
 
-		$nonce = isset( $_REQUEST['security'] ) ? sanitize_text_field( $_REQUEST['security'] ) : '';
+		$nonce = isset( $_REQUEST['security'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['security'] ) ) : '';
 		if ( empty( $nonce ) && isset( $_REQUEST['_wpnonce'] ) ) {
-			$nonce = sanitize_text_field( $_REQUEST['_wpnonce'] );
+			$nonce = sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) );
 		}
 		if ( ! wp_verify_nonce( $nonce, $this->nonce_action ) ) {
 			wp_die( esc_html__( 'Invalid nonce.', 'academy' ) );

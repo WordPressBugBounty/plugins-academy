@@ -114,7 +114,7 @@ class Notices {
 	}
 
 	public function handle_admin_request() {
-		if ( isset( $_GET['security'] ) && wp_verify_nonce( $_GET['security'], 'academy_nonce' ) ) {
+		if ( isset( $_GET['security'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['security'] ) ), 'academy_nonce' ) ) {
 			if ( isset( $_GET['academy-registration'] ) && 'enable' === $_GET['academy-registration'] ) {
 				$this->enabled_registration_notice();
 			} elseif ( isset( $_GET['academy-dismiss-notice'] ) && 'pro_upgrade_discount_offer' === $_GET['academy-dismiss-notice'] ) {

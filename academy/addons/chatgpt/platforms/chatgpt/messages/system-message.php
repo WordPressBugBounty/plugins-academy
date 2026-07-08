@@ -26,7 +26,7 @@ class SystemMessage extends Message {
 	}
 	public function validate_character_limit( string $limit ) : bool {
 		if ( intval( $limit ) <= 0 ) {
-			throw new InvalidValueException( __( 'Character length must be greater than zero.', 'academy' ) );
+			throw new InvalidValueException( esc_html__( 'Character length must be greater than zero.', 'academy' ) );
 		}
 		return true;
 	}

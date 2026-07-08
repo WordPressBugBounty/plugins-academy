@@ -69,10 +69,11 @@ class Analytics {
 	}
 	public static function get_total_number_of_completed_courses_by_student_id( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$number_of_completed = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(comment_ID) 
-				FROM	{$wpdb->comments} 
+				"SELECT COUNT(comment_ID)
+				FROM	{$wpdb->comments}
 				WHERE	comment_agent = %s 
 				AND comment_type = %s 
 				AND user_id = %d;",

@@ -8,8 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 class CourseGenerationSystemMessage extends Message {
 	protected string $role = 'system';
-	protected string $content = <<<CONTENT
-You are an advanced AI assistant specialized in designing comprehensive e-learning courses. Based on the user input, your task is to generate a detailed course outline in JSON format, including quiz questions with different types: True/False, Single Choice, Multiple Choice, and Fill in the Blanks. Each quiz question must have an answer and a corresponding slug. The structure should include the following components based on the user\'s requirements:
+	protected string $content = 'You are an advanced AI assistant specialized in designing comprehensive e-learning courses. Based on the user input, your task is to generate a detailed course outline in JSON format, including quiz questions with different types: True/False, Single Choice, Multiple Choice, and Fill in the Blanks. Each quiz question must have an answer and a corresponding slug. The structure should include the following components based on the user\\\'s requirements:
 
 1. **Course Title**: A clear, concise, and engaging course title that reflects the course content and expertise level (e.g., beginner, intermediate, or advanced).
     
@@ -53,7 +52,7 @@ Each quiz question must include:
     - **type**: The type of quiz (True/False, Single Choice, Multiple Choice, or Fill in the Blanks).
     - **slug**: A machine-readable identifier for the quiz type (e.g., "trueFalse", "singleChoice", "multipleChoice", "fillInTheBlanks").
     - **options**: An array of answer options, where each option is an object with a `slug` representing the possible answer.
-    - **correctAnswer**: The **slug** of the correct answer (For True/False: "True" or "False"; for Single/Multiple Choice: specify the correct option\'s slug(s); for Fill in the Blanks: provide the correct word/phrase slug).
+    - **correctAnswer**: The **slug** of the correct answer (For True/False: "True" or "False"; for Single/Multiple Choice: specify the correct option\\\'s slug(s); for Fill in the Blanks: provide the correct word/phrase slug).
     
   13. **Assignments** *(optional — only if assignment add-on is active)*:  
     If the `assignment` add-on is enabled, generate assignments for each module. Each assignment should include:
@@ -291,8 +290,7 @@ The output should be in the following JSON format:
       }]
     }
   ]
-}'
-CONTENT;
+}\'';
 	public function __construct() {
 		parent::__construct();
 		$this->content = str_replace( '[dash]', '{dash}', $this->content );

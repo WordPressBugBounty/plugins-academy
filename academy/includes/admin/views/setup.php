@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title><?php echo esc_html__( 'Academy Setup Wizard', 'academy' ); ?></title>
 		<base target="_parent">
-		<?php do_action( 'admin_print_styles' ); ?>
+		<?php do_action( 'admin_print_styles' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WordPress hook. ?>
 	</head>
 	<body>
 		<div id="academysetupscreenwrap" class="academysetupscreenwrap">
@@ -22,6 +22,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				echo wp_kses_post( $preloader );
 			?>
 		</div>
-		<?php do_action( 'admin_print_footer_scripts' ); ?>
+		<?php do_action( 'admin_print_footer_scripts' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WordPress hook. ?>
 	</body>
 </html>

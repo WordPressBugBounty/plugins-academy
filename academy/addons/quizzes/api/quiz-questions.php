@@ -31,7 +31,7 @@ class QuizQuestions extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_items' ),
-					'permission_callback' => '__return_true',
+					'permission_callback' => array( $this, 'read_item_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 				array(
@@ -61,7 +61,7 @@ class QuizQuestions extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_item' ),
-					'permission_callback' => '__return_true',
+					'permission_callback' => array( $this, 'read_item_permissions_check' ),
 					'args'                => $get_item_args,
 				),
 				array(
@@ -85,6 +85,23 @@ class QuizQuestions extends \WP_REST_Controller {
 				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
+	}
+
+	/**
+	 * Reading the raw question bank (including instructor-only fields such as
+	 * question_explanation) is a course-builder operation. Restrict it to
+	 * instructors/admins instead of exposing it publicly; the student quiz player
+	 * receives questions through the enrollment-gated `quizzes/render_quiz` route.
+	 */
+	public function read_item_permissions_check( $request ) {
+		if ( ! current_user_can( 'manage_academy_instructor' ) ) {
+			return new \WP_Error(
+				'rest_forbidden_context',
+				esc_html__( 'Sorry, you are not allowed to view quiz questions', 'academy' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+		return true;
 	}
 
 	public function create_item_permissions_check( $request ) {

@@ -14,15 +14,19 @@ class Dale2editImg extends Dale2createImg {
 	];
 	public string $base_url = 'https://api.openai.com/v1/images/edits';
 	public function payload() : array {
+		// Nonce is verified centrally in the AbstractAjaxHandler dispatcher before this runs.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( ! isset( $_FILES['image'] ) || ! isset( $_FILES['mask'] ) ) {
-			throw new Exception( __( 'image and mask field is required.', 'academy' ) );
+			throw new Exception( esc_html__( 'image and mask field is required.', 'academy' ) );
 		}
 
-		$image = $_FILES['image'];
-		$mask  = $_FILES['mask'];
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$image = array_map( 'sanitize_text_field', wp_unslash( $_FILES['image'] ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$mask  = array_map( 'sanitize_text_field', wp_unslash( $_FILES['mask'] ) );
 
 		if ( ! in_array( $image['type'], self::SUPPORTED_FILE_TYPES, true ) || ! in_array( $mask['type'], self::SUPPORTED_FILE_TYPES, true ) ) {
-			throw new Exception( __( 'Only PNG Image is allowed.', 'academy' ) );
+			throw new Exception( esc_html__( 'Only PNG Image is allowed.', 'academy' ) );
 		}
 		return [
 			'model'  => $this->name,

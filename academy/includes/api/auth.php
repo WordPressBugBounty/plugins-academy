@@ -214,6 +214,7 @@ class Auth extends Registration {
 
 		wp_set_current_user( $user_signon->ID );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		do_action( 'set_current_user' );
 
 		$redirect_url = ! empty( $login_redirect_url )
@@ -233,7 +234,7 @@ class Auth extends Registration {
 	public function password_reset_handler( WP_REST_Request $request ) {
 		$username = $request->get_param( 'username' );
 		$rechaptcha_response = ! empty( $request->get_param( 'g-recaptcha-response' ) ) ? $request->get_param( 'g-recaptcha-response' ) : '';
-		$ip  = $_SERVER['REMOTE_ADDR'] ?? '';
+		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$key = 'academy_reset_limit_' . md5( $ip . $username );
 
 		if ( get_transient( $key ) ) {

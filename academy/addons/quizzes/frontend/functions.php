@@ -62,12 +62,12 @@ if ( ! function_exists( 'academy_quizzes_curriculum_quiz_content' ) ) {
 
 if ( ! function_exists( 'academy_quizzes_start_quiz' ) ) {
 	function academy_quizzes_start_quiz() {
-		if ( ! wp_verify_nonce( $_POST['security'], 'academy_nonce' ) ) {
+		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'academy_nonce' ) ) {
 			wp_die( 'Nonce verification failed.' );
 		}
 
-		$course_id = isset( $_POST['course_id'] ) ? sanitize_text_field( $_POST['course_id'] ) : '';
-		$quiz_id = isset( $_POST['quiz_id'] ) ? sanitize_text_field( $_POST['quiz_id'] ) : '';
+		$course_id = isset( $_POST['course_id'] ) ? sanitize_text_field( wp_unslash( $_POST['course_id'] ) ) : '';
+		$quiz_id = isset( $_POST['quiz_id'] ) ? sanitize_text_field( wp_unslash( $_POST['quiz_id'] ) ) : '';
 		$referer_url = \Academy\Helper::sanitize_referer_url( wp_get_referer() );
 
 		$quiz_attempt = array(
@@ -84,15 +84,15 @@ if ( ! function_exists( 'academy_quizzes_start_quiz' ) ) {
 
 if ( ! function_exists( 'academy_quizzes_submit_quiz' ) ) {
 	function academy_quizzes_submit_quiz() {
-		if ( ! wp_verify_nonce( $_POST['security'], 'academy_nonce' ) ) {
+		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'academy_nonce' ) ) {
 			wp_die( 'Nonce verification failed.' );
 		}
 
-		$course_id = isset( $_POST['course_id'] ) ? sanitize_text_field( $_POST['course_id'] ) : '';
-		$attempt_id = isset( $_POST['attempt'] ) ? sanitize_text_field( array_key_first( $_POST['attempt'] ) ) : 0;
+		$course_id = isset( $_POST['course_id'] ) ? sanitize_text_field( wp_unslash( $_POST['course_id'] ) ) : '';
+		$attempt_id = isset( $_POST['attempt'] ) ? sanitize_text_field( array_key_first( wp_unslash( $_POST['attempt'] ) ) ) : 0;
 		$referer_url = \Academy\Helper::sanitize_referer_url( wp_get_referer() );
-		$answers = isset( $_POST['attempt'] ) ? $_POST['attempt'][ $attempt_id ]['quiz_question'] : 0;
-		$quiz_id = isset( $_POST['quiz_id'] ) ? sanitize_text_field( $_POST['quiz_id'] ) : '';
+		$answers = isset( $_POST['attempt'][ $attempt_id ]['quiz_question'] ) ? map_deep( wp_unslash( $_POST['attempt'][ $attempt_id ]['quiz_question'] ), 'sanitize_text_field' ) : 0;
+		$quiz_id = isset( $_POST['quiz_id'] ) ? sanitize_text_field( wp_unslash( $_POST['quiz_id'] ) ) : '';
 		if ( ! $attempt_id ) {
 			$args = array(
 				'course_id' => $course_id,

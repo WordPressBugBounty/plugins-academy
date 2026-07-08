@@ -192,7 +192,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 
 	public function insert_qa() {
 		check_ajax_referer( 'academy_nonce', 'security' );
-		$course_id = (int) sanitize_text_field( $_POST['post'] );
+		$course_id = isset( $_POST['post'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['post'] ) ) : 0;
 
 		$is_administrator = current_user_can( 'administrator' );
 		$is_instructor  = \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), $course_id );
@@ -200,10 +200,10 @@ class QuestionAnswer extends \WP_REST_Controller {
 		$is_public = \Academy\Helper::get_course_type( $course_id ) === 'public' ? true : false;
 
 		if ( $is_administrator || $is_instructor || $enrolled || $is_public ) {
-			$parent = (int) sanitize_text_field( $_POST['parent'] );
-			$content = sanitize_text_field( $_POST['content'] );
-			$comment_approved = sanitize_text_field( $_POST['status'] );
-			$title = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+			$parent = isset( $_POST['parent'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['parent'] ) ) : 0;
+			$content = isset( $_POST['content'] ) ? sanitize_text_field( wp_unslash( $_POST['content'] ) ) : '';
+			$comment_approved = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
+			$title = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
 			$current_user = wp_get_current_user();
 
 			$default_data = array(
@@ -250,12 +250,35 @@ class QuestionAnswer extends \WP_REST_Controller {
 		wp_send_json_error( __( 'Sorry, you have not permission to create QA.', 'academy' ) );
 	}
 
+	/**
+	 * A Q&A comment may only be managed by an administrator or by an instructor of
+	 * the course the comment belongs to. The bare `manage_academy_instructor`
+	 * capability is not enough — without this check any instructor could edit or
+	 * delete Q&A on courses owned by other instructors.
+	 *
+	 * @param int $comment_ID Comment ID.
+	 * @return bool
+	 */
+	protected function current_user_can_manage_qa( $comment_ID ) {
+		if ( current_user_can( 'manage_options' ) ) {
+			return true;
+		}
+		if ( ! current_user_can( 'manage_academy_instructor' ) ) {
+			return false;
+		}
+		$comment = get_comment( $comment_ID );
+		if ( ! $comment ) {
+			return false;
+		}
+		return (bool) \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), (int) $comment->comment_post_ID );
+	}
+
 	public function update_qa() {
 		check_ajax_referer( 'academy_nonce', 'security' );
 
-		if ( current_user_can( 'manage_academy_instructor' ) ) {
-			$comment_ID = (int) sanitize_text_field( $_POST['id'] );
-			$comment_approved = sanitize_text_field( $_POST['status'] );
+		$comment_ID = isset( $_POST['id'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['id'] ) ) : 0;
+		if ( $this->current_user_can_manage_qa( $comment_ID ) ) {
+			$comment_approved = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
 			wp_update_comment( array(
 				'comment_ID'                => $comment_ID,
 				'comment_approved'          => $comment_approved,
@@ -267,9 +290,9 @@ class QuestionAnswer extends \WP_REST_Controller {
 	}
 	public function delete_qa() {
 		check_ajax_referer( 'academy_nonce', 'security' );
-		if ( current_user_can( 'manage_academy_instructor' ) ) {
-			$comment_ID = (int) sanitize_text_field( $_POST['id'] );
-			$force = sanitize_text_field( $_POST['force'] );
+		$comment_ID = isset( $_POST['id'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['id'] ) ) : 0;
+		if ( $this->current_user_can_manage_qa( $comment_ID ) ) {
+			$force = isset( $_POST['force'] ) ? sanitize_text_field( wp_unslash( $_POST['force'] ) ) : '';
 			$comment = $this->prepare_comment_for_response( get_comment( $comment_ID ) );
 			$is_delete = wp_delete_comment( $comment_ID, $force );
 			wp_send_json_success([

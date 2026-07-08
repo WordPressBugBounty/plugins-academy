@@ -37,6 +37,7 @@ class PostLesson extends Base\Lesson {
 				WHERE post_name = %s
 				LIMIT 1";
 
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$found_id = (int) $this->wpdb->get_var(
 			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$sql, $slug// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -113,7 +114,7 @@ class PostLesson extends Base\Lesson {
 			$ins->set_meta_data( is_array( $meta_data ) ? array_column( $meta_data, 'meta_value', 'meta_key' ) : [] );
 			return $ins;
 		}
-		throw new Exception( __( 'Invalid Lesson ID.', 'academy' ) );
+		throw new Exception( esc_html__( 'Invalid Lesson ID.', 'academy' ) );
 	}
 
 	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ) : int {
@@ -192,13 +193,13 @@ class PostLesson extends Base\Lesson {
 		}
 
 		if ( false === $this->ignore_slug_check && ! $this->is_slug_available() ) {
-			throw new Exception( __( 'Slug is not available.', 'academy' ) );
+			throw new Exception( esc_html__( 'Slug is not available.', 'academy' ) );
 		}
 
 		$id = wp_insert_post( $this->data );
 
 		if ( is_wp_error( $id ) ) {
-			throw new Exception( ( $this->data['ID'] ?? false ) > 0 ? __( 'Lesson update failed. An unexpected error occurred.', 'academy' ) : __( 'Failed to create Lesson.', 'academy' ) );
+			throw new Exception( ( $this->data['ID'] ?? false ) > 0 ? esc_html__( 'Lesson update failed. An unexpected error occurred.', 'academy' ) : esc_html__( 'Failed to create Lesson.', 'academy' ) );
 		}
 		$this->id = $id;
 	}
@@ -214,7 +215,7 @@ class PostLesson extends Base\Lesson {
 	}
 	public function delete() : void {
 		if ( empty( wp_delete_post( $this->id, true ) ) ) {
-			throw new Exception( __( 'Lesson deletion failed. Please try again.', 'academy' ) );
+			throw new Exception( esc_html__( 'Lesson deletion failed. Please try again.', 'academy' ) );
 		}
 	}
 
@@ -227,6 +228,7 @@ class PostLesson extends Base\Lesson {
 
 		$placeholders = implode( ',', array_fill( 0, count( $keys ), '%s' ) );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 		$existing_keys = $wpdb->get_col( $wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			"SELECT meta_key FROM $table WHERE post_id = %d AND meta_key IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$this->id, ...$keys// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -238,22 +240,24 @@ class PostLesson extends Base\Lesson {
 			}
 			if ( in_array( $key, $existing_keys, true ) ) {
 				// Update
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->update(
 					$table,
-					[ 'meta_value' => $value ],
+					[ 'meta_value' => $value ], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 					[
 						'post_id' => $this->id,
-						'meta_key' => $key
+						'meta_key' => $key // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 					]
 				);
 			} else {
 				// Insert
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->insert(
 					$table,
 					[
 						'post_id'    => $this->id,
-						'meta_key'   => $key,
-						'meta_value' => $value
+						'meta_key'   => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+						'meta_value' => $value // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 					]
 				);
 			}//end if

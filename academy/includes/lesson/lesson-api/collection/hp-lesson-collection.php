@@ -86,6 +86,7 @@ class HpLessonCollection extends Base\Collection {
 			{$limit_query}
 		";
 
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$this->lessons = $this->wpdb->get_results(
 			$this->wpdb->prepare( $query ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			ARRAY_A
@@ -123,8 +124,9 @@ class HpLessonCollection extends Base\Collection {
 
 		$meta_data = $this->skip_meta
 			? []
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 			: $this->wpdb->get_results(
-				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 					"SELECT * FROM {$this->meta_table} WHERE lesson_id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					...$ids// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				),
@@ -152,6 +154,7 @@ class HpLessonCollection extends Base\Collection {
 			" . ( empty( $this->by_meta ) ? '' : $this->join() ) . '
 			' . ( empty( $this->where ) ? '' : 'WHERE ' . implode( ' AND ', $this->where ) );
 
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return (int) (
 			$this->wpdb->get_var(
 				$this->wpdb->prepare( $query ) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

@@ -987,6 +987,7 @@ class Helper {
 
 	public static function maybe_define_constant( $name, $value ) {
 		if ( ! defined( $name ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.VariableConstantNameFound
 			define( $name, $value );
 		}
 	}

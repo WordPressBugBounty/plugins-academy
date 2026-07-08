@@ -41,14 +41,16 @@ abstract class Message {
 				if ( method_exists( $this, "validate_{$placeholder}" ) &&
 					false === boolval( call_user_func( [ $this, "validate_{$placeholder}" ], $input[ $placeholder ] ?? '' ) )
 				) {
-					throw new InvalidValueException( sprintf( __( 'Invalid value is provided for: %s.', 'academy' ), $placeholder ) );
+					// translators: %s is the placeholder key that received an invalid value.
+					throw new InvalidValueException( sprintf( esc_html__( 'Invalid value is provided for: %s.', 'academy' ), esc_html( $placeholder ) ) );
 				}
 				$this->content = str_replace( '{' . $placeholder . '}', $input[ $placeholder ] ?? '', $this->content );
 			}
 
 			$this->is_filled = true;
 		} else {
-			throw new PlaceholderMissingException( sprintf( __( '%s fields are missing.', 'academy' ), implode( ',', $missing_keys ) ) );
+			// translators: %s is the comma-separated list of missing field keys.
+			throw new PlaceholderMissingException( sprintf( esc_html__( '%s fields are missing.', 'academy' ), esc_html( implode( ',', $missing_keys ) ) ) );
 		}
 		return [
 			'role' => trim( $this->role ),

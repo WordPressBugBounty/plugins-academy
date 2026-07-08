@@ -228,6 +228,7 @@ class ScriptsBase {
 		}
 
 		$image_size_names = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			'image_size_names_choose',
 			array(
 				'thumbnail' => __( 'Thumbnail', 'academy' ),
@@ -248,7 +249,9 @@ class ScriptsBase {
 		/**
 		 * @psalm-suppress TooManyArguments
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$body_placeholder = apply_filters( 'write_your_story', __( 'Start writing or type / to choose a block', 'academy' ), $post );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$allowed_block_types = apply_filters( 'allowed_block_types', true, $post );
 
 		return array(

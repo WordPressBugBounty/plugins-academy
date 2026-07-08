@@ -119,7 +119,7 @@ class FontDownloader extends AbstractAjaxHandler {
 		}
 
 		$filepath = trailingslashit( $fonts_dir ) . $filename;
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		$fp = fopen( $filepath, 'w+' );
 		if ( ! $fp ) {
 			$sse->emit_event( [
@@ -127,7 +127,7 @@ class FontDownloader extends AbstractAjaxHandler {
 				'message' => esc_html__( 'Failed to open file for writing.', 'academy' ),
 			], true );
 		}
-		fclose( $fp );// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+		fclose( $fp );// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
 		add_action( 'requests-curl.before_send', [ __CLASS__, 'percentage_callback' ] );
 		$result = wp_remote_get( $font_zip_url, [
@@ -160,6 +160,7 @@ class FontDownloader extends AbstractAjaxHandler {
 		if ( is_wp_error( $unzip_result ) ) {
 			$sse->emit_event( [
 				'type'    => 'message',
+				// translators: %s is the error message returned while extracting the zip file.
 				'message' => sprintf( __( 'Failed to extract zip file: %s', 'academy' ), $unzip_result->get_error_message() ),
 			], true );
 		}
@@ -181,7 +182,7 @@ class FontDownloader extends AbstractAjaxHandler {
 
 		// Delete the zip file
 		if ( file_exists( $filepath ) ) {
-			unlink( $filepath );
+			wp_delete_file( $filepath );
 			$sse->emit_event( [
 				'type'    => 'message',
 				'message' => esc_html__( 'Zip file deleted.', 'academy' ),
@@ -190,7 +191,9 @@ class FontDownloader extends AbstractAjaxHandler {
 	}
 
 	public static function percentage_callback( $args ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 		curl_setopt( $args, CURLOPT_NOPROGRESS, false );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 		curl_setopt( $args, CURLOPT_PROGRESSFUNCTION, function ( $resource, $download_size, $downloaded ) {
 			if ( $download_size > 0 ) {
 				$percent = round( ( $downloaded / $download_size ) * 100 );

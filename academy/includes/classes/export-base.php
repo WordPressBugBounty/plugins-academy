@@ -54,7 +54,7 @@ class ExportBase {
 		// Write the nested array data to CSV
 		$this->write_nested_csv( $data, $f );
 		// Close the output stream
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		fclose( $f );
 	}
 }

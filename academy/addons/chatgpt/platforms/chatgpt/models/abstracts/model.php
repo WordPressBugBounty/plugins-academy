@@ -32,20 +32,20 @@ abstract class Model {
 		$res = $this->http->post();
 		$msg = ( $res->as_array()['error']['message'] ?? false );
 		if ( $msg ) {
-			throw new InvalidResponseException( $msg );
+			throw new InvalidResponseException( esc_html( $msg ) );
 		}
 		$this->content = $res->as_array()['choices'][0]['message']['content'] ?? '';
 		if ( $this->prompt instanceof ExpectsJson ) {
 			preg_match( '|\{.*\}|s', $this->content, $matches );
 			if ( ! isset( $matches[0] ) ) {
-				throw new InvalidResponseException( $this->content );
+				throw new InvalidResponseException( esc_html( $this->content ) );
 			}
 			$this->content = json_decode( $matches[0], true );
 			$this->content = json_last_error() === JSON_ERROR_NONE ? $this->content : [];
 		}
 
 		if ( empty( $this->content ) ) {
-			throw new InvalidResponseException( __( 'Unable to handle this request.', 'academy' ) );
+			throw new InvalidResponseException( esc_html__( 'Unable to handle this request.', 'academy' ) );
 		}
 
 		return $res;

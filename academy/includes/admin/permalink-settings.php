@@ -136,18 +136,18 @@ class PermalinkSettings {
 		}
 
 		// We need to save the options ourselves; settings api does not trigger save for the permalinks page.
-		if ( isset( $_POST['permalink_structure'], $_POST['academy-permalinks-nonce'], $_POST['academy_course_category_slug'], $_POST['academy_course_tag_slug'] ) && wp_verify_nonce( wp_unslash( $_POST['academy-permalinks-nonce'] ), 'academy-permalinks' ) ) { // WPCS: input var ok, sanitization ok.
+		if ( isset( $_POST['permalink_structure'], $_POST['academy-permalinks-nonce'], $_POST['academy_course_category_slug'], $_POST['academy_course_tag_slug'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['academy-permalinks-nonce'] ) ), 'academy-permalinks' ) ) { // WPCS: input var ok, sanitization ok.
 
 			$permalinks                   = (array) get_option( 'academy_permalinks', array() );
-			$permalinks['category_base']  = \Academy\Helper::sanitize_permalink( wp_unslash( $_POST['academy_course_category_slug'] ) ); // WPCS: input var ok, sanitization ok.
-			$permalinks['tag_base']       = \Academy\Helper::sanitize_permalink( wp_unslash( $_POST['academy_course_tag_slug'] ) ); // WPCS: input var ok, sanitization ok.
+			$permalinks['category_base']  = \Academy\Helper::sanitize_permalink( sanitize_text_field( wp_unslash( $_POST['academy_course_category_slug'] ) ) ); // WPCS: input var ok, sanitization ok.
+			$permalinks['tag_base']       = \Academy\Helper::sanitize_permalink( sanitize_text_field( wp_unslash( $_POST['academy_course_tag_slug'] ) ) ); // WPCS: input var ok, sanitization ok.
 
 			// Generate course base.
 			$course_base = isset( $_POST['course_permalink'] ) ? sanitize_text_field( wp_unslash( $_POST['course_permalink'] ) ) : ''; // WPCS: input var ok, sanitization ok.
 
 			if ( 'custom' === $course_base ) {
 				if ( isset( $_POST['course_permalink_structure'] ) ) { // WPCS: input var ok.
-					$course_base = preg_replace( '#/+#', '/', '/' . str_replace( '#', '', trim( wp_unslash( $_POST['course_permalink_structure'] ) ) ) ); // WPCS: input var ok, sanitization ok.
+					$course_base = preg_replace( '#/+#', '/', '/' . str_replace( '#', '', trim( sanitize_text_field( wp_unslash( $_POST['course_permalink_structure'] ) ) ) ) ); // WPCS: input var ok, sanitization ok.
 				} else {
 					$course_base = '/';
 				}

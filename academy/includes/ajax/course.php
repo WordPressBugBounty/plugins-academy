@@ -207,7 +207,7 @@ class Course extends AbstractAjaxHandler {
 		</div>
 				<?php
 
-				wp_reset_query(); else : ?>
+				wp_reset_postdata(); else : ?>
 				<div class='academy-mycourse'>
 					<h3 class='academy-not-found'>
 						<?php
@@ -252,7 +252,7 @@ class Course extends AbstractAjaxHandler {
 					'title' => get_the_title(),
 				);
 			endwhile;
-			wp_reset_query();
+			wp_reset_postdata();
 		}
 		wp_send_json_success( $response );
 	}
@@ -272,7 +272,7 @@ class Course extends AbstractAjaxHandler {
 							$courses->the_post();
 							\Academy\Helper::get_template_part( 'content', 'course' );
 						endwhile;
-						wp_reset_query();
+						wp_reset_postdata();
 					else :
 						?>
 					<div class='academy-mycourse'>
@@ -379,7 +379,7 @@ class Course extends AbstractAjaxHandler {
 					'total_enrolled'    => $total_enrolled
 				);
 			endwhile;
-			wp_reset_query();
+			wp_reset_postdata();
 		endif;
 		wp_send_json_success( $response );
 	}
@@ -480,12 +480,12 @@ class Course extends AbstractAjaxHandler {
 			wp_send_json_error( __( 'Upload File is empty.', 'academy' ) );
 		}
 
-		$file = $_FILES['upload_file'];
+		$file = array_map( 'sanitize_text_field', wp_unslash( $_FILES['upload_file'] ) );
 		if ( 'csv' !== pathinfo( $file['name'] )['extension'] ) {
 			wp_send_json_error( __( 'Wrong File Format! Please import csv file.', 'academy' ) );
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		$file_open = fopen( $file['tmp_name'], 'r' );
 		if ( false !== $file_open ) {
 			$has_course = false;
@@ -624,7 +624,7 @@ class Course extends AbstractAjaxHandler {
 					$this->update_course_curriculum( $item['curriculum'], $item['course_id'] );
 				}
 			}
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 			fclose( $file_open );
 
 			wp_send_json_success( $response );

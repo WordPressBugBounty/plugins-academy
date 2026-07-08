@@ -1192,14 +1192,14 @@ class Course extends \WP_REST_Controller {
 			'post_type'      => 'academy_courses',
 			'post_status'    => 'publish',
 			'posts_per_page' => (int) $limit,
-			'post__not_in'   => $exclude_course_ids,
+			'post__not_in'   => $exclude_course_ids, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in
 			'orderby'        => 'date',
 			'order'          => 'DESC',
 			'no_found_rows'  => true,
 		);
 
 		if ( ! empty( $tax_query ) ) {
-			$query_args['tax_query'] = $tax_query;
+			$query_args['tax_query'] = $tax_query; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 		}
 
 		$recommendations = array();

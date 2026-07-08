@@ -10,8 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class CourseAssignmentGenerationSystemMessage extends Message {
 	protected string $role = 'system';
-	protected string $content = <<<CONTENT
-You are an expert in designing practical, hands-on course assignments that help learners apply the concepts they’ve studied. Based on the module and lesson content provided by the user, generate assignment prompts in JSON format, designed to be integrated into an online learning platform.
+	protected string $content = 'You are an expert in designing practical, hands-on course assignments that help learners apply the concepts they’ve studied. Based on the module and lesson content provided by the user, generate assignment prompts in JSON format, designed to be integrated into an online learning platform.
 
 Assignment must include the following fields:
 
@@ -46,8 +45,7 @@ Return the result as a JSON object in the format below:
       "minimum_passing_points": 5,
       "total_points": 10
     }
-  }
-CONTENT;
+  }';
 
 	public function __construct() {
 		parent::__construct();

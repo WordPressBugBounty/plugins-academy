@@ -16,8 +16,8 @@ class Export extends ExportBase {
 		add_action( 'admin_init', [ $self, 'course_export_data' ], -1 );
 	}
 	public function export_lessons() {
-		$page = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
-		$exportType = isset( $_GET['exportType'] ) ? sanitize_text_field( $_GET['exportType'] ) : '';
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+		$exportType = isset( $_GET['exportType'] ) ? sanitize_text_field( wp_unslash( $_GET['exportType'] ) ) : '';
 		if ( 'academy-tools' !== $page || 'lessons' !== $exportType || ! current_user_can( 'manage_options' ) ) {
 			return false;
 		}
@@ -37,8 +37,8 @@ class Export extends ExportBase {
 	}
 
 	public function course_export_data() {
-		$page = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
-		$exportType = isset( $_GET['exportType'] ) ? sanitize_text_field( $_GET['exportType'] ) : '';
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+		$exportType = isset( $_GET['exportType'] ) ? sanitize_text_field( wp_unslash( $_GET['exportType'] ) ) : '';
 		if ( 'academy-tools' !== $page || 'course' !== $exportType || ! current_user_can( 'manage_options' ) ) {
 			return false;
 		}

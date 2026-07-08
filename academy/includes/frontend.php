@@ -77,11 +77,15 @@ class Frontend {
 			return;
 		}
 
+		// Reset link is authenticated by check_password_reset_key() below, not a nonce.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_GET['reset_key'] ) || empty( $_GET['login'] ) ) {
 			wp_die( esc_html__( 'Invalid or expired reset link.', 'academy' ) );
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$reset_key = sanitize_text_field( wp_unslash( $_GET['reset_key'] ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$login = sanitize_text_field( wp_unslash( $_GET['login'] ) );
 
 		$user = get_user_by( 'login', $login );

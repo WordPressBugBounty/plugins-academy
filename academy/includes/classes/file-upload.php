@@ -8,6 +8,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class FileUpload {
 
+	/**
+	 * Server-executable / dangerous extensions that must never be written to the
+	 * public academy_uploads directory, regardless of the per-call allowlist.
+	 * Blocking these prevents an uploaded file (or a file inside an uploaded zip)
+	 * from being executed as a webshell.
+	 *
+	 * @return string[]
+	 */
+	protected function get_disallowed_extensions() {
+		return apply_filters( 'academy/upload_disallowed_extensions', array(
+			'php', 'php3', 'php4', 'php5', 'php7', 'php8', 'pht', 'phtml', 'phps', 'phar',
+			'shtml', 'cgi', 'pl', 'asp', 'aspx', 'jsp', 'jspx', 'htaccess', 'htm', 'html',
+			'exe', 'so', 'dll', 'sh', 'bat', 'com',
+		) );
+	}
+
+	/**
+	 * @param string $ext File extension (without dot).
+	 * @return bool True when the extension is disallowed.
+	 */
+	protected function is_disallowed_extension( $ext ) {
+		return in_array( strtolower( (string) $ext ), $this->get_disallowed_extensions(), true );
+	}
+
 	public function upload_file( $file, $supported_file_types = [] ) {
 		if ( ! empty( $file ) && ! empty( $file['name'] ) ) {
 			$filename = $file['name'];
@@ -26,6 +50,11 @@ class FileUpload {
 		$path = ( isset( $file['name'] ) ) ? sanitize_text_field( $file['name'] ) : '';
 		$ext  = pathinfo( $path, PATHINFO_EXTENSION );
 
+		// Always reject executable extensions, even when no allowlist is supplied.
+		if ( $this->is_disallowed_extension( $ext ) ) {
+			return apply_filters( 'academy/not_supported_upload_file_error_message', __( 'Invalid file extension', 'academy' ) );
+		}
+
 		if ( count( $supported_file_types ) && ! in_array( $ext, $supported_file_types, true ) ) {
 			return apply_filters( 'academy/not_supported_upload_file_error_message', __( 'Invalid file extension', 'academy' ) );
 		}
@@ -40,6 +69,7 @@ class FileUpload {
 			return $results;
 		}
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
 		rename( $upload_file['file'], $this->get_file_path( $filename ) );
 
 		$file_data  = $this->get_file_data( $filename );
@@ -56,6 +86,25 @@ class FileUpload {
 		$zip = new \ZipArchive();
 
 		if ( $zip->open( $zip_file ) === true ) {
+			// Refuse archives that contain executable files or path-traversal entries,
+			// so a malicious zip cannot drop a webshell into the public uploads dir.
+			for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+				$entry_name = $zip->getNameIndex( $i );
+				if ( false === $entry_name ) {
+					continue;
+				}
+				if ( strpos( $entry_name, '..' ) !== false || strpos( $entry_name, ':' ) !== false || 0 === strpos( $entry_name, '/' ) ) {
+					$zip->close();
+					wp_delete_file( $zip_file );
+					return false;
+				}
+				if ( $this->is_disallowed_extension( pathinfo( $entry_name, PATHINFO_EXTENSION ) ) ) {
+					$zip->close();
+					wp_delete_file( $zip_file );
+					return false;
+				}
+			}
+
 			// Specify the directory where you want to extract the files
 			$extract_path = $this->get_upload_dir(); // Replace with the actual directory path
 
@@ -65,6 +114,7 @@ class FileUpload {
 
 			// Create the extracted folder if it doesn't exist
 			if ( ! is_dir( $extracted_folder ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 				mkdir( $extracted_folder, 0755, true );
 			}
 
@@ -73,7 +123,7 @@ class FileUpload {
 			$zip->close();
 
 			// Delete the original zip file
-			unlink( $zip_file );
+			wp_delete_file( $zip_file );
 
 			return $zip_folder_name;
 		}//end if

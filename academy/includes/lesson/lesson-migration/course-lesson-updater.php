@@ -39,8 +39,10 @@ class CourseLessonUpdater extends Db {
 		global $wpdb;
 
 		// Delete migration meta key
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete(
 			$wpdb->postmeta,
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			[ 'meta_key' => 'lesson:migrate:course:update' ]
 		);
 
@@ -55,6 +57,7 @@ class CourseLessonUpdater extends Db {
 			return;
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$post_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->posts} WHERE post_type = %s",
@@ -67,6 +70,7 @@ class CourseLessonUpdater extends Db {
 		}
 
 		// Delete posts
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete(
 			$wpdb->posts,
 			[ 'post_type' => 'academy_lessons' ]
@@ -75,10 +79,11 @@ class CourseLessonUpdater extends Db {
 		// Delete post meta safely
 		$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
 		$prepared_sql = $wpdb->prepare(
-			"DELETE FROM {$wpdb->postmeta} WHERE post_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			"DELETE FROM {$wpdb->postmeta} WHERE post_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			...array_map( 'absint', $post_ids )
 		);
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $prepared_sql );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
@@ -96,6 +101,7 @@ class CourseLessonUpdater extends Db {
             AND pm.meta_key IS NULL
         ";
 
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return (int) $this->wpdb->get_var(
 			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -117,6 +123,7 @@ class CourseLessonUpdater extends Db {
             WHERE pm.meta_key = %s
         ";
 
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return (int) $this->wpdb->get_var(
 			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -244,6 +251,7 @@ class CourseLessonUpdater extends Db {
             LIMIT %d
         ";
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$sql, 'academy_courses', 'academy_course_curriculum', 'lesson:migrate:course:update', $this->batch_size// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

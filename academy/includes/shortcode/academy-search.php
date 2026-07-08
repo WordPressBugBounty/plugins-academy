@@ -13,13 +13,13 @@ class AcademySearch {
 
 	public function search_form_handler() {
 		check_ajax_referer( 'academy_nonce', 'security' );
-		$keyword = isset( $_POST['keyword'] ) ? sanitize_text_field( $_POST['keyword'] ) : '';
+		$keyword = isset( $_POST['keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['keyword'] ) ) : '';
 		$args = array(
 			'posts_per_page' => 5,
 			's' => $keyword,
 			'post_type' => 'academy_courses',
 		);
-		$query = new \WP_Query( apply_filters( ' academy/course_search_query_args', $args ) );
+		$query = new \WP_Query( apply_filters( 'academy/course_search_query_args', $args ) );
 		$item_markup = '';
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) :

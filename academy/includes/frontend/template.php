@@ -110,6 +110,7 @@ class Template {
 				$link = get_home_url();
 			}
 			/** This filter is documented in wp-includes/link-template.php */
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			return apply_filters( 'post_type_archive_link', $link, $post_type );
 		}
 

@@ -73,7 +73,7 @@ class Http {
 
 	public function make( string $path = '', ?string $method = null ) : HttpResponse {
 		if ( empty( $this->url . $path ) ) {
-			throw new EmptyUrlException( __( 'URL is empty', 'academy' ) );
+			throw new EmptyUrlException( esc_html__( 'URL is empty', 'academy' ) );
 		}
 
 		if ( $method && in_array( strtoupper( $method ), $this->allowed_http_verb, true ) ) {
@@ -110,7 +110,7 @@ class Http {
 		$response = wp_remote_request( $this->url . $path, $args );
 
 		if ( is_wp_error( $response ) ) {
-			throw new ReqFailedException( __( 'Request failed.', 'academy' ) );
+			throw new ReqFailedException( esc_html__( 'Request failed.', 'academy' ) );
 		}
 
 		return new HttpResponse( $response );

@@ -128,6 +128,13 @@ class Student extends AbstractAjaxHandler {
 			wp_send_json_error( __( 'Course ID, Enrolled ID and Student ID is Required', 'academy' ) );
 		}
 
+		// Only an administrator or an instructor of this specific course may change
+		// its enrollments; otherwise any instructor could alter enrollments on
+		// courses owned by other instructors.
+		if ( ! current_user_can( 'manage_options' ) && ! \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), $course_id ) ) {
+			wp_send_json_error( __( 'Sorry, you are not allowed to manage enrollments for this course.', 'academy' ) );
+		}
+
 		$is_updated = \Academy\Helper::update_enrollment_status( $course_id, $enrolled_id, $student_id, $updated_status );
 		if ( $is_updated ) {
 			wp_send_json_success( __( 'Successfully change Enrollment status!', 'academy' ) );

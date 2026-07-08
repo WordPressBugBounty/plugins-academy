@@ -179,7 +179,8 @@ class Integration {
 	}
 
 	public function save_wc_product_meta( $post_ID ) {
-		$is_academy_product = sanitize_text_field( ( isset( $_POST['_academy_product'] ) ? $_POST['_academy_product'] : '' ) ); // phpcs:ignore input var ok, CSRF ok.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$is_academy_product = sanitize_text_field( wp_unslash( isset( $_POST['_academy_product'] ) ? $_POST['_academy_product'] : '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( 'on' === $is_academy_product ) {
 			update_post_meta( $post_ID, '_academy_product', 'yes' );
 		} else {

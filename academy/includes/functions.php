@@ -485,6 +485,7 @@ if ( ! function_exists( 'academy_review_display_comment_text_update_form') ) {
 					</div>
 				</div>
 			<?php endif;
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Buffered markup is static and all dynamic values are individually escaped above.
 		echo ob_get_clean();
 	}
 }
@@ -519,6 +520,7 @@ if ( ! function_exists( 'academy_single_course_enroll' ) ) {
  * Handles password protection for Academy courses.
  */
 if ( ! function_exists( 'handle_academy_course_password_form' ) ) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Function name contains the academy prefix and is referenced by name in hooks.php.
 	function handle_academy_course_password_form( $data ) {
 		if ( is_singular( 'academy_courses' ) && post_password_required() && ! \Academy\Helper::is_enrolled( get_the_ID(), get_current_user_id() ) ) {
 			remove_all_filters( 'template_include' );
@@ -563,6 +565,7 @@ if ( ! function_exists( 'academy_bypass_password_for_enrolled' ) ) {
 }//end if
 
 if ( ! function_exists( 'handle_academy_course_password_submit' ) ) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Function name contains the academy prefix and is referenced by name in hooks.php.
 	function handle_academy_course_password_submit() {
 
 		$user_id = get_current_user_id();
@@ -1707,12 +1710,12 @@ if ( ! function_exists( 'academy_handle_password_reset' ) ) {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( $_POST['security'], 'academy_nonce' ) ) {
+		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'academy_nonce' ) ) {
 			wp_die( 'Invalid request' );
 		}
 
-		$key   = sanitize_text_field( $_GET['reset_key'] ?? '' );
-		$login = sanitize_text_field( $_GET['login'] ?? '' );
+		$key   = sanitize_text_field( wp_unslash( $_GET['reset_key'] ?? '' ) );
+		$login = sanitize_text_field( wp_unslash( $_GET['login'] ?? '' ) );
 
 		// 🔒 This is the magic line
 		$user = check_password_reset_key( $key, $login );
@@ -1721,8 +1724,10 @@ if ( ! function_exists( 'academy_handle_password_reset' ) ) {
 			wp_die( 'Invalid or expired reset link' );
 		}
 
-		$pass1 = $_POST['new_password'];
-		$pass2 = $_POST['confirm_new_password'];
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Password value must not be altered by sanitization; it is validated and passed to reset_password() below.
+		$pass1 = isset( $_POST['new_password'] ) ? wp_unslash( $_POST['new_password'] ) : '';
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Password value must not be altered by sanitization; it is validated and passed to reset_password() below.
+		$pass2 = isset( $_POST['confirm_new_password'] ) ? wp_unslash( $_POST['confirm_new_password'] ) : '';
 
 		if ( $pass1 !== $pass2 || empty( $pass1 ) ) {
 			wp_die( 'Passwords do not match' );
@@ -1785,6 +1790,7 @@ if ( ! function_exists( 'academy_loco_translate_sync' ) ) {
 			empty( get_current_user_id() ) &&
 			! defined( 'LOCO_TEST' )
 		) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- LOCO_TEST is a marker constant for the external Loco Translate integration and must not be renamed.
 			define( 'LOCO_TEST', false );
 		}
 

@@ -181,9 +181,26 @@ class Lessons extends \WP_REST_Controller {
 	public function get_item( $request ) {
 		$ID = (int) $request->get_param( 'id' );
 
-		$user = wp_get_current_user();
-
-		$author_id = ( current_user_can( 'manage_options' ) || in_array( 'academy_student', (array) $user->roles ) ) ? null : get_current_user_id();
+		if ( current_user_can( 'manage_options' ) ) {
+			// Administrators may read any lesson.
+			$author_id = null;
+		} elseif ( current_user_can( 'manage_academy_instructor' ) ) {
+			// Instructors are scoped to lessons they authored.
+			$author_id = get_current_user_id();
+		} else {
+			// Students may only read a lesson that belongs to a course they can access
+			// (enrolled/public/previewable). Without this, any student could read every
+			// course's lesson content by enumerating lesson IDs.
+			$course_id = (int) $request->get_param( 'course_id' );
+			if ( ! $course_id || ! \Academy\Helper::has_permission_to_access_lesson_curriculum( $course_id, $ID ) ) {
+				return new \WP_Error(
+					'academy_lesson_forbidden',
+					esc_html__( 'Sorry, you are not allowed to view this lesson.', 'academy' ),
+					[ 'status' => rest_authorization_required_code() ]
+				);
+			}
+			$author_id = null;
+		}
 		try {
 			$lesson = LessonApi::get_by_id( $ID, false, $author_id );
 			$response = $this->rest_prepare_item( $lesson->get_data(), $request );

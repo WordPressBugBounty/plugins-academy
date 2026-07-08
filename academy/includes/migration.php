@@ -395,13 +395,15 @@ class Migration {
 		}
 		if ( ! get_option( 'academy_quiz_questions_migrate_3_2_3' ) ) {
 			global $wpdb;
-			$table_name = $wpdb->prefix . ACADEMY_PLUGIN_SLUG . '_quiz_questions';
+			$table_name = esc_sql( $wpdb->prefix . ACADEMY_PLUGIN_SLUG . '_quiz_questions' );
 			// Check if the column exists
-			$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE 'question_negative_score'" );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE 'question_negative_score'" );
 
 			if ( empty( $column_exists ) ) {
 				// Add the new column
-				$wpdb->query( "ALTER TABLE `$table_name` ADD `question_negative_score` DECIMAL(9,2) UNSIGNED NULL DEFAULT 0.00 AFTER `question_score`" );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( "ALTER TABLE `$table_name` ADD `question_negative_score` DECIMAL(9,2) UNSIGNED NULL DEFAULT 0.00 AFTER `question_score`" );
 			}
 			update_option( 'academy_quiz_questions_migrate_3_2_3', true );
 		}
@@ -416,9 +418,11 @@ class Migration {
 
 		$table_name = esc_sql( $wpdb->prefix . ACADEMY_PLUGIN_SLUG . '_quiz_questions' );
 
-		$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE 'question_image_id'" );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE 'question_image_id'" );
 		// Add column if missing
 		if ( ! $column_exists ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 			$wpdb->query(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"ALTER TABLE `{$table_name}`
@@ -442,6 +446,7 @@ class Migration {
 
 	public function migrate_3_3_2() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
 				"UPDATE {$wpdb->postmeta} pm
@@ -462,11 +467,13 @@ class Migration {
 	public function migrate_add_question_explanation_column() {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'academy_quiz_questions';
+		$table_name = esc_sql( $wpdb->prefix . 'academy_quiz_questions' );
 
 		// Check if column exists
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$column_exists = $wpdb->get_results(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"SHOW COLUMNS FROM `$table_name` LIKE %s",
 				'question_explanation'
 			)
@@ -474,9 +481,11 @@ class Migration {
 
 		// If column does not exist → add it
 		if ( empty( $column_exists ) ) {
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 			$wpdb->query(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"ALTER TABLE `$table_name`
-				ADD `question_explanation` LONGTEXT NULL 
+				ADD `question_explanation` LONGTEXT NULL
 				AFTER `question_content`"
 			);
 		}

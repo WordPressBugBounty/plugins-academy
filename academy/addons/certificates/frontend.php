@@ -40,6 +40,7 @@ class Frontend {
 		if ( get_query_var( 'post_type' ) === 'academy_courses' && get_query_var( 'source' ) === 'certificate' ) {
 			add_filter( 'ablocks/is_allow_block_inline_assets', '__return_true' );
 			$course_id = get_the_ID();
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public shareable certificate URL; value is only a sanitized display identifier, no state change.
 			$verification_id = isset( $_GET['verify'] ) ? sanitize_text_field( wp_unslash( $_GET['verify'] ) ) : '';
 			$certificate_id = get_post_meta( $course_id, 'academy_course_certificate_id', true );
 			if ( ! $certificate_id ) {

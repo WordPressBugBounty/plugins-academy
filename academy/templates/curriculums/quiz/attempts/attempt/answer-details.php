@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -125,6 +125,7 @@ $topic['slug'] = get_query_var( 'name' );
 									</div>
 									<?php if ( $explanation_enabled && ! empty( $attempt_answer_detail->question_explanation ) ) : ?>
 										<div class="academy-quiz-attempt-explanation">
+											<?php // translators: %d is the question number. ?>
 											<strong><?php echo esc_html( sprintf( __( 'Q%d Explanation:', 'academy' ), $count ) ); ?></strong>
 											<?php echo wp_kses_post( $attempt_answer_detail->question_explanation ); ?>
 										</div>

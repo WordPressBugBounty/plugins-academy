@@ -48,7 +48,7 @@ class Migrator extends Db {
 		$this->flow       = $GLOBALS['academy_settings']->lesson_migrator_flow ?? '';
 
 		if ( ! array_key_exists( $this->flow, $this->setting ) || ! $this->migrator_status ) {
-			throw new Exception( __( 'Migration is not activated.', 'academy' ) );
+			throw new Exception( esc_html__( 'Migration is not activated.', 'academy' ) );
 		}
 
 		$this->collection_class = $this->setting[ $this->flow ]['collection_class'];
@@ -80,6 +80,7 @@ class Migrator extends Db {
                 LIMIT %d
             ";
 
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 			return $this->wpdb->get_results(
 				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql, 'lesson:migrate:id', $limit// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -108,6 +109,7 @@ class Migrator extends Db {
                 LIMIT %d
             ";
 
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 			return $this->wpdb->get_results(
 				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql, 'academy_lessons', 'lesson:migrate:id', $limit// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -171,6 +173,7 @@ class Migrator extends Db {
                 )
             ";
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$left = (int) $wpdb->get_var(
 				$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql_left, 'lesson:migrate:id'// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -190,6 +193,7 @@ class Migrator extends Db {
                 )
             ";
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$migrated = (int) $wpdb->get_var(
 				$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql_migrated, 'lesson:migrate:id'// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -217,6 +221,7 @@ class Migrator extends Db {
                 )
             ";
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$left = (int) $wpdb->get_var(
 				$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$sql_left, 'academy_lessons', 'lesson:migrate:id'// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -237,6 +242,7 @@ class Migrator extends Db {
                 )
             ";
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$migrated = (int) $wpdb->get_var(
 				$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql_migrated, 'academy_lessons', 'lesson:migrate:id'// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

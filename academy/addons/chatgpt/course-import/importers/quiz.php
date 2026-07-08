@@ -53,7 +53,7 @@ class Quiz implements Interfaces\Insertable {
 		$id = wp_insert_post( $data );
 
 		if ( is_wp_error( $id ) ) {
-			throw new Exception( __( 'Error.', 'academy' ) );
+			throw new Exception( esc_html__( 'Error.', 'academy' ) );
 		}
 
 		$this->id = $id;

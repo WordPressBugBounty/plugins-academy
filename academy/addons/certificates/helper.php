@@ -30,6 +30,7 @@ class Helper {
 
 		if ( ! $student_id && ! empty( $verification_id ) ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$student_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT user_id 

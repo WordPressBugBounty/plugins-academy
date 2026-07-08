@@ -282,21 +282,21 @@ class Frontend extends AbstractAjaxHandler {
 		], $payload_data );
 
 		$attempt_id = $payload['attempt_id'];
-		$user_id = ( isset( $payload['user_id'] ) ? $payload['user_id'] : 0 );
-		if ( ! $user_id ) {
-			$user_id = get_current_user_id();
-		}
-		$course_id = $payload['course_id'];
 
-		$is_administrator = current_user_can( 'administrator' );
-		$is_instructor    = \Academy\Helper::is_instructor_of_this_course( $user_id, $course_id );
-		$enrolled         = \Academy\Helper::is_enrolled( $course_id, $user_id );
-		$is_public = \Academy\Helper::is_public_course( $course_id );
+		// Resolve the real owner from the attempt row and authorize against the
+		// current user (owner, course instructor, or administrator). Trusting the
+		// caller-supplied user_id/course_id allowed reading other users' attempts.
+		$attempt = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id );
+		$current_user_id = get_current_user_id();
+		$is_administrator = current_user_can( 'manage_options' );
+		$is_owner         = ! empty( $attempt ) && (int) $attempt->user_id === (int) $current_user_id;
+		$is_instructor    = ! empty( $attempt ) && (bool) \Academy\Helper::is_instructor_of_this_course( $current_user_id, (int) $attempt->course_id );
 
-		if ( $is_administrator || $is_instructor || $enrolled || $is_public ) {
+		if ( ! empty( $attempt ) && ( $is_administrator || $is_owner || $is_instructor ) ) {
+			$user_id = (int) $attempt->user_id;
 			$prepare_response = [];
 			$attempt_details = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details( $attempt_id, $user_id );
-			$quiz_id = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id )->quiz_id;
+			$quiz_id = $attempt->quiz_id;
 			$is_enable_explanation = get_post_meta( $quiz_id, 'academy_quiz_explanation_enabled', true );
 			$is_enable_skip_question = get_post_meta( $quiz_id, 'academy_quiz_skip_question_showing', true );
 			$is_hide_see_more_button = (bool) get_post_meta( $quiz_id, 'academy_quiz_show_full_answer_content', true );

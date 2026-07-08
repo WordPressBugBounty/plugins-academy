@@ -47,6 +47,7 @@ class Admin extends AbstractAjaxHandler {
 			}
 
 			// fetch all paid course product id
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$paid_course_product_ids = $wpdb->get_results( $wpdb->prepare(
 				"SELECT post_id FROM {$wpdb->postmeta}  WHERE meta_key = %s AND meta_value = %s",
 				'_academy_product', 'yes'

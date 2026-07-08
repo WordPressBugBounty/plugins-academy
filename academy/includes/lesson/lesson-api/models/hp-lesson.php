@@ -120,7 +120,7 @@ class HpLesson extends Base\Lesson {
 			$ins->set_meta_data( is_array( $meta_data ) ? array_column( $meta_data, 'meta_value', 'meta_key' ) : [] );
 			return $ins;
 		}
-		throw new Exception( __( 'Invalid Lesson ID.', 'academy' ) );
+		throw new Exception( esc_html__( 'Invalid Lesson ID.', 'academy' ) );
 	}
 	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ) : int {
 		$ins = new self();
@@ -188,7 +188,7 @@ class HpLesson extends Base\Lesson {
 		$this->data['lesson_name'] = sanitize_title( empty( $this->data['lesson_name'] ?? '' ) ? $this->data['lesson_title'] : $this->data['lesson_name'] );
 
 		if ( false === $this->ignore_slug_check && ! $this->is_slug_available() ) {
-			throw new Exception( __( 'Slug is not available.', 'academy' ) );
+			throw new Exception( esc_html__( 'Slug is not available.', 'academy' ) );
 		}
 
 		if ( ! empty( $this->id ) ) {
@@ -200,7 +200,7 @@ class HpLesson extends Base\Lesson {
 				[ 'ID' => $this->id ]
 			);
 			if ( false === $saved ) {
-				throw new Exception( __( 'Lesson update failed. An unexpected error occurred.', 'academy' ) );
+				throw new Exception( esc_html__( 'Lesson update failed. An unexpected error occurred.', 'academy' ) );
 			}
 		} else {
 			$this->data['lesson_date']     = current_time( 'mysql' );
@@ -213,7 +213,7 @@ class HpLesson extends Base\Lesson {
 				$this->data
 			);
 			if ( false === $saved ) {
-				throw new Exception( __( 'Failed to create Lesson.', 'academy' ) );
+				throw new Exception( esc_html__( 'Failed to create Lesson.', 'academy' ) );
 			}
 			$this->is_insert = true;
 			$this->id = $this->wpdb->insert_id;
@@ -226,6 +226,7 @@ class HpLesson extends Base\Lesson {
 			$this->set_meta_data( $meta );
 		}
 		if ( ! empty( $this->id ) && is_array( $this->meta ) && count( $this->meta ) > 0 ) {
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 			$meta_keys = $this->wpdb->get_col(
 				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					"SELECT meta_key FROM {$this->meta_table} WHERE lesson_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -241,10 +242,12 @@ class HpLesson extends Base\Lesson {
 					$this->wpdb->update(
 						$this->meta_table,
 						[
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 							'meta_value'    => $value,
 						],
 						[
 							'lesson_id' => $this->id,
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 							'meta_key'  => $key,
 						]
 					);
@@ -253,7 +256,9 @@ class HpLesson extends Base\Lesson {
 						$this->meta_table,
 						[
 							'lesson_id'     => $this->id,
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 							'meta_key'      => $key,
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 							'meta_value'    => $value,
 						]
 					);
@@ -274,7 +279,7 @@ class HpLesson extends Base\Lesson {
 		);
 
 		if ( false === $is_lesson_delete || false === $is_lesson_meta_delete ) {
-			throw new Exception( __( 'Lesson deletion failed. Please try again.', 'academy' ) );
+			throw new Exception( esc_html__( 'Lesson deletion failed. Please try again.', 'academy' ) );
 		}
 	}
 }

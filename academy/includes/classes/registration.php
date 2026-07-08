@@ -108,6 +108,7 @@ class Registration {
 				$field_value = isset( $submitted_data[ $column['name'] ] ) ? sanitize_text_field( $submitted_data[ $column['name'] ] ) : '';
 
 				if ( $column['is_required'] && empty( $field_value ) ) {
+					/* translators: %s is the field label. */
 					$error = sprintf(
 						__( '%s is required.', 'academy' ),
 						$column['label']

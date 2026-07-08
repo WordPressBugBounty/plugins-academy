@@ -15,7 +15,7 @@ $title = sprintf(
 <div class="academy-lesson-quiz__body question-no-<?php echo esc_html(
 	$question_count
 ); ?>">
-	<h3><?php echo $title; ?></h3>
+	<h3><?php echo esc_html( $title ); ?></h3>
 	<?php // load the short-answer if the question type is short-ans
 	if ( 'shortAnswer' === $question_with_option['question']->question_type ) {
 		\Academy\Helper::get_template(
