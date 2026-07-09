@@ -5,7 +5,7 @@ Tags: lms, online courses, course builder, elearning, quiz
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8.3
+Stable tag: 3.8.4
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -192,6 +192,13 @@ Yes. Instructors can build and edit courses directly from the frontend, and ever
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 3.8.3 - 08/07/2026 =
+* Fixed - Security: access-control (IDOR) hardening for quiz attempts, quiz manual review and instructor feedback, lessons, Q&A, and manual enrollment so data is only accessible or editable by authorized users.
+* Fixed - Security: quiz question data and instructor earning settings are now restricted to authorized roles.
+* Improved - Hardened file and ZIP upload handling to reject executable files.
+* Improved - WordPress Plugin Check / coding standards compliance (output escaping, input sanitization, internationalization, and prepared database queries).
+* Fixed - Translation and text-domain issues.
 
 = 3.8.2 - 01/07/2026 =
 * Fixed - Gumlet Video Integration addon settings not compatible with the Gumlet dashboard settings.

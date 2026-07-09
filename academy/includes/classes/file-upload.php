@@ -37,7 +37,7 @@ class FileUpload {
 			$filename = $file['name'];
 			do_action( 'academy/before_upload_file', $filename );
 		}
-
+		
 		$this->create_folder();
 
 		$results = array(
@@ -59,9 +59,16 @@ class FileUpload {
 			return apply_filters( 'academy/not_supported_upload_file_error_message', __( 'Invalid file extension', 'academy' ) );
 		}
 
+		// No file actually arrived (empty file input, or the upload failed/was
+		// truncated) — bail out with the generic error instead of calling
+		// file_get_contents() on an empty tmp_name, which throws a ValueError.
+		if ( empty( $file['tmp_name'] ) || ( isset( $file['error'] ) && UPLOAD_ERR_OK !== $file['error'] ) ) {
+			return $results;
+		}
+
 		$filename    = md5( time() ) . basename( $path );
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$file        = ( isset( $file['tmp_name'] ) ) ? file_get_contents( sanitize_text_field( $file['tmp_name'] ) ) : '';
+		$file        = file_get_contents( sanitize_text_field( $file['tmp_name'] ) );
 		$upload_file = wp_upload_bits( $filename, null, $file );
 
 		if ( $upload_file['error'] ) {

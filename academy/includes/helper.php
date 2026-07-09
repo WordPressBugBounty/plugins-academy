@@ -930,7 +930,7 @@ class Helper {
 		return null;
 	}
 
-	public static function get_post_by_name( $page_name, $post_type = 'page' ) {
+	public static function get_page_by_name( $page_name, $post_type = 'page' ) {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -1130,19 +1130,19 @@ class Helper {
 			}
 			return 0;
 		} elseif ( 'quiz' === $topic_type ) {
-			$quiz = self::get_post_by_name( $slug, 'academy_quiz' );
+			$quiz = self::get_page_by_name( $slug, 'academy_quiz' );
 
 			return $quiz ? $quiz->ID : 0;
 		} elseif ( 'assignment' === $topic_type ) {
-			$assignment = self::get_post_by_name( $slug, 'academy_assignments' );
+			$assignment = self::get_page_by_name( $slug, 'academy_assignments' );
 
 			return ( ! empty( $assignment ) ) ? $assignment->ID : 0;
 		} elseif ( 'meeting' === $topic_type ) {
-			$meeting = self::get_post_by_name( $slug, 'academy_meeting' );
+			$meeting = self::get_page_by_name( $slug, 'academy_meeting' );
 
 			return $meeting ? current( $meeting )->ID : 0;
 		} elseif ( 'booking' === $topic_type ) {
-			$booking = self::get_post_by_name( $slug, 'academy_booking' );
+			$booking = self::get_page_by_name( $slug, 'academy_booking' );
 
 			return $booking ? $booking->ID : 0;
 		}//end if
@@ -1232,7 +1232,10 @@ class Helper {
 	}
 
 	public static function has_permission_to_access_lesson_curriculum( $course_id, $lesson_id, $user_id = null ) {
-		return self::has_permission_to_access_curriculum( $course_id, $user_id, $lesson_id, 'lesson' ) || ( $lesson_id && self::get_lesson_meta( $lesson_id, 'is_previewable' ) );
+		$is_previewable = $lesson_id
+			&& self::get_lesson_meta( $lesson_id, 'is_previewable' )
+			&& (bool) self::get_addon_active_status( 'course-preview' );
+		return self::has_permission_to_access_curriculum( $course_id, $user_id, $lesson_id, 'lesson' ) || $is_previewable;
 	}
 
 	public static function is_active_curriculum_content( $topic ) {

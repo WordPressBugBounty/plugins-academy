@@ -476,17 +476,28 @@ class Course extends AbstractAjaxHandler {
 			wp_die();
 		}
 
-		if ( ! isset( $_FILES['upload_file'] ) ) {
+		if ( ! isset( $_FILES['upload_file']['tmp_name'], $_FILES['upload_file']['name'] ) ) {
 			wp_send_json_error( __( 'Upload File is empty.', 'academy' ) );
 		}
 
-		$file = array_map( 'sanitize_text_field', wp_unslash( $_FILES['upload_file'] ) );
-		if ( 'csv' !== pathinfo( $file['name'] )['extension'] ) {
+		// `tmp_name` is a PHP-generated upload path, not user text. Running it through
+		// sanitize_text_field() (which strips tags/whitespace and `%XX` octets) can mangle
+		// the path and break fopen() below, so validate it is a genuine upload instead.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$tmp_name  = $_FILES['upload_file']['tmp_name'];
+		$file_name = sanitize_file_name( wp_unslash( $_FILES['upload_file']['name'] ) );
+
+		if ( ! is_uploaded_file( $tmp_name ) ) {
+			wp_send_json_error( __( 'Invalid file upload.', 'academy' ) );
+		}
+
+		$filetype = wp_check_filetype( $file_name, [ 'csv' => 'text/csv' ] );
+		if ( 'csv' !== $filetype['ext'] ) {
 			wp_send_json_error( __( 'Wrong File Format! Please import csv file.', 'academy' ) );
 		}
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
-		$file_open = fopen( $file['tmp_name'], 'r' );
+		$file_open = fopen( $tmp_name, 'r' );
 		if ( false !== $file_open ) {
 			$has_course = false;
 			$has_course_meta = false;
@@ -824,8 +835,8 @@ class Course extends AbstractAjaxHandler {
 	}
 
 	public function update_course_curriculum( $curriculums, $new_course_id ) {
+		$new_curriculum = array();
 		if ( is_array( $curriculums ) ) {
-			$new_curriculum = array();
 			foreach ( $curriculums as $curriculum ) {
 				$new_topics = array();
 				foreach ( $curriculum['topics'] as $topic ) {
@@ -850,10 +861,8 @@ class Course extends AbstractAjaxHandler {
 					'topics' => $new_topics,
 				);
 			}//end foreach
-			if ( is_array( $new_curriculum ) ) {
-				update_post_meta( $new_course_id, 'academy_course_curriculum', $new_curriculum );
-			}
 		}//end if
+		update_post_meta( $new_course_id, 'academy_course_curriculum', $new_curriculum );
 	}
 
 	private function set_topics( $topic ) {
@@ -869,20 +878,20 @@ class Course extends AbstractAjaxHandler {
 				}
 				break;
 			case 'quiz':
-				$quiz_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic['name'], 'quiz' );
-				if ( $quiz_id ) {
+				$quiz = \Academy\Helper::get_page_by_title( $topic['name'], 'academy_quiz' );
+				if ( $quiz ) {
 					return array(
-						'id' => $quiz_id,
+						'id' => $quiz->ID,
 						'name' => $topic['name'],
 						'type'  => 'quiz',
 					);
 				}
 				break;
 			case 'assignment':
-				$assignment_id = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $topic['name'], 'assignment' );
-				if ( $assignment_id ) {
+				$assignment = \Academy\Helper::get_page_by_title( $topic['name'], 'academy_assignments' );
+				if ( $assignment ) {
 					return array(
-						'id' => $assignment_id,
+						'id' => $assignment->ID,
 						'name' => $topic['name'],
 						'type'  => 'assignment',
 					);

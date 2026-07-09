@@ -335,8 +335,15 @@ class Course extends \WP_REST_Controller {
 		if ( \Academy\Helper::is_public_course( $course_id ) ) {
 			return true;
 		}
-		
-		// logged in 
+
+		// Allow visitors/non-enrolled users through when the course exposes previewable
+		// lesson(s). Per-topic `is_accessible` flags in the response keep every
+		// non-previewable topic locked, so only the preview content is reachable.
+		if ( \Academy\Helper::course_has_previewable_lesson( $course_id ) ) {
+			return true;
+		}
+
+		// logged in
 		if ( ! is_user_logged_in() ) {
 			return new \WP_Error(
 				'rest_forbidden',

@@ -1512,6 +1512,43 @@ trait Courses {
 		return $update;
 	}
 
+	public static function course_has_previewable_lesson( $course_id ) {
+		// Preview is a gated feature — only counts when the course-preview addon is active.
+		if ( ! (bool) self::get_addon_active_status( 'course-preview' ) ) {
+			return false;
+		}
+
+		$curriculums = get_post_meta( $course_id, 'academy_course_curriculum', true );
+		if ( ! is_array( $curriculums ) ) {
+			return false;
+		}
+
+		foreach ( $curriculums as $curriculum ) {
+			if ( ! isset( $curriculum['topics'] ) || ! is_array( $curriculum['topics'] ) ) {
+				continue;
+			}
+			foreach ( $curriculum['topics'] as $topic ) {
+				if ( isset( $topic['type'], $topic['id'] )
+					&& 'lesson' === $topic['type']
+					&& self::get_lesson_meta( $topic['id'], 'is_previewable' ) ) {
+					return true;
+				}
+				// Nested (sub-curriculum) lessons.
+				if ( isset( $topic['topics'] ) && is_array( $topic['topics'] ) ) {
+					foreach ( $topic['topics'] as $child_topic ) {
+						if ( isset( $child_topic['type'], $child_topic['id'] )
+							&& 'lesson' === $child_topic['type']
+							&& self::get_lesson_meta( $child_topic['id'], 'is_previewable' ) ) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public static function get_course_curriculum( $course_id, $complete_status = true ) {
 		$user_id            = get_current_user_id();
 		$is_public          = Helper::is_public_course( $course_id );
@@ -1584,7 +1621,7 @@ trait Courses {
 								// if topic type is lesson then set duration
 								if ( 'lesson' === $child_topic['type'] ) {
 									$child_topic['duration']            = Helper::get_lesson_video_duration( $child_topic['id'] );
-									$child_topic['is_accessible']       = \Academy\Helper::get_lesson_meta( $child_topic['id'], 'is_previewable' );
+									$child_topic['is_accessible']       = \Academy\Helper::get_lesson_meta( $child_topic['id'], 'is_previewable' ) && (bool) \Academy\Helper::get_addon_active_status( 'course-preview' );
 									$child_topic['slug']                = \Academy\Helper::get_lesson_slug( $child_topic['id'] );
 								} else {
 									$child_topic['slug'] = basename( get_permalink( $child_topic['id'] ) );

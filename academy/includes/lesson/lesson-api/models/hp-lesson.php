@@ -86,7 +86,7 @@ class HpLesson extends Base\Lesson {
 		);
 	}
 
-	public static function by_title( string $title, bool $skip_meta = false, int $author = 0 ) : self {
+	public static function by_title( string $title, bool $skip_meta = false, ?int $author = null ) : self {
 		$ins = new self();
 
 		$sql = "SELECT * FROM {$ins->table} WHERE lesson_title = %s";
