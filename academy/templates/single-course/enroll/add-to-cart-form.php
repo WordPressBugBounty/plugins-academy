@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Academy\Helper;
 use EDD\Models\Download;
 $monetization_engine = Helper::monetization_engine();
-if ( 'woocommerce' === $monetization_engine ) {
+if ( 'woocommerce' === $monetization_engine && Helper::is_active_woocommerce() ) {
 	$product = wc_get_product( $product_id ); ?>
 	<div class="academy-widget-enroll__add-to-cart">
 		<?php if ( $product ) :

@@ -186,7 +186,10 @@ class AcademyCourses {
 		echo '</div>';
 
 		$output = ob_get_clean();
-		wp_reset_postdata();
+		// query_posts() replaced the global main query above; wp_reset_postdata()
+		// only restores $post, so use wp_reset_query() to restore $wp_query and
+		// avoid breaking the page layout rendered after this shortcode.
+		wp_reset_query();
 
 		return $output;
 	}

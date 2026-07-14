@@ -480,7 +480,7 @@ class Course extends AbstractAjaxHandler {
 			wp_send_json_error( __( 'Upload File is empty.', 'academy' ) );
 		}
 
-		// `tmp_name` is a PHP-generated upload path, not user text. Running it through
+		// `tmp_name` is a PHP-generated upload path, not user text. Running it through 
 		// sanitize_text_field() (which strips tags/whitespace and `%XX` octets) can mangle
 		// the path and break fopen() below, so validate it is a genuine upload instead.
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash

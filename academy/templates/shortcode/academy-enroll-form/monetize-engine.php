@@ -21,7 +21,7 @@ if ( 'free' !== $course_type || ! empty( $required_levels ) || $is_surecart_inte
 		\Academy\Helper::get_template( 'shortcode/academy-enroll-form/restrict-content-pro.php', $template_args );
 	} elseif ( 'storeengine' === $monetize_engine ) {
 		\Academy\Helper::get_template( 'shortcode/academy-enroll-form/storeengine.php', $template_args );
-	} elseif ( 'woocommerce' === $monetize_engine ) {
+	} elseif ( 'woocommerce' === $monetize_engine && \Academy\Helper::is_active_woocommerce() ) {
 		\Academy\Helper::get_template( 'shortcode/academy-enroll-form/woocommerce.php', $template_args );
 	} elseif ( 'edd' === $monetize_engine ) {
 		\Academy\Helper::get_template( 'shortcode/academy-enroll-form/easy-digital-downloads.php', $template_args );

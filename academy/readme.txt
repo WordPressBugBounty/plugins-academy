@@ -5,7 +5,7 @@ Tags: lms, online courses, course builder, elearning, quiz
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8.4
+Stable tag: 3.8.5
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -193,7 +193,10 @@ Yes. Instructors can build and edit courses directly from the frontend, and ever
 
 == Changelog ==
 
-= 3.8.3 - 08/07/2026 =
+= 3.8.5 - 14/07/2026 =
+* Fixed - `academy_courses` shortcode query reset issue
+
+= 3.8.4 - 09/07/2026 =
 * Fixed - Security: access-control (IDOR) hardening for quiz attempts, quiz manual review and instructor feedback, lessons, Q&A, and manual enrollment so data is only accessible or editable by authorized users.
 * Fixed - Security: quiz question data and instructor earning settings are now restricted to authorized roles.
 * Improved - Hardened file and ZIP upload handling to reject executable files.
