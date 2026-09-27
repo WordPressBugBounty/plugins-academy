@@ -1,0 +1,89 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/form-field",
+	"title": "Form Field",
+	"category": "academy",
+	"description": "One field of a registration form.",
+	"keywords": [
+		"field",
+		"input",
+		"form"
+	],
+	"textdomain": "academy",
+	"ancestor": [
+		"academy/registration-form"
+	],
+	"usesContext": [
+		"academy/registrationRole"
+	],
+	"attributes": {
+		"name": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldType": {
+			"type": "string",
+			"enum": [
+				"text",
+				"email",
+				"password",
+				"tel",
+				"number",
+				"date",
+				"url",
+				"textarea",
+				"select",
+				"radio",
+				"checkbox"
+			],
+			"default": "text"
+		},
+		"label": {
+			"type": "string",
+			"default": ""
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"help": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"width": {
+			"type": "string",
+			"enum": [
+				"full",
+				"half"
+			],
+			"default": "full"
+		},
+		"options": {
+			"type": "array",
+			"default": []
+		}
+	},
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"color": {
+			"text": true,
+			"background": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		}
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php"
+}

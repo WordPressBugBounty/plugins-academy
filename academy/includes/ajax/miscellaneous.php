@@ -62,6 +62,10 @@ class Miscellaneous extends AbstractAjaxHandler {
 				'callback'   => array( $this, 'get_lesson_comment' ),
 				'capability' => 'read'
 			),
+			'delete_lesson_comment' => array(
+				'callback'   => array( $this, 'delete_lesson_comment' ),
+				'capability' => 'read'
+			),
 			'hide_zencommunity_ads' => array(
 				'callback' => array( $this, 'hide_zencommunity_ads' ),
 				'capability' => 'manage_options'
@@ -77,6 +81,10 @@ class Miscellaneous extends AbstractAjaxHandler {
 			'update_review' => array(
 				'callback' => array( $this, 'update_review' ),
 				'capability' => 'read'
+			),
+			'dismiss_admin_notice' => array(
+				'callback'   => array( $this, 'dismiss_admin_notice' ),
+				'capability' => 'manage_academy_instructor'
 			),
 		);
 	}
@@ -193,19 +201,46 @@ class Miscellaneous extends AbstractAjaxHandler {
 			wp_send_json_error( __( 'Request is not valid.', 'academy' ) );
 		}
 
-		do_action( 'academy/frontend/before_mark_topic_complete', $topic_type, $course_id, $topic_id, $user_id );
-		$is_skip_disabled = \Academy\Helper::get_settings( 'is_disabled_lessons_video_skip' ) && \Academy\Helper::get_settings( 'is_enabled_academy_player' );
-
-		if ( $is_skip_disabled && 'lesson' === $topic_type && 'youtube' === \Academy\Helper::get_lesson_meta( $topic_id, 'video_source' )['type'] ) {
-			$meta_key     = "academy_{$course_id}lesson_video_{$topic_id}_completed";
-			$is_completed = get_user_meta( $user_id, $meta_key, true );
-
-			if ( ! $is_completed ) {
-				wp_send_json_error(
-					__( 'Please complete the lesson video before marking the topic as completed.', 'academy' )
-				);
-			}
+		if ( ! \Academy\Helper::is_enrolled( $course_id, $user_id ) ) {
+			wp_send_json_error( __( 'You must be enrolled in this course to mark lessons as complete.', 'academy' ) );
 		}
+
+		do_action( 'academy/frontend/before_mark_topic_complete', $topic_type, $course_id, $topic_id, $user_id );
+
+		// Video completion gate: when a watch threshold is configured, a trackable
+		// video lesson can only be marked complete once the student has watched
+		// enough of it (the progress endpoint sets the watch-complete flag).
+		// Opaque third-party embeds (Wistia, Vidyard, Twitch, SoundCloud,
+		// Mixcloud, Facebook, Kaltura, …) get the same gate, but based on
+		// dwell time (seconds open) since they report no playback position.
+		$threshold       = (int) \Academy\Helper::get_settings( 'lessons_video_completion_threshold' );
+		$dwell_threshold = (int) \Academy\Helper::get_settings( 'external_video_min_watch_seconds' );
+		if ( ( $threshold > 0 || $dwell_threshold > 0 ) && 'lesson' === $topic_type ) {
+			$video        = \Academy\Helper::get_lesson_meta( $topic_id, 'video_source' );
+			$vtype        = is_array( $video ) ? ( $video['type'] ?? '' ) : '';
+			$vurl         = $video['url'] ?? '';
+			$is_trackable = \Academy\Helper::is_trackable_video_source( $vtype, $vurl );
+			$is_dwell_trackable = ! $is_trackable && $dwell_threshold > 0
+				&& \Academy\Helper::is_dwell_trackable_video_source( $vtype, $vurl );
+
+			if ( ( $threshold > 0 && $is_trackable ) || $is_dwell_trackable ) {
+				$meta_key = "academy_{$course_id}lesson_video_{$topic_id}_completed";
+				if ( ! get_user_meta( $user_id, $meta_key, true ) ) {
+					$message = $is_dwell_trackable
+						? sprintf(
+							/* translators: %d: required seconds. */
+							__( 'Please keep this lesson open for at least %d seconds before marking it complete.', 'academy' ),
+							$dwell_threshold
+						)
+						: sprintf(
+							/* translators: %d: required watch percentage. */
+							__( 'Please watch at least %d%% of the lesson video before marking it complete.', 'academy' ),
+							$threshold
+						);
+					wp_send_json_error( $message );
+				}
+			}
+		}//end if
 		$option_name        = 'academy_course_' . $course_id . '_completed_topics';
 		$is_complete = true;
 		$saved_topics_lists = (array) json_decode( get_user_meta( $user_id, $option_name, true ), true );
@@ -265,7 +300,7 @@ class Miscellaneous extends AbstractAjaxHandler {
 
 		$comment = get_comment( $comment_id );
 
-		if ( ! $comment || (int) $comment->user_id !== get_current_user_id() ) {
+		if ( ! $comment || get_current_user_id() !== (int) $comment->user_id ) {
 			wp_send_json_error( __( 'Permission denied', 'academy' ) );
 		}
 
@@ -302,7 +337,6 @@ class Miscellaneous extends AbstractAjaxHandler {
 				// Log-in again.
 				wp_set_auth_cookie( $user->ID );
 				wp_set_current_user( $user->ID );
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				do_action( 'wp_login', $user->user_login, $user );
 				wp_send_json_success( esc_html__( 'Successfully, updated your password.', 'academy' ) );
 				wp_die();
@@ -385,17 +419,22 @@ class Miscellaneous extends AbstractAjaxHandler {
 			'post' => 'integer',
 			'lesson_id' => 'integer',
 			'parent' => 'integer',
-			'content' => 'string',
 		], $payload_data );
+
+		// Preserve line breaks (sanitize_text_field would collapse them).
+		$content = isset( $payload_data['content'] ) ? sanitize_textarea_field( wp_unslash( $payload_data['content'] ) ) : '';
+		if ( '' === trim( $content ) ) {
+			wp_send_json_error( 'Comment cannot be empty.', 400 );
+		}
 
 		$course_id = isset( $payload['post'] ) ? $payload['post'] : 0;
 		$lesson_id = isset( $payload['lesson_id'] ) ? $payload['lesson_id'] : 0;
 		$current_user = wp_get_current_user();
-		if ( current_user_can( 'administrator' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
+		if ( current_user_can( 'manage_options' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
 			$comment_data = array(
 				'comment_post_ID'      => $lesson_id,
 				'comment_parent'       => $payload['parent'] ?? 0,
-				'comment_content'      => $payload['content'],
+				'comment_content'      => $content,
 				'comment_approved'     => true,
 				'comment_type'         => 'comment',
 				'user_id'              => $current_user->ID,
@@ -409,12 +448,54 @@ class Miscellaneous extends AbstractAjaxHandler {
 			);
 
 			$comment_id = wp_insert_comment( $comment_data );
+
+			// Notification / integration hook (auto-approved for enrolled users).
+			do_action( 'academy/lesson_comment/inserted', $comment_id, $course_id, $lesson_id );
+
 			$comment = ( new \Academy\API\QuestionAnswer() )->prepare_comment_for_response( get_comment( $comment_id ) );
 
 			wp_send_json_success( $comment );
 
 		}//end if
 		wp_die( 'You do not have the permission to do this.' );
+	}
+
+	public function delete_lesson_comment( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload([
+			'comment_id' => 'integer',
+			'course_id'  => 'integer',
+		], $payload_data );
+
+		$comment_id = $payload['comment_id'] ?? 0;
+		$comment    = $comment_id ? get_comment( $comment_id ) : null;
+
+		// Only Academy lesson comments can be removed through this endpoint.
+		if ( ! $comment || 'Academy' !== $comment->comment_agent ) {
+			wp_send_json_error( 'Comment not found.', 404 );
+		}
+
+		$course_id = $payload['course_id'] ? $payload['course_id'] : (int) get_comment_meta( $comment_id, 'academy_comment_course_id', true );
+		$current_user = wp_get_current_user();
+
+		$can_delete = current_user_can( 'manage_options' )
+			|| \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id )
+			|| ( (int) $comment->user_id === (int) $current_user->ID );
+
+		if ( ! $can_delete ) {
+			wp_die( 'You do not have the permission to do this.' );
+		}
+
+		// Remove replies first, then the comment itself.
+		$children = get_comments([
+			'parent' => $comment_id,
+			'status' => 'all',
+		]);
+		foreach ( $children as $child ) {
+			wp_delete_comment( (int) $child->comment_ID, true );
+		}
+		wp_delete_comment( $comment_id, true );
+
+		wp_send_json_success( [ 'id' => $comment_id ] );
 	}
 
 	public function get_lesson_comment( $payload_data ) {
@@ -433,16 +514,30 @@ class Miscellaneous extends AbstractAjaxHandler {
 		$current_user = wp_get_current_user();
 
 		if (
-			current_user_can( 'administrator' ) ||
+			current_user_can( 'manage_options' ) ||
 			\Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) ||
 			\Academy\Helper::is_enrolled( $course_id, $current_user->ID ) ||
 			\Academy\Helper::is_public_course( $course_id )
 		) {
+			// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- meta/tax lookup the feature depends on; no cheaper equivalent
 			$comment_args = array(
-				'status'  => true,
+				'status'  => 'approve',
 				'post_id' => $lesson_id,
 				'type'    => 'comment',
+				'orderby' => 'comment_date_gmt',
+				'order'   => 'ASC',
+				// Sane upper bound so a huge thread doesn't load unbounded.
+				'number'  => (int) apply_filters( 'academy/lesson_comment/fetch_limit', 200 ),
+				// Scope to this course's Academy comments — in High-Performance
+				// mode a lesson id could otherwise collide with a real post id.
+				'meta_query' => array(
+					array(
+						'key'   => 'academy_comment_course_id',
+						'value' => $course_id,
+					),
+				),
 			);
+			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 
 			$raw_comments = get_comments( $comment_args );
 			$comment_data = [];
@@ -453,7 +548,7 @@ class Miscellaneous extends AbstractAjaxHandler {
 			}
 
 			wp_send_json_success( $comment_data );
-		}
+		}//end if
 
 		wp_die( 'You do not have the permission to do this.' );
 	}
@@ -481,18 +576,58 @@ class Miscellaneous extends AbstractAjaxHandler {
 		wp_send_json_success( $results );
 	}
 
+	/**
+	 * Persists a dismissed Admin::Notices notice for the current user (see
+	 * includes/admin/notices.php — Notices::add_notice() filters against this
+	 * on every subsequent request, so a dismissed notice never gets
+	 * re-added). Capability + nonce are already enforced centrally by
+	 * AbstractAjaxHandler::handle_ajax_request() before this runs, so the
+	 * dismissal is always scoped to whichever user is actually logged in —
+	 * there's no user-id parameter to spoof.
+	 *
+	 * @param array $payload_data
+	 */
+	public function dismiss_admin_notice( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload( [
+			'notice_key' => 'string',
+		], $payload_data );
+
+		$notice_key = $payload['notice_key'] ?? '';
+		if ( '' === $notice_key ) {
+			wp_send_json_error( esc_html__( 'Invalid notice.', 'academy' ), 400 );
+		}
+
+		$user_id   = get_current_user_id();
+		$dismissed = get_user_meta( $user_id, 'academy_dismissed_admin_notices', true );
+		$dismissed = is_array( $dismissed ) ? $dismissed : array();
+
+		if ( ! in_array( $notice_key, $dismissed, true ) ) {
+			$dismissed[] = $notice_key;
+			update_user_meta( $user_id, 'academy_dismissed_admin_notices', $dismissed );
+		}
+
+		wp_send_json_success( array( 'notice_key' => $notice_key ) );
+	}
+
 	public function fetch_courses( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'keyword' => 'string',
+			'per_page' => 'integer',
+			'include_private' => 'boolean',
 		], $payload_data );
 
-		$keyword = $payload['keyword'] ?? '';
+		$keyword  = $payload['keyword'] ?? '';
+		$per_page = ! empty( $payload['per_page'] ) ? $payload['per_page'] : 10;
+		// Default stays 'publish' only, unchanged for existing callers; the
+		// students course filter opts in so it can match enrollments that live
+		// on private courses.
+		$post_status = ! empty( $payload['include_private'] ) ? [ 'publish', 'private' ] : 'publish';
 
 		$courses = get_posts( [
 			'post_type' => 'academy_courses',
-			'post_status' => 'publish',
+			'post_status' => $post_status,
 			's' => $keyword,
-			'posts_per_page' => 10,
+			'posts_per_page' => $per_page,
 		] );
 		$results = [];
 		if ( is_array( $courses ) ) {

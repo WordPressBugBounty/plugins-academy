@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Frontend\Template;
+namespace Academy\Frontend\Template;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -11,6 +11,18 @@ class Block {
 		$self = new self();
 		add_filter( 'pre_get_block_file_template', [ $self, 'get_block_file_template' ], 10, 3 );
 		add_filter( 'get_block_templates', [ $self, 'add_block_templates' ], 10, 3 );
+	}
+
+	/**
+	 * Directory of the course block templates in use: the block-based
+	 * templates, or the original shortcode layout for sites that kept it.
+	 *
+	 * @return string
+	 */
+	public static function templates_dir() {
+		return 'legacy' === \Academy\Blocks::template_style()
+			? ACADEMY_ROOT_DIR_PATH . 'templates/block-templates-legacy/'
+			: ACADEMY_BLOCK_TEMPLATES_DIR_PATH;
 	}
 
 	public function get_block_file_template( $template, $id, $template_type ) {
@@ -33,7 +45,7 @@ class Block {
 			return $template;
 		}
 
-		$directory = ACADEMY_BLOCK_TEMPLATES_DIR_PATH;
+		$directory = self::templates_dir();
 
 		$template_file_path = $directory . '/' . $template_slug . '.html';
 
@@ -53,7 +65,7 @@ class Block {
 		if ( ! $template_name ) {
 			return false;
 		}
-		$directory = ACADEMY_BLOCK_TEMPLATES_DIR_PATH . $template_name . '.html';
+		$directory = self::templates_dir() . $template_name . '.html';
 
 		return is_readable( $directory ) || $this->get_block_templates( [ $template_name ], $template_type );
 	}
@@ -66,6 +78,7 @@ class Block {
 	}
 
 	public function get_block_templates_from_db( $slugs = [], $template_type = 'wp_template' ) {
+		// phpcs:disable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page -- needs the complete (small, bounded) set
 		$check_query_args = [
 			'post_type'      => $template_type,
 			'posts_per_page' => -1,
@@ -78,6 +91,7 @@ class Block {
 				]
 			]
 		];
+		// phpcs:enable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page
 
 		if ( is_array( $slugs ) && count( $slugs ) > 0 ) {
 			$check_query_args['post_name__in'] = $slugs;
@@ -173,8 +187,7 @@ class Block {
 					array_filter(
 						$already_found_templates,
 						function ( $template ) use ( $template_slug ) {
-							$template_obj = (object) $template; //phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.Found
-							return $template_obj->slug === $template_slug;
+							return ( (object) $template )->slug === $template_slug;
 						}
 					)
 				) > 0 ) {
@@ -189,7 +202,7 @@ class Block {
 	}
 
 	public function get_templates_fils_from_academylms( $template_type ) {
-		$directory      = ACADEMY_BLOCK_TEMPLATES_DIR_PATH;
+		$directory      = self::templates_dir();
 		$template_files = $this->get_template_paths( $directory );
 		return $template_files;
 	}
@@ -235,6 +248,8 @@ class Block {
 				return __( 'Single Courses', 'academy' );
 			case 'archive-academy_courses':
 				return __( 'Archive Courses', 'academy' );
+			case 'taxonomy-academy_courses_category':
+				return __( 'Course Category Archive', 'academy' );
 			default:
 				// Replace all hyphens and underscores with spaces.
 				return ucwords( preg_replace( '/[\-_]/', ' ', $template_slug ) );
@@ -249,16 +264,28 @@ class Block {
 		$template_is_from_theme = 'theme' === $template_file->source;
 		$theme_name             = wp_get_theme()->get( 'TextDomain' );
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$template_content  = file_get_contents( $template_file->path );
+		$template_content  = file_get_contents( $template_file->path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents, WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown -- local file, not a remote URL
 		$template          = new \WP_Block_Template();
 		$template->id      = $template_is_from_theme ? $theme_name . '//' . $template_file->slug : ACADEMY_PLUGIN_SLUG . '//' . $template_file->slug;
 		$template->theme   = $template_is_from_theme ? $theme_name : ACADEMY_PLUGIN_SLUG;
 		$template->content = self::inject_theme_attribute_in_content( $template_content );
+		/**
+		 * Filters a course template's blocks, so the Design screen can build the
+		 * card and the course page from its settings.
+		 *
+		 * @param string $content Template content.
+		 * @param string $slug    Template slug.
+		 */
+		$template->content = (string) apply_filters( 'academy/blocks/template_content', $template->content, $template_file->slug );
 		// Remove the term description block from the archive-product template
 		// as the Product Catalog/Shop page doesn't have a description.
 		if ( 'archive-academy_courses' === $template_file->slug ) {
 			$template->content = str_replace( '<!-- wp:term-description {"align":"wide"} /-->', '', $template->content );
+		}
+		// The category taxonomy archive shares the same course-grid layout as
+		// the plain courses archive, including the sidebar-position setting.
+		if ( in_array( $template_file->slug, [ 'archive-academy_courses', 'taxonomy-academy_courses_category' ], true ) ) {
+			$template->content = $this->apply_course_archive_sidebar_setting( $template->content );
 		}
 		// Plugin was agreed as a valid source value despite existing inline docs at the time of creating: https://github.com/WordPress/gutenberg/issues/36597#issuecomment-976232909.
 		$template->source         = $template_file->source ? $template_file->source : 'plugin';
@@ -289,6 +316,120 @@ class Block {
 		}
 
 		return $template;
+	}
+
+	/**
+	 * Classic themes route the course archive through templates/archive-course.php,
+	 * which already reads the `course_archive_sidebar_position` setting (none/left/
+	 * right). Block themes render this hardcoded archive-academy_courses.html
+	 * instead, which never consulted that setting — apply it here by editing the
+	 * parsed block tree (rather than the raw HTML) before it's re-serialized, so
+	 * this doesn't depend on the file's exact formatting/whitespace.
+	 *
+	 * @param string $content
+	 */
+	public function apply_course_archive_sidebar_setting( $content ) {
+		$sidebar_position = \Academy\Helper::get_settings( 'course_archive_sidebar_position', 'right' );
+
+		if ( 'right' === $sidebar_position ) {
+			return $content;
+		}
+
+		$blocks  = parse_blocks( $content );
+		$updated = false;
+
+		foreach ( $blocks as &$block ) {
+			if ( $this->update_course_filters_column( $block, $sidebar_position ) ) {
+				$updated = true;
+				break;
+			}
+		}
+		unset( $block );
+
+		if ( ! $updated ) {
+			return $content;
+		}
+
+		$new_content = '';
+		foreach ( $blocks as $block ) {
+			$new_content .= serialize_block( $block );
+		}
+
+		return $new_content;
+	}
+
+	/**
+	 * Recursively find the wp:columns block holding the course filters (the
+	 * [academy_course_filters] shortcode or the Course Filters block) and
+	 * either drop that column ("none") or move it in front of its siblings
+	 * ("left"). Returns true once the target column has been found/handled, so
+	 * the caller can stop walking once it's done.
+	 *
+	 * @param &     $block
+	 * @param mixed $sidebar_position
+	 */
+	private function update_course_filters_column( &$block, $sidebar_position ) {
+		if ( empty( $block['innerBlocks'] ) ) {
+			return false;
+		}
+
+		if ( 'core/columns' === $block['blockName'] ) {
+			foreach ( $block['innerBlocks'] as $index => $column_block ) {
+				$column_markup = serialize_block( $column_block );
+				if ( false === strpos( $column_markup, '[academy_course_filters]' ) && false === strpos( $column_markup, '<!-- wp:academy/course-filters' ) ) {
+					continue;
+				}
+
+				if ( 'none' === $sidebar_position ) {
+					$this->remove_inner_block( $block, $index );
+				} elseif ( 'left' === $sidebar_position && 0 !== $index ) {
+					$filters_block = $block['innerBlocks'][ $index ];
+					unset( $block['innerBlocks'][ $index ] );
+					array_unshift( $block['innerBlocks'], $filters_block );
+					$block['innerBlocks'] = array_values( $block['innerBlocks'] );
+				}
+
+				return true;
+			}
+		}
+
+		foreach ( $block['innerBlocks'] as &$inner_block ) {
+			if ( $this->update_course_filters_column( $inner_block, $sidebar_position ) ) {
+				unset( $inner_block );
+				return true;
+			}
+		}
+		unset( $inner_block );
+
+		return false;
+	}
+
+	/**
+	 * Remove the Nth inner block from a parsed block, keeping `innerContent`'s
+	 * null placeholders (which serialize_block() walks in lock-step with
+	 * innerBlocks, pulling the next inner block for each one) in sync so the
+	 * remaining siblings — and any literal markup around them — still
+	 * serialize correctly.
+	 *
+	 * @param &     $parent_block
+	 * @param mixed $inner_block_index
+	 */
+	private function remove_inner_block( &$parent_block, $inner_block_index ) {
+		$null_seen = -1;
+		foreach ( $parent_block['innerContent'] as $i => $chunk ) {
+			if ( null !== $chunk ) {
+				continue;
+			}
+			++$null_seen;
+			if ( $null_seen === $inner_block_index ) {
+				unset( $parent_block['innerContent'][ $i ] );
+				break;
+			}
+		}
+		$parent_block['innerContent'] = array_values( $parent_block['innerContent'] );
+
+		unset( $parent_block['innerBlocks'][ $inner_block_index ] );
+		$parent_block['innerBlocks'] = array_values( $parent_block['innerBlocks'] );
 	}
 
 	public function inject_theme_attribute_in_content( $template_content ) {

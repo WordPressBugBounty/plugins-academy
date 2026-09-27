@@ -12,18 +12,18 @@ class Request {
 		$this->base = $base;
 	}
 
-	public function get( string $path ) : array {
-		$res = wp_remote_get( $this->base . $path );
+	public function get( string $path ): array {
+		$res = wp_safe_remote_get( $this->base . $path, [ 'timeout' => 3 ] );
 		return is_wp_error( $res ) ? [] : json_decode( $res['body'] ?? '{}', true );
 	}
 
-	public function get_items( $playlist_id, $api_key ) : array {
+	public function get_items( $playlist_id, $api_key ): array {
 		$next_page_token = '';
 		$videos = [];
 		do {
 			$api_url = $this->base . "/playlistItems?part=snippet&maxResults=50&playlistId={$playlist_id}&key={$api_key}&pageToken={$next_page_token}";
 
-			$response = wp_remote_get( $api_url );
+			$response = wp_safe_remote_get( $api_url, [ 'timeout' => 3 ] );
 			$body = wp_remote_retrieve_body( $response );
 			$data = json_decode( $body, true );
 

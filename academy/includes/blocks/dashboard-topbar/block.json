@@ -1,0 +1,40 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/dashboard-topbar",
+	"title": "Dashboard Top Bar",
+	"category": "academy",
+	"description": "The page title and the buttons beside it.",
+	"textdomain": "academy",
+	"attributes": {
+		"showTitle": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"spacing": {
+			"padding": true,
+			"margin": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"interactivity": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"ancestor": [
+		"academy/dashboard"
+	],
+	"parent": [
+		"academy/dashboard"
+	]
+}

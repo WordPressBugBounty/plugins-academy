@@ -44,6 +44,5 @@ final class Woocommerce implements AddonInterface {
 	}
 
 	public function addon_activation_hook() {
-
 	}
 }

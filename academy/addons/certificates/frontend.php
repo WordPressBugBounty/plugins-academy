@@ -40,9 +40,15 @@ class Frontend {
 		if ( get_query_var( 'post_type' ) === 'academy_courses' && get_query_var( 'source' ) === 'certificate' ) {
 			add_filter( 'ablocks/is_allow_block_inline_assets', '__return_true' );
 			$course_id = get_the_ID();
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public shareable certificate URL; value is only a sanitized display identifier, no state change.
-			$verification_id = isset( $_GET['verify'] ) ? sanitize_text_field( wp_unslash( $_GET['verify'] ) ) : '';
+			$verification_id = isset( $_GET['verify'] ) ? sanitize_text_field( wp_unslash( $_GET['verify'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public certificate verification link.
 			$certificate_id = get_post_meta( $course_id, 'academy_course_certificate_id', true );
+			// A course can point at a certificate that no longer exists. Treat
+			// that as "not set" so it falls back to the primary, rather than
+			// handing a dead id to the renderer, which bails silently and
+			// serves the course page in place of the PDF.
+			if ( $certificate_id && ! CertificateHelper::certificate_exists( $certificate_id ) ) {
+				$certificate_id = 0;
+			}
 			if ( ! $certificate_id ) {
 				$certificate_id = Helper::get_settings( 'academy_primary_certificate_id' );
 			}

@@ -77,7 +77,7 @@ trait LessonSchema {
 							'type'          => 'integer',
 						],
 						'video_duration' => [
-							'type'   => 'object',
+							'type'   => [ 'object', 'null' ],
 						],
 						'video_source' => [
 							'type'          => [ 'object', 'null' ],
@@ -150,7 +150,7 @@ trait LessonSchema {
 						'style'             => true,
 					);
 
-					add_filter( 'safe_style_css', function( $styles ) {
+					add_filter( 'safe_style_css', function ( $styles ) {
 						$styles[] = 'display';
 						$styles[] = 'align-items';
 						$styles[] = 'justify-content';
@@ -220,8 +220,14 @@ trait LessonSchema {
 						'type'          => 'integer',
 						'sanitize_callback' => 'absint',
 					],
+					// A text lesson never gets this meta written (the seeder and
+					// the lesson form both skip it when there is no video), so
+					// the REST client reads it back as null and reposts that
+					// same null on every other save — trash included. Allowing
+					// null here as well as object is what keeps that round
+					// trip from failing schema validation.
 					'video_duration' => [
-						'type'   => 'object',
+						'type'   => [ 'object', 'null' ],
 						'properties' => [
 							'hours' => [
 								'type'          => 'integer',

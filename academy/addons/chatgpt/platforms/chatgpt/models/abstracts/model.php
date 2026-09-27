@@ -21,11 +21,11 @@ abstract class Model {
 		$this->api    = $api;
 		$this->prompt = $prompt;
 	}
-	abstract public function headers() : array;
+	abstract public function headers(): array;
 
-	abstract public function payload() : array;
+	abstract public function payload(): array;
 
-	public function request() : HttpResponse {
+	public function request(): HttpResponse {
 		$this->http->set_headers( $this->headers() );
 		$this->http->set_payload( $this->payload() );
 

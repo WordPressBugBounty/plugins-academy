@@ -9,11 +9,13 @@ use Exception;
 
 class BaseListeners {
 	public function get_all_webhooks() {
+		// phpcs:disable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_numberposts -- needs the complete (small, bounded) set
 		$args = array(
 			'post_type'   => 'academy_webhook',
 			'numberposts' => -1,
 			'post_status' => 'publish'
 		);
+		// phpcs:enable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_numberposts
 
 		return get_posts( apply_filters( 'academy_webhooks_query_args', $args ) );
 	}

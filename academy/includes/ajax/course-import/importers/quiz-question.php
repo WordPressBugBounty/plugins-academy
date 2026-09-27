@@ -38,7 +38,7 @@ class QuizQuestion implements Interfaces\Insertable {
 		$this->wpdb    = $GLOBALS['wpdb'];
 	}
 
-	public function insert() : int {
+	public function insert(): int {
 
 		$res = $this->wpdb->insert( $this->wpdb->prefix . 'academy_quiz_questions', [
 			'quiz_id'             => $this->quiz->id,
@@ -69,7 +69,7 @@ class QuizQuestion implements Interfaces\Insertable {
 		return $this->id;
 	}
 
-	protected function insert_answers() : void {
+	protected function insert_answers(): void {
 		if ( 'fillInTheBlanks' === $this->type ) {
 			( new QuizAnswer( $this->type, [], $this->answer, $this ) )->insert();
 			return;

@@ -13,7 +13,7 @@ class NewEnrollment implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy/course/after_enroll',
-			function( $course_id, $enroll_id, $user_id ) use ( $deliver_callback, $webhook ) {
+			function ( $course_id, $enroll_id, $user_id ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(
@@ -30,7 +30,7 @@ class NewEnrollment implements ListenersInterface {
 		$data = array_merge( Payload::get_course_data( $course_id ), array(
 			'enroll_date'        => self::enroll_date( $enroll_id ),
 			'_user'               => Payload::get_user_data( $user_id ),
-			'user_profile_image_id' => attachment_url_to_postid( $image_url ),
+			'user_profile_image_id' => \Academy\Helper::attachment_url_to_postid( $image_url ),
 			'user_profile_image_url' => $image_url,
 		) );
 

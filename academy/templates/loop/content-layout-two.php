@@ -20,7 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	// Display course category if available
 	if ( ! empty( $categories ) ) {
 		foreach ( $categories as $category ) {
-			echo '<p class="academy-course__meta academy-course__meta--category"><a href="' . esc_url( get_term_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a></p>';
+			$category_link = get_term_link( $category );
+			if ( is_wp_error( $category_link ) ) {
+				continue;
+			}
+			echo '<p class="academy-course__meta academy-course__meta--category"><a href="' . esc_url( $category_link ) . '">' . esc_html( $category->name ) . '</a></p>';
 		}
 	}
 
@@ -38,6 +42,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 				$price = $product->get_price_html();
 			}
 		}
+	}
+
+	// No WooCommerce/EDD product price found (StoreEngine, or no engine
+	// configured at all) — fall back to the plain `academy_course_price`
+	// meta the course builder writes directly in that case, so a paid
+	// course still shows an actual amount instead of just "Paid".
+	if ( $is_paid && empty( $price ) ) {
+		$price = \Academy\Helper::get_plain_course_price_html( $course_id );
 	}
 
 	// Get course rating

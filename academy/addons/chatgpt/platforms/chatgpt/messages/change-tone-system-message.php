@@ -15,7 +15,7 @@ class ChangeToneSystemMessage extends Message {
 		You are an assistant tasked with revising the provided text to adopt a {tone} tone. Maintain the original meaning of the content while ensuring the tone aligns with a {tone} style. Ensure that the number of sentences in the output is equal to the number of sentences in the input. Don’t exceed the input character limit, just change the tone.
 	';
 
-	public function get( array $input ) : array {
+	public function get( array $input ): array {
 		if ( boolval( $input['html'] ?? false ) ) {
 			$this->content .= ' Please use some html formatting tag if needed.';
 		} else {

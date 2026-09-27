@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Exception;
 class HpLesson extends Base\Lesson {
 
-	protected function set_default() : void {
+	protected function set_default(): void {
 		$this->data = wp_parse_args( $this->data, [
 			'lesson_author'       => get_current_user_id(),
 			'lesson_date'         => '',
@@ -45,7 +45,7 @@ class HpLesson extends Base\Lesson {
 		return 0 === $existing_id;
 	}
 
-	public static function by_id( int $id, bool $skip_meta = false, ?int $author = null, ?string $status = null ) : self {
+	public static function by_id( int $id, bool $skip_meta = false, ?int $author = null, ?string $status = null ): self {
 		$ins = new self();
 
 		$sql = "SELECT * FROM {$ins->table} WHERE ID = %d";
@@ -65,7 +65,7 @@ class HpLesson extends Base\Lesson {
 		return self::get_lesson( $row, $ins, $skip_meta );
 	}
 
-	public static function by_slug( string $slug, bool $skip_meta = false, ?int $author = null ) : self {
+	public static function by_slug( string $slug, bool $skip_meta = false, ?int $author = null ): self {
 		$ins = new self();
 
 		$sql = "SELECT * FROM {$ins->table} WHERE lesson_name = %s";
@@ -86,7 +86,7 @@ class HpLesson extends Base\Lesson {
 		);
 	}
 
-	public static function by_title( string $title, bool $skip_meta = false, ?int $author = null ) : self {
+	public static function by_title( string $title, bool $skip_meta = false, ?int $author = null ): self {
 		$ins = new self();
 
 		$sql = "SELECT * FROM {$ins->table} WHERE lesson_title = %s";
@@ -107,7 +107,7 @@ class HpLesson extends Base\Lesson {
 		);
 	}
 
-	protected static function get_lesson( ?array $data, self $ins, bool $skip_meta = false ) : self {
+	protected static function get_lesson( ?array $data, self $ins, bool $skip_meta = false ): self {
 		if ( is_array( $data ) && isset( $data['ID'] ) ) {
 			$meta_data = $skip_meta ? [] : $ins->wpdb->get_results(
 				$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -122,7 +122,7 @@ class HpLesson extends Base\Lesson {
 		}
 		throw new Exception( esc_html__( 'Invalid Lesson ID.', 'academy' ) );
 	}
-	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ) : int {
+	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ): int {
 		$ins = new self();
 		$query = "SELECT COUNT(*) FROM {$ins->table}";
 		if ( 'any' !== $status ) {
@@ -136,7 +136,7 @@ class HpLesson extends Base\Lesson {
 		return (int) $ins->wpdb->get_var( $query );
 	}
 
-	public static function get_slug_by_id( int $id ) : ?string {
+	public static function get_slug_by_id( int $id ): ?string {
 		$ins = new self();
 		return $ins->wpdb->get_row(
 			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -146,7 +146,7 @@ class HpLesson extends Base\Lesson {
 			ARRAY_A
 		)['lesson_name'] ?? null;
 	}
-	public static function get_title_by_id( int $id ) : ?string {
+	public static function get_title_by_id( int $id ): ?string {
 		$ins = new self();
 		return $ins->wpdb->get_row(
 			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -156,7 +156,7 @@ class HpLesson extends Base\Lesson {
 			ARRAY_A
 		)['lesson_title'] ?? null;
 	}
-	public static function get_lesson_meta_data( int $id ) : array {
+	public static function get_lesson_meta_data( int $id ): array {
 		$ins = new self();
 		return $ins->set_meta_data( array_column( $ins->wpdb->get_results(
 			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -184,7 +184,7 @@ class HpLesson extends Base\Lesson {
 		return null;
 	}
 
-	public function save_data() : void {
+	public function save_data(): void {
 		$this->data['lesson_name'] = sanitize_title( empty( $this->data['lesson_name'] ?? '' ) ? $this->data['lesson_title'] : $this->data['lesson_name'] );
 
 		if ( false === $this->ignore_slug_check && ! $this->is_slug_available() ) {
@@ -220,13 +220,12 @@ class HpLesson extends Base\Lesson {
 		}//end if
 	}
 
-	public function save_meta_data() : void {
+	public function save_meta_data(): void {
 		$meta = apply_filters( 'academy/lesson/set_meta_data', [] );
 		if ( $this->is_insert && ! empty( $meta ) ) {
 			$this->set_meta_data( $meta );
 		}
 		if ( ! empty( $this->id ) && is_array( $this->meta ) && count( $this->meta ) > 0 ) {
-			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 			$meta_keys = $this->wpdb->get_col(
 				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					"SELECT meta_key FROM {$this->meta_table} WHERE lesson_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -238,36 +237,36 @@ class HpLesson extends Base\Lesson {
 					$value = wp_json_encode( $value, JSON_UNESCAPED_SLASHES );
 				}
 
-				if ( in_array( $key, $meta_keys ) ) {
+				if ( in_array( (string) $key, (array) $meta_keys, true ) ) {
+					// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- meta/tax lookup the feature depends on; no cheaper equivalent
 					$this->wpdb->update(
 						$this->meta_table,
 						[
-							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 							'meta_value'    => $value,
 						],
 						[
 							'lesson_id' => $this->id,
-							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 							'meta_key'  => $key,
 						]
 					);
+					// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				} else {
+					// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- meta/tax lookup the feature depends on; no cheaper equivalent
 					$this->wpdb->insert(
 						$this->meta_table,
 						[
 							'lesson_id'     => $this->id,
-							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 							'meta_key'      => $key,
-							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 							'meta_value'    => $value,
 						]
 					);
+					// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				}//end if
 			}//end foreach
 		}//end if
 	}
 
-	public function delete() : void {
+	public function delete(): void {
 
 		$is_lesson_delete = $this->wpdb->delete(
 			$this->table,
@@ -281,5 +280,13 @@ class HpLesson extends Base\Lesson {
 		if ( false === $is_lesson_delete || false === $is_lesson_meta_delete ) {
 			throw new Exception( esc_html__( 'Lesson deletion failed. Please try again.', 'academy' ) );
 		}
+
+		/**
+		 * Fires after a lesson kept in the custom tables is deleted. Post-backed
+		 * lessons are covered by WordPress's own `deleted_post` instead.
+		 *
+		 * @param int $lesson_id Deleted lesson ID.
+		 */
+		do_action( 'academy/lesson/deleted', (int) $this->id );
 	}
 }

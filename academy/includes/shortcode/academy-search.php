@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Shortcode;
+namespace Academy\Shortcode;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -19,7 +19,7 @@ class AcademySearch {
 			's' => $keyword,
 			'post_type' => 'academy_courses',
 		);
-		$query = new \WP_Query( apply_filters( 'academy/course_search_query_args', $args ) );
+		$query = new \WP_Query( apply_filters( ' academy/course_search_query_args', $args ) );
 		$item_markup = '';
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) :
@@ -56,5 +56,3 @@ class AcademySearch {
 		return apply_filters( 'academy/templates/shortcode/academy_course_search', ob_get_clean() );
 	}
 }
-
-

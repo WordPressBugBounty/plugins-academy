@@ -14,7 +14,7 @@ class LessonPublished implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy_new_lesson_published',
-			function( $lesson ) use ( $deliver_callback, $webhook ) {
+			function ( $lesson ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(

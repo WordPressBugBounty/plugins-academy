@@ -12,7 +12,7 @@ abstract class Prompt {
 		$this->input = $input;
 	}
 
-	public function get() : array {
+	public function get(): array {
 		$messages = [];
 		foreach ( $this->message_classes as $message ) {
 			$ins = new $message();

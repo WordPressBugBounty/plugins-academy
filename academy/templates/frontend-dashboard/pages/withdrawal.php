@@ -12,11 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="academy-dashboard-withdrawal-info__content">
 				<span class="academy-cta-sub-title"><?php esc_html_e( 'Total Earning', 'academy' ); ?></span>
-				<h4 class="academy-cta-title"><?php echo esc_html( $earning->withdraw_currency_symbol . '' . ( $earning->instructor_amount ?? 0 ) ); ?></h4>
+				<h4 class="academy-cta-title"><?php echo esc_html( $earning->withdraw_currency_symbol . '' . ( $earning->total_earning ?? 0 ) ); ?></h4>
 			</div>
 			<div class="academy-dashboard-withdrawal-info__content">
 				<span class="academy-cta-sub-title"><?php esc_html_e( 'Available Balance', 'academy' ); ?></span>
-				<h4 class="academy-cta-title"><?php echo esc_html( $earning->withdraw_currency_symbol . ' ' . ( $earning->instructor_amount ? $earning->instructor_amount - $earning->withdraws_amount : 0 ) ); ?></h4>
+				<h4 class="academy-cta-title"><?php echo esc_html( $earning->withdraw_currency_symbol . ' ' . ( $earning->balance ?? 0 ) ); ?></h4>
 			</div>
 		</div>
 		<div class="academy-dashboard-withdrawal-info__action"></div>
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php esc_html_e( 'Manage your withdrawal method', 'academy' ); ?> <a href="<?php echo esc_url( Academy\Helper::get_frontend_dashboard_endpoint_url( 'withdraw' ) ); ?>"><?php esc_html_e( 'Settings', 'academy' ); ?></a><strong>
 	</p>
 	<?php
-	if ( (int) $earning->instructor_amount > (int) \Academy\Helper::get_settings( 'instructor_minimum_withdraw_amount' ) ) :
+	if ( (float) ( $earning->balance ?? 0 ) > (float) \Academy\Helper::get_settings( 'instructor_minimum_withdraw_amount' ) ) :
 		?>
 	<form id="academy_withdrawal" class="academy-dashboard-instructor-earning-withdrawal" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 		<?php wp_nonce_field( 'academy_nonce', 'security' ); ?>
@@ -139,8 +139,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 								// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
 								echo '<img src="' . esc_url( ACADEMY_ASSETS_URI . 'images/NoDataAvailable.svg' ) . '" alt="oops">'; ?>
 						</div>
-						<h3 class="academy-oops__heading"><?php esc_html_e( 'No data Available!!', 'academy' ); ?></h3>
-						<h3 class="academy-oops__text"><?php esc_html_e( 'No purchase data was found to see the available list here.', 'academy' ); ?></h3>
+						<h3 class="academy-oops__heading"><?php esc_html_e( 'Nothing here yet', 'academy' ); ?></h3>
+						<h3 class="academy-oops__text"><?php esc_html_e( 'No withdrawals yet.', 'academy' ); ?></h3>
 					</div>
 				<?php endif; ?>
 			</div>

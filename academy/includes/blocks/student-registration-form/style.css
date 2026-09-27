@@ -1,0 +1,18 @@
+/* Style presets for the form. */
+.wp-block-academy-student-registration-form.is-style-card > * {
+	max-width: 480px;
+	margin-inline: auto;
+	padding: 2rem;
+	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border-radius: 14px;
+	background: var(--academy-surface-color, #fff);
+	box-shadow: 0 12px 32px rgba(16, 24, 40, 0.08);
+}
+
+.wp-block-academy-student-registration-form.is-style-minimal > *,
+.wp-block-academy-student-registration-form.is-style-minimal form {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+}

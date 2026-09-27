@@ -14,6 +14,7 @@ use Academy\Ajax\Student;
 use Academy\Ajax\Miscellaneous;
 use Academy\Ajax\Settings;
 use Academy\Ajax\PluginDownloader;
+use Academy\Ajax\AttachmentDownload;
 use Academy\Lesson\LessonMigration\Ajax as MigrationAjax;
 
 class Ajax {
@@ -32,5 +33,6 @@ class Ajax {
 		( new Settings() )->dispatch_actions();
 		( new MigrationAjax() )->dispatch_actions();
 		( new PluginDownloader() )->dispatch_actions();
+		( new AttachmentDownload() )->dispatch_actions();
 	}
 }

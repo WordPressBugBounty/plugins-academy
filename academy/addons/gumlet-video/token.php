@@ -106,11 +106,9 @@ class Token {
 
 			$signed_url .= '?' . http_build_query( $final_params );
 
-		} else {
-			if ( ! empty( $optional_params ) ) {
+		} elseif ( ! empty( $optional_params ) ) {
 				$signed_url .= '?' . http_build_query( $optional_params );
-			}
-		}
+		}//end if
 
 		return [
 			'signed_url' => $signed_url,

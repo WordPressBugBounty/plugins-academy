@@ -45,10 +45,9 @@ class Assignment implements Interfaces\Insertable {
 				'total_points'           => absint( $data['meta']['total_points'] ?? 0 ),
 			];
 		}
-
 	}
 
-	public function insert() : int {
+	public function insert(): int {
 		$id = wp_insert_post( array_merge( $this->is_edit ? [ 'ID' => $this->id ] : [], [
 			'post_title' => $this->title,
 			'post_type'  => 'academy_assignments',
@@ -65,7 +64,7 @@ class Assignment implements Interfaces\Insertable {
 		return $this->id;
 	}
 
-	protected function insert_meta() : void {
+	protected function insert_meta(): void {
 		foreach ( $this->meta as $key => $value ) {
 			update_post_meta( $this->id, $key, $value );
 		}

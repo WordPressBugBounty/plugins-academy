@@ -8,7 +8,7 @@ if ( count( $benefits ) === 0 ) {
 }
 ?>
 <div class="academy-single-course__content-item academy-single-course__content-item--benefits">
-	<h4 class="benefits-title"><?php esc_html_e( 'What You\'ll Learn?', 'academy' ); ?></h4>   
+	<h2 class="benefits-title"><?php esc_html_e( 'What You\'ll Learn?', 'academy' ); ?></h2>   
 	<div class="benefits-content">
 		<?php
 		if ( count( $benefits ) > 0 ) :

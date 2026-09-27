@@ -11,16 +11,20 @@ use AcademyWebhooks\Classes\Payload;
 class CoursePublished implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
-			'rest_after_insert_academy_courses',
-			function( $course ) use ( $deliver_callback, $webhook ) {
+			'transition_post_status',
+			function ( $new_status, $old_status, $post ) use ( $deliver_callback, $webhook ) {
+				if ( 'academy_courses' !== $post->post_type || 'publish' !== $new_status || 'publish' === $old_status ) {
+					return;
+				}
+
 				call_user_func_array(
 					$deliver_callback,
 					array(
 						$webhook,
-						self::get_payload( $course )
+						self::get_payload( $post )
 					)
 				);
-			}, 10
+			}, 10, 3
 		);
 	}
 

@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Post;
+namespace Academy\Post;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -43,6 +43,10 @@ class Course extends AbstractPostHandler {
 		$topic_id = isset( $payload['topic_id'] ) ? $payload['topic_id'] : 0;
 		$user_id   = (int) get_current_user_id();
 
+		if ( ! Helper::is_enrolled( $course_id, $user_id ) ) {
+			wp_die( esc_html__( 'You must be enrolled in this course to mark lessons as complete.', 'academy' ) );
+		}
+
 		do_action( 'academy/frontend/before_mark_topic_complete', $topic_type, $course_id, $topic_id, $user_id );
 
 		$option_name = 'academy_course_' . $course_id . '_completed_topics';
@@ -59,6 +63,7 @@ class Course extends AbstractPostHandler {
 
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 		wp_safe_redirect( $referer_url );
+		exit;
 	}
 
 	public function insert_question( $form_data ) {
@@ -74,7 +79,7 @@ class Course extends AbstractPostHandler {
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 		$current_user = wp_get_current_user();
 
-		if ( current_user_can( 'administrator' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
+		if ( current_user_can( 'manage_options' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
 			$comment_data = array(
 				'comment_post_ID'      => $course_id,
 				'comment_parent'       => $payload['parent'] ?? 0,
@@ -146,7 +151,7 @@ class Course extends AbstractPostHandler {
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 		$current_user = wp_get_current_user();
 
-		if ( current_user_can( 'administrator' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
+		if ( current_user_can( 'manage_options' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
 			$comment_data = array(
 				'comment_post_ID'      => $lesson_id,
 				'comment_parent'       => $payload['parent'] ?? 0,

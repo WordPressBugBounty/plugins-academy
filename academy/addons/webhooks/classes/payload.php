@@ -387,7 +387,7 @@ class Payload {
 			'_academy_booking_schedule_repeated_times',
 			true
 		);
-		foreach ( $repeated_days as $day ) {
+		foreach ( (array) $repeated_days as $day ) {
 			$schedules['day'] = $day['day'];
 			foreach ( $day['scheduleTimes'] as $time ) {
 				$schedules['start_time'] = $time['start_time'];
@@ -487,7 +487,6 @@ class Payload {
 			'ID' => (int) $zoom_id,
 			'title' => wp_specialchars_decode( $zoom->post_title ),
 			'permalink' => get_permalink( $zoom_id ),
-			'status' => $zoom->post_status,
 			'short_description' => $zoom->post_excerpt,
 			'slug' => $zoom->post_name,
 			'description' => $zoom->post_content,

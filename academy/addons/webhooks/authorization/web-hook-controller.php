@@ -40,11 +40,19 @@ class WebHookController extends WP_REST_Posts_Controller {
 			return new WP_Error( 'unauthorized', __( 'Unauthorized.', 'academy' ), [ 'status' => 401 ] );
 		}
 
-		if ( current_user_can( 'manage_options' ) ) {
+		// manage_academy_instructor is what Academy-Pro's role-permission addon
+		// elevates a staff member to for the duration of an academy/v1 request
+		// (see AcademyProRolePermission\Caps::elevate()) — the same base check
+		// every other Academy REST controller accepts. Without it here, a staff
+		// user holding the `academy.webhooks` permission could never pass this
+		// hardcoded manage_options-only check, and RestGuard's per-permission
+		// enforcement (which is supposed to be the actual gate) never even gets
+		// a chance to run. Found via a live report: webhook create failed for
+		// every staff member regardless of granted permissions.
+		if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_academy_instructor' ) ) {
 			return true;
 		}
 
 		return new WP_Error( 'unauthorized', __( 'Unauthorized.', 'academy' ), [ 'status' => 401 ] );
 	}
-
 }

@@ -1,0 +1,80 @@
+/* The dashboard blocks in the block editor: the real parts, laid out like the page. */
+.editor-styles-wrapper .academy-dash-editor {
+	display: block;
+}
+
+.academy-dash-editor > .block-editor-inner-blocks > .block-editor-block-list__layout {
+	display: grid;
+	grid-template-columns: var(--academy-dashboard-sidebar-width, 260px) minmax(0, 1fr);
+	grid-template-rows: auto 1fr;
+	column-gap: 24px;
+	align-items: start;
+}
+
+.academy-dash-editor-part.is-sidebar {
+	grid-column: 1;
+	grid-row: 1 / span 2;
+}
+
+.academy-dash-editor-part.is-topbar,
+.academy-dash-editor > .block-editor-inner-blocks > .block-editor-block-list__layout > :not(.is-sidebar) {
+	grid-column: 2;
+}
+
+.academy-dash-editor[data-sidebar="right"] > .block-editor-inner-blocks > .block-editor-block-list__layout {
+	grid-template-columns: minmax(0, 1fr) var(--academy-dashboard-sidebar-width, 260px);
+}
+
+.academy-dash-editor[data-sidebar="right"] .academy-dash-editor-part.is-sidebar {
+	grid-column: 2;
+}
+
+.academy-dash-editor[data-sidebar="right"] > .block-editor-inner-blocks > .block-editor-block-list__layout > :not(.is-sidebar) {
+	grid-column: 1;
+}
+
+/* Links in the preview do nothing. */
+.academy-dash-editor-part a,
+.academy-dash-editor-part button {
+	pointer-events: none;
+}
+
+.academy-dash-editor-part .academy-dash-sidebar.is-sticky {
+	position: static;
+	max-height: none;
+}
+
+.academy-dash-editor-content {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.academy-dash-editor-content > .block-editor-inner-blocks > .block-editor-block-list__layout {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.academy-dash-editor-content > .block-editor-inner-blocks > .block-editor-block-list__layout > * {
+	margin-block: 0;
+}
+
+.academy-dash-editor-note {
+	margin: 0;
+	padding: 10px 12px;
+	border: 1px dashed var(--academy-border-color, #d1d5db);
+	border-radius: 8px;
+	font-size: 12px;
+	color: var(--academy-description-color, #6b7280);
+}
+
+/* The home page sits under the top bar; the front end's named areas do not exist here. */
+.academy-dash-editor .academy-dash-editor-content {
+	grid-area: auto;
+	grid-column: 2;
+}
+
+.academy-dash-editor[data-sidebar="right"] .academy-dash-editor-content {
+	grid-column: 1;
+}

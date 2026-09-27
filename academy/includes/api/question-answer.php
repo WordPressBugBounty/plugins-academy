@@ -80,7 +80,23 @@ class QuestionAnswer extends \WP_REST_Controller {
 			unset( $args['parent'] );
 		}
 
-		if ( ! current_user_can( 'administrator' ) && ! empty( $instructor_course_ids ) ) {
+		// Scope the thread to a single curriculum item (lesson/quiz/assignment) when
+		// a topic id is supplied. Both questions and their answers carry the topic
+		// meta (answers inherit it from their parent), so threads stay intact.
+		$topic_id = $request->get_param( 'topic' );
+		if ( ! empty( $topic_id ) ) {
+			// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- meta/tax lookup the feature depends on; no cheaper equivalent
+			$args['meta_query'] = array(
+				array(
+					'key'     => 'academy_qa_topic_id',
+					'value'   => (int) $topic_id,
+					'compare' => '=',
+				),
+			);
+			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+		}
+
+		if ( ! current_user_can( 'manage_options' ) && ! empty( $instructor_course_ids ) ) {
 			$args['post__in'] = $instructor_course_ids;
 		}
 
@@ -153,6 +169,12 @@ class QuestionAnswer extends \WP_REST_Controller {
 				'sanitize_callback' => 'absint',
 				'validate_callback' => 'rest_validate_request_arg',
 			),
+			'topic'   => array(
+				'description'       => __( 'Scope questions to a single curriculum item (lesson/quiz/assignment) id.', 'academy' ),
+				'type'              => 'integer',
+				'sanitize_callback' => 'absint',
+				'validate_callback' => 'rest_validate_request_arg',
+			),
 			'search'   => array(
 				'description'       => __( 'Limit results to those matching a string.', 'academy' ),
 				'type'              => 'string',
@@ -185,26 +207,56 @@ class QuestionAnswer extends \WP_REST_Controller {
 			'status' => $comment->comment_approved,
 			'type' => $comment->comment_type,
 			'meta' => [
-				'question_title' => get_comment_meta( (int) $comment->comment_ID, 'academy_question_title', true )
+				'question_title' => get_comment_meta( (int) $comment->comment_ID, 'academy_question_title', true ),
+				'topic_id'       => (int) get_comment_meta( (int) $comment->comment_ID, 'academy_qa_topic_id', true ),
+				'topic_type'     => get_comment_meta( (int) $comment->comment_ID, 'academy_qa_topic_type', true ),
 			]
 		];
 	}
 
 	public function insert_qa() {
 		check_ajax_referer( 'academy_nonce', 'security' );
-		$course_id = isset( $_POST['post'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['post'] ) ) : 0;
+		$course_id = isset( $_POST['post'] ) ? absint( $_POST['post'] ) : 0;
 
-		$is_administrator = current_user_can( 'administrator' );
+		$is_administrator = current_user_can( 'manage_options' );
 		$is_instructor  = \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), $course_id );
 		$enrolled    = \Academy\Helper::is_enrolled( $course_id, get_current_user_id() );
 		$is_public = \Academy\Helper::get_course_type( $course_id ) === 'public' ? true : false;
 
 		if ( $is_administrator || $is_instructor || $enrolled || $is_public ) {
-			$parent = isset( $_POST['parent'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['parent'] ) ) : 0;
+			$parent = isset( $_POST['parent'] ) ? absint( $_POST['parent'] ) : 0;
 			$content = isset( $_POST['content'] ) ? sanitize_text_field( wp_unslash( $_POST['content'] ) ) : '';
-			$comment_approved = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
+			// A reply has to answer a Q&A thread of this same course.
+			if ( $parent > 0 ) {
+				$parent_comment = get_comment( $parent );
+				if ( ! $parent_comment || 'academy_qa' !== $parent_comment->comment_type || (int) $parent_comment->comment_post_ID !== $course_id ) {
+					wp_send_json_error( __( 'Sorry, you have not permission to create QA.', 'academy' ) );
+				}
+			}
+			// The status follows from what is posted, never from the request: a
+			// new question waits for an answer, a reply answers it.
+			$comment_approved = $parent > 0 ? 'answered' : 'waiting_for_answer';
 			$title = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
 			$current_user = wp_get_current_user();
+
+			// Curriculum-item context so the drawer can scope "On this lesson/quiz/…"
+			// vs "All course". Replies inherit their question's topic so the whole
+			// thread stays inside the same item scope.
+			$topic_id   = isset( $_POST['topic_id'] ) ? absint( $_POST['topic_id'] ) : 0;
+			$topic_type = isset( $_POST['topic_type'] ) ? sanitize_text_field( wp_unslash( $_POST['topic_type'] ) ) : '';
+			if ( $parent > 0 ) {
+				$inherited_topic = (int) get_comment_meta( $parent, 'academy_qa_topic_id', true );
+				if ( $inherited_topic ) {
+					$topic_id   = $inherited_topic;
+					$topic_type = get_comment_meta( $parent, 'academy_qa_topic_type', true );
+				}
+			}
+
+			$comment_meta = array( 'academy_question_title' => $title );
+			if ( $topic_id > 0 ) {
+				$comment_meta['academy_qa_topic_id']   = $topic_id;
+				$comment_meta['academy_qa_topic_type'] = $topic_type;
+			}
 
 			$default_data = array(
 				'comment_content'      => '',
@@ -228,9 +280,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 				'comment_author'       => $current_user->user_login,
 				'comment_author_email' => $current_user->user_email,
 				'comment_author_url'   => $current_user->user_url,
-				'comment_meta'         => array(
-					'academy_question_title' => $title
-				)
+				'comment_meta'         => $comment_meta,
 			), $default_data );
 
 			$comment_id = wp_insert_comment( $comment_data );
@@ -253,21 +303,23 @@ class QuestionAnswer extends \WP_REST_Controller {
 	/**
 	 * A Q&A comment may only be managed by an administrator or by an instructor of
 	 * the course the comment belongs to. The bare `manage_academy_instructor`
-	 * capability is not enough — without this check any instructor could edit or
-	 * delete Q&A on courses owned by other instructors.
+	 * capability alone is not scoped to ownership — without this check any
+	 * instructor could approve/edit or delete Q&A on courses owned by other
+	 * instructors.
 	 *
 	 * @param int $comment_ID Comment ID.
 	 * @return bool
 	 */
 	protected function current_user_can_manage_qa( $comment_ID ) {
+		// Only Q&A comments: not reviews, completion records or other comments.
+		$comment = get_comment( $comment_ID );
+		if ( ! $comment || 'academy_qa' !== $comment->comment_type ) {
+			return false;
+		}
 		if ( current_user_can( 'manage_options' ) ) {
 			return true;
 		}
 		if ( ! current_user_can( 'manage_academy_instructor' ) ) {
-			return false;
-		}
-		$comment = get_comment( $comment_ID );
-		if ( ! $comment ) {
 			return false;
 		}
 		return (bool) \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), (int) $comment->comment_post_ID );
@@ -276,9 +328,12 @@ class QuestionAnswer extends \WP_REST_Controller {
 	public function update_qa() {
 		check_ajax_referer( 'academy_nonce', 'security' );
 
-		$comment_ID = isset( $_POST['id'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['id'] ) ) : 0;
+		$comment_ID = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
 		if ( $this->current_user_can_manage_qa( $comment_ID ) ) {
 			$comment_approved = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
+			if ( ! in_array( $comment_approved, array( 'answered', 'waiting_for_answer' ), true ) ) {
+				wp_send_json_error( __( 'Invalid status.', 'academy' ) );
+			}
 			wp_update_comment( array(
 				'comment_ID'                => $comment_ID,
 				'comment_approved'          => $comment_approved,
@@ -290,7 +345,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 	}
 	public function delete_qa() {
 		check_ajax_referer( 'academy_nonce', 'security' );
-		$comment_ID = isset( $_POST['id'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['id'] ) ) : 0;
+		$comment_ID = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
 		if ( $this->current_user_can_manage_qa( $comment_ID ) ) {
 			$force = isset( $_POST['force'] ) ? sanitize_text_field( wp_unslash( $_POST['force'] ) ) : '';
 			$comment = $this->prepare_comment_for_response( get_comment( $comment_ID ) );
@@ -364,7 +419,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 			}
 
 			// If PHP rendering is disabled
-			if ( ! \Academy\Helper::get_settings( 'is_enabled_lessons_php_render' ) ) {
+			if ( ! \Academy\Helper::is_server_learn_page() ) {
 				$course_permalink = \Academy\Helper::get_start_course_permalink( $course_id );
 				return esc_url( $course_permalink ) . '#/lesson/' . $post->ID;
 			}
@@ -380,5 +435,4 @@ class QuestionAnswer extends \WP_REST_Controller {
 
 		return $permalink;
 	}
-
 }

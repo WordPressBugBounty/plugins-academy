@@ -31,20 +31,38 @@ class Migration {
 		$this->migrate_1_9_0( $academy_version );
 		$this->migrate_1_9_14( $academy_version );
 		$this->migrate_2_3_1( $academy_version );
-		$this->migrate_3_2_3();
-		$this->migrate_3_3_11( $academy_version );
 
 		// Quiz max question allowed
 		if ( ! get_option( 'academy_quiz_question_max_allowed' ) ) {
 			$this->migrate_3_3_2();
 		}
 
+		// Resume Mode quizzes can no longer use Random question order (no way
+		// to keep a resumed attempt on the same sequence it started with) —
+		// force any quiz already saved with that combination to Ascending.
+		if ( ! Options::get( Options::MIGRATIONS, 'quiz_resume_random_order' ) ) {
+			$this->migrate_lock_resume_random_order();
+			Options::set( Options::MIGRATIONS, 'quiz_resume_random_order', true );
+		}
+
 		// Woo settings migration
 		$this->migrate_woo_settings_3_3_6();
+
+		// Add-ons that start switched on.
+		$this->enable_default_addons();
 
 		// Save version number, flash role, and permalinks
 		if ( ACADEMY_VERSION !== $academy_version ) {
 			Settings::save_settings();
+
+			// Flag the one-time About ("What's New") redirect — but only on a
+			// real update, not a fresh install ($academy_version is empty then).
+			// Consumed once by Admin\Menu::maybe_redirect_about(). Version is the
+			// single source of truth: bump ACADEMY_VERSION and this fires once.
+			if ( ! empty( $academy_version ) ) {
+				Options::set( Options::MIGRATIONS, 'show_whats_new', ACADEMY_VERSION );
+			}
+
 			update_option( 'academy_version', ACADEMY_VERSION );
 			update_option( 'academy_flash_role_management', true );
 			\Academy\Helper::flush_rewrite_rules();
@@ -58,12 +76,6 @@ class Migration {
 			delete_option( 'academy_flash_role_management' );
 		}
 
-		// Assign instructor role to admin if missing
-		$user = new \WP_User( get_current_user_id() );
-		if ( in_array( 'administrator', $user->roles, true ) && ! in_array( 'academy_instructor', $user->roles, true ) ) {
-			$user->add_role( 'academy_instructor' );
-		}
-
 		// Lesson Gutenberg editor support for instructor
 		if ( version_compare( $academy_version, '3.2.2', '>' ) ) {
 			$role = get_role( 'manage_academy_instructor' );
@@ -72,13 +84,61 @@ class Migration {
 				$role->add_cap( 'edit_others_academy_lessons' );
 			}
 		}
-		// add question explanation column
-		if ( \Academy\Helper::get_addon_active_status( 'quizzes' ) && version_compare( $academy_version, '3.5.6', '<=' ) ) {
-			$this->migrate_add_question_explanation_column();
+		// Quiz table columns/keys (negative score, image, explanation, title
+		// type, audio, AI feedback, attempt/question key) are kept in sync by
+		// the Quizzes addon itself — see \AcademyQuizzes\Database::sync_schema().
+
+		// create attachment downloads table
+		if ( version_compare( $academy_version, '4.0.0', '<' ) ) {
+			$this->migrate_create_attachment_downloads_table();
+		}
+
+		if ( version_compare( $academy_version, '3.9.0', '<=' ) && ! Options::get( Options::MIGRATIONS, 'admin_caps_390' ) ) {
+			$this->grant_admin_academy_caps();
+			Options::set( Options::MIGRATIONS, 'admin_caps_390', 'yes' );
+		}
+
+		// Give existing sites' untouched bundled default certificates the new
+		// builder's tree, matching what a fresh install already ships with.
+		if ( \Academy\Helper::get_addon_active_status( 'certificates' ) && ! Options::get( Options::MIGRATIONS, 'certificate_defaults_v2' ) ) {
+			$this->migrate_certificate_default_designs();
+			Options::set( Options::MIGRATIONS, 'certificate_defaults_v2', true );
 		}
 	}
 
-	public function loco_translate_sync() : void {
+	public function grant_admin_academy_caps() {
+		$admin      = get_role( 'administrator' );
+		$instructor = get_role( 'academy_instructor' );
+
+		if ( ! $admin || ! $instructor ) {
+			return;
+		}
+
+		// Add instructor capabilities to administrator if missing.
+		foreach ( $instructor->capabilities as $cap => $granted ) {
+			if ( ! $admin->has_cap( $cap ) ) {
+				$admin->add_cap( $cap, $granted );
+			}
+		}
+
+		// Remove academy_instructor role from administrators.
+		$users = get_users(
+			[
+				'role'   => 'administrator',
+				'fields' => [ 'ID' ],
+			]
+		);
+
+		foreach ( $users as $user ) {
+			$user = new \WP_User( $user->ID );
+
+			if ( in_array( 'academy_instructor', $user->roles, true ) ) {
+				$user->remove_role( 'academy_instructor' );
+			}
+		}
+	}
+
+	public function loco_translate_sync(): void {
 		if ( ! is_plugin_active( 'loco-translate/loco.php' ) ) {
 			return;
 		}
@@ -380,55 +440,48 @@ class Migration {
 		}
 	}
 
+	/**
+	 * Switches on the add-ons that are on by default (Notes), once per site:
+	 * on a fresh install, and on an existing site that never set them either
+	 * way. One someone already turned off stays off, and turning it off later
+	 * sticks, since this never runs again.
+	 */
+	public function enable_default_addons() {
+		if ( Options::get( Options::MIGRATIONS, 'default_addons' ) ) {
+			return;
+		}
+
+		$default_on   = array( 'notes' );
+		$saved_addons = (array) json_decode( get_option( ACADEMY_ADDONS_SETTINGS_NAME, '{}' ), true );
+		$enabled      = array();
+
+		foreach ( $default_on as $addon_slug ) {
+			if ( ! array_key_exists( $addon_slug, $saved_addons ) ) {
+				$saved_addons[ $addon_slug ] = true;
+				$enabled[]                   = $addon_slug;
+			}
+		}
+
+		if ( $enabled ) {
+			update_option( ACADEMY_ADDONS_SETTINGS_NAME, wp_json_encode( $saved_addons ) );
+			// Later code in this request reads the add-ons from here.
+			$GLOBALS['academy_addons'] = json_decode( wp_json_encode( $saved_addons ) );
+			// Same as switching it on from the Add-ons screen: Notes creates
+			// its table and moves legacy notes over on this hook.
+			foreach ( $enabled as $addon_slug ) {
+				do_action( "academy/addons/activated_{$addon_slug}", true );
+			}
+		}
+
+		Options::set( Options::MIGRATIONS, 'default_addons', true );
+	}
+
 	public function migrate_2_3_1( $academy_version ) {
 		if ( version_compare( $academy_version, '2.3.0', '<' ) ) {
 			// Enable WooCommerce Addon
 			$saved_addons = (array) json_decode( get_option( ACADEMY_ADDONS_SETTINGS_NAME ), true );
 			$saved_addons['course-preview'] = true;
 			update_option( ACADEMY_ADDONS_SETTINGS_NAME, wp_json_encode( $saved_addons ) );
-		}
-	}
-
-	public function migrate_3_2_3() {
-		if ( ! \Academy\Helper::get_addon_active_status( 'quizzes' ) ) {
-			return;
-		}
-		if ( ! get_option( 'academy_quiz_questions_migrate_3_2_3' ) ) {
-			global $wpdb;
-			$table_name = esc_sql( $wpdb->prefix . ACADEMY_PLUGIN_SLUG . '_quiz_questions' );
-			// Check if the column exists
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE 'question_negative_score'" );
-
-			if ( empty( $column_exists ) ) {
-				// Add the new column
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-				$wpdb->query( "ALTER TABLE `$table_name` ADD `question_negative_score` DECIMAL(9,2) UNSIGNED NULL DEFAULT 0.00 AFTER `question_score`" );
-			}
-			update_option( 'academy_quiz_questions_migrate_3_2_3', true );
-		}
-	}
-
-	public function migrate_3_3_11( $academy_version ) {
-		if ( ! \Academy\Helper::get_addon_active_status( 'quizzes' ) || version_compare( $academy_version, '3.4.0', '<' ) ) {
-			return;
-		}
-
-		global $wpdb;
-
-		$table_name = esc_sql( $wpdb->prefix . ACADEMY_PLUGIN_SLUG . '_quiz_questions' );
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM `$table_name` LIKE 'question_image_id'" );
-		// Add column if missing
-		if ( ! $column_exists ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-			$wpdb->query(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				"ALTER TABLE `{$table_name}`
-				ADD `question_image_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL
-				AFTER `question_negative_score`"
-			); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 	}
 
@@ -446,7 +499,7 @@ class Migration {
 
 	public function migrate_3_3_2() {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 		$wpdb->query(
 			$wpdb->prepare(
 				"UPDATE {$wpdb->postmeta} pm
@@ -461,33 +514,92 @@ class Migration {
 				0
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		add_option( 'academy_quiz_question_max_allowed', true );
 	}
 
-	public function migrate_add_question_explanation_column() {
+	public function migrate_lock_resume_random_order() {
 		global $wpdb;
-
-		$table_name = esc_sql( $wpdb->prefix . 'academy_quiz_questions' );
-
-		// Check if column exists
-		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$column_exists = $wpdb->get_results(
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
+		$wpdb->query(
 			$wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				"SHOW COLUMNS FROM `$table_name` LIKE %s",
-				'question_explanation'
+				"UPDATE {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+				INNER JOIN {$wpdb->postmeta} pm2 ON pm2.post_id = pm.post_id
+					AND pm2.meta_key = %s
+					AND pm2.meta_value = %s
+				SET pm.meta_value = %s
+				WHERE p.post_type = %s
+				AND pm.meta_key = %s
+				AND pm.meta_value = %s",
+				'academy_quiz_feedback_mode',
+				'resume',
+				'ASC',
+				'academy_quiz',
+				'academy_quiz_questions_order',
+				'rand'
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	}
 
-		// If column does not exist → add it
-		if ( empty( $column_exists ) ) {
-			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-			$wpdb->query(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				"ALTER TABLE `$table_name`
-				ADD `question_explanation` LONGTEXT NULL
-				AFTER `question_content`"
-			);
+	/**
+	 * Give existing sites' bundled default certificates ("Certificate 1"–"Certificate 7")
+	 * the new tree-builder's polished design, matching what
+	 * `AcademyCertificates\Installer::insert_default_certificate()` already gives a
+	 * fresh install. Only touches a default that is both untouched (its
+	 * post_content still matches the shipped template) and not already on the new
+	 * builder (no `_academy_certificate_tree` meta yet) — anything customized, or
+	 * already re-seeded/edited, is left alone and keeps using the existing
+	 * on-demand `AcademyCertificates\LegacyMigrator` fallback. Never touches
+	 * post_content or `_academy_certificate_html`, so it has no effect on
+	 * already-issued PDFs; it only changes what the builder shows on next open.
+	 */
+	public function migrate_certificate_default_designs() {
+		if ( ! class_exists( '\AcademyCertificates\Helper' ) ) {
+			return;
 		}
+
+		$certificates = \AcademyCertificates\Helper::necessary_certificates();
+
+		foreach ( $certificates as $index => $certificate ) {
+			$title = $certificate['title'] ?? '';
+			if ( '' === $title ) {
+				continue;
+			}
+
+			$post = \Academy\Helper::get_page_by_slug( sanitize_title( $title ), 'academy_certificate' );
+			if ( ! $post instanceof \WP_Post ) {
+				$post = \Academy\Helper::get_page_by_title( $title, 'academy_certificate' );
+			}
+			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+
+			// Already on the new builder (fresh install, already reset, or already
+			// edited) — leave it alone.
+			if ( get_post_meta( $post->ID, '_academy_certificate_tree', true ) ) {
+				continue;
+			}
+
+			// Customized via the old editor — leave it for the generic lazy
+			// migrator rather than overwriting a real design with the shipped one.
+			$pristine = \AcademyCertificates\Helper::get_default_certificate_content( $certificate['file'] ?? '' );
+			if ( trim( (string) $post->post_content ) !== trim( (string) $pristine ) ) {
+				continue;
+			}
+
+			update_post_meta(
+				$post->ID,
+				'_academy_certificate_tree',
+				wp_slash( wp_json_encode( \AcademyCertificates\Helper::default_certificate_tree( \AcademyCertificates\Helper::default_certificate_image( $index + 1 ) ) ) )
+			);
+		}//end foreach
+	}
+
+	public function migrate_create_attachment_downloads_table() {
+		global $wpdb;
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		\Academy\Database\CreateAttachmentDownloadsTable::up( $wpdb->prefix, $wpdb->get_charset_collate() );
 	}
 }

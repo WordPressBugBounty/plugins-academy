@@ -240,7 +240,6 @@ class QuizAnswers extends \WP_REST_Controller {
 		$answer_id = $request->get_param( 'id' );
 		$is_delete = Query::delete_answer( $answer_id );
 		return new \WP_REST_Response( $is_delete, 200 );
-
 	}
 
 
@@ -373,5 +372,4 @@ class QuizAnswers extends \WP_REST_Controller {
 
 		return $data;
 	}
-
 }

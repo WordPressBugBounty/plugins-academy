@@ -15,10 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php \Academy\Helper::get_template_part( 'content', 'course' ); ?>				
 					<?php
 					endwhile;
-					wp_reset_postdata();
+					wp_reset_query();
 				else :
 					?>
-					<h3 class='academy-not-found'><?php esc_html_e( 'Your wishlist is empty!', 'academy' ); ?></h3>
+					<h3 class='academy-not-found'><?php esc_html_e( 'Your wishlist is empty. Save courses you like to find them here.', 'academy' ); ?></h3>
 					<?php
 				endif;
 				?>

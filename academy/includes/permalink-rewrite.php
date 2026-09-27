@@ -31,11 +31,27 @@ class PermalinkRewrite {
 			$course_rewrite_slug . '/(.+?)/certificate/(.+?)/?$' => 'index.php?source=certificate',
 			// Lesson Permalink
 			$course_rewrite_slug . '/(.+?)/lesson/(.+?)/?$' => 'index.php?curriculum_type=lesson&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
-			$course_rewrite_slug . '/(.+?)/quiz/(.+?)/?$' => 'index.php?curriculum_type=quiz&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
+			// post_type is pinned on the quiz/quizpress_quiz rules (unlike the
+			// other curriculum_type rules) because these two post types can
+			// share the same post_name (independent plugins independently
+			// slugify their own titles: an academy_quiz and a quizpress_quiz
+			// post both named "Quiz 1" both slugify to quiz-1) -- and QuizPress's
+			// own quizpress_quiz CPT is registered with rewrite slug 'quiz' (its
+			// own single-post permalink is /quiz/{slug}/), so without post_type
+			// pinned, WP's main query resolves the bare `name` ambiguously and
+			// redirect_canonical() bounces the request to the other post's
+			// permalink instead of rendering the one this rule actually matched.
+			// Verified live: the other curriculum_type keywords (assignment/
+			// booking/zoom/meeting/lesson) do NOT necessarily map to a real
+			// wp_posts row of that post_type (e.g. lessons live in a separate
+			// custom table), so post_type is deliberately NOT added to those
+			// rules -- doing so 404s them.
+			$course_rewrite_slug . '/(.+?)/quiz/(.+?)/?$' => 'index.php?curriculum_type=quiz&post_type=academy_quiz&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
 			$course_rewrite_slug . '/(.+?)/assignment/(.+?)/?$' => 'index.php?curriculum_type=assignment&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
 			$course_rewrite_slug . '/(.+?)/booking/(.+?)/?$' => 'index.php?curriculum_type=booking&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
 			$course_rewrite_slug . '/(.+?)/zoom/(.+?)/?$' => 'index.php?curriculum_type=zoom&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
 			$course_rewrite_slug . '/(.+?)/meeting/(.+?)/?$' => 'index.php?curriculum_type=meeting&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
+			$course_rewrite_slug . '/(.+?)/quizpress_quiz/(.+?)/?$' => 'index.php?curriculum_type=quizpress_quiz&post_type=quizpress_quiz&course_name=' . $wp_rewrite->preg_index( 1 ) . '&name=' . $wp_rewrite->preg_index( 2 ),
 		];
 		// Reset Password permalink
 		$new_rules['^academy-retrieve-password/?$'] = 'index.php?academy_retrieve_password=1';
@@ -43,7 +59,24 @@ class PermalinkRewrite {
 		// Frontend Dashboard
 		$dashboard_page_id = (int) Helper::get_settings( 'frontend_dashboard_page' );
 		$dashboard_page_slug = get_post_field( 'post_name', $dashboard_page_id );
-		$dashboard_pages     = Helper::get_frontend_dashboard_menu_items();
+		// Every dashboard page needs its address, not only the ones the person
+		// whose request happens to rebuild the rules can see (a visitor or a
+		// student would drop every instructor page). Build them as an admin.
+		$rules_user = get_current_user_id();
+		$admins     = get_users(
+			[
+				'role'   => 'administrator',
+				'number' => 1,
+				'fields' => 'ID',
+			]
+		);
+		if ( $admins && ! current_user_can( 'manage_options' ) ) {
+			wp_set_current_user( (int) $admins[0] );
+		}
+		$dashboard_pages = Helper::get_frontend_dashboard_menu_items();
+		if ( get_current_user_id() !== $rules_user ) {
+			wp_set_current_user( $rules_user );
+		}
 		foreach ( $dashboard_pages as $dashboard_key => $dashboard_page ) {
 			$new_rules[ "({$dashboard_page_slug})/{$dashboard_key}/?$" ] = 'index.php?pagename=' . $wp_rewrite->preg_index( 1 ) . '&academy_dashboard_page=' . $dashboard_key;
 			$new_rules[ "({$dashboard_page_slug})/{$dashboard_key}/(.+?)/?$" ] = 'index.php?pagename=' . $wp_rewrite->preg_index( 1 ) . '&academy_dashboard_page=' . $dashboard_key . '&academy_dashboard_sub_page=' . $wp_rewrite->preg_index( 2 );
@@ -62,7 +95,7 @@ class PermalinkRewrite {
 	public function change_curriculum_url( $post_link, $id = 0 ) {
 		global $wp_query;
 
-		if ( ! (bool) Helper::get_settings( 'is_enabled_lessons_php_render' ) || empty( $wp_query->query_vars['curriculum_type'] ) ) {
+		if ( ! Helper::is_server_learn_page() || empty( $wp_query->query_vars['curriculum_type'] ) ) {
 			return $post_link;
 		}
 		$post             = get_post( $id );
@@ -83,6 +116,8 @@ class PermalinkRewrite {
 			return home_url( "/{$course_post_type}/{$course_name}/booking/{$post->post_name}/" );
 		} elseif ( is_object( $post ) && 'academy_lessons' === $post->post_type && $course_name ) {
 			return home_url( "/{$course_post_type}/{$course_name}/lesson/{$post->post_name}/" );
+		} elseif ( is_object( $post ) && 'quizpress_quiz' === $post->post_type && $course_name ) {
+			return home_url( "/{$course_post_type}/{$course_name}/quizpress_quiz/{$post->post_name}/" );
 		}
 		return $post_link;
 	}

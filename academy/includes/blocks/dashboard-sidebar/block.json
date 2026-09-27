@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/dashboard-sidebar",
+	"title": "Dashboard Menu",
+	"category": "academy",
+	"description": "The person, the view switch and the dashboard menu.",
+	"textdomain": "academy",
+	"attributes": {
+		"showUser": {
+			"type": "boolean",
+			"default": true
+		},
+		"showViewSwitch": {
+			"type": "boolean",
+			"default": true
+		},
+		"sticky": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"spacing": {
+			"padding": true,
+			"margin": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"interactivity": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"ancestor": [
+		"academy/dashboard"
+	],
+	"parent": [
+		"academy/dashboard"
+	]
+}

@@ -1,0 +1,235 @@
+/* Registration Form block: fields in a two-column grid; a half-width field
+   takes one column, everything else the whole row. */
+.academy-reg-block {
+	--academy-reg-gap: 16px;
+	box-sizing: border-box;
+}
+
+.academy-reg-block *,
+.academy-reg-block *::before,
+.academy-reg-block *::after {
+	box-sizing: border-box;
+}
+
+/* The form sits in a white box with room around the fields, an edge and a
+   soft shadow. Padding, border, background or shadow set in the block's own
+   settings win (they are inline). "Plain" drops the box. */
+.academy-reg-block:not(.is-style-plain) {
+	padding: 32px;
+	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border-radius: 14px;
+	background: var(--academy-surface-color, #fff);
+	box-shadow: 0 12px 32px rgba(16, 24, 40, 0.08);
+}
+
+/* Card: the same box, narrower and centred. */
+.academy-reg-block.is-style-card {
+	max-width: 520px;
+	margin-inline: auto;
+}
+
+@media (max-width: 600px) {
+	.academy-reg-block:not(.is-style-plain) {
+		padding: 20px;
+	}
+}
+
+.academy-reg-block .academy-reg-form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--style--block-gap, 20px);
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+/* The classic registration form's hover shadow (frontendCommon.css) shares
+   this class; the block's form has no hover effect. */
+.academy-reg-block .academy-reg-form:hover {
+	box-shadow: none;
+}
+
+.academy-reg-form__fields {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--academy-reg-gap);
+}
+
+/* Anything else in the form (a heading, a paragraph) takes the whole row. */
+.academy-reg-form__fields > * {
+	grid-column: 1 / -1;
+	margin: 0;
+}
+
+.academy-reg-form__fields > .academy-reg-form__field--half {
+	grid-column: auto;
+}
+
+.academy-reg-form__field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin: 0;
+}
+
+.academy-reg-form__label,
+.academy-reg-form__choices legend {
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.4;
+	color: var(--academy-heading-color, #101828);
+}
+
+.academy-reg-form__required {
+	color: var(--academy-danger-color, #d92d20);
+}
+
+.academy-reg-block .academy-form-control {
+	width: 100%;
+	min-height: 44px;
+	margin: 0;
+	padding: 10px 14px;
+	border: 1px solid var(--academy-border-color, #d0d5dd);
+	border-radius: 8px;
+	background: var(--academy-surface-color, #fff);
+	color: var(--academy-heading-color, #101828);
+	font: inherit;
+	font-size: 15px;
+	line-height: 1.4;
+	box-shadow: none;
+}
+
+.academy-reg-block textarea.academy-form-control {
+	min-height: 96px;
+	resize: vertical;
+}
+
+/* The uniform 14px side padding above leaves the native dropdown arrow
+   pressed right against the field's edge; give it room to breathe. */
+select.academy-form-control {
+	padding-right: 36px;
+}
+
+.academy-reg-block .academy-form-control:focus {
+	border-color: var(--academy-primary-color, #5b47e0);
+	outline: none;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--academy-primary-color, #5b47e0) 18%, transparent);
+}
+
+.academy-reg-form__control {
+	position: relative;
+}
+
+.academy-reg-form__field--password .academy-form-control {
+	padding-right: 44px;
+}
+
+.academy-reg-form__reveal {
+	position: absolute;
+	top: 50%;
+	right: 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--academy-description-color, #667085);
+	cursor: pointer;
+	transform: translateY(-50%);
+}
+
+.academy-reg-form__reveal:hover {
+	color: var(--academy-heading-color, #101828);
+}
+
+.academy-reg-form__reveal .academy-icon::before {
+	font-size: 16px;
+	color: currentColor;
+}
+
+.academy-reg-form__choices {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	min-width: 0;
+}
+
+.academy-reg-form__choice {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	font-size: 14px;
+	color: var(--academy-text-color, #344054);
+	cursor: pointer;
+}
+
+.academy-reg-form__choice input {
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	accent-color: var(--academy-primary-color, #5b47e0);
+}
+
+.academy-reg-form__help {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.45;
+	color: var(--academy-description-color, #667085);
+}
+
+.academy-reg-form__footer {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 12px;
+}
+
+.academy-reg-block .academy-reg-form__submit {
+	width: 100%;
+	min-height: 46px;
+	justify-content: center;
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.academy-reg-form__login {
+	margin: 0;
+	font-size: 14px;
+	text-align: center;
+	/* Follows the block's own Text color (set via the block-supports "color"
+	   panel) instead of a fixed gray, which used to override it outright. */
+	color: currentColor;
+	opacity: 0.65;
+}
+
+.academy-reg-form__login a {
+	font-weight: 600;
+	color: var(--academy-primary-color, #5b47e0);
+}
+
+.academy-reg-block .academy-register-form-status:empty {
+	display: none;
+}
+
+@media (max-width: 600px) {
+	.academy-reg-form__fields > .academy-reg-form__field--half {
+		grid-column: 1 / -1;
+	}
+}
+
+/* The button says exactly what the form's settings say. */
+.academy-reg-block .academy-reg-form__submit {
+	text-transform: none;
+}

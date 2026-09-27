@@ -1,0 +1,75 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-badge",
+	"title": "Course Featured Badge",
+	"category": "academy-course",
+	"description": "A badge shown on featured courses.",
+	"keywords": [
+		"featured",
+		"badge",
+		"sticky",
+		"label",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"attributes": {
+		"text": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontWeight": true,
+			"__experimentalTextTransform": true,
+			"__experimentalLetterSpacing": true,
+			"textAlign": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"interactivity": {
+			"clientNavigation": true
+		}
+	},
+	"editorScript": "academy-blocks-editor",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"styles": [
+		{
+			"name": "pill",
+			"label": "Pill",
+			"isDefault": true
+		},
+		{
+			"name": "soft",
+			"label": "Soft"
+		},
+		{
+			"name": "outline",
+			"label": "Outline"
+		},
+		{
+			"name": "square",
+			"label": "Square"
+		}
+	]
+}

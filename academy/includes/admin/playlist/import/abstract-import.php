@@ -15,9 +15,9 @@ abstract class AbstractImport {
 		$this->meta_data = $meta_data;
 	}
 
-	abstract public function save() : self;
+	abstract public function save(): self;
 
-	public function get_id() : ?int {
+	public function get_id(): ?int {
 		return $this->id;
 	}
 }

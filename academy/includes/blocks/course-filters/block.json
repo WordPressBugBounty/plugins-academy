@@ -1,0 +1,82 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-filters",
+	"title": "Course Filters",
+	"category": "academy",
+	"description": "Search and filter courses by category, level and price. Course grids on the same page update to match.",
+	"keywords": [
+		"filter",
+		"search",
+		"category",
+		"level",
+		"price",
+		"course"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"showSearch": {
+			"type": "boolean",
+			"default": true
+		},
+		"showCategories": {
+			"type": "boolean",
+			"default": true
+		},
+		"showLevels": {
+			"type": "boolean",
+			"default": true
+		},
+		"showTypes": {
+			"type": "boolean",
+			"default": true
+		},
+		"autoApply": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"blockGap": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"viewScript": "academy-course-filters-view",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "boxed",
+			"label": "Boxed"
+		},
+		{
+			"name": "chips",
+			"label": "Chips"
+		}
+	]
+}

@@ -47,11 +47,12 @@ class Admin extends AbstractAjaxHandler {
 			}
 
 			// fetch all paid course product id
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 			$paid_course_product_ids = $wpdb->get_results( $wpdb->prepare(
 				"SELECT post_id FROM {$wpdb->postmeta}  WHERE meta_key = %s AND meta_value = %s",
 				'_academy_product', 'yes'
 			), ARRAY_A );
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$paid_course_product_ids = wp_list_pluck( $paid_course_product_ids, 'post_id', 'post_id' );
 		}//end if
 		$results = array();
@@ -70,5 +71,4 @@ class Admin extends AbstractAjaxHandler {
 
 		wp_send_json_success( $results );
 	}
-
 }

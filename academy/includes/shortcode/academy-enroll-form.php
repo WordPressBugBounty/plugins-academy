@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Shortcode;
+namespace Academy\Shortcode;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,9 +25,11 @@ class AcademyEnrollForm {
 
 		if ( 'legacy' === $layout ) {
 			echo '<div class="academy-enroll-form-shortcode academy-enroll-form-shortcode--legacy">';
-			if ( $course_id ) {
+			if ( $course_id && 'academy_courses' === get_post_type( $course_id ) ) {
 				do_action( 'academy/templates/shortcode/enroll_form_content', $course_id );
 				do_action( 'academy/templates/shortcode/enroll_price_content', $course_id );
+			} elseif ( $course_id ) {
+				echo esc_html__( 'course_id attribute does not match an existing course.', 'academy' );
 			} else {
 				echo esc_html__( 'course_id attribute is required.', 'academy' );
 			}
@@ -69,5 +71,3 @@ class AcademyEnrollForm {
 		return apply_filters( 'academy/templates/shortcode/enroll_form', ob_get_clean() );
 	}
 }
-
-

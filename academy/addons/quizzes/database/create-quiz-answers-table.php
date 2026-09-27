@@ -6,9 +6,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class CreateQuizAnswersTable {
-	public static function up( $prefix, $charset_collate ) {
-		$table_name = $prefix . ACADEMY_PLUGIN_SLUG . '_quiz_answers';
-		$sql        = "CREATE TABLE IF NOT EXISTS $table_name (
+	public static function table_name( $prefix ) {
+		return $prefix . ACADEMY_PLUGIN_SLUG . '_quiz_answers';
+	}
+
+	/**
+	 * Full table definition. Also the source of truth for the columns
+	 * \AcademyQuizzes\Database::sync_schema() adds to an existing table.
+	 *
+	 * @param string $prefix
+	 * @param string $charset_collate
+	 */
+	public static function schema( $prefix, $charset_collate ) {
+		$table_name = self::table_name( $prefix );
+		return "CREATE TABLE IF NOT EXISTS $table_name (
             answer_id bigint(20) unsigned NOT NULL auto_increment,
             quiz_id bigint(20) DEFAULT NULL,
             question_id bigint(20) DEFAULT NULL,
@@ -23,6 +34,9 @@ class CreateQuizAnswersTable {
 			answer_updated_at datetime DEFAULT NULL,
 			PRIMARY KEY  (answer_id)
         ) $charset_collate;";
-		dbDelta( $sql );
+	}
+
+	public static function up( $prefix, $charset_collate ) {
+		dbDelta( self::schema( $prefix, $charset_collate ) );
 	}
 }

@@ -1,0 +1,81 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-announcements",
+	"title": "Course Announcements",
+	"category": "academy-course",
+	"description": "News and updates from the course's instructors, shown to enrolled students.",
+	"keywords": [
+		"announcement",
+		"news",
+		"updates",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		},
+		"max": {
+			"type": "number",
+			"default": 5
+		}
+	},
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"styles": [
+		{
+			"name": "list",
+			"label": "List",
+			"isDefault": true
+		},
+		{
+			"name": "cards",
+			"label": "Cards"
+		},
+		{
+			"name": "timeline",
+			"label": "Timeline"
+		}
+	],
+	"editorScript": "academy-blocks-editor",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

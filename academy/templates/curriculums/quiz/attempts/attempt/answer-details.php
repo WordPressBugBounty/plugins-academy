@@ -2,8 +2,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-$topic['type'] = 'quiz';
-$topic['slug'] = get_query_var( 'name' );
 ?>
 <div class="academy-quiz-attempt-answer-details">
 	<h3 class="academy-quiz-attempt-entry-title-details">
@@ -39,13 +37,9 @@ $topic['slug'] = get_query_var( 'name' );
 							</div>
 							<div class="academy-table__body">
 								<?php
-								$attempt_answer_details = is_array( $attempt_answer_details ?? null ) ? $attempt_answer_details : [];
-								$count               = 0;
-								$first_detail        = reset( $attempt_answer_details );
-								$quiz_id             = $first_detail ? (int) $first_detail->quiz_id : 0;
-								$explanation_enabled = $quiz_id ? (bool) get_post_meta( $quiz_id, 'academy_quiz_explanation_enabled', true ) : false;
+								$count = 0;
 								foreach ( $attempt_answer_details as $attempt_answer_detail ) :
-									$count ++;
+									++$count;
 									$question_type = $attempt_answer_detail->question_type;
 									?>
 									<div class="academy-table__body-row">
@@ -58,54 +52,68 @@ $topic['slug'] = get_query_var( 'name' );
 											?>
 										</div>
 										<div class="academy-table__row-cell">
-											<?php echo esc_html( $attempt_answer_detail->question_title ); ?>
+											<?php echo wp_kses_post( $attempt_answer_detail->question_title ); ?>
 										</div>
 										<div class="academy-table__row-cell">
-											<?php
-											foreach ( $attempt_answer_detail->correct_answer as $correct ) :
-												echo is_array( $correct ) ? esc_html( $correct['answer_title'] ) : esc_html( $correct->answer_title ?? $correct );
-												if ( isset( $correct->image_url ) ) : ?>
-													<div class="academy-quiz-table-answers-item">
-
+											<div class="academy-items-column">
+												<?php
+												foreach ( $attempt_answer_detail->correct_answer as $correct ) : ?>
+													<div class="academy-quiz-table-answer-entry">
 														<?php
+														// Answer titles are rich-text HTML (bold/italic/sub/sup/etc, same
+														// as question_title above) — esc_html() here previously escaped
+														// that markup to literal "&lt;p&gt;..." text instead of
+														// rendering it.
+														echo wp_kses_post( is_array( $correct ) ? $correct['answer_title'] : ( $correct->answer_title ?? $correct ) );
+														if ( isset( $correct->image_url ) ) : ?>
+															<div class="academy-quiz-table-answers-item">
 
-														// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
-														echo '<img src="' . esc_url( $correct->image_url ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $correct->answer_title ) . '">'; ?>
+																<?php
+
+																// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+																echo '<img src="' . esc_url( $correct->image_url ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $correct->answer_title ) . '">'; ?>
 
 
+															</div>
+														<?php elseif ( is_array( $correct ) && ! empty( $correct['image_url'] ) ) : ?>
+															<div class="academy-quiz-table-answers-item">
+																<?php
+
+																// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+																echo '<img src="' . esc_url( $correct['image_url'] ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $correct['answer_title'] ) . '">'; ?>
+															</div>
+														<?php endif; ?>
 													</div>
-												<?php elseif ( is_array( $correct ) && ! empty( $correct['image_url'] ) ) : ?>
-													<div class="academy-quiz-table-answers-item">
-														<?php
-
-														// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
-														echo '<img src="' . esc_url( $correct['image_url'] ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $correct['answer_title'] ) . '">'; ?>
-													</div>
-												<?php endif;
-											endforeach; ?>
+												<?php endforeach; ?>
+											</div>
 										</div>
 										<div class="academy-table__row-cell">
-											<?php
-											foreach ( $attempt_answer_detail->given_answer as $given ) :
-												if ( isset( $given->image_url ) ) : ?>
-													<div class="academy-quiz-table-answers-item">
-														<?php
-														// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
-														echo '<img src="' . esc_url( $given->image_url ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $given->answer_title ) . '">'; ?>
+											<div class="academy-items-column">
+												<?php
+												foreach ( $attempt_answer_detail->given_answer as $given ) : ?>
+													<div class="academy-quiz-table-answer-entry">
+														<?php if ( isset( $given->image_url ) ) : ?>
+															<div class="academy-quiz-table-answers-item">
+																<?php
+																// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+																echo '<img src="' . esc_url( $given->image_url ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $given->answer_title ) . '">'; ?>
+															</div>
+
+														<?php elseif ( is_array( $given ) && ! empty( $given['image_url'] ) ) : ?>
+															<div class="academy-quiz-table-answers-item">
+																<?php
+																// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+																echo '<img src="' . esc_url( $given['image_url'] ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $given['answer_title'] ) . '">'; ?>
+															</div>
+
+														<?php endif;
+
+														// Same rich-text HTML rendering fix as the Correct Answer column above.
+														echo wp_kses_post( is_array( $given ) ? $given['answer_title'] : $given->answer_title );
+														?>
 													</div>
-
-												<?php elseif ( is_array( $given ) && ! empty( $given['image_url'] ) ) : ?>
-													<div class="academy-quiz-table-answers-item">
-														<?php
-														// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
-														echo '<img src="' . esc_url( $given['image_url'] ) . '" width="50" class="academy-quiz-table-answers-item" alt="' . esc_attr( $given['answer_title'] ) . '">'; ?>
-													</div>
-
-												<?php endif;
-
-												echo is_array( $given ) ? esc_html( $given['answer_title'] ) : esc_html( $given->answer_title );
-											endforeach;
-											?>
+												<?php endforeach; ?>
+											</div>
 										</div>
 										<div class="academy-table__row-cell">
 											<?php if ( $attempt_answer_detail->is_correct ) : ?>
@@ -123,13 +131,6 @@ $topic['slug'] = get_query_var( 'name' );
 											<?php endif; ?>
 										</div>
 									</div>
-									<?php if ( $explanation_enabled && ! empty( $attempt_answer_detail->question_explanation ) ) : ?>
-										<div class="academy-quiz-attempt-explanation">
-											<?php // translators: %d is the question number. ?>
-											<strong><?php echo esc_html( sprintf( __( 'Q%d Explanation:', 'academy' ), $count ) ); ?></strong>
-											<?php echo wp_kses_post( $attempt_answer_detail->question_explanation ); ?>
-										</div>
-									<?php endif; ?>
 								<?php endforeach; ?>
 							</div>
 						</div>
@@ -142,13 +143,14 @@ $topic['slug'] = get_query_var( 'name' );
 		<h3 class="academy-quiz-attempt-entry-title">
 			<?php esc_html_e( 'Instructor Feedback', 'academy' ); ?>
 		</h3>
-		<p class="academy-quiz-attempt-feedback__message">
-			<?php echo wp_kses_post( $instructor_feedback ?? '' ); ?>
-		</p>
+		<?php if ( '' !== trim( wp_strip_all_tags( (string) $instructor_feedback ) ) ) : ?>
+			<div class="academy-quiz-attempt-feedback__message">
+				<?php echo wp_kses_post( $instructor_feedback ); ?>
+			</div>
+		<?php else : ?>
+			<p class="academy-quiz-attempt-feedback__empty">
+				<?php esc_html_e( 'No feedback given yet.', 'academy' ); ?>
+			</p>
+		<?php endif; ?>
 	</div>
-	<a class="academy-btn academy-btn--md academy-btn--preset-purple" href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $topic ) ); ?>">
-		<?php
-			esc_html_e( 'Back', 'academy' );
-		?>
-	</a>
 </div>

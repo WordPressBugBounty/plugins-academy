@@ -1,0 +1,27 @@
+<svg
+    width="32"
+    height="32"
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M8 4.5H19L24 9.5V27.5H8V4.5Z"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M19 4.5V9.5H24"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13 14C13 12.62 14.12 11.5 15.5 11.5C16.88 11.5 18 12.62 18 14C18 15.12 17.28 15.72 16.3 16.32C15.55 16.78 15.5 17.35 15.5 18"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+    />
+    <circle cx="15.5" cy="21" r="0.9" fill="currentColor" />
+  </svg>

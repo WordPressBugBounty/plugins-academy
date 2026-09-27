@@ -24,7 +24,7 @@ class Helper {
 			$replacement = explode( ',', $attempt_item->given_answer );
 			return array(
 				array(
-					'answer_title' => preg_replace_callback('/\{dash\}/', function( $match ) use ( $replacement ) {
+					'answer_title' => preg_replace_callback('/\{dash\}/', function ( $match ) use ( $replacement ) {
 						static $index = 0;
 						$value = '{' . trim( $replacement[ $index ] ) . '}';
 						$index++;
@@ -71,7 +71,7 @@ class Helper {
 		} elseif ( 'fillInTheBlanks' === $question_type ) {
 			$replacement = explode( '|', $attempt_item->answer_content );
 			return array(
-				'answer_title' => preg_replace_callback('/\{dash\}/', function( $match ) use ( $replacement ) {
+				'answer_title' => preg_replace_callback('/\{dash\}/', function ( $match ) use ( $replacement ) {
 					static $index = 0;
 					$value = '{' . trim( $replacement[ $index ] ) . '}';
 					$index++;
@@ -193,19 +193,25 @@ class Helper {
 		$quiz = self::render_quiz_by_course_and_quiz_id( $course_id, $quiz_id );
 		$attempt = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id );
 
-		$quiz_time = $quiz['settings']['quiz_time'];
-		$unit = strtoupper( $quiz['settings']['quiz_time_unit'][0] );
+		$quiz_time = (int) ( $quiz['settings']['quiz_time'] ?? 0 );
+
+		// "No time limit" quizzes have quiz_time 0 and/or no unit set. Building a
+		// DateInterval spec from that (e.g. "P0") throws, so bail out early instead.
+		if ( ! $quiz_time ) {
+			return false;
+		}
+
+		$unit = strtoupper( substr( (string) ( $quiz['settings']['quiz_time_unit'] ?? '' ), 0, 1 ) );
+		if ( '' === $unit ) {
+			return false;
+		}
 
 		$current_time = new \DateTime();
 		$start_time   = new \DateTime( $attempt->attempt_started_at );
 		$interval     = ( 'H' === $unit || 'M' === $unit || 'S' === $unit ) ? "PT{$quiz_time}{$unit}" : "P{$quiz_time}{$unit}";
 		$end_time     = $start_time->add( new \DateInterval( $interval ) );
 
-		if ( $end_time < $current_time && $quiz_time ) {
-			return true;
-		}
-
-		return false;
+		return $end_time < $current_time;
 	}
 
 	public static function has_attempt_quiz( $course_id, $quiz_id, $user_id = '' ) {

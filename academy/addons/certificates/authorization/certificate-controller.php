@@ -50,5 +50,4 @@ class CertificateController extends WP_REST_Posts_Controller {
 
 		return $pass;
 	}
-
 }

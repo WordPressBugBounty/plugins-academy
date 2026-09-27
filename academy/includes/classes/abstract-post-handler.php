@@ -43,5 +43,4 @@ abstract class AbstractPostHandler {
 			wp_die( esc_html__( 'Invalid callback method.', 'academy' ) );
 		}
 	}
-
 }

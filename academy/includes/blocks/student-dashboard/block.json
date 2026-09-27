@@ -1,0 +1,59 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/student-dashboard",
+	"title": "Academy Student Dashboard",
+	"category": "academy",
+	"description": "The frontend dashboard for students and instructors.",
+	"keywords": [
+		"dashboard",
+		"account",
+		"my courses",
+		"profile"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true,
+		"align": [
+			"wide",
+			"full"
+		],
+		"multiple": false
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php"
+}

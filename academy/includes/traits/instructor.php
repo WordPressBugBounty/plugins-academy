@@ -54,6 +54,7 @@ trait Instructor {
 	}
 	public static function get_all_instructors( $offset = 0, $per_page = 10, $search_keyword = '' ) {
 		global $wpdb;
+		// phpcs:disable WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- reporting JOIN on users/usermeta that get_users() cannot express
 		$query = $wpdb->prepare(
 			"SELECT ID, display_name, user_nicename, user_email
 			FROM {$wpdb->users}
@@ -61,6 +62,7 @@ trait Instructor {
 			ON ({$wpdb->users}.ID = {$wpdb->usermeta}.user_id)
 			WHERE {$wpdb->usermeta}.meta_key = %s",
 		'is_academy_instructor');
+		// phpcs:enable WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 
 		if ( ! empty( $search_keyword ) ) {
 			$wild = '%';
@@ -74,18 +76,19 @@ trait Instructor {
 	}
 	public static function get_instructor( $ID ) {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- custom query with no WP API equivalent; reporting JOIN on users/usermeta that get_users() cannot express
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT ID, display_name, user_nicename, user_email
 			FROM {$wpdb->users}
 			WHERE ID = %d",
 			$ID,
 		) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 		return current( $results );
 	}
 	public static function get_all_instructors_by_status( $instructor_status ) {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- custom query with no WP API equivalent; reporting JOIN on users/usermeta that get_users() cannot express
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, display_name, user_nicename, user_email
@@ -98,6 +101,7 @@ trait Instructor {
 				$instructor_status
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 		if ( count( $results ) ) {
 			return $results;
 		}
@@ -105,7 +109,7 @@ trait Instructor {
 	}
 	public static function get_all_approved_instructors() {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- custom query with no WP API equivalent; reporting JOIN on users/usermeta that get_users() cannot express
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, display_name, user_nicename, user_email
@@ -118,6 +122,7 @@ trait Instructor {
 				'approved'
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 		if ( count( $results ) ) {
 			return $results;
 		}
@@ -126,7 +131,7 @@ trait Instructor {
 	public static function get_current_instructor() {
 		global $wpdb;
 		$user_id = get_current_user_id();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- custom query with no WP API equivalent; reporting JOIN on users/usermeta that get_users() cannot express
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, display_name, user_nicename, user_email
@@ -138,6 +143,7 @@ trait Instructor {
 				'is_academy_instructor'
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 		if ( count( $results ) ) {
 			return $results;
 		}
@@ -153,6 +159,10 @@ trait Instructor {
 				$instructor->first_name        = get_user_meta( $instructor->ID, 'first_name', true );
 				$instructor->last_name         = get_user_meta( $instructor->ID, 'last_name', true );
 				$instructor->instructor_status = get_user_meta( $instructor->ID, 'academy_instructor_status', true );
+				// Administrators are always instructors (Role::add_admin_caps()) and
+				// must stay that way, so the table needs to know which rows are
+				// admin to lock their Remove/Status controls.
+				$instructor->is_administrator  = user_can( $instructor->ID, 'manage_options' );
 				$instructor->total_courses     = is_array( $courseIds ) ? count( $courseIds ) : 0;
 				$instructor->permalink         = get_edit_user_link( $instructor->ID );
 				$instructor->bio = get_user_meta( $instructor->ID, 'academy_profile_bio', true );
@@ -207,7 +217,7 @@ trait Instructor {
 
 	public static function get_course_instructor( $course_id ) {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		$instructor = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT *
@@ -217,12 +227,13 @@ trait Instructor {
 				'academy_instructor_course_id', $course_id
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $instructor;
 	}
 
 	public static function get_all_course_by_instructor( $instructor_id ) {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		$course_count = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT count(umeta_id)
@@ -232,6 +243,7 @@ trait Instructor {
 				$instructor_id, 'academy_instructor_course_id'
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $course_count;
 	}
 
@@ -281,6 +293,35 @@ trait Instructor {
 		return $user_id;
 	}
 
+	/**
+	 * How one sale of an instructor's course is split, as [ instructor %, admin % ].
+	 *
+	 * - No Multi Instructor: nobody to share with — the course author (admin
+	 *   or not) keeps the whole sale.
+	 * - Earning sharing off: the admin keeps the whole sale.
+	 * - Otherwise admin and instructor split it, always adding up to 100% —
+	 *   the admin gets their share even when they aren't one of the course's
+	 *   instructors. A per-instructor rate (set from the Instructors screen)
+	 *   overrides the global one, and the admin takes the rest.
+	 *
+	 * @param int $user_id Course author / instructor the earning is for.
+	 * @return array{0: float, 1: float}
+	 */
+	public static function get_earning_rates( $user_id ) {
+		if ( ! \Academy\Helper::get_addon_active_status( 'multi_instructor' ) ) {
+			return array( 100, 0 );
+		}
+		if ( ! (bool) \Academy\Helper::get_settings( 'is_enabled_earning' ) ) {
+			return array( 0, 100 );
+		}
+		$instructor_rate = (float) get_user_meta( $user_id, 'academy_instructor_earning_percentage', true );
+		if ( ! $instructor_rate ) {
+			$instructor_rate = (float) \Academy\Helper::get_settings( 'instructor_commission_percentage' );
+		}
+		$instructor_rate = min( 100, max( 0, $instructor_rate ) );
+		return array( $instructor_rate, 100 - $instructor_rate );
+	}
+
 	public static function save_instructor_earnings( $course_id, $order, $order_id ) {
 		$user_id      = \Academy\Helper::get_user_id_from_course_id( $course_id );
 		$monetize_engine = \Academy\Helper::monetization_engine();
@@ -321,16 +362,7 @@ trait Instructor {
 			);
 		}
 
-		$instructor_rate = get_user_meta( $user_id, 'academy_instructor_earning_percentage', true );
-
-		if ( ! $instructor_rate ) {
-			$instructor_rate = \Academy\Helper::get_settings( 'instructor_commission_percentage' );
-		}
-
-		$admin_rate      = (int) \Academy\Helper::get_settings( 'admin_commission_percentage' );
-		if ( ! (bool) \Academy\Helper::get_settings( 'is_enabled_earning' ) ) {
-			$admin_rate = 100;
-		}
+		list( $instructor_rate, $admin_rate ) = self::get_earning_rates( $user_id );
 		$instructor_amount = 0;
 		if ( $instructor_rate > 0 ) {
 			$instructor_amount = ( $course_price_grand_total * $instructor_rate ) / 100;

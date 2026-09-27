@@ -2,14 +2,14 @@
 
 namespace AcademyMigrationTool\Classes;
 
-use Academy\Helper as Helper;
+use Academy\Helper;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 use AcademyMigrationTool\Interfaces\MigrationInterface;
 
-class Tutor  extends Migration implements MigrationInterface {
+class Tutor extends Migration implements MigrationInterface {
 	public $course;
 	public $logs = [];
 	public function __construct( $course_id ) {
@@ -106,6 +106,7 @@ class Tutor  extends Migration implements MigrationInterface {
 	public function migrate_course_topics( $course_id ) {
 		global $wpdb;
 
+		// phpcs:disable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page -- one-time migration over a bounded set
 		$topics = get_posts([
 			'post_type'      => 'topics',
 			'post_parent'    => $course_id,
@@ -113,6 +114,7 @@ class Tutor  extends Migration implements MigrationInterface {
 			'orderby'        => 'menu_order',
 			'posts_per_page' => -1,
 		]);
+		// phpcs:enable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page
 
 		if ( empty( $topics ) ) {
 			return;
@@ -182,7 +184,7 @@ class Tutor  extends Migration implements MigrationInterface {
 		update_post_meta( $id, 'academy_course_drip_content_type', $content_drip_type );
 		// course durations
 		$course_durations = get_post_meta( $id, '_course_duration', true );
-		foreach ( $course_durations as $duration ) {
+		foreach ( (array) $course_durations as $duration ) {
 			$time[] = (int) $duration;
 		}
 		$time[] = 0;

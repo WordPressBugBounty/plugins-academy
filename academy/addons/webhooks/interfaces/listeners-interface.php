@@ -6,5 +6,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 interface ListenersInterface {
-	public static function dispatch( $deliver_callback, $webhook);
+	public static function dispatch( $deliver_callback, $webhook );
 }

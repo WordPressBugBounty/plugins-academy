@@ -20,6 +20,13 @@ class Frontend {
 		add_filter( 'the_content', [ $this, 'assign_shortcode_to_page_content' ], 9 );
 		add_action( 'wp_footer', [ $this, 'add_react_modal_div' ] );
 		add_action( 'init', [ $this, 'disable_admin_topbar_for_student_role' ] );
+		add_action( 'init', [ $this, 'disable_admin_bar_for_curriculum_frame' ] );
+
+		// Isolated full-page renderer for a curriculum item's shortcode/block
+		// content (loaded in an iframe by the learn page). Running the normal
+		// wp_head → content → wp_footer pipeline lets ANY shortcode's enqueued
+		// assets load exactly as on a real page — impossible over AJAX.
+		add_action( 'template_redirect', [ $this, 'render_curriculum_frame' ], 0 );
 
 		// Reset password form template
 		if ( ! is_user_logged_in() ) {
@@ -38,7 +45,27 @@ class Frontend {
 	public function disable_admin_topbar_for_student_role() {
 		$user = wp_get_current_user();
 		if ( $user && in_array( 'academy_student', (array) $user->roles, true ) ) {
-			add_filter( 'show_admin_bar', '__return_false' );
+			add_filter( 'show_admin_bar', '__return_false' ); // phpcs:ignore WordPressVIPMinimum.UserExperience.AdminBarRemoval.RemovalDetected -- students get no admin bar
+		}
+	}
+
+	/**
+	 * Must run on `init`, not inside render_curriculum_frame() on
+	 * `template_redirect`. Core's own `_wp_admin_bar_init()` is hooked on
+	 * `template_redirect` at the same priority 0 but registered first (core
+	 * boots before this plugin), so by the time render_curriculum_frame() ran
+	 * a `show_admin_bar` filter it was already too late: `_admin_bar_bump_cb`
+	 * had already been hooked onto `wp_head`, which unconditionally prints the
+	 * `html { margin-top: 32px !important; }` bump CSS regardless of any
+	 * `show_admin_bar` filter added afterwards — leaving a 32px gap at the top
+	 * of this chrome-free frame. Real access is still nonce+permission gated
+	 * in render_curriculum_frame(); this is a cosmetic-only, unauthenticated
+	 * toggle that only ever hides an admin bar, so it's safe pre-nonce.
+	 */
+	public function disable_admin_bar_for_curriculum_frame() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- cosmetic-only toggle, not a data-changing request.
+		if ( isset( $_GET['academy_curriculum_frame'] ) ) {
+			add_filter( 'show_admin_bar', '__return_false' ); // phpcs:ignore WordPressVIPMinimum.UserExperience.AdminBarRemoval.RemovalDetected -- chrome-free preview frame
 		}
 	}
 	public function assign_shortcode_to_page_content( $content ) {
@@ -69,6 +96,73 @@ class Frontend {
 	}
 
 	/**
+	 * Render a single curriculum item's shortcode/block content as a minimal,
+	 * standalone HTML document — served to an iframe on the learn page.
+	 *
+	 * Because this is a real page load, `wp_head()` fires `wp_enqueue_scripts`
+	 * (so plugins register their handles) BEFORE the content renders and
+	 * enqueues them, and `wp_footer()` prints every asset. That makes ANY
+	 * shortcode / block (TruePlayer, maps, players, embeds …) work exactly as
+	 * it would on a normal page — which the AJAX/SPA path can never do.
+	 *
+	 * Access is gated the same way the learn page gates topic content.
+	 */
+	public function render_curriculum_frame() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['academy_curriculum_frame'] ) ) {
+			return;
+		}
+
+		$item_id   = isset( $_GET['item_id'] ) ? absint( $_GET['item_id'] ) : 0;
+		$course_id = isset( $_GET['course_id'] ) ? absint( $_GET['course_id'] ) : 0;
+		$field     = isset( $_GET['field'] ) ? sanitize_key( $_GET['field'] ) : 'content';
+		$nonce     = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		if ( ! wp_verify_nonce( $nonce, 'academy_nonce' ) ) {
+			status_header( 403 );
+			exit;
+		}
+
+		if ( ! \Academy\Helper::has_permission_to_access_lesson_curriculum( $course_id, $item_id, get_current_user_id() ) ) {
+			status_header( 403 );
+			exit;
+		}
+
+		// Admin bar is already disabled by disable_admin_bar_for_curriculum_frame()
+		// on `init` — too late to do it here, see that method's docblock.
+
+		$raw    = '';
+		$lesson = \Academy\Lesson\LessonApi\Lesson::get_by_id( $item_id, false, null, 'publish' );
+		$lesson = $lesson ? $lesson->get_data() : null;
+		if ( $lesson ) {
+			if ( 'video' === $field ) {
+				$video = $lesson['meta']['video_source'] ?? array();
+				$raw   = ( isset( $video['type'], $video['url'] ) && 'short_code' === $video['type'] )
+					? (string) $video['url']
+					: '';
+			} else {
+				$raw = (string) ( $lesson['lesson_content'] ?? '' );
+			}
+		}
+		$raw = stripslashes( $raw );
+
+		nocache_headers();
+		status_header( 200 );
+		header( 'Content-Type: text/html; charset=' . get_option( 'blog_charset' ) );
+
+		// The template runs the normal wp_head -> content -> wp_footer pipeline
+		// so the shortcode's assets register (wp_head) before it renders and
+		// print (wp_footer) — exactly as on a real page. Theme-overridable via
+		// yourtheme/academy/curriculums/frame.php.
+		\Academy\Helper::get_template(
+			'curriculums/frame.php',
+			array( 'content' => \Academy\Helper::get_content_html( $raw ) )
+		);
+		exit;
+	}
+
+	/**
 	 * Validate reset link (NO rendering here)
 	 */
 	public function validate_reset_password_request() {
@@ -77,16 +171,15 @@ class Frontend {
 			return;
 		}
 
-		// Reset link is authenticated by check_password_reset_key() below, not a nonce.
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// The emailed reset link carries no nonce — check_password_reset_key() is its proof.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_GET['reset_key'] ) || empty( $_GET['login'] ) ) {
 			wp_die( esc_html__( 'Invalid or expired reset link.', 'academy' ) );
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$reset_key = sanitize_text_field( wp_unslash( $_GET['reset_key'] ) );
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$login = sanitize_text_field( wp_unslash( $_GET['login'] ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		$user = get_user_by( 'login', $login );
 

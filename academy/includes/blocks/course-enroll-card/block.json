@@ -1,0 +1,89 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-enroll-card",
+	"title": "Course Enroll Box",
+	"category": "academy-course",
+	"description": "Price, enroll or buy button and course includes.",
+	"keywords": [
+		"enroll",
+		"buy",
+		"price",
+		"purchase",
+		"sidebar",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"supports": {
+		"html": false,
+		"multiple": true,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		},
+		"priceFontSize": {
+			"type": "number"
+		},
+		"priceColor": {
+			"type": "string"
+		},
+		"listFontSize": {
+			"type": "number"
+		},
+		"listColor": {
+			"type": "string"
+		}
+	},
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "card",
+			"label": "Card"
+		},
+		{
+			"name": "soft",
+			"label": "Soft panel"
+		}
+	],
+	"style": "file:./style.css"
+}

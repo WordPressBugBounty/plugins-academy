@@ -1,0 +1,40 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/learn-curriculum",
+	"title": "Learn Page Curriculum",
+	"category": "academy",
+	"parent": [
+		"academy/learn-page"
+	],
+	"description": "The course's sections and topics, with progress, as a sidebar.",
+	"textdomain": "academy",
+	"attributes": {
+		"showProgress": {
+			"type": "boolean",
+			"default": true
+		},
+		"showDuration": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"typography": {
+			"fontSize": true
+		},
+		"interactivity": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"usesContext": [
+		"academy/previewCourse"
+	]
+}

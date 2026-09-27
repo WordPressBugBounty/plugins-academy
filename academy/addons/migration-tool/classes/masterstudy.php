@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use AcademyMigrationTool\Interfaces\MigrationInterface;
-use \MasterStudy\Lms\Repositories\CurriculumRepository;
+use MasterStudy\Lms\Repositories\CurriculumRepository;
 
 class Masterstudy extends Migration implements MigrationInterface {
 

@@ -1,0 +1,148 @@
+/* Academy's type scale; a size set on the block in the editor wins. */
+:where(.wp-block-academy-course-filters) {
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+
+/*
+ * Editor only. The server preview prints this wrapper again inside the
+ * editor's own block element, and the copy carries no style of its own (the
+ * preview sends no block-support attributes), so the base size above would
+ * undo the size set on the block. On the front there is one wrapper, so this
+ * never matches there.
+ */
+.wp-block-academy-course-filters .wp-block-academy-course-filters {
+	font-size: inherit;
+	line-height: inherit;
+}
+
+.wp-block-academy-course-filters .academy-course-filters__form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--style--block-gap, 1.5em);
+}
+
+.academy-course-filters__group {
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.academy-course-filters__title {
+	display: block;
+	margin: 0 0 0.6em;
+	padding: 0;
+	color: var(--academy-text-color-black, inherit);
+	font-size: 1.143em;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.academy-course-filters__search {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0.6em 0.8em;
+	border: 1px solid var(--academy-border-color, #d8dbe2);
+	border-radius: 6px;
+	background: var(--academy-surface-color, #fff);
+	color: inherit;
+	font: inherit;
+}
+
+.academy-course-filters__options {
+	display: flex;
+	flex-direction: column;
+	gap: 0.45em;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.academy-course-filters__options--children {
+	margin-block-start: 0.45em;
+	padding-inline-start: 1.6em;
+}
+
+.academy-course-filters__option {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55em;
+	cursor: pointer;
+}
+
+.academy-course-filters__option input {
+	flex: none;
+	width: 1.05em;
+	height: 1.05em;
+	margin: 0;
+	accent-color: var(--academy-primary-color, currentColor);
+}
+
+.academy-course-filters__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5em 1em;
+}
+
+.academy-course-filters__form.is-auto-apply .academy-course-filters__submit {
+	display: none;
+}
+
+/* Style presets. */
+.wp-block-academy-course-filters.is-style-boxed .academy-course-filters__group {
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border-radius: 10px;
+	background: var(--academy-surface-color, #fff);
+}
+
+.wp-block-academy-course-filters.is-style-boxed .academy-course-filters__title {
+	float: left;
+	width: 100%;
+	margin-bottom: 0.75em;
+	padding-bottom: 0.6em;
+	border-bottom: 1px solid var(--academy-border-color, #e4e7ee);
+}
+
+.wp-block-academy-course-filters.is-style-boxed .academy-course-filters__title + * {
+	clear: both;
+}
+
+/* Chips: options as toggles in a wrapping row; the checkbox stays for keyboards and screen readers. */
+.wp-block-academy-course-filters.is-style-chips .academy-course-filters__options {
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.4em;
+}
+
+.wp-block-academy-course-filters.is-style-chips .academy-course-filters__options--children {
+	flex-basis: 100%;
+	padding-inline-start: 0;
+}
+
+.wp-block-academy-course-filters.is-style-chips .academy-course-filters__option {
+	position: relative;
+	padding: 0.35em 0.85em;
+	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border-radius: 999px;
+	background: var(--academy-surface-color, #fff);
+}
+
+.wp-block-academy-course-filters.is-style-chips .academy-course-filters__option input {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.wp-block-academy-course-filters.is-style-chips .academy-course-filters__option:has(input:checked) {
+	border-color: var(--academy-primary-color, currentColor);
+	background: var(--academy-secondary-color, #f2f0fd);
+	color: var(--academy-primary-color, currentColor);
+}
+
+.wp-block-academy-course-filters.is-style-chips .academy-course-filters__option:has(input:focus-visible) {
+	outline: 2px solid var(--academy-primary-color, currentColor);
+	outline-offset: 2px;
+}

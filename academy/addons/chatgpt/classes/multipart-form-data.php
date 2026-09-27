@@ -16,7 +16,7 @@ class MultipartFormData {
 		$this->body     = '';
 		$this->process();
 	}
-	protected function make_array_flat( array $array, ?string $prefix = null ) : array {
+	protected function make_array_flat( array $array, ?string $prefix = null ): array {
 		$result = [];
 		foreach ( $array as $key => $value ) {
 			$prefixed_key = $prefix ? $prefix . '[' . $key . ']' : $key;
@@ -29,7 +29,7 @@ class MultipartFormData {
 		return $result;
 	}
 
-	protected function process() : void {
+	protected function process(): void {
 		foreach ( $this->make_array_flat( $this->payload ) as $key => $value ) {
 			if ( is_object( $value ) && $value instanceof FileStream ) {
 				$this->body .= $this->process_file( $key, $value );
@@ -45,14 +45,14 @@ class MultipartFormData {
 		];
 	}
 
-	protected function process_text( string $key, string $value ) :string {
+	protected function process_text( string $key, string $value ): string {
 		$text = '--' . $this->boundary . "\r\n";
 		$text .= 'Content-Disposition: form-data; name="' . $key . "\"\r\n\r\n";
 		$text .= $value . "\r\n";
 		return $text;
 	}
 
-	protected function process_file( string $key, FileStream $file ) : string {
+	protected function process_file( string $key, FileStream $file ): string {
 		$fs = '--' . $this->boundary . "\r\n";
 		$fs .= 'Content-Disposition: form-data; name="' . $key . '"; filename="' . $file->name . "\"\r\n";
 		$fs .= 'Content-Type: ' . $file->mimi_type . "\r\n\r\n";

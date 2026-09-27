@@ -16,7 +16,7 @@ class LengthenSystemMessage extends Message {
 		Your task is to enhance the provided text by adding more detail and depth, while staying true to the original meaning and intent. Ensuring the tone aligns with a {tone}.
 	';
 
-	public function get( array $input ) : array {
+	public function get( array $input ): array {
 		if ( boolval( $input['html'] ?? false ) ) {
 			$this->content .= '  Please use some html formatting tag if needed.';
 		} else {

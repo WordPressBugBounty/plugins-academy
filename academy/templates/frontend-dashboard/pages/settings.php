@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	$academy_cover_photo = esc_html( get_user_meta( $user_id, 'academy_cover_photo', true ) );
 
 	$user_info = get_userdata( $user_id );
-	$user_role = in_array( 'academy_instructor', $user_info->roles ) ? 'instructor' : 'student';
+	$user_role = in_array( 'academy_instructor', (array) $user_info->roles, true ) ? 'instructor' : 'student';
 	$user_fields = \Academy\Helper::get_form_builder_fields( $user_role );
 	$user_meta = \Academy\Helper::prepare_user_meta_data( $user_fields, $user_id );
 	$user_data = array_column( $user_meta, null, 'type' );
@@ -109,7 +109,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										. 'value="' . esc_attr( $data['value'] ) . '">'
 							. '</div>';
 				} ?>
-				<input class="academy-btn academy-btn--bg-purple academy-btn--save-settings" type="submit" value="<?php echo esc_html__( 'Save Settings', 'academy' ); ?>">
+				<input class="academy-btn academy-btn--bg-purple academy-btn--save-settings" type="submit" value="<?php echo esc_attr__( 'Save Settings', 'academy' ); ?>">
 			</form>
 		</div>
 	</div>

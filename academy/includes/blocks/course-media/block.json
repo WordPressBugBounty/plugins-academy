@@ -1,0 +1,73 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-media",
+	"title": "Course Intro Media",
+	"category": "academy-course",
+	"description": "The course intro video, or its featured image.",
+	"keywords": [
+		"video",
+		"image",
+		"intro",
+		"preview",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"html": false,
+		"multiple": true,
+		"color": {
+			"text": false,
+			"background": true,
+			"link": false
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		},
+		"width": {
+			"type": "string"
+		},
+		"justify": {
+			"type": "string",
+			"enum": [
+				"left",
+				"center",
+				"right"
+			],
+			"default": "left"
+		}
+	},
+	"style": "file:./style.css"
+}

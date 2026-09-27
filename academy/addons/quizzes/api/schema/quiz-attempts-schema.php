@@ -117,8 +117,16 @@ trait QuizAttemptsSchema {
 				'validate_callback' => 'rest_validate_request_arg',
 			],
 			'attempt_info'         => [
-				'type'   => 'string',
-				'sanitize_callback' => 'sanitize_text_field',
+				// Object, not string: the client sends a nested payload here
+				// (e.g. `{ proctoring: { fullscreen_exit_count } }`) — a
+				// `sanitize_callback` of `sanitize_text_field` would mangle
+				// an array, and a `type` of `string` makes core's own
+				// `rest_validate_request_arg` reject the whole request
+				// before `update_item()` ever runs. The controller already
+				// does its own array→JSON encoding in
+				// `prepare_item_for_database()`, so no sanitize_callback is
+				// needed here.
+				'type'   => 'object',
 				'validate_callback' => 'rest_validate_request_arg',
 			],
 			'attempt_status'         => [

@@ -10,9 +10,29 @@ use Academy\Admin\Settings\Base as BaseSettings;
 class Bootstrap {
 
 	public static function init(): void {
+		add_filter( 'academy/admin/settings/base_default_data', [ __CLASS__, 'add_defaults' ] );
 		add_filter( 'academy/admin/settings/sanitize_payload', [ __CLASS__, 'add_sanitize_rules' ] );
 		add_filter( 'academy/admin/settings/save', [ __CLASS__, 'save_fields' ], 10, 3 );
 		add_filter( 'academy/api/settings/get_settings', [ __CLASS__, 'mask_secret_in_response' ] );
+	}
+
+	/**
+	 * Seed the defaults array.
+	 *
+	 * Required, not cosmetic: {@see self::save_fields()} falls back to
+	 * $default['gumlet_*'] whenever a field is absent from the payload, so
+	 * without these entries every such save wrote null over the stored value
+	 * and raised an undefined-index notice.
+	 *
+	 * @param array $defaults
+	 */
+	public static function add_defaults( array $defaults ): array {
+		$defaults['gumlet_collection_id']      = '';
+		$defaults['gumlet_token_expiry']       = 3600;
+		$defaults['gumlet_signed_url_enabled'] = false;
+		$defaults['gumlet_token_secret']       = '';
+
+		return $defaults;
 	}
 
 	public static function add_sanitize_rules( array $rules ): array {
@@ -44,7 +64,7 @@ class Bootstrap {
 		$settings = array_merge( [
 			'gumlet_collection_id'     => '',
 			'gumlet_token_expiry'      => 3600,
-			'gumlet_signed_url_enabled'=> false,
+			'gumlet_signed_url_enabled' => false,
 		], $settings );
 
 		$settings['gumlet_token_secret_is_set'] = ! empty( $settings['gumlet_token_secret'] ?? '' );

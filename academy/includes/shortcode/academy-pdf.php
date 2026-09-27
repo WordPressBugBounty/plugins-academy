@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Shortcode;
+namespace Academy\Shortcode;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -21,10 +21,9 @@ class AcademyPDF {
 		ob_start();
 		?>
 		<div class="academy-pdf-embedder">
-			<iframe class="academy-pdf-embedder__iframe" src="<?php echo esc_url( $src ); ?>" width="<?php echo esc_attr( $width ); ?>" height="<?php echo esc_attr( $height ); ?>"></iframe>
+			<iframe class="academy-pdf-embedder__iframe" style="max-width:100%;border:0;" src="<?php echo esc_url( $src ); ?>" width="<?php echo esc_attr( $width ); ?>" height="<?php echo esc_attr( $height ); ?>"></iframe>
 		</div>
 		<?php
 		return apply_filters( 'academy/templates/shortcode/pdf', ob_get_clean() );
 	}
-
 }

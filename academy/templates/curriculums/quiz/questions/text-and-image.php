@@ -13,6 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	</div>
 	<span class="academy-lesson-quiz-answer-title">
-		<?php echo esc_html( $ans_title ); ?>
+		<?php echo wp_kses_post( $ans_title ); ?>
 	</span>
 </label>

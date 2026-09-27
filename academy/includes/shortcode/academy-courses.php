@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Shortcode;
+namespace Academy\Shortcode;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -8,7 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class AcademyCourses {
 	public function __construct() {
 		add_shortcode( 'academy_courses', array( $this, 'academy_courses' ) );
-
 	}
 	public function academy_courses( $atts, $content = '' ) {
 		$courses_per_row = \Academy\Helper::get_settings( 'course_archive_courses_per_row' );
@@ -140,6 +139,21 @@ class AcademyCourses {
 		$args['order'] = ! empty( $order ) ? $order : 'DESC';
 		$args['posts_per_page'] = (int) $count;
 
+		// Only pin sticky courses first when the shortcode is rendering the
+		// site's default course listing (no explicit `ids`/`orderby`
+		// override) — an embed with its own explicit order (e.g. "6 latest
+		// courses") expects literal control over that order, not a surprise
+		// reprioritization. This is also what the theme's default course
+		// catalog page actually renders through on this site (a Shortcode
+		// block), so sticky-first must work here too, not just on the
+		// `is_post_type_archive()` path.
+		if ( empty( $atts['ids'] ) && empty( $atts['orderby'] ) ) {
+			// `orderby` becomes an array, which carries its own per-key
+			// direction — a lone `order` alongside it is ignored by WP_Query.
+			$args = array_merge( $args, \Academy\Helper::apply_sticky_course_ordering( $args['orderby'], $args['order'] ) );
+			unset( $args['order'] );
+		}
+
 		$grid_class = \Academy\Helper::get_responsive_column( array(
 			'desktop' => $column_per_row,
 			'tablet' => $courses_per_row->tablet,
@@ -157,7 +171,7 @@ class AcademyCourses {
 			}
 		}
 
-		wp_reset_postdata();
+		wp_reset_query();
 		// phpcs:ignore WordPress.WP.DiscouragedFunctions.query_posts_query_posts
 		query_posts( apply_filters( 'academy_courses_shortcode_args', $args ) );
 
@@ -186,9 +200,6 @@ class AcademyCourses {
 		echo '</div>';
 
 		$output = ob_get_clean();
-		// query_posts() replaced the global main query above; wp_reset_postdata()
-		// only restores $post, so use wp_reset_query() to restore $wp_query and
-		// avoid breaking the page layout rendered after this shortcode.
 		wp_reset_query();
 
 		return $output;

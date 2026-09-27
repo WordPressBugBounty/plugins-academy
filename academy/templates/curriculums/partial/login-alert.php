@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <div class="academy-lessons-content--topic-error">
 	<div class="academy-required-login">
 		<div class="academy-oops">

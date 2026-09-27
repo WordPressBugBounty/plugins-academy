@@ -1,5 +1,5 @@
 <?php
-namespace  Academy;
+namespace Academy;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,5 +27,6 @@ class Shortcode {
 		new Shortcode\AcademyCourseEnrollWidget();
 		new Shortcode\AcademySingleCourse();
 		new Shortcode\AcademyCourseInstructors();
+		new Shortcode\AcademyEnrolledCourses();
 	}
 }

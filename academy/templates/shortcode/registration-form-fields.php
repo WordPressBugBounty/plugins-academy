@@ -31,7 +31,7 @@ foreach ( $fields as $field ) {
 								class="academy-form-control<?php echo esc_attr( 'file' === $col['type'] ? '-file' : '' ); ?>"
 								type="<?php echo esc_attr( $col['type'] ); ?>"
 								name="<?php echo esc_attr( $col['name'] ); ?>"
-								placeholder="<?php echo esc_html( $col['placeholder'] ); ?>"
+								placeholder="<?php echo esc_attr( $col['placeholder'] ); ?>"
 							<?php if ( $col['is_required'] ) :
 								?> required <?php endif; ?>
 						/>
@@ -55,7 +55,7 @@ foreach ( $fields as $field ) {
 							id="academy_<?php echo esc_attr( $col['name'] ); ?>"
 							class="academy-form-control"
 							name="<?php echo esc_attr( $col['name'] ); ?>"
-							placeholder="<?php echo esc_html( $col['placeholder'] ); ?>"
+							placeholder="<?php echo esc_attr( $col['placeholder'] ); ?>"
 							<?php if ( $col['is_required'] ) :
 								?> required <?php endif; ?>
 						></textarea>

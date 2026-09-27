@@ -16,7 +16,7 @@ class ShortenSystemMessage extends Message {
 		You are an assistant tasked with shortening the provided text. Just make it more concise while keeping the core meaning. Ensure the output is shorter than the original text. Ensuring the tone aligns with a {tone}.
 	';
 
-	public function get( array $input ) : array {
+	public function get( array $input ): array {
 		if ( boolval( $input['html'] ?? false ) ) {
 			$this->content .= '  Please use some html formatting tag if needed.';
 		} else {

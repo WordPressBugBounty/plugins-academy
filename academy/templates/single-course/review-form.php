@@ -69,7 +69,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<option value="1">' . esc_html__( 'Very poor', 'academy' ) . '</option>
 	</select></div>';
 
-	$comment_form['comment_field'] .= '<p class="academy-review-form-review"><textarea id="academy_comment" name="comment" cols="45" rows="8" placeholder="' . esc_html__( 'Enter your feedback', 'academy' ) . '" required></textarea></p>';
+	$comment_form['comment_field'] .= '<p class="academy-review-form-review"><textarea id="academy_comment" name="comment" cols="45" rows="8" placeholder="' . esc_attr__( 'Enter your feedback', 'academy' ) . '" required></textarea></p>';
 	comment_form( apply_filters( 'academy/templates/course_review_comment_form_args', $comment_form ) );
 	?>
 </div>

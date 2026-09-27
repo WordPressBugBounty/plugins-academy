@@ -5,5 +5,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div class="academy-archive-course-widget academy-archive-course-widget--search">
 	<input class="academy-archive-course-search" type="text" name="searchfield"
-		placeholder="<?php esc_html_e( 'Search Courses...', 'academy' ); ?>" />
+		placeholder="<?php esc_attr_e( 'Search Courses...', 'academy' ); ?>" />
 </div>

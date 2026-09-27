@@ -6,5 +6,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 interface Insertable {
-	public function insert() : int;
+	public function insert(): int;
 }

@@ -13,7 +13,7 @@ class ZoomPublish implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy_pro/frontend/after_zoom_publish',
-			function( $zoom_id ) use ( $deliver_callback, $webhook ) {
+			function ( $zoom_id ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(
@@ -23,7 +23,6 @@ class ZoomPublish implements ListenersInterface {
 				);
 			}, 10
 		);
-
 	}
 
 	public static function get_payload( $zoom_id ) {

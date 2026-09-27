@@ -1,0 +1,46 @@
+.wp-block-academy-course-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--style--block-gap, 0.4em 1em);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.wp-block-academy-course-meta .academy-course-meta__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	margin: 0;
+}
+
+.academy-course-meta__icon {
+	flex: none;
+	opacity: 0.7;
+}
+
+/* Style presets. */
+.wp-block-academy-course-meta.is-style-stacked {
+	flex-direction: column;
+	gap: 0.4em;
+}
+
+.wp-block-academy-course-meta.is-style-chips {
+	gap: 0.4em;
+}
+
+.wp-block-academy-course-meta.is-style-chips .academy-course-meta__item {
+	padding: 0.2em 0.65em;
+	border-radius: 999px;
+	background: var(--academy-gray-color, #f6f7f8);
+	line-height: 1.5;
+}
+
+/* Alignment from the block toolbar. */
+.wp-block-academy-course-meta.has-text-align-center {
+	justify-content: center;
+}
+
+.wp-block-academy-course-meta.has-text-align-right {
+	justify-content: flex-end;
+}

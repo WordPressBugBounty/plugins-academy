@@ -1,0 +1,80 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-search",
+	"title": "Course Search",
+	"category": "academy",
+	"description": "A search box for courses. Results open on the course archive, together with the course filters.",
+	"keywords": [
+		"search",
+		"find",
+		"course"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"placeholder": {
+			"type": "string"
+		},
+		"buttonText": {
+			"type": "string"
+		},
+		"showButton": {
+			"type": "boolean",
+			"default": true
+		},
+		"width": {
+			"type": "string"
+		},
+		"justify": {
+			"type": "string",
+			"enum": [
+				"left",
+				"center",
+				"right"
+			],
+			"default": "left"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"editorScript": "academy-blocks-editor",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "rounded",
+			"label": "Rounded"
+		},
+		{
+			"name": "underline",
+			"label": "Underline"
+		},
+		{
+			"name": "joined",
+			"label": "Joined"
+		}
+	]
+}

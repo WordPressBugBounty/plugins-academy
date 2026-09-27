@@ -128,7 +128,7 @@ class EventStreamServer {
 				// No updates needed, send a comment to keep the connection alive.
 				// From https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo ': ' . sha1( wp_rand() ) . "\n\n";
+				echo ': ' . sha1( (string) wp_rand() ) . "\n\n";
 			}
 
 			try {
@@ -142,7 +142,9 @@ class EventStreamServer {
 				] );
 			}
 
-			@ob_flush();
+			if ( ob_get_level() > 0 ) {
+				ob_flush();
+			}
 			flush();
 
 			// if the connection has been closed by the client we better exit the loop
@@ -187,7 +189,9 @@ class EventStreamServer {
 		// Browser padding for IE
 		echo ':' . str_repeat( ' ', 2048 ) . "\n\n";// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		@ob_flush();
+		if ( ob_get_level() > 0 ) {
+			ob_flush();
+		}
 		flush();
 
 		if ( $terminate ) {
@@ -196,7 +200,7 @@ class EventStreamServer {
 	}
 
 	public function get_new_id(): int {
-		return $this->id ++;
+		return $this->id++;
 	}
 }
 

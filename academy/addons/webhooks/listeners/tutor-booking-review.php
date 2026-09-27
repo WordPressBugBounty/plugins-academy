@@ -13,7 +13,7 @@ class TutorBookingReview implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy_pro/fronted/academy_booking_review',
-			function( $comment_id, $rating ) use ( $deliver_callback, $webhook ) {
+			function ( $comment_id, $rating ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(
@@ -23,7 +23,6 @@ class TutorBookingReview implements ListenersInterface {
 				);
 			}, 10, 2
 		);
-
 	}
 
 	public static function get_payload( $comment_id, $rating ) {

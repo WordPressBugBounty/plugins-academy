@@ -6,5 +6,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 interface SettingsExtendInterface {
-	public function set_settings_default_data( $settings);
+	public function set_settings_default_data( $settings );
 }

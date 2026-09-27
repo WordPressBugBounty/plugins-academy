@@ -27,71 +27,130 @@ class QuizQuestions extends \WP_REST_Controller {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
-			array(
-				array(
+			[
+				[
 					'methods'             => \WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_items' ),
-					'permission_callback' => array( $this, 'read_item_permissions_check' ),
+					'callback'            => [ $this, 'get_items' ],
+					'permission_callback' => [ $this, 'read_item_permissions_check' ],
 					'args'                => $this->get_collection_params(),
-				),
-				array(
+				],
+				[
 					'methods'             => \WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_item' ),
-					'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'callback'            => [ $this, 'create_item' ],
+					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => $this->get_item_schema(),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			)
-		);
-
-		$get_item_args = array(
-			'context' => $this->get_context_param( array( 'default' => 'view' ) ),
+				],
+				'schema' => [ $this, 'get_public_item_schema' ],
+			]
 		);
 
 		register_rest_route(
 			$this->namespace,
+			'/' . $this->rest_base . '/export',
+			[
+				[
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => [ $this, 'export_items' ],
+					'permission_callback' => [ $this, 'create_item_permissions_check' ],
+				],
+			]
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/import',
+			[
+				[
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => [ $this, 'import_items' ],
+					'permission_callback' => [ $this, 'create_item_permissions_check' ],
+				],
+			]
+		);
+
+		$get_item_args = [
+			'context' => $this->get_context_param( [ 'default' => 'view' ] ),
+		];
+
+		register_rest_route(
+			$this->namespace,
 			'/' . $this->rest_base . '/(?P<id>[\d]+)',
-			array(
-				'args'   => array(
-					'id' => array(
+			[
+				'args'   => [
+					'id' => [
 						'description' => esc_html__( 'Unique identifier for the object.', 'academy' ),
 						'type'        => 'integer',
-					),
-				),
-				array(
+					],
+				],
+				[
 					'methods'             => \WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_item' ),
-					'permission_callback' => array( $this, 'read_item_permissions_check' ),
+					'callback'            => [ $this, 'get_item' ],
+					'permission_callback' => [ $this, 'read_item_permissions_check' ],
 					'args'                => $get_item_args,
-				),
-				array(
+				],
+				[
 					'methods'             => \WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_item' ),
-					'permission_callback' => array( $this, 'update_item_permissions_check' ),
+					'callback'            => [ $this, 'update_item' ],
+					'permission_callback' => [ $this, 'update_item_permissions_check' ],
 					'args'                => $this->get_item_schema(),
-				),
-				array(
+				],
+				[
 					'methods'             => \WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_item' ),
-					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-					'args'                => array(
-						'force' => array(
+					'callback'            => [ $this, 'delete_item' ],
+					'permission_callback' => [ $this, 'delete_item_permissions_check' ],
+					'args'                => [
+						'force' => [
 							'type'        => 'boolean',
 							'default'     => false,
 							'description' => esc_html__( 'Whether to bypass Trash and force deletion.', 'academy' ),
-						),
-					),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			)
+						],
+					],
+				],
+				'schema' => [ $this, 'get_public_item_schema' ],
+			]
+		);
+
+		// Reverse lookup: which quizzes reference this question.
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/quizzes',
+			[
+				'args' => [
+					'id' => [
+						'description' => esc_html__( 'Unique identifier for the question.', 'academy' ),
+						'type'        => 'integer',
+					],
+				],
+				[
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => [ $this, 'get_item_quizzes' ],
+					'permission_callback' => [ $this, 'read_item_permissions_check' ],
+				],
+			]
 		);
 	}
 
 	/**
-	 * Reading the raw question bank (including instructor-only fields such as
-	 * question_explanation) is a course-builder operation. Restrict it to
-	 * instructors/admins instead of exposing it publicly; the student quiz player
-	 * receives questions through the enrollment-gated `quizzes/render_quiz` route.
+	 * GET /quiz_questions/{id}/quizzes — the quizzes that reference a question.
+	 *
+	 * @param \WP_REST_Request $request
+	 */
+	public function get_item_quizzes( $request ) {
+		$quizzes = Query::get_quizzes_using_question( (int) $request->get_param( 'id' ) );
+		return rest_ensure_response( $quizzes );
+	}
+
+	/**
+	 * Reading the question bank is an authoring capability, not a public one.
+	 *
+	 * Every consumer of these read routes is an admin-side screen (the quiz
+	 * builder and the Question Bank browser). Students never reach questions
+	 * through here — they get them via the quiz attempt flow — so gating reads
+	 * behind the same capability as writes does not affect the learner side,
+	 * and it keeps question titles, content and explanations from being
+	 * enumerable by anyone who knows the route.
+	 *
+	 * @param \WP_REST_Request $request
 	 */
 	public function read_item_permissions_check( $request ) {
 		if ( ! current_user_can( 'manage_academy_instructor' ) ) {
@@ -147,26 +206,223 @@ class QuizQuestions extends \WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error Response object on success, or \WP_Error object on failure.
 	 */
 	public function get_items( $request ) {
-		$params = $request->get_params();
+		$params   = $request->get_params();
+		$per_page = (int) ( $params['per_page'] ?? 10 );
+		$page     = max( 1, (int) ( $params['page'] ?? 1 ) );
 
-		$args = array(
-			'limit' => 12,
+		$filter_args = [
+			'limit'          => $per_page,
+			'offset'         => ( $page - 1 ) * $per_page,
+			'search'         => sanitize_text_field( $params['search'] ?? '' ),
+			'question_type'  => sanitize_text_field( $params['question_type'] ?? '' ),
+			'question_level' => sanitize_text_field( $params['question_level'] ?? '' ),
+			'orderby'        => sanitize_text_field( $params['orderby'] ?? 'question_created_at' ),
+			'order'          => sanitize_text_field( $params['order'] ?? 'DESC' ),
+		];
+
+		// Instructors (unlike admins) may only browse/reuse questions that
+		// live in their own quizzes — otherwise the question bank and the
+		// quiz builder's "Reuse Content" picker leak every other author's
+		// question titles and content.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$filter_args['quiz_id__in'] = Query::get_quiz_ids_by_instructor_id( get_current_user_id() );
+		}
+
+		$questions = Query::get_quiz_questions( $filter_args );
+		$total     = Query::get_quiz_questions_count( $filter_args );
+
+		// One scan of all quizzes' meta gives the per-question usage counts for
+		// this page (no join table — membership lives in quiz post meta).
+		$usage_map = Query::get_question_usage_map();
+
+		$data = [];
+		foreach ( $questions as $question ) {
+			$item                    = $this->rest_prepare_item( $question, $request );
+			$item['used_in_count']   = count( $usage_map[ (int) $question->question_id ] ?? [] );
+			$data[]                  = $this->rest_prepare_for_collection( $item );
+		}
+
+		$response = rest_ensure_response( $data );
+		$response->header( 'X-WP-Total', $total );
+		$response->header( 'X-WP-TotalPages', (int) ceil( $total / $per_page ) );
+		return $response;
+	}
+
+	public function export_items( $request ) {
+		$export_args = [
+			'limit'  => 9999,
 			'offset' => 0,
-		);
-		$questions = Query::get_quiz_questions( $args );
+		];
 
-		$data = array();
+		// Same scoping as get_items(): an instructor can only export the
+		// questions from their own quizzes, not the whole site's bank.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$export_args['quiz_id__in'] = Query::get_quiz_ids_by_instructor_id( get_current_user_id() );
+		}
+
+		$questions = Query::get_quiz_questions( $export_args );
 
 		if ( empty( $questions ) ) {
-			return rest_ensure_response( $data );
+			return new \WP_Error(
+				'no_questions',
+				esc_html__( 'No questions to export.', 'academy' ),
+				[ 'status' => 404 ]
+			);
 		}
 
-		foreach ( $questions as $question ) {
-			$response = $this->rest_prepare_item( $question, $request );
-			$data[] = $this->rest_prepare_for_collection( $response );
-		}
+		$data = [];
+		foreach ( $questions as $q ) {
+			// get_question_answers_by_question_id needs the question_type to build its query
+			$answers = Query::get_question_answers_by_question_id( $q->question_id, $q->question_type );
+			$answer_data = [];
+			if ( ! empty( $answers ) ) {
+				foreach ( $answers as $a ) {
+					$answer_data[] = [
+						'answer_title'   => $a->answer_title,
+						'answer_content' => $a->answer_content,
+						'is_correct'     => (int) $a->is_correct,
+						'image_id'       => $a->image_id,
+						'view_format'    => $a->view_format,
+						'answer_order'   => (int) $a->answer_order,
+					];
+				}
+			}
+
+			$data[] = [
+				'question_title'          => $q->question_title,
+				'question_title_type'     => $q->question_title_type,
+				'question_content'        => $q->question_content,
+				'question_explanation'    => $q->question_explanation,
+				'question_type'           => $q->question_type,
+				'question_level'          => $q->question_level,
+				'question_score'          => $q->question_score,
+				'question_negative_score' => $q->question_negative_score,
+				'question_settings'       => $q->question_settings,
+				'question_answers'        => wp_json_encode( $answer_data ),
+			];
+		}//end foreach
 
 		return rest_ensure_response( $data );
+	}
+
+	public function import_items( $request ) {
+		$rows = $request->get_json_params();
+		if ( empty( $rows ) || ! is_array( $rows ) ) {
+			return new \WP_Error(
+				'invalid_data',
+				esc_html__( 'No valid question data provided.', 'academy' ),
+				[ 'status' => 400 ]
+			);
+		}
+
+		$allowed_types  = [ 'trueFalse', 'singleChoice', 'multipleChoice', 'dropDown', 'fillInTheBlanks', 'imageAnswer', 'shortAnswer' ];
+		$allowed_levels = [ '', 'high', 'medium', 'low' ];
+		$imported       = 0;
+		$errors         = [];
+
+		foreach ( $rows as $index => $row ) {
+			$title = self::sanitize_rich_title( $row['question_title'] ?? '' );
+			if ( empty( $title ) || Query::question_title_exists( $title ) ) {
+				/* translators: %d: CSV row number. */
+				$errors[] = sprintf( esc_html__( 'Row %d: question_title is required or matched.', 'academy' ), $index + 1 );
+				continue;
+			}
+
+			$title_type = sanitize_key( $row['question_title_type'] ?? 'plain' );
+			if ( ! in_array( $title_type, [ 'plain', 'rich' ], true ) ) {
+				$title_type = 'plain';
+			}
+
+			$type = sanitize_text_field( $row['question_type'] ?? 'trueFalse' );
+			if ( ! in_array( $type, $allowed_types, true ) ) {
+				/* translators: 1: CSV row number, 2: question type. */
+				$errors[] = sprintf( esc_html__( 'Row %1$d: invalid question_type "%2$s".', 'academy' ), $index + 1, esc_html( $type ) );
+				continue;
+			}
+
+			$level = sanitize_text_field( $row['question_level'] ?? '' );
+			if ( ! in_array( $level, $allowed_levels, true ) ) {
+				$level = '';
+			}
+
+			// quiz_id: if importing into a specific quiz, pass it in the request;
+			// otherwise default to 0 (unassigned / question bank item).
+			$quiz_id = absint( $row['quiz_id'] ?? 0 );
+
+			$default_settings = [
+				'display_points'  => true,
+				'answer_required' => false,
+				'randomize'       => false,
+			];
+			$settings = json_decode( wp_unslash( $row['question_settings'] ?? '' ), true );
+			$settings = is_array( $settings ) ? wp_parse_args( $settings, $default_settings ) : $default_settings;
+
+			$question_data = [
+				'quiz_id'                 => $quiz_id,
+				'question_title'          => $title,
+				'question_title_type'     => $title_type,
+				'question_content'        => self::sanitize_description( $row['question_content'] ?? '' ),
+				'question_explanation'    => sanitize_text_field( $row['question_explanation'] ?? '' ),
+				'question_type'           => $type,
+				'question_level'          => $level,
+				'question_score'          => (float) ( $row['question_score'] ?? 1.0 ),
+				'question_negative_score' => (float) ( $row['question_negative_score'] ?? 0.0 ),
+				'question_status'         => 'publish',
+				'question_settings'       => wp_json_encode( $settings ),
+			];
+
+			$question_id = Query::quiz_question_insert( $question_data );
+
+			if ( ! $question_id ) {
+				/* translators: %d: CSV row number. */
+				$errors[] = sprintf( esc_html__( 'Row %d: failed to insert question.', 'academy' ), $index + 1 );
+				continue;
+			}
+
+			++$imported;
+
+			// Insert answers for this question
+			$answers = json_decode( $row['question_answers'], true ) ?? [];
+			if ( ! empty( $answers ) && is_array( $answers ) ) {
+				foreach ( $answers as $a_index => $answer ) {
+					$answer_title = sanitize_text_field( $answer['answer_title'] ?? '' );
+
+					if ( '' === $answer_title && empty( $answer['answer_content'] ) ) {
+						$errors[] = sprintf(
+							/* translators: 1: CSV row number, 2: answer number. */
+							esc_html__( 'Row %1$d, answer %2$d: answer_title or answer_content is required, skipped.', 'academy' ),
+							$index + 1,
+							$a_index + 1
+						);
+						continue;
+					}
+
+					$answer_data = [
+						'quiz_id'        => $quiz_id,
+						'question_id'    => $question_id,
+						'question_type'  => $type, // must match the question's type, table is filtered on this
+						'answer_title'   => $answer_title,
+						'answer_content' => sanitize_textarea_field( $answer['answer_content'] ?? '' ),
+						'is_correct'     => (int) ( $answer['is_correct'] ?? 0 ),
+						'image_id'       => absint( $answer['image_id'] ?? 0 ),
+						'view_format'    => sanitize_text_field( $answer['view_format'] ?? '' ),
+						'answer_order'   => (int) ( $answer['answer_order'] ?? $a_index ),
+					];
+
+					Query::quiz_answer_insert( $answer_data );
+				}//end foreach
+			} elseif ( ! in_array( $type, [ 'shortAnswer' ], true ) ) {
+				// shortAnswer questions legitimately have no predefined answers;
+				// everything else should have at least one.
+				/* translators: 1: CSV row number, 2: question type. */
+				$errors[] = sprintf( esc_html__( 'Row %1$d: no answers provided for question type "%2$s".', 'academy' ), $index + 1, esc_html( $type ) );
+			}//end if
+		}//end foreach
+
+		return rest_ensure_response( [
+			'imported' => $imported,
+			'errors'   => $errors,
+		] );
 	}
 
 	public function get_item( $request ) {
@@ -226,24 +482,27 @@ class QuizQuestions extends \WP_REST_Controller {
 
 
 	protected function rest_prepare_item( $question, $request ) {
-		$data = array();
-
 		$schema = $this->get_public_item_schema();
+		$data   = [];
 
-		if ( isset( $schema['properties']['question_id'] ) ) {
-			$data['question_id'] = (int) $question->question_id;
-		}
+		$field_map = [
+			'question_id'             => 'intval',
+			'question_title'          => null,
+			'question_title_type'     => null,
+			'question_content'        => null,
+			'question_explanation'    => null,
+			'question_type'           => null,
+			'question_level'          => null,
+			'question_score'          => 'floatval',
+			'question_negative_score' => 'floatval',
+			'question_created_at'     => null,
+		];
 
-		if ( isset( $schema['properties']['question_title'] ) ) {
-			$data['question_title'] = $question->question_title;
-		}
-
-		if ( isset( $schema['properties']['question_content'] ) ) {
-			$data['question_content'] = $question->question_content;
-		}
-
-		if ( isset( $schema['properties']['question_explanation'] ) ) {
-			$data['question_explanation'] = $question->question_explanation;
+		foreach ( $field_map as $field => $cast ) {
+			if ( isset( $schema['properties'][ $field ] ) ) {
+				$value          = $question->$field ?? null;
+				$data[ $field ] = $cast ? $cast( $value ) : $value;
+			}
 		}
 
 		return $data;
@@ -272,6 +531,13 @@ class QuizQuestions extends \WP_REST_Controller {
 		if ( ! empty( $schema['question_name'] ) && isset( $request['question_title'] ) ) {
 			if ( is_string( $request['question_title'] ) ) {
 				$prepared_question->question_title = $request['question_title'];
+			}
+		}
+
+		// Question title type.
+		if ( ! empty( $schema['question_title_type'] ) && isset( $request['question_title_type'] ) ) {
+			if ( in_array( $request['question_title_type'], [ 'plain', 'rich' ], true ) ) {
+				$prepared_question->question_title_type = $request['question_title_type'];
 			}
 		}
 
@@ -324,6 +590,13 @@ class QuizQuestions extends \WP_REST_Controller {
 			}
 		}
 
+		// Question Audio ID.
+		if ( ! empty( $schema['question_audio_id'] ) && isset( $request['question_audio_id'] ) ) {
+			if ( is_numeric( $request['question_audio_id'] ) ) {
+				$prepared_question->question_audio_id = $request['question_audio_id'];
+			}
+		}
+
 		// Question Settings.
 		if ( ! empty( $schema['question_settings'] ) && isset( $request['question_settings'] ) ) {
 			if ( is_array( $request['question_settings'] ) ) {
@@ -353,5 +626,4 @@ class QuizQuestions extends \WP_REST_Controller {
 
 		return $data;
 	}
-
 }

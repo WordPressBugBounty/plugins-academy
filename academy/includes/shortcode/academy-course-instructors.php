@@ -19,6 +19,11 @@ class AcademyCourseInstructors {
 		$author_id = isset( $post->post_author ) ? $post->post_author : 0;
 		if ( \Academy\Helper::get_addon_active_status( 'multi_instructor' ) ) {
 			$instructors = (array) \Academy\Helper::get_instructors_by_course_id( $post->ID );
+			// A course saved before Multi Instructor was turned on has no
+			// instructor list yet: its author teaches it.
+			if ( ! $instructors ) {
+				$instructors = (array) \Academy\Helper::get_instructor_by_author_id( $author_id );
+			}
 		} else {
 			$instructors = (array) \Academy\Helper::get_instructor_by_author_id( $author_id );
 		}

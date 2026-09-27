@@ -53,7 +53,7 @@ class Init extends AbstractAjaxHandler {
 		];
 	}
 
-	protected function authorize() : void {
+	protected function authorize(): void {
 		if ( current_user_can( 'manage_options' ) ) {
 			return;
 		} elseif ( in_array( 'academy_instructor', array_values( wp_get_current_user()->roles ), true ) &&
@@ -64,7 +64,7 @@ class Init extends AbstractAjaxHandler {
 		wp_send_json_error( __( 'Unauthorized.', 'academy' ), 401 );
 	}
 
-	public function key_test( array $payload_data ) : void {
+	public function key_test( array $payload_data ): void {
 		$key = $payload_data['key'] ?? '';
 		if ( empty( $key ) ) {
 			wp_send_json_error( __( 'Key field is required.', 'academy' ), 500 );
@@ -78,7 +78,7 @@ class Init extends AbstractAjaxHandler {
 			'prompt'         => 'Hello GPT, are you working?',
 		] );
 	}
-	public function handle( array $payload_data ) : void {
+	public function handle( array $payload_data ): void {
 		$this->authorize();
 		$prompt_handler = sanitize_text_field( $payload_data['prompt_handler'] ?? '' );
 		if ( ! array_key_exists( $this->model, $this->models ) ) {
@@ -102,14 +102,13 @@ class Init extends AbstractAjaxHandler {
 		} catch ( Exception $e ) {
 			wp_send_json_error( $e->getMessage(), 500 );
 		}
-
 	}
 
-	public function img_handler( array $payload_data ) : void {
+	public function img_handler( array $payload_data ): void {
 		$this->authorize();
 		$type = sanitize_text_field( $payload_data['action_type'] ?? 'create' );
 		$prompt_handler = 'img:' . sanitize_text_field( $payload_data['prompt_handler'] ?? 'create_img' );
-		if ( ! in_array( $type, [ 'create', 'edit' ] ) ) {
+		if ( ! in_array( $type, [ 'create', 'edit' ], true ) ) {
 			wp_send_json_error( __( 'action type field is required..', 'academy' ), 500 );
 		}
 		if ( ! array_key_exists( $this->img_model . ':' . $type, $this->models ) ) {
@@ -133,7 +132,6 @@ class Init extends AbstractAjaxHandler {
 		} catch ( Exception $e ) {
 			wp_send_json_error( $e->getMessage(), 500 );
 		}
-
 	}
 
 	protected function get_setting( string $name, $default = '' ) {

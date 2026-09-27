@@ -3,8 +3,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-academy_get_header();
-
+// The student dashboard can be shown without the theme's header and footer.
+$academy_bare = \Academy\FrontendDashboard\Dashboard::is_bare();
+if ( $academy_bare ) :
+	?>
+<!doctype html>
+<html <?php language_attributes(); ?>>
+<head>
+	<meta charset="<?php bloginfo( 'charset' ); ?>" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<?php wp_head(); ?>
+</head>
+<body <?php body_class(); ?>>
+	<?php
+	wp_body_open();
+else :
+	academy_get_header();
+endif;
 ?>
 
 <?php
@@ -36,4 +51,9 @@ academy_get_header();
 ?>
 
 <?php
-academy_get_footer();
+if ( $academy_bare ) {
+	wp_footer();
+	echo '</body></html>';
+} else {
+	academy_get_footer();
+}

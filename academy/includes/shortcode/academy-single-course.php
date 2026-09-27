@@ -45,12 +45,14 @@ class AcademySingleCourse {
 	}
 
 	public function single_course_additional_info( $attributes, $content = '' ) {
+		$atts      = shortcode_atts( [ 'course_id' => get_the_ID() ], $attributes );
+		$course_id = (int) $atts['course_id'];
 		ob_start();
 
-		$benefits     = \Academy\Helper::string_to_array( get_post_meta( get_the_ID(), 'academy_course_benefits', true ) );
-		$audience     = \Academy\Helper::string_to_array( get_post_meta( get_the_ID(), 'academy_course_audience', true ) );
-		$requirements = \Academy\Helper::string_to_array( get_post_meta( get_the_ID(), 'academy_course_requirements', true ) );
-		$materials    = \Academy\Helper::string_to_array( get_post_meta( get_the_ID(), 'academy_course_materials_included', true ) );
+		$benefits     = \Academy\Helper::string_to_array( get_post_meta( $course_id, 'academy_course_benefits', true ) );
+		$audience     = \Academy\Helper::string_to_array( get_post_meta( $course_id, 'academy_course_audience', true ) );
+		$requirements = \Academy\Helper::string_to_array( get_post_meta( $course_id, 'academy_course_requirements', true ) );
+		$materials    = \Academy\Helper::string_to_array( get_post_meta( $course_id, 'academy_course_materials_included', true ) );
 		$tabs_nav     = [];
 		$tabs_content = [];
 		if ( is_array( $benefits ) && count( $benefits ) > 0 ) {
@@ -92,19 +94,34 @@ class AcademySingleCourse {
 	}
 
 	public function single_course_description( $attributes, $content = '' ) {
+		static $rendering = false;
+
+		// The template runs post_content through the_content, which re-runs
+		// do_shortcode(). If this shortcode sits on the very page whose
+		// content it is rendering, that recurses into itself until the
+		// memory limit is hit, so bail out on re-entry.
+		if ( $rendering ) {
+			return '';
+		}
+
+		$rendering = true;
 		ob_start();
 
 		\Academy\Helper::get_template(
 			'single-course/description.php'
 		);
 
-		return apply_filters( 'academy/templates/shortcode/single_course_description', ob_get_clean() );
+		$output    = ob_get_clean();
+		$rendering = false;
+
+		return apply_filters( 'academy/templates/shortcode/single_course_description', $output );
 	}
 
 	public function single_course_curriculums( $attributes, $content = '' ) {
 		ob_start();
 
-		$course_id = get_the_ID();
+		$atts        = shortcode_atts( [ 'course_id' => get_the_ID() ], $attributes );
+		$course_id   = (int) $atts['course_id'];
 		$curriculums = \Academy\Helper::get_course_curriculum( $course_id, false );
 		$topics_first_item_open_status = (bool) \Academy\Helper::get_settings( 'is_opened_course_single_first_topic', true );
 
@@ -122,7 +139,8 @@ class AcademySingleCourse {
 
 	public function single_course_review_rating( $attributes, $content = '' ) {
 		ob_start();
-		$course_id = get_the_ID();
+		$atts      = shortcode_atts( [ 'course_id' => get_the_ID() ], $attributes );
+		$course_id = (int) $atts['course_id'];
 		if ( ! (bool) \Academy\Helper::get_settings( 'is_enabled_course_review', true ) || get_post_meta( $course_id, 'academy_is_disabled_course_review', true ) ) {
 			return;
 		}
@@ -419,7 +437,8 @@ class AcademySingleCourse {
 
 	public function single_course_attachment_file( $attributes, $content = '' ) {
 
-		$course_id = get_the_ID();
+		$atts      = shortcode_atts( [ 'course_id' => get_the_ID() ], $attributes );
+		$course_id = (int) $atts['course_id'];
 
 		if ( ! \Academy\Helper::is_enrolled( $course_id, get_current_user_id() ) || ! \Academy\Helper::is_active_academy_pro() ) {
 			return '';

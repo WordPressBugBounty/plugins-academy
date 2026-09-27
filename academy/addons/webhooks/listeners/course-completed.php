@@ -13,7 +13,7 @@ class CourseCompleted implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy/admin/course_complete_after',
-			function( $course_id, $user_id ) use ( $deliver_callback, $webhook ) {
+			function ( $course_id, $user_id ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(
@@ -35,7 +35,7 @@ class CourseCompleted implements ListenersInterface {
 			'curriculums'        => (array) self::get_curriculum_topics( $curriculums ),
 			'summary'            => (array) self::get_all_topics_summary( $course_curriculums, $total_completed_topics ),
 			'_user'               => $user_data,
-			'user_profile_image_id' => (int) attachment_url_to_postid( $image_url ),
+			'user_profile_image_id' => \Academy\Helper::attachment_url_to_postid( $image_url ),
 			'user_profile_image_url' => $image_url,
 		) );
 

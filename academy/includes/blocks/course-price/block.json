@@ -1,0 +1,64 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-price",
+	"title": "Course Price",
+	"category": "academy-course",
+	"description": "The course price, or Free for free courses.",
+	"keywords": [
+		"price",
+		"cost",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"attributes": {
+		"textAlign": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"gradients": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalLetterSpacing": true,
+			"textAlign": true
+		},
+		"interactivity": {
+			"clientNavigation": true
+		}
+	},
+	"editorScript": "academy-blocks-editor",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "large",
+			"label": "Large"
+		},
+		{
+			"name": "pill",
+			"label": "Pill"
+		}
+	]
+}

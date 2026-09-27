@@ -1,0 +1,65 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-wishlist",
+	"title": "Course Wishlist Button",
+	"category": "academy-course",
+	"description": "A heart button that adds the course to the student's wishlist.",
+	"keywords": [
+		"wishlist",
+		"favorite",
+		"save",
+		"heart",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"attributes": {
+		"showLabel": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"textAlign": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"editorScript": "academy-blocks-editor",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"styles": [
+		{
+			"name": "icon",
+			"label": "Icon",
+			"isDefault": true
+		},
+		{
+			"name": "outline",
+			"label": "Outline"
+		},
+		{
+			"name": "soft",
+			"label": "Soft"
+		}
+	]
+}

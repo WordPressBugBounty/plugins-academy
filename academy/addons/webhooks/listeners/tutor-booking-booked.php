@@ -13,7 +13,11 @@ class TutorBookingBooked implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy_pro/booking/after_booked',
-			function ( $booking_id, $booked_id, $user_id ) use (
+			function (
+				$booking_id,
+				$booked_id,
+				$user_id
+			) use (
 				$deliver_callback,
 				$webhook
 			) {

@@ -56,7 +56,7 @@ class Where {
 			$relation = strtoupper( $condition['relation'] );
 			if (
 				isset( $condition['relation'] ) &&
-				in_array( $relation, [ 'AND', 'OR' ] )
+				in_array( $relation, [ 'AND', 'OR' ], true )
 			) {
 				unset( $condition['relation'] );
 				$ins = new static( $condition, $relation, $this->alias );
@@ -68,7 +68,8 @@ class Where {
 				$compare = isset( $condition['compare'] ) ? $condition['compare'] : '=';
 				$method = str_replace( '-', '_', sanitize_title( $compare ) );
 
-				if ( method_exists( $this, $method = "clause_{$method}" ) ) {
+				$method = "clause_{$method}";
+				if ( method_exists( $this, $method ) ) {
 					$this->{$method}( $key, $value );
 				} else {
 					$this->clause_default( $key, $value, $compare );

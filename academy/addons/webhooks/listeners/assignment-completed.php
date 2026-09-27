@@ -12,7 +12,7 @@ class AssignmentCompleted implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy/frontend/after_mark_topic_complete',
-			function( $topic_type, $course_id, $assignment_id, $user_id ) use ( $deliver_callback, $webhook ) {
+			function ( $topic_type, $course_id, $assignment_id, $user_id ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(
@@ -22,7 +22,6 @@ class AssignmentCompleted implements ListenersInterface {
 				);
 			}, 10, 4
 		);
-
 	}
 
 	public static function get_payload( $topic_type, $course_id, $assignment_id, $user_id ) {

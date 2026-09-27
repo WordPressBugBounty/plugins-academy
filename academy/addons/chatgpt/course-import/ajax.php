@@ -104,7 +104,7 @@ class Ajax extends AbstractAjaxHandler {
 		}
 	}
 
-	protected function authorize( int $course_id = 0 ) : bool {
+	protected function authorize( int $course_id = 0 ): bool {
 		if ( empty( $course_id ) ) {
 			$post_type_obj = get_post_type_object( 'academy_courses' );
 			return $post_type_obj && current_user_can( $post_type_obj->cap->create_posts );

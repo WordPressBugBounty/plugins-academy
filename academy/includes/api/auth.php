@@ -158,7 +158,7 @@ class Auth extends Registration {
 
 		echo do_shortcode(
 			'[academy_login_form 
-				form_title="' . esc_html__( 'Hi, Welcome back!', 'academy' ) . '" 
+				form_title="' . esc_attr__( 'Hi, Welcome back!', 'academy' ) . '" 
 				show_logged_in_message="false" 
 				student_register_url="' . esc_url( $register_url ) . '"
 			login_redirect_url="' . esc_url( $current_permalink ) . '"]'
@@ -214,7 +214,6 @@ class Auth extends Registration {
 
 		wp_set_current_user( $user_signon->ID );
 
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		do_action( 'set_current_user' );
 
 		$redirect_url = ! empty( $login_redirect_url )
@@ -234,7 +233,8 @@ class Auth extends Registration {
 	public function password_reset_handler( WP_REST_Request $request ) {
 		$username = $request->get_param( 'username' );
 		$rechaptcha_response = ! empty( $request->get_param( 'g-recaptcha-response' ) ) ? $request->get_param( 'g-recaptcha-response' ) : '';
-		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		// Throttle key only; behind a proxy REMOTE_ADDR is the proxy, which just makes the limit stricter.
+		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? (string) filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP ) : ''; // phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__REMOTE_ADDR__ -- REST request, never page-cached; validated as an IP.
 		$key = 'academy_reset_limit_' . md5( $ip . $username );
 
 		if ( get_transient( $key ) ) {
@@ -248,6 +248,13 @@ class Auth extends Registration {
 		}
 
 		set_transient( $key, 1, MINUTE_IN_SECONDS );
+
+		// CAPTCHA must be verified before the user lookup below, not after —
+		// otherwise a request for a non-existent username short-circuits to
+		// the generic "hide user existence" response without ever reaching
+		// the code that checks the CAPTCHA, letting a bot skip it entirely
+		// by submitting usernames it knows (or guesses) don't exist.
+		do_action( 'academy/api/auth/before_password_reset', null, null, $rechaptcha_response );
 
 		$user = get_user_by( 'login', $username );
 
@@ -265,8 +272,6 @@ class Auth extends Registration {
 				200
 			);
 		}
-
-		do_action( 'academy/api/auth/before_password_reset', $user, null, $rechaptcha_response );
 
 		retrieve_password( $user->user_login );
 
@@ -304,7 +309,11 @@ class Auth extends Registration {
 
 	private function process_user_registration( $role, $submitted_data ) {
 		$rechaptcha_response = ! empty( $submitted_data['g-recaptcha-response'] ) ? $submitted_data['g-recaptcha-response'] : '';
-		$form_fields = $this->get_form_fields( $role );
+		// A block form's own fields; the classic Form Builder's otherwise.
+		$form_fields = \Academy\RegistrationForms::fields_for( (string) ( $submitted_data['academy_form_id'] ?? '' ), $role );
+		if ( null === $form_fields ) {
+			$form_fields = $this->get_form_fields( $role );
+		}
 
 		list( $error, $user_data ) = $this->sanitize_and_validate_fields(
 			$form_fields,

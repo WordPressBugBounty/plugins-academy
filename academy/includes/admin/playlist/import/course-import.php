@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class CourseImport extends AbstractImport {
 
-	public function save() : self {
+	public function save(): self {
 		$this->data['post_type'] = 'academy_courses';
 		$this->id = wp_insert_post( $this->data );
 		if ( ! is_wp_error( $this->id ) ) {
@@ -17,5 +17,4 @@ class CourseImport extends AbstractImport {
 		}
 		return $this;
 	}
-
 }

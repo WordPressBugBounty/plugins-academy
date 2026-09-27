@@ -37,7 +37,9 @@ else :
 	do_action( 'academy/templates/before_main_content', 'single-course-curriculums.php' );
 
 
-	if ( \Academy\Helper::get_settings( 'is_enabled_lessons_php_render' ) ) {
+	if ( \Academy\LearnPage::is_request() ) {
+		\Academy\Helper::get_template( 'curriculums/blocks-render.php' );
+	} elseif ( \Academy\Helper::get_settings( 'is_enabled_lessons_php_render' ) ) {
 		\Academy\Helper::get_template( 'curriculums/php-render.php' );
 	} else {
 		\Academy\Helper::get_template( 'curriculums/js-render.php' );

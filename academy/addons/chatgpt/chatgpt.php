@@ -46,13 +46,9 @@ final class Chatgpt implements AddonInterface {
 			( new ChatgptIntegrationInit() )->dispatch_actions();
 			( new CourseImportAjax() )->dispatch_actions();
 		}
-
 	}
 
 	public function addon_activation_hook() {
 		// DO NOTHING
 	}
-
-
 }
-

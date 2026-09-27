@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $msg = $is_required ? esc_html__( 'required', 'academy' ) : esc_html__( 'optional', 'academy' );
-$title = sprintf(
+$question_heading = sprintf(
 	'%d. %s (%s)',
 	$question_count,
 	$question_with_option['question']->question_title,
@@ -15,8 +15,45 @@ $title = sprintf(
 <div class="academy-lesson-quiz__body question-no-<?php echo esc_html(
 	$question_count
 ); ?>">
-	<h3><?php echo esc_html( $title ); ?></h3>
-	<?php // load the short-answer if the question type is short-ans
+	<h3><?php echo wp_kses_post( $question_heading ); ?></h3>
+	<?php
+	$question_audio_id = $question_with_option['question']->question_audio_id ?? 0;
+	if ( $question_audio_id && '0' !== (string) $question_audio_id ) :
+		$audio_url = wp_get_attachment_url( $question_audio_id );
+		if ( $audio_url ) :
+			?>
+			<div class="academy-quiz-audio" data-audio-src="<?php echo esc_url( $audio_url ); ?>"></div>
+			<?php
+		endif;
+	endif;
+	$question_content = $question_with_option['question']->question_content ?? '';
+	if ( '' !== trim( wp_strip_all_tags( (string) $question_content ) ) ) :
+		?>
+		<span class="academy-quiz-content"><?php echo wp_kses_post( $question_content ); ?></span>
+		<?php
+	endif;
+	$question_image_id = $question_with_option['question']->question_image_id ?? 0;
+	if ( $question_image_id && '0' !== (string) $question_image_id ) :
+		$question_image_url = wp_get_attachment_url( $question_image_id );
+		if ( $question_image_url ) :
+			$image_settings = json_decode( $question_with_option['question']->question_settings ?? '' )->image ?? null;
+			$allowed_sizes = array( 'small', 'medium', 'large', 'full' );
+			$allowed_aligns = array( 'none', 'left', 'center', 'right' );
+			$image_size = in_array( $image_settings->size ?? '', $allowed_sizes, true ) ? $image_settings->size : 'full';
+			$image_alignment = in_array( $image_settings->alignment ?? '', $allowed_aligns, true ) ? $image_settings->alignment : 'none';
+			$image_alt = $image_settings->alt ?? '';
+			$image_caption = $image_settings->caption ?? '';
+			?>
+			<div class="academy-quiz-question-image-wrap academy-quiz-question-image--size-<?php echo esc_attr( $image_size ); ?> academy-quiz-question-image--align-<?php echo esc_attr( $image_alignment ); ?>">
+				<img class="academy-quiz-question-image" src="<?php echo esc_url( $question_image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" />
+				<?php if ( '' !== trim( (string) $image_caption ) ) : ?>
+					<div class="academy-quiz-question-image-caption"><?php echo esc_html( $image_caption ); ?></div>
+				<?php endif; ?>
+			</div>
+			<?php
+		endif;
+	endif;
+	// load the short-answer if the question type is short-ans
 	if ( 'shortAnswer' === $question_with_option['question']->question_type ) {
 		\Academy\Helper::get_template(
 			'curriculums/quiz/questions/short-answer.php',

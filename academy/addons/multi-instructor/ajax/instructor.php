@@ -22,10 +22,11 @@ class Instructor extends AbstractAjaxHandler {
 			'remove_instructor_from_course' => array(
 				'callback' => array( $this, 'remove_instructor_from_course' ),
 			),
+			// Revenue-split control: any instructor holding just
+			// 'manage_academy_instructor' could set ANY instructor's earning
+			// percentage, not only their own course's split — keep this admin-only.
 			'save_instructor_earning_percentage' => array(
 				'callback' => array( $this, 'save_instructor_earning_percentage' ),
-				// Earning/commission split is a revenue-control setting: admin only.
-				// (Previously any instructor could set the payout % for any instructor.)
 				'capability' => 'manage_options',
 			),
 			'get_instructor_earning_percentage' => array(
@@ -124,5 +125,4 @@ class Instructor extends AbstractAjaxHandler {
 
 		wp_send_json_error( __( 'Sorry, Instructor earning percentage not available. Please set Instructor earning percentage in settings.', 'academy' ) );
 	}
-
 }

@@ -68,7 +68,7 @@ class AcademyCourseCurriculum {
 			$slug,
 			$type
 		);
-		$is_previewable = \Academy\Helper::get_lesson_meta( $id, 'is_previewable' );
+		$is_previewable = \Academy\Helper::get_lesson_meta( (int) $id, 'is_previewable' );
 		ob_start();
 
 		\Academy\Helper::get_template('curriculums/content.php', [

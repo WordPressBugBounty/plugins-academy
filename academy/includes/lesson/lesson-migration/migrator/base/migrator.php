@@ -14,6 +14,6 @@ abstract class Migrator extends Db {
 		parent::__construct();
 		$this->from = $from;
 	}
-	abstract public function migrate() : void;
-	abstract protected function is_migrated() : bool;
+	abstract public function migrate(): void;
+	abstract protected function is_migrated(): bool;
 }

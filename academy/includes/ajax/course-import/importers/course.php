@@ -65,7 +65,7 @@ class Course implements Interfaces\Insertable {
 		$this->meta['academy_course_materials_included'] = $data['materials_included'] ?? '';
 	}
 
-	public function insert() : int {
+	public function insert(): int {
 		$id = wp_insert_post( array_merge( $this->is_edit ? [ 'ID' => $this->id ] : [], [
 			'post_title' => $this->title,
 			'post_type' => 'academy_courses',
@@ -89,7 +89,7 @@ class Course implements Interfaces\Insertable {
 		return $this->id;
 	}
 
-	protected function insert_lessons( array $lessons ) : array {
+	protected function insert_lessons( array $lessons ): array {
 		$topics = [];
 		foreach ( $lessons as $lesson ) {
 			try {
@@ -105,7 +105,7 @@ class Course implements Interfaces\Insertable {
 		}
 		return $topics;
 	}
-	protected function insert_quizzes( array $quizzes ) : array {
+	protected function insert_quizzes( array $quizzes ): array {
 		if ( empty( $quizzes ) ) {
 			return [];
 		}
@@ -125,7 +125,7 @@ class Course implements Interfaces\Insertable {
 		return $topics;
 	}
 
-	protected function insert_modules() : void {
+	protected function insert_modules(): void {
 		foreach ( $this->data['modules'] ?? [] as $module ) {
 			$this->meta['academy_course_curriculum'][] = [
 				'title'   => $module['moduleTitle'] ?? '',
@@ -137,19 +137,19 @@ class Course implements Interfaces\Insertable {
 			];
 		}
 	}
-	protected function insert_meta() : void {
+	protected function insert_meta(): void {
 		foreach ( $this->meta as $key => $value ) {
 			update_post_meta( $this->id, $key, $value );
 		}
 	}
-	protected function delete_old_data() : void {
+	protected function delete_old_data(): void {
 		if ( empty( $this->id ) ) {
 			return;
 		}
 
 		$modules = get_post_meta( $this->id, 'academy_course_curriculum', true );
 
-		foreach ( $modules as [ 'topics' => $topics ] ) {
+		foreach ( (array) $modules as [ 'topics' => $topics ] ) {
 			foreach ( $topics as [ 'id' => $id, 'type' => $type ] ) {
 				switch ( $type ) {
 					case 'quiz':

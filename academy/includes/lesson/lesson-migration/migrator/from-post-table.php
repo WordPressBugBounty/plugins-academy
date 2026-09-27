@@ -13,7 +13,7 @@ class FromPostTable extends Base\Migrator {
 	/**
 	 * Migrate lesson from post table to HpLesson.
 	 */
-	public function migrate() : void {
+	public function migrate(): void {
 		if ( ! empty( $this->from->id() ) && ! $this->is_migrated() ) {
 			$data = $this->from->get_data();
 			$meta = $data['meta'];
@@ -66,5 +66,4 @@ class FromPostTable extends Base\Migrator {
 
 		return $count > 0;
 	}
-
 }

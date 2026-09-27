@@ -1,11 +1,16 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AcademyQuizzes\Classes\Query;
 
 if ( ! function_exists( 'academy_quizzes_added_frontend_dashboard_menu' ) ) {
 	function academy_quizzes_added_frontend_dashboard_menu( $menu ) {
 		if ( current_user_can( 'manage_academy_instructor' ) ) {
 			$menu['quizzes'] = array(
+				'area' => 'teaching',
 				'label' => __( 'Quizzes', 'academy' ),
 				'icon'  => 'academy-icon academy-icon--quiz-alt',
 				'public' => true,
@@ -21,7 +26,7 @@ if ( ! function_exists( 'academy_quizzes_added_frontend_dashboard_menu' ) ) {
 		}
 		return $menu;
 	}
-}
+}//end if
 
 if ( ! function_exists( 'academy_quizzes_frontend_dashboard_quizzes_page' ) ) {
 	function academy_quizzes_frontend_dashboard_quizzes_page() {
@@ -63,7 +68,7 @@ if ( ! function_exists( 'academy_quizzes_curriculum_quiz_content' ) ) {
 if ( ! function_exists( 'academy_quizzes_start_quiz' ) ) {
 	function academy_quizzes_start_quiz() {
 		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'academy_nonce' ) ) {
-			wp_die( 'Nonce verification failed.' );
+			wp_die( esc_html__( 'Nonce verification failed.', 'academy' ) );
 		}
 
 		$course_id = isset( $_POST['course_id'] ) ? sanitize_text_field( wp_unslash( $_POST['course_id'] ) ) : '';
@@ -85,13 +90,15 @@ if ( ! function_exists( 'academy_quizzes_start_quiz' ) ) {
 if ( ! function_exists( 'academy_quizzes_submit_quiz' ) ) {
 	function academy_quizzes_submit_quiz() {
 		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'academy_nonce' ) ) {
-			wp_die( 'Nonce verification failed.' );
+			wp_die( esc_html__( 'Nonce verification failed.', 'academy' ) );
 		}
 
 		$course_id = isset( $_POST['course_id'] ) ? sanitize_text_field( wp_unslash( $_POST['course_id'] ) ) : '';
-		$attempt_id = isset( $_POST['attempt'] ) ? sanitize_text_field( array_key_first( wp_unslash( $_POST['attempt'] ) ) ) : 0;
+		$attempt_id = isset( $_POST['attempt'] ) && is_array( $_POST['attempt'] ) ? absint( array_key_first( wp_unslash( $_POST['attempt'] ) ) ) : 0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only the first key is read, cast by absint().
 		$referer_url = \Academy\Helper::sanitize_referer_url( wp_get_referer() );
-		$answers = isset( $_POST['attempt'][ $attempt_id ]['quiz_question'] ) ? map_deep( wp_unslash( $_POST['attempt'][ $attempt_id ]['quiz_question'] ), 'sanitize_text_field' ) : 0;
+		$answers = $attempt_id && isset( $_POST['attempt'][ $attempt_id ]['quiz_question'] ) && is_array( $_POST['attempt'][ $attempt_id ]['quiz_question'] )
+			? map_deep( wp_unslash( $_POST['attempt'][ $attempt_id ]['quiz_question'] ), 'sanitize_text_field' )
+			: array();
 		$quiz_id = isset( $_POST['quiz_id'] ) ? sanitize_text_field( wp_unslash( $_POST['quiz_id'] ) ) : '';
 		if ( ! $attempt_id ) {
 			$args = array(

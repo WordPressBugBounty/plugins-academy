@@ -1,0 +1,190 @@
+/* Card: the form on a bordered surface. */
+.wp-block-academy-certificate-verification.is-style-card .academy-certificate-verify {
+	max-width: 560px;
+	margin-inline: auto;
+	padding: 2rem;
+	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border-radius: 12px;
+	background: var(--academy-surface-color, #fff);
+	box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+}
+
+/* Compact: no illustration, a smaller heading, the form in one line of focus. */
+.wp-block-academy-certificate-verification.is-style-compact .academy-certificate-verify {
+	max-width: 480px;
+	text-align: start;
+}
+
+.wp-block-academy-certificate-verification.is-style-compact .academy-certificate-verify__thumbnail {
+	display: none;
+}
+
+.wp-block-academy-certificate-verification.is-style-compact .academy-certificate-verify__title {
+	font-size: 1.5em;
+}
+
+/* Layouts, chosen in the block settings. */
+.wp-block-academy-certificate-verification.hide-image .academy-certificate-verify__thumbnail,
+.wp-block-academy-certificate-verification.hide-heading .academy-certificate-verify__title,
+.wp-block-academy-certificate-verification.hide-heading .academy-certificate-verify__subtitle {
+	display: none;
+}
+
+/* Stacked: heading, picture and form in one centred column. */
+.academy-cert-layout--stacked .academy-certificate-verify {
+	max-width: 560px;
+	margin-inline: auto;
+}
+
+/* Side by side: the picture on one side, heading and form on the other. */
+.academy-cert-layout--split .academy-certificate-verify {
+	display: grid;
+	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+	grid-template-areas: "image title" "image subtitle" "image form";
+	grid-template-rows: auto auto 1fr;
+	column-gap: 48px;
+	align-items: start;
+}
+
+.academy-cert-layout--split .academy-certificate-verify__thumbnail {
+	grid-area: image;
+	align-self: center;
+	width: 100%;
+	max-width: 100%;
+	height: auto;
+	margin: 0;
+}
+
+.academy-cert-layout--split .academy-certificate-verify__title {
+	grid-area: title;
+	text-align: start;
+}
+
+.academy-cert-layout--split .academy-certificate-verify__subtitle {
+	grid-area: subtitle;
+	text-align: start;
+}
+
+.academy-cert-layout--split #academy-certificate-verify__form {
+	grid-area: form;
+	margin-top: 24px;
+}
+
+.academy-cert-layout--split.hide-image .academy-certificate-verify {
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-areas: "title" "subtitle" "form";
+}
+
+/* One line: the number and the button side by side, no picture. */
+.academy-cert-layout--inline .academy-certificate-verify,
+.academy-cert-layout--banner .academy-certificate-verify {
+	text-align: center;
+}
+
+.academy-cert-layout--inline .academy-certificate-verify {
+	max-width: 720px;
+	margin-inline: auto;
+}
+
+.academy-cert-layout--inline .academy-certificate-verify__thumbnail,
+.academy-cert-layout--banner .academy-certificate-verify__thumbnail {
+	display: none;
+}
+
+.academy-cert-layout--inline #academy-certificate-verify__form,
+.academy-cert-layout--banner #academy-certificate-verify__form {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 12px;
+	margin-top: 24px;
+	text-align: start;
+}
+
+.academy-cert-layout--inline .academy-certificate-verify__form-input,
+.academy-cert-layout--banner .academy-certificate-verify__form-input {
+	flex: 1 1 240px;
+	padding-top: 0;
+	border-top: 0;
+}
+
+.academy-cert-layout--inline .academy-certificate-verify__form-input input,
+.academy-cert-layout--banner .academy-certificate-verify__form-input input,
+.academy-cert-layout--inline .academy-certificate-verify__form-submit,
+.academy-cert-layout--banner .academy-certificate-verify__form-submit {
+	box-sizing: border-box;
+	height: 48px;
+}
+
+.academy-cert-layout--inline .academy-certificate-verify__form-submit,
+.academy-cert-layout--banner .academy-certificate-verify__form-submit {
+	flex: none;
+	width: auto;
+	margin-top: 0;
+	padding: 0 22px;
+}
+
+.academy-cert-layout--inline .academy-certificate-verify__append-error-content,
+.academy-cert-layout--inline .academy-certificate-verify__append-success-content,
+.academy-cert-layout--banner .academy-certificate-verify__append-error-content,
+.academy-cert-layout--banner .academy-certificate-verify__append-success-content {
+	flex-basis: 100%;
+	order: 3;
+	margin: 0;
+}
+
+/* Banner: a wide band, heading on one side and the form on the other. */
+.academy-cert-layout--banner .academy-certificate-verify {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+	grid-template-areas: "title form" "subtitle form";
+	column-gap: 40px;
+	align-items: center;
+	padding: 36px 40px;
+	border-radius: 16px;
+	background: var(--academy-secondary-color, #f3f1ff);
+	text-align: start;
+}
+
+.academy-cert-layout--banner .academy-certificate-verify__title {
+	grid-area: title;
+	align-self: end;
+	text-align: start;
+}
+
+.academy-cert-layout--banner .academy-certificate-verify__subtitle {
+	grid-area: subtitle;
+	align-self: start;
+	text-align: start;
+}
+
+.academy-cert-layout--banner #academy-certificate-verify__form {
+	grid-area: form;
+	margin-top: 0;
+}
+
+.academy-cert-layout--banner.hide-heading .academy-certificate-verify {
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-areas: "form";
+}
+
+.academy-cert-layout--banner .academy-certificate-verify__form-input input {
+	background: #fff;
+}
+
+@media (max-width: 781px) {
+	.academy-cert-layout--split .academy-certificate-verify,
+	.academy-cert-layout--banner .academy-certificate-verify {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas: "title" "subtitle" "form";
+		padding: 28px 20px;
+	}
+
+	.academy-cert-layout--split .academy-certificate-verify__thumbnail {
+		display: none;
+	}
+
+	.academy-cert-layout--banner #academy-certificate-verify__form {
+		margin-top: 20px;
+	}
+}

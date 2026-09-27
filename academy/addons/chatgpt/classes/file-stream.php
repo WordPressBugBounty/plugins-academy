@@ -16,6 +16,8 @@ class FileStream {
 			throw new Exception( esc_html__( 'File is not exists.', 'academy' ) );
 		}
 		$this->name = basename( $file_path );
+		// phpcs:disable WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown -- local file, not a remote URL
 		$this->data = file_get_contents( $file_path );// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		// phpcs:enable WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 	}
 }

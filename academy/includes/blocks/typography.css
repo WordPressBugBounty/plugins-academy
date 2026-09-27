@@ -1,0 +1,65 @@
+/*
+ * Make a block's own Typography and Color settings reach Academy's markup.
+ *
+ * Academy's templates fix their font sizes in px, so a font size or line height
+ * set on the block only changed the wrapper. When one is set, the parts inside
+ * follow it; headings keep their proportions. Section text settings (title,
+ * price, details list) and the link colour are applied here as well.
+ */
+
+/* Blocks that print Academy's own markup are listed in each :is() below. */
+
+/* Font size. */
+:is(.wp-block-academy-course-description, .wp-block-academy-course-additional-info, .wp-block-academy-course-curriculum, .wp-block-academy-course-instructor-profiles, .wp-block-academy-course-rating-summary, .wp-block-academy-course-reviews, .wp-block-academy-course-review-form, .wp-block-academy-course-attachments, .wp-block-academy-course-enroll-card, .wp-block-academy-enroll-form, .wp-block-academy-enrolled-courses, .wp-block-academy-login-form, .wp-block-academy-password-reset-form, .wp-block-academy-student-dashboard, .wp-block-academy-student-registration-form, .wp-block-academy-instructor-registration-form, .wp-block-academy-course-announcements, .wp-block-academy-registration-form, .wp-block-academy-dashboard, .wp-block-academy-dashboard-topbar, .wp-block-academy-dashboard-sidebar, .wp-block-academy-dashboard-welcome, .wp-block-academy-dashboard-stats, .wp-block-academy-dashboard-teaching-courses, .wp-block-academy-dashboard-continue):is([class*="-font-size"], [style*="font-size:"]) :where(p, li, span, a, label, div, td, th, dt, dd, time, strong, em, b, button, input, select, textarea, small, cite):not(.academy-icon, [class*="__date"], [class*="__size"]) {
+	font-size: inherit !important;
+}
+
+:is(.wp-block-academy-course-description, .wp-block-academy-course-additional-info, .wp-block-academy-course-curriculum, .wp-block-academy-course-instructor-profiles, .wp-block-academy-course-rating-summary, .wp-block-academy-course-reviews, .wp-block-academy-course-review-form, .wp-block-academy-course-attachments, .wp-block-academy-course-enroll-card, .wp-block-academy-enroll-form, .wp-block-academy-enrolled-courses, .wp-block-academy-login-form, .wp-block-academy-password-reset-form, .wp-block-academy-student-dashboard, .wp-block-academy-student-registration-form, .wp-block-academy-instructor-registration-form, .wp-block-academy-course-announcements, .wp-block-academy-registration-form, .wp-block-academy-dashboard, .wp-block-academy-dashboard-topbar, .wp-block-academy-dashboard-sidebar, .wp-block-academy-dashboard-welcome, .wp-block-academy-dashboard-stats, .wp-block-academy-dashboard-teaching-courses, .wp-block-academy-dashboard-continue):is([class*="-font-size"], [style*="font-size:"]) :where(h1) { font-size: 2em !important; }
+:is(.wp-block-academy-course-description, .wp-block-academy-course-additional-info, .wp-block-academy-course-curriculum, .wp-block-academy-course-instructor-profiles, .wp-block-academy-course-rating-summary, .wp-block-academy-course-reviews, .wp-block-academy-course-review-form, .wp-block-academy-course-attachments, .wp-block-academy-course-enroll-card, .wp-block-academy-enroll-form, .wp-block-academy-enrolled-courses, .wp-block-academy-login-form, .wp-block-academy-password-reset-form, .wp-block-academy-student-dashboard, .wp-block-academy-student-registration-form, .wp-block-academy-instructor-registration-form, .wp-block-academy-course-announcements, .wp-block-academy-registration-form, .wp-block-academy-dashboard, .wp-block-academy-dashboard-topbar, .wp-block-academy-dashboard-sidebar, .wp-block-academy-dashboard-welcome, .wp-block-academy-dashboard-stats, .wp-block-academy-dashboard-teaching-courses, .wp-block-academy-dashboard-continue):is([class*="-font-size"], [style*="font-size:"]) :where(h2) { font-size: 1.5em !important; }
+:is(.wp-block-academy-course-description, .wp-block-academy-course-additional-info, .wp-block-academy-course-curriculum, .wp-block-academy-course-instructor-profiles, .wp-block-academy-course-rating-summary, .wp-block-academy-course-reviews, .wp-block-academy-course-review-form, .wp-block-academy-course-attachments, .wp-block-academy-course-enroll-card, .wp-block-academy-enroll-form, .wp-block-academy-enrolled-courses, .wp-block-academy-login-form, .wp-block-academy-password-reset-form, .wp-block-academy-student-dashboard, .wp-block-academy-student-registration-form, .wp-block-academy-instructor-registration-form, .wp-block-academy-course-announcements, .wp-block-academy-registration-form, .wp-block-academy-dashboard, .wp-block-academy-dashboard-topbar, .wp-block-academy-dashboard-sidebar, .wp-block-academy-dashboard-welcome, .wp-block-academy-dashboard-stats, .wp-block-academy-dashboard-teaching-courses, .wp-block-academy-dashboard-continue):is([class*="-font-size"], [style*="font-size:"]) :where(h3) { font-size: 1.25em !important; }
+:is(.wp-block-academy-course-description, .wp-block-academy-course-additional-info, .wp-block-academy-course-curriculum, .wp-block-academy-course-instructor-profiles, .wp-block-academy-course-rating-summary, .wp-block-academy-course-reviews, .wp-block-academy-course-review-form, .wp-block-academy-course-attachments, .wp-block-academy-course-enroll-card, .wp-block-academy-enroll-form, .wp-block-academy-enrolled-courses, .wp-block-academy-login-form, .wp-block-academy-password-reset-form, .wp-block-academy-student-dashboard, .wp-block-academy-student-registration-form, .wp-block-academy-instructor-registration-form, .wp-block-academy-course-announcements, .wp-block-academy-registration-form, .wp-block-academy-dashboard, .wp-block-academy-dashboard-topbar, .wp-block-academy-dashboard-sidebar, .wp-block-academy-dashboard-welcome, .wp-block-academy-dashboard-stats, .wp-block-academy-dashboard-teaching-courses, .wp-block-academy-dashboard-continue):is([class*="-font-size"], [style*="font-size:"]) :where(h4) { font-size: 1.1em !important; }
+:is(.wp-block-academy-course-description, .wp-block-academy-course-additional-info, .wp-block-academy-course-curriculum, .wp-block-academy-course-instructor-profiles, .wp-block-academy-course-rating-summary, .wp-block-academy-course-reviews, .wp-block-academy-course-review-form, .wp-block-academy-course-attachments, .wp-block-academy-course-enroll-card, .wp-block-academy-enroll-form, .wp-block-academy-enrolled-courses, .wp-block-academy-login-form, .wp-block-academy-password-reset-form, .wp-block-academy-student-dashboard, .wp-block-academy-student-registration-form, .wp-block-academy-instructor-registration-form, .wp-block-academy-course-announcements, .wp-block-academy-registration-form, .wp-block-academy-dashboard, .wp-block-academy-dashboard-topbar, .wp-block-academy-dashboard-sidebar, .wp-block-academy-dashboard-welcome, .wp-block-academy-dashboard-stats, .wp-block-academy-dashboard-teaching-courses, .wp-block-academy-dashboard-continue):is([class*="-font-size"], [style*="font-size:"]) :where(h5) { font-size: 1em !important; }
+:is(.wp-block-academy-course-description, .wp-block-academy-course-additional-info, .wp-block-academy-course-curriculum, .wp-block-academy-course-instructor-profiles, .wp-block-academy-course-rating-summary, .wp-block-academy-course-reviews, .wp-block-academy-course-review-form, .wp-block-academy-course-attachments, .wp-block-academy-course-enroll-card, .wp-block-academy-enroll-form, .wp-block-academy-enrolled-courses, .wp-block-academy-login-form, .wp-block-academy-password-reset-form, .wp-block-academy-student-dashboard, .wp-block-academy-student-registration-form, .wp-block-academy-instructor-registration-form, .wp-block-academy-course-announcements, .wp-block-academy-registration-form, .wp-block-academy-dashboard, .wp-block-academy-dashboard-topbar, .wp-block-academy-dashboard-sidebar, .wp-block-academy-dashboard-welcome, .wp-block-academy-dashboard-stats, .wp-block-academy-dashboard-teaching-courses, .wp-block-academy-dashboard-continue):is([class*="-font-size"], [style*="font-size:"]) :where(h6) { font-size: 0.9em !important; }
+
+/* Line height. */
+:is(.wp-block-academy-course-description, .wp-block-academy-course-additional-info, .wp-block-academy-course-curriculum, .wp-block-academy-course-instructor-profiles, .wp-block-academy-course-rating-summary, .wp-block-academy-course-reviews, .wp-block-academy-course-review-form, .wp-block-academy-course-attachments, .wp-block-academy-course-enroll-card, .wp-block-academy-enroll-form, .wp-block-academy-enrolled-courses, .wp-block-academy-login-form, .wp-block-academy-password-reset-form, .wp-block-academy-student-dashboard, .wp-block-academy-student-registration-form, .wp-block-academy-instructor-registration-form, .wp-block-academy-course-announcements, .wp-block-academy-registration-form, .wp-block-academy-dashboard, .wp-block-academy-dashboard-topbar, .wp-block-academy-dashboard-sidebar, .wp-block-academy-dashboard-welcome, .wp-block-academy-dashboard-stats, .wp-block-academy-dashboard-teaching-courses, .wp-block-academy-dashboard-continue)[style*="line-height:"] :where(p, li, span, a, label, div, td, th, dt, dd, time, strong, em, b, button, small, h1, h2, h3, h4, h5, h6) {
+	line-height: inherit !important;
+}
+
+/* Link colour from the block's Color panel. */
+[style*="--academy-link-color"] a:not([class*="btn"], [class*="button"], .wp-element-button) {
+	color: var(--academy-link-color) !important;
+}
+
+/* Section titles. */
+[style*="--academy-title-size"] :is(.academy-single-course__content-item--description-title, .benefits-title, .academy-curriculum-title, .feedback-title) {
+	font-size: var(--academy-title-size) !important;
+	line-height: 1.3 !important;
+}
+
+[style*="--academy-title-color"] :is(.academy-single-course__content-item--description-title, .benefits-title, .academy-curriculum-title, .feedback-title) {
+	color: var(--academy-title-color) !important;
+}
+
+[style*="--academy-title-align"] :is(.academy-single-course__content-item--description-title, .benefits-title, .academy-curriculum-title, .feedback-title) {
+	text-align: var(--academy-title-align) !important;
+}
+
+/* Enroll box: price and details list. */
+[style*="--academy-price-size"] :is(.academy-course-price, .academy-course-price *, .academy-course-type) {
+	font-size: var(--academy-price-size) !important;
+	line-height: 1.3 !important;
+}
+
+[style*="--academy-price-color"] :is(.academy-course-price, .academy-course-price *, .academy-course-type) {
+	color: var(--academy-price-color) !important;
+}
+
+[style*="--academy-list-size"] .academy-widget-enroll__content-lists :is(li, .label, .data) {
+	font-size: var(--academy-list-size) !important;
+	line-height: 1.5 !important;
+}
+
+[style*="--academy-list-color"] .academy-widget-enroll__content-lists :is(li, .label, .data, i) {
+	color: var(--academy-list-color) !important;
+}

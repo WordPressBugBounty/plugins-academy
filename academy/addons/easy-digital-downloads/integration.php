@@ -12,6 +12,7 @@ use EDD_Payment;
 
 class Integration {
 	use Earning;
+
 	public static function init() {
 
 		$self        = new self();

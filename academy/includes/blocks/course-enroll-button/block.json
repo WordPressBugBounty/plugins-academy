@@ -1,0 +1,103 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-enroll-button",
+	"title": "Course Button",
+	"category": "academy-course",
+	"description": "View course, Start or Continue learning, or the enroll and buy form.",
+	"keywords": [
+		"enroll",
+		"button",
+		"start",
+		"continue",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"attributes": {
+		"text": {
+			"type": "string"
+		},
+		"continueText": {
+			"type": "string"
+		},
+		"showContinue": {
+			"type": "boolean",
+			"default": true
+		},
+		"width": {
+			"type": "string",
+			"enum": [
+				"auto",
+				"full"
+			],
+			"default": "auto"
+		},
+		"action": {
+			"type": "string",
+			"enum": [
+				"link",
+				"enroll"
+			],
+			"default": "link"
+		},
+		"completeText": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"gradients": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontWeight": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalTextTransform": true,
+			"textAlign": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true,
+		"interactivity": {
+			"clientNavigation": true
+		}
+	},
+	"editorScript": "academy-blocks-editor",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"styles": [
+		{
+			"name": "fill",
+			"label": "Fill",
+			"isDefault": true
+		},
+		{
+			"name": "outline",
+			"label": "Outline"
+		},
+		{
+			"name": "soft",
+			"label": "Soft"
+		},
+		{
+			"name": "link",
+			"label": "Text link"
+		}
+	]
+}

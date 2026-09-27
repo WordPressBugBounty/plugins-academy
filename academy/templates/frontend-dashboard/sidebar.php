@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use \Academy\Helper;
+use Academy\Helper;
 $user = wp_get_current_user();
 ?>
 <div class="academy-frontend-dashboard__sidebar" id="academy-frontend-dashboard-sidebar">
@@ -33,6 +33,30 @@ $user = wp_get_current_user();
 						<?php do_action( 'academy/templates/frontend_dashboard/after_user_email_popover' ); ?>
 					</p>
 				</li>
+				<?php
+				// Switching view is an account-level choice, so it lives with
+				// Profile and Settings rather than taking permanent room in the
+				// menu. Someone with a single area never sees it at all.
+				$academy_areas = Helper::available_dashboard_areas();
+				$academy_view  = Helper::current_dashboard_view();
+				if ( count( $academy_areas ) > 1 ) :
+					?>
+					<li class="academy-dashboard-view-switch">
+						<span class="academy-dashboard-view-switch__label"><?php esc_html_e( 'Viewing as', 'academy' ); ?></span>
+						<?php foreach ( $academy_areas as $academy_area_key => $academy_area ) : ?>
+							<a
+								class="academy-dashboard-view-switch__option<?php echo $academy_area_key === $academy_view ? ' is-current' : ''; ?>"
+								href="<?php echo esc_url( add_query_arg( 'view', $academy_area_key, Helper::get_frontend_dashboard_endpoint_url( 'index' ) ) ); ?>"
+							>
+								<i class="<?php echo esc_attr( $academy_area['icon'] ); ?>"></i>
+								<span><?php echo esc_html( $academy_area['label'] ); ?></span>
+								<?php if ( $academy_area_key === $academy_view ) : ?>
+									<i class="academy-icon academy-icon--check"></i>
+								<?php endif; ?>
+							</a>
+						<?php endforeach; ?>
+					</li>
+				<?php endif; ?>
 				<?php do_action( 'academy/templates/frontend_dashboard/user_popover_menu_item_before_profile_menu' ); ?>
 				<li>
 					<a href="<?php echo esc_url( Helper::get_frontend_dashboard_endpoint_url( 'profile' ) ); ?>">

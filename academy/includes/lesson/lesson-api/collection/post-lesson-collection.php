@@ -35,8 +35,7 @@ class PostLessonCollection extends Base\Collection {
 
 		$by_meta = array_merge( $by_meta, apply_filters( 'academy/lesson/meta_query', [] ) );
 		if ( ! empty( $by_meta ) ) {
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			$args['meta_query'] = $by_meta;
+			$args['meta_query'] = $by_meta; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- meta/tax lookup the feature depends on; no cheaper equivalent
 		}
 
 		$this->query = new WP_Query( $args );
@@ -52,24 +51,25 @@ class PostLessonCollection extends Base\Collection {
 		$this->offset = 0;
 		$this->load_meta();
 	}
-	public function getIterator() : ArrayIterator {
+	public function getIterator(): ArrayIterator {
 		return new ArrayIterator( $this->lessons );
 	}
-	public function load_meta() : void {
+	public function load_meta(): void {
 		$ids = array_map( 'absint', array_column( $this->lessons, 'ID' ) );
 		if ( empty( $ids ) ) {
 			$this->lessons = [];
 			return;
 		}
 		$placeholder = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders are generated to match the values
 		$meta_data = $this->skip_meta ? [] : $this->wpdb->get_results(
 			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-				"SELECT * FROM {$this->wpdb->postmeta} WHERE post_id IN ({$placeholder}) ", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+				"SELECT * FROM {$this->wpdb->postmeta} WHERE post_id IN ({$placeholder}) ", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				...$ids, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			),
 			ARRAY_A
 		) ?? [];
+		// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 		foreach ( $meta_data as $meta ) {
 			$this->meta_data[ $meta['post_id'] ][ $meta['meta_key'] ] = $meta['meta_value'];
 		}
@@ -80,7 +80,7 @@ class PostLessonCollection extends Base\Collection {
 		}
 		$this->lessons = $lessons;
 	}
-	public function count() : int {
+	public function count(): int {
 		return absint( $this->query->found_posts );
 	}
 }

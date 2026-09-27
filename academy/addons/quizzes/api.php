@@ -5,11 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use \WP_REST_Controller as Controller;
-use \WP_REST_Server as Server;
-use \Academy\Helper as Helper;
-use \AcademyQuizzes\Classes\Query as Query;
-use \WP_REST_Response as Response;
+use WP_REST_Controller as Controller;
+use WP_REST_Server as Server;
+use Academy\Helper;
+use AcademyQuizzes\Classes\Query;
+use WP_REST_Response as Response;
 
 class API extends Controller {
 
@@ -31,80 +31,116 @@ class API extends Controller {
 		add_action( 'rest_api_init', array( $self, 'register_routes' ) );
 	}
 
-	    /**
-     * Register the routes for the objects of the controller.
-     */
-    public function register_routes() {
-        $context_arg = array(
-            'context' => $this->get_context_param( array( 'default' => 'view' ) ),
-        );
+		/**
+		 * Register the routes for the objects of the controller.
+		 */
+	public function register_routes() {
+		$context_arg = array(
+			'context' => $this->get_context_param( array( 'default' => 'view' ) ),
+		);
 
-        // Common ID argument schema.
-        $id_arg = array(
-            'description' => esc_html__( 'Unique identifier for the object.', 'academy' ),
-            'type'        => 'integer',
-            'required'    => true,
-        );
+		// Common ID argument schema.
+		$id_arg = array(
+			'description' => esc_html__( 'Unique identifier for the object.', 'academy' ),
+			'type'        => 'integer',
+			'required'    => true,
+		);
 
-        // Render quiz.
-        register_rest_route(
-            $this->namespace,
-            '/' . $this->rest_base . '/render_quiz',
-            array(
-                array(
-                    'methods'             => Server::READABLE,
-                    'callback'            => array( $this, 'render_quiz' ),
-                    'permission_callback' => array( $this, 'permissions_check' ),
-                    'args'                => array_merge(
-                        $context_arg,
-                        array(
-                            'quiz_id'   => $id_arg,
-                            'course_id' => $id_arg,
-                        )
-                    ),
-                ),
-            )
-        );
+		// Render quiz.
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/render_quiz',
+			array(
+				array(
+					'methods'             => Server::READABLE,
+					'callback'            => array( $this, 'render_quiz' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+					'args'                => array_merge(
+						$context_arg,
+						array(
+							'quiz_id'   => $id_arg,
+							'course_id' => $id_arg,
+						)
+					),
+				),
+			)
+		);
 
-        // Render quiz answers.
-        register_rest_route(
-            $this->namespace,
-            '/' . $this->rest_base . '/render_answers',
-            array(
-                array(
-                    'methods'             => Server::READABLE,
-                    'callback'            => array( $this, 'render_question_answers' ),
-                    'permission_callback' => array( $this, 'permissions_check' ),
-                    'args'                => array_merge(
-                        $context_arg,
-                        array(
-                            'course_id'    => $id_arg,
-                            'question_id'  => $id_arg,
-                            'question_type' => array(
-                                'description' => esc_html__( 'Type of the question.', 'academy' ),
-                                'type'        => 'string',
-                                'required'    => true,
-                            ),
-                        )
-                    ),
-                ),
-            )
-        );
+		// Render quiz answers.
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/render_answers',
+			array(
+				array(
+					'methods'             => Server::READABLE,
+					'callback'            => array( $this, 'render_question_answers' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+					'args'                => array_merge(
+						$context_arg,
+						array(
+							'course_id'    => $id_arg,
+							'question_id'  => $id_arg,
+							'question_type' => array(
+								'description' => esc_html__( 'Type of the question.', 'academy' ),
+								'type'        => 'string',
+								'required'    => true,
+							),
+						)
+					),
+				),
+			)
+		);
 
-        // Insert quiz answers (legacy URL — quiz_id in request body).
-        register_rest_route(
-            $this->namespace,
-            '/' . $this->rest_base . '/insert_question_answers',
-            array(
-                array(
-                    'methods'             => Server::CREATABLE,
-                    'callback'            => array( $this, 'insert_question_answers' ),
-                    'permission_callback' => array( $this, 'permissions_check' ),
-                    'args'                => $context_arg,
-                ),
-            )
-        );
-    }
+		// Insert quiz answers (legacy URL — quiz_id in request body).
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/insert_question_answers',
+			array(
+				array(
+					'methods'             => Server::CREATABLE,
+					'callback'            => array( $this, 'insert_question_answers' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+					'args'                => $context_arg,
+				),
+			)
+		);
+
+		// Resume Mode: saved answer rows for an in-progress attempt, so the
+		// client can rebuild its answer state after a "Resume" choice. Mirrors
+		// the AJAX get_resume_attempt_answers handler in ajax/frontend.php.
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/get_resume_attempt_answers',
+			array(
+				array(
+					'methods'             => Server::READABLE,
+					'callback'            => array( $this, 'get_resume_attempt_answers' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+					'args'                => array_merge(
+						$context_arg,
+						array( 'attempt_id' => $id_arg )
+					),
+				),
+			)
+		);
+
+		// Resume Mode heartbeat: persists current step + remaining timer
+		// seconds independent of answering a question, so an idle student
+		// resumes to an accurate position rather than a stale one. Mirrors
+		// the AJAX update_resume_progress handler in ajax/frontend.php.
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/update_resume_progress',
+			array(
+				array(
+					'methods'             => Server::CREATABLE,
+					'callback'            => array( $this, 'update_resume_progress' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+					'args'                => $context_arg,
+				),
+			)
+		);
+	}
 
 	public function permissions_check( $request ) {
 		if ( ! is_user_logged_in() ) {
@@ -165,6 +201,7 @@ class API extends Controller {
 				$question->quiz_id = (int) $question->quiz_id;
 				$question->question_order = (int) $question->question_order;
 				$question->question_image_id = (int) $question->question_image_id;
+				$question->question_audio_id = (int) ( $question->question_audio_id ?? 0 );
 				$question->question_score = (float) $question->question_score;
 				$question->question_negative_score = (float) $question->question_negative_score;
 				$question->question_settings = json_decode( $question->question_settings ?? '{}', true );
@@ -180,6 +217,11 @@ class API extends Controller {
 					}
 				}
 				$settings = Query::get_question_settings_by_quiz_id( $quiz_id, $order );
+				// Mirrors the AJAX render_quiz handler (addons/quizzes/ajax/frontend.php)
+				// so the mobile app can enforce the same proctoring behaviour the web
+				// player does — it isn't part of Query::get_question_settings_by_quiz_id's
+				// per-quiz settings, it's a single site-wide toggle.
+				$settings['quiz_proctoring_browser_lock'] = (bool) Helper::get_settings( 'quiz_proctoring_browser_lock', false );
 				return new Response(array(
 					'questions' => $questions,
 					'settings' => $settings,
@@ -187,7 +229,7 @@ class API extends Controller {
 				), 200);
 			}
 			return new Response( array( 'error' => esc_html__( 'No questions found for this quiz.', 'academy' ) ), 404 );
-		} //end if
+		}//end if
 		return new Response( array( 'error' => esc_html__( 'Access Denied', 'academy' ) ), 403 );
 	}
 
@@ -201,7 +243,7 @@ class API extends Controller {
 			return new Response( array( 'error' => esc_html__( 'Course ID, Question ID and Question Type is required to parameter.', 'academy' ) ), 400 );
 		}
 
-		$is_administrator = current_user_can( 'administrator' );
+		$is_administrator = current_user_can( 'manage_options' );
 		$is_instructor    = Helper::is_instructor_of_this_course( $user_id, $course_id );
 		$enrolled         = Helper::is_enrolled( $course_id, $user_id );
 		$is_public        = Helper::is_public_course( $course_id );
@@ -222,179 +264,262 @@ class API extends Controller {
 				$answer->answer_order = (int) $answer->answer_order;
 			}
 			return new Response( $answers, 200 );
-		} //end if
+		}//end if
 		return new Response( array( 'error' => esc_html__( 'Access Denied', 'academy' ) ), 403 );
 	}
 
-    public function insert_question_answers( $request ) {
-        $quiz_id        = (int) ( ! empty( $request['id'] ) ? $request['id'] : $request->get_param( 'quiz_id' ) );
-        $course_id      = (int) $request->get_param( 'course_id' );
-        $attempt_id     = (int) $request->get_param( 'attempt_id' );
-        $attempt_answers = $request->get_param( 'attempt_answers' );
+	public function insert_question_answers( $request ) {
+		$quiz_id        = (int) ( ! empty( $request['id'] ) ? $request['id'] : $request->get_param( 'quiz_id' ) );
+		$course_id      = (int) $request->get_param( 'course_id' );
+		$attempt_id     = (int) $request->get_param( 'attempt_id' );
+		$attempt_answers = $request->get_param( 'attempt_answers' );
 
-        // Validate required params.
-        if ( ! $course_id || ! $quiz_id || ! $attempt_id || empty( $attempt_answers ) ) {
-            return new Response(
-                array( 'error' => esc_html__( 'Missing required parameters.', 'academy' ) ),
-                400
-            );
-        }
+		// Validate required params.
+		if ( ! $course_id || ! $quiz_id || ! $attempt_id || empty( $attempt_answers ) ) {
+			return new Response(
+				array( 'error' => esc_html__( 'Missing required parameters.', 'academy' ) ),
+				400
+			);
+		}
 
-        $user_id = get_current_user_id();
+		$user_id = get_current_user_id();
 
-        // Permission check.
-        if ( ! $this->can_attempt_quiz( $user_id, $course_id ) ) {
-            return new Response(
-                array( 'error' => esc_html__( 'Access Denied', 'academy' ) ),
-                403
-            );
-        }
+		// Permission check.
+		if ( ! $this->can_attempt_quiz( $user_id, $course_id ) ) {
+			return new Response(
+				array( 'error' => esc_html__( 'Access Denied', 'academy' ) ),
+				403
+			);
+		}
 
-        // The attempt being written to must belong to the current user and match the
-        // quiz/course in the request, so a user cannot inject answers into another
-        // user's attempt or mismatch quiz/course to tamper with scoring.
-        $attempt = Query::get_quiz_attempt( $attempt_id );
-        if (
-            empty( $attempt ) ||
-            (int) $attempt->user_id !== (int) $user_id ||
-            (int) $attempt->quiz_id !== $quiz_id ||
-            (int) $attempt->course_id !== $course_id
-        ) {
-            return new Response(
-                array( 'error' => esc_html__( 'Access Denied', 'academy' ) ),
-                403
-            );
-        }
+		// The attempt being written to must belong to the current user and match the
+		// quiz/course in the request, so a user cannot inject answers into another
+		// user's attempt or mismatch quiz/course to tamper with scoring.
+		$attempt = Query::get_quiz_attempt( $attempt_id );
+		if (
+			empty( $attempt ) ||
+			(int) $attempt->user_id !== (int) $user_id ||
+			(int) $attempt->quiz_id !== $quiz_id ||
+			(int) $attempt->course_id !== $course_id
+		) {
+			return new Response(
+				array( 'error' => esc_html__( 'Access Denied', 'academy' ) ),
+				403
+			);
+		}
 
-        if ( ! is_array( $attempt_answers ) ) {
-            return new Response(
-                array( 'error' => esc_html__( 'Invalid attempt answers format.', 'academy' ) ),
-                400
-            );
-        }
+		if ( ! is_array( $attempt_answers ) ) {
+			return new Response(
+				array( 'error' => esc_html__( 'Invalid attempt answers format.', 'academy' ) ),
+				400
+			);
+		}
 
-        $results        = array();
-        $achieved_score = 0;
-        $score_total    = 0;
+		$results        = array();
+		$achieved_score = 0;
+		$score_total    = 0;
 
-        foreach ( $attempt_answers as $answer ) {
-            $processed = $this->process_answer( $answer );
+		$quiz_questions = Query::get_quiz_questions_for_scoring( $quiz_id );
 
-            if ( empty( $processed ) ) {
-                continue;
-            }
+		foreach ( $attempt_answers as $answer ) {
+			$processed = $this->process_answer( $answer, $quiz_questions );
 
-            list( $question_id, $given_answer, $correct, $question_score, $negative_score ) = $processed;
+			if ( empty( $processed ) ) {
+				continue;
+			}
 
-            $score_total    += $question_score;
-            $achieved_score += $correct ? $question_score : $negative_score;
+			list( $question_id, $given_answer, $correct, $question_score, $negative_score ) = $processed;
 
-            $results[] = Query::quiz_attempt_answer_insert( array(
-                'user_id'       => $user_id,
-                'quiz_id'       => $quiz_id,
-                'question_id'   => $question_id,
-                'attempt_id'    => $attempt_id,
-                'answer'        => $given_answer,
-                'question_mark' => $question_score,
-                'achieved_mark' => $correct ? $question_score : $negative_score,
-                'minus_mark'    => '',
-                'is_correct'    => $correct,
-            ) );
-        }
+			$score_total    += $question_score;
+			$achieved_score += $correct ? $question_score : $negative_score;
 
-        // Avoid division by zero.
-        $percentage = $score_total > 0 ? ( $achieved_score / $score_total ) * 100 : 0;
+			$results[] = Query::quiz_attempt_answer_insert( array(
+				'user_id'       => $user_id,
+				'quiz_id'       => $quiz_id,
+				'question_id'   => $question_id,
+				'attempt_id'    => $attempt_id,
+				'answer'        => $given_answer,
+				'question_mark' => $question_score,
+				'achieved_mark' => $correct ? $question_score : $negative_score,
+				'minus_mark'    => '',
+				'is_correct'    => $correct,
+			) );
+		}//end foreach
 
-        $quiz_data = (object) array(
-            'user_id'           => $user_id,
-            'course_id'         => $course_id,
-            'quiz_id'           => $quiz_id,
-            'assignment_id'     => null,
-            'result_for'        => 'quiz',
-            'earned_percentage' => $percentage,
-        );
+		// Avoid division by zero.
+		$percentage = $score_total > 0 ? ( $achieved_score / $score_total ) * 100 : 0;
 
-        do_action( 'academy_quizzes/after_quiz_insert', $quiz_data );
+		$quiz_data = (object) array(
+			'user_id'           => $user_id,
+			'course_id'         => $course_id,
+			'quiz_id'           => $quiz_id,
+			'assignment_id'     => null,
+			'result_for'        => 'quiz',
+			'earned_percentage' => $percentage,
+		);
 
-        $passing_grade = (float) get_post_meta( $quiz_id, 'academy_quiz_passing_grade', true );
+		do_action( 'academy_quizzes/after_quiz_insert', $quiz_data );
 
-        if ( $percentage >= $passing_grade ) {
-            do_action( 'academy_quizzes/after_insert_quiz_status_pass', $quiz_id, $user_id, $course_id );
-        } else {
-            do_action( 'academy_quizzes/after_insert_quiz_status_failed', $quiz_id, $user_id, $course_id );
-        }
+		$passing_grade = (float) get_post_meta( $quiz_id, 'academy_quiz_passing_grade', true );
 
-        do_action( 'academy_quizzes/after_insert_quiz_status_completed', $quiz_id, $user_id, $course_id );
+		if ( $percentage >= $passing_grade ) {
+			do_action( 'academy_quizzes/after_insert_quiz_status_pass', $quiz_id, $user_id, $course_id );
+		} else {
+			do_action( 'academy_quizzes/after_insert_quiz_status_failed', $quiz_id, $user_id, $course_id );
+		}
 
-        return new Response( array( 'results' => $results ), 200 );
-    }
+		do_action( 'academy_quizzes/after_insert_quiz_status_completed', $quiz_id, $user_id, $course_id );
 
-    private function can_attempt_quiz( $user_id, $course_id ) {
-	    return current_user_can( 'administrator' )
-        || Helper::is_instructor_of_this_course( $user_id, $course_id )
-        || Helper::is_enrolled( $course_id, $user_id )
-        || Helper::is_public_course( $course_id );
-    }
+		// Resume Mode: piggyback the current step/remaining-timer bookkeeping
+		// on this same request when the client sends it, exactly like the AJAX
+		// insert_quiz_answer handler does — avoids a second round-trip per
+		// question just to keep resume state current.
+		if ( null !== $request->get_param( 'current_step_index' ) || null !== $request->get_param( 'remaining_seconds' ) ) {
+			$resume_partial = array(
+				'last_saved_at' => current_time( 'mysql' ),
+				'submitted'     => false,
+			);
+			if ( null !== $request->get_param( 'current_step_index' ) ) {
+				$resume_partial['current_step_index'] = (int) $request->get_param( 'current_step_index' );
+			}
+			if ( null !== $request->get_param( 'remaining_seconds' ) ) {
+				$resume_partial['remaining_seconds'] = (int) $request->get_param( 'remaining_seconds' );
+			}
+			Query::update_quiz_attempt_resume_info( $attempt_id, $resume_partial );
+		}
 
-    private function process_answer( $data ) {
-        $question_id    = (int) $data['question_id'];
-        $question_score = (float) $data['question_score'];
-        $question_type  = (string) $data['question_type'];
-        $given_answer   = $data['given_answer'];
+		return new Response( array( 'results' => $results ), 200 );
+	}
 
-        $correct = 0;
+	/**
+	 * Resume Mode: saved answer rows for an in-progress attempt, so the
+	 * client can rebuild its in-memory answer state after a "Resume" choice.
+	 * Mirrors Frontend::get_resume_attempt_answers() in ajax/frontend.php.
+	 *
+	 * @param \WP_REST_Request $request
+	 */
+	public function get_resume_attempt_answers( $request ) {
+		$attempt_id = (int) $request->get_param( 'attempt_id' );
+		$user_id    = get_current_user_id();
 
-        switch ( $question_type ) {
-            case 'imageAnswer':
-                $given_answer = $this->normalize_json_answer( $given_answer, true );
-                $correct      = (int) Query::is_image_answer_quiz_correct_answer( $given_answer, $question_id );
-                $given_answer = wp_json_encode( $given_answer );
-                break;
+		$attempt = Query::get_quiz_attempt( $attempt_id );
+		// Only the attempt's own owner may pull its saved answers back into a
+		// live quiz session.
+		if ( empty( $attempt ) || (int) $attempt->user_id !== (int) $user_id ) {
+			return new Response( array( 'error' => esc_html__( 'Access Denied', 'academy' ) ), 403 );
+		}
 
-            case 'multipleChoice':
-                $ids          = is_array( $given_answer ) ? $given_answer : explode( ',', $given_answer );
-                $given_answer = implode( ',', $ids );
-                $correct      = (int) Query::is_quiz_correct_answer( $ids, $question_id );
-                break;
+		$answers = Query::get_quiz_attempt_raw_answers( $attempt_id, $user_id );
+		return new Response( $answers, 200 );
+	}
 
-            case 'fillInTheBlanks':
-                $args         = $this->normalize_json_answer( $given_answer );
-                $given_answer = implode( ',', $args );
-                $correct      = (int) Query::is_fill_in_the_blanks_quiz_correct_answer( $args, $question_id );
-                break;
+	/**
+	 * Resume Mode heartbeat: persists current step + remaining timer seconds
+	 * independent of answering a question, so a student who leaves the app
+	 * mid-countdown without changing an answer still resumes to an accurate
+	 * position. Mirrors Frontend::update_resume_progress() in ajax/frontend.php.
+	 *
+	 * @param \WP_REST_Request $request
+	 */
+	public function update_resume_progress( $request ) {
+		$attempt_id = (int) $request->get_param( 'attempt_id' );
+		$user_id    = get_current_user_id();
+		$attempt    = Query::get_quiz_attempt( $attempt_id );
 
-            case 'shortAnswer':
-                break;
+		if ( empty( $attempt ) || (int) $attempt->user_id !== $user_id ) {
+			return new Response( array( 'error' => esc_html__( 'Access Denied', 'academy' ) ), 403 );
+		}
 
-            default:
-                $correct = (int) Query::is_quiz_correct_answer( $given_answer, $question_id );
-        }
+		$resume_partial = array(
+			'last_saved_at' => current_time( 'mysql' ),
+			'submitted'     => false,
+		);
+		if ( null !== $request->get_param( 'current_step_index' ) ) {
+			$resume_partial['current_step_index'] = (int) $request->get_param( 'current_step_index' );
+		}
+		if ( null !== $request->get_param( 'remaining_seconds' ) ) {
+			$resume_partial['remaining_seconds'] = (int) $request->get_param( 'remaining_seconds' );
+		}
+		Query::update_quiz_attempt_resume_info( $attempt_id, $resume_partial );
 
-        $negative_score = $this->calculate_negative_mark( $question_id, $given_answer, $correct );
+		return new Response( array( 'success' => true ), 200 );
+	}
 
-        return array( $question_id, $given_answer, $correct, $question_score, $negative_score );
-    }
+	private function can_attempt_quiz( $user_id, $course_id ) {
+		return current_user_can( 'manage_options' )
+		|| Helper::is_instructor_of_this_course( $user_id, $course_id )
+		|| Helper::is_enrolled( $course_id, $user_id )
+		|| Helper::is_public_course( $course_id );
+	}
 
-    private function normalize_json_answer( $answer, $with_keys = false ) {
-        $decoded = is_string( $answer ) ? json_decode( stripslashes( $answer ), true ) : $answer;
+	/**
+	 * @param array $data           One submitted answer.
+	 * @param array $quiz_questions The quiz's questions, from get_quiz_questions_for_scoring().
+	 * @return array Empty when the question isn't part of the quiz.
+	 */
+	private function process_answer( $data, $quiz_questions ) {
+		$question_id = (int) ( $data['question_id'] ?? 0 );
+		// Only the quiz's own questions count, scored as stored.
+		if ( ! isset( $quiz_questions[ $question_id ] ) ) {
+			return array();
+		}
+		$question_score = (float) $quiz_questions[ $question_id ]->question_score;
+		$question_type  = (string) $quiz_questions[ $question_id ]->question_type;
+		$given_answer   = $data['given_answer'] ?? '';
 
-        if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) {
-            return $with_keys
-                ? wp_list_pluck( $decoded, 'value', 'id' )
-                : wp_list_pluck( $decoded, 'value' );
-        }
+		$correct = 0;
 
-        return (array) $answer;
-    }
+		switch ( $question_type ) {
+			case 'imageAnswer':
+				$given_answer = $this->normalize_json_answer( $given_answer, true );
+				$correct      = (int) Query::is_image_answer_quiz_correct_answer( $given_answer, $question_id );
+				$given_answer = wp_json_encode( $given_answer );
+				break;
 
-    private function calculate_negative_mark( $question_id, $given_answer, $correct ) {
-        $details = Query::get_question_details_by_question_id( $question_id );
-        $negative = ! empty( $details ) ? (float) current( $details )->question_negative_score : 0;
+			case 'multipleChoice':
+				$ids          = is_array( $given_answer ) ? $given_answer : explode( ',', $given_answer );
+				$given_answer = implode( ',', $ids );
+				$correct      = (int) Query::is_quiz_correct_answer( $ids, $question_id );
+				break;
 
-        if ( ! empty( $given_answer ) && $negative > 0 && ! $correct ) {
-            return -$negative;
-        }
+			case 'fillInTheBlanks':
+				$args         = $this->normalize_json_answer( $given_answer );
+				$given_answer = implode( ',', $args );
+				$correct      = (int) Query::is_fill_in_the_blanks_quiz_correct_answer( $args, $question_id );
+				break;
 
-        return 0;
-    }
+			case 'shortAnswer':
+				break;
+
+			default:
+				$correct = (int) Query::is_quiz_correct_answer( $given_answer, $question_id );
+		}//end switch
+
+		$negative_score = $this->calculate_negative_mark( $question_id, $given_answer, $correct );
+
+		return array( $question_id, $given_answer, $correct, $question_score, $negative_score );
+	}
+
+	private function normalize_json_answer( $answer, $with_keys = false ) {
+		$decoded = is_string( $answer ) ? json_decode( stripslashes( $answer ), true ) : $answer;
+
+		if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) {
+			return $with_keys
+				? wp_list_pluck( $decoded, 'value', 'id' )
+				: wp_list_pluck( $decoded, 'value' );
+		}
+
+		return (array) $answer;
+	}
+
+	private function calculate_negative_mark( $question_id, $given_answer, $correct ) {
+		$details = Query::get_question_details_by_question_id( $question_id );
+		$negative = ! empty( $details ) ? (float) current( $details )->question_negative_score : 0;
+
+		if ( ! empty( $given_answer ) && $negative > 0 && ! $correct ) {
+			return -$negative;
+		}
+
+		return 0;
+	}
 }

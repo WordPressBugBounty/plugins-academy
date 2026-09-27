@@ -12,7 +12,7 @@ class QuizAttemptStatusFailed implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy/frontend/quiz_attempt_status_failed',
-			function( $attempt_quiz ) use ( $deliver_callback, $webhook ) {
+			function ( $attempt_quiz ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(
@@ -22,7 +22,6 @@ class QuizAttemptStatusFailed implements ListenersInterface {
 				);
 			}, 10
 		);
-
 	}
 
 	public static function get_payload( $attempt_quiz ) {

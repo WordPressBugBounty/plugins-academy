@@ -1,0 +1,69 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/enroll-form",
+	"title": "Course Enroll Form",
+	"category": "academy-course",
+	"description": "The enroll or buy form for a course, anywhere on the site.",
+	"keywords": [
+		"enroll",
+		"buy",
+		"checkout",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		},
+		"courseId": {
+			"type": "number"
+		},
+		"layout": {
+			"type": "string",
+			"enum": [
+				"legacy",
+				"modern"
+			],
+			"default": "legacy"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php"
+}

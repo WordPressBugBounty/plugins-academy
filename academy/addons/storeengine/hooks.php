@@ -9,5 +9,4 @@ class Hooks {
 		Hooks\Cart::init();
 		Hooks\Order::init();
 	}
-
 }

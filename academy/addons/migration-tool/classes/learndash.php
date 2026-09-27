@@ -4,7 +4,7 @@ namespace AcademyMigrationTool\Classes;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-use Academy\Helper as Helper;
+use Academy\Helper;
 use AcademyMigrationTool\Interfaces\MigrationInterface;
 
 class Learndash extends Migration implements MigrationInterface {
@@ -217,7 +217,6 @@ class Learndash extends Migration implements MigrationInterface {
 				}
 			}
 		}
-
 	}
 
 	public function migrate_course_lesson( $lesson_id ) {

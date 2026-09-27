@@ -12,7 +12,7 @@ class AnnouncementPublish implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'rest_after_insert_academy_announcement',
-			function( $announcement ) use ( $deliver_callback, $webhook ) {
+			function ( $announcement ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(
@@ -22,7 +22,6 @@ class AnnouncementPublish implements ListenersInterface {
 				);
 			}, 10
 		);
-
 	}
 
 	public static function get_payload( $announcement ) {

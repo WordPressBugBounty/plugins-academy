@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/learn-footer",
+	"title": "Learn Page Footer",
+	"category": "academy",
+	"parent": [
+		"academy/learn-page"
+	],
+	"description": "Previous topic, mark as complete and next topic.",
+	"textdomain": "academy",
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"typography": {
+			"fontSize": true
+		},
+		"interactivity": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"usesContext": [
+		"academy/previewCourse"
+	]
+}

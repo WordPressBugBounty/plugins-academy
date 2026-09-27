@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Ajax;
+namespace Academy\Ajax;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -40,5 +40,4 @@ class Tools extends AbstractAjaxHandler {
 		$status = Pages::regenerate_necessary_pages();
 		wp_send_json_success( $status );
 	}
-
 }

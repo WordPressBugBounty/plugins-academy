@@ -1,0 +1,89 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-curriculum",
+	"title": "Course Curriculum",
+	"category": "academy-course",
+	"description": "Topics and lessons in the course.",
+	"keywords": [
+		"curriculum",
+		"lessons",
+		"topics",
+		"syllabus",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"html": false,
+		"multiple": true,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		},
+		"titleFontSize": {
+			"type": "number"
+		},
+		"titleColor": {
+			"type": "string"
+		},
+		"titleAlign": {
+			"type": "string"
+		}
+	},
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "boxed",
+			"label": "Boxed"
+		},
+		{
+			"name": "minimal",
+			"label": "Minimal"
+		}
+	],
+	"style": "file:./style.css"
+}

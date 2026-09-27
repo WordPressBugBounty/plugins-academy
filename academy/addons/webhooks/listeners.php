@@ -39,7 +39,7 @@ class Listeners extends BaseListeners {
 
 					$listener = $listeners[ $event_name ];
 
-					$callback = function( $webhook, $payload ) use ( $event_name ) {
+					$callback = function ( $webhook, $payload ) use ( $event_name ) {
 						as_enqueue_async_action(
 							'academy_webhooks/async_delivery',
 							array(

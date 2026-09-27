@@ -2230,6 +2230,5 @@ class SingleBooking extends SectionBase implements CustomizerSectionInterface {
 				'type'     => 'academy_dimensions',
 			)
 		);
-
 	}
 }

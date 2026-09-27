@@ -48,6 +48,13 @@ class AnnouncementController extends WP_REST_Posts_Controller {
 			return true;
 		}
 
+		// See the identical bypass in CourseController — academy_announcement is
+		// registered with map_meta_cap: false, so edit_others_* isn't honored
+		// automatically here without this.
+		if ( current_user_can( 'edit_others_academy_announcements' ) ) {
+			return true;
+		}
+
 		if ( ! parent::{$perm_method}( $request ) ) {
 			return new WP_Error( 'unauthorized', __( 'Unauthorized.', 'academy' ), [ 'status' => 404 ] );
 		}

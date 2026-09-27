@@ -75,5 +75,4 @@ class FakeOrder extends AbstractAjaxHandler {
 			esc_html__( 'Something went wrong.', 'academy' )
 		);
 	}
-
 }

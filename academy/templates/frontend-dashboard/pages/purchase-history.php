@@ -33,7 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="academy-table__row-cell">
 						<div class="academy-table-title">
 								<?php foreach ( $order['courses'] as $course ) : ?>
-								<p><a href="<?php echo esc_html( $course['permalink'] ); ?> "><?php echo esc_html( $course['title'] ); ?></a></p>
+								<p><a href="<?php echo esc_url( $course['permalink'] ); ?>"><?php echo esc_html( $course['title'] ); ?></a></p>
 								<?php endforeach; ?>
 							</div>
 						</div>
@@ -51,8 +51,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 								// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
 								echo '<img src="' . esc_url( ACADEMY_ASSETS_URI . 'images/NoDataAvailable.svg' ) . '" alt="">'; ?>
 							</div>
-							<h3 class="academy-oops__heading"><?php echo esc_html__( 'No data Available!!', 'academy' ); ?></h3>
-							<h3 class="academy-oops__text"><?php echo esc_html__( 'No purchase data was found to see the available list here.', 'academy' ); ?></h3>
+							<h3 class="academy-oops__heading"><?php echo esc_html__( 'Nothing here yet', 'academy' ); ?></h3>
+							<h3 class="academy-oops__text"><?php echo esc_html__( 'No purchases yet.', 'academy' ); ?></h3>
 						</div>
 				<?php endif; ?>
 		</div>

@@ -123,6 +123,8 @@ add_action( 'academy_frontend_dashboard_active-courses_endpoint', 'academy_front
 add_action( 'academy_frontend_dashboard_complete-courses_endpoint', 'academy_frontend_dashboard_completed_courses_page' );
 // download certificate
 add_action( 'academy_frontend_dashboard_download-certificate_endpoint', 'academy_frontend_dashboard_download_certificate_page' );
+// grades
+add_action( 'academy_frontend_dashboard_grades_endpoint', 'academy_frontend_dashboard_grades_page' );
 
 add_action( 'academy_frontend_dashboard_wishlist_endpoint', 'academy_frontend_dashboard_wishlist_page' );
 // reviews

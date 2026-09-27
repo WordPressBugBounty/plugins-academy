@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Shortcode;
+namespace Academy\Shortcode;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -55,5 +55,3 @@ class AcademyLogin {
 		return apply_filters( 'academy/templates/shortcode/login', ob_get_clean() );
 	}
 }
-
-

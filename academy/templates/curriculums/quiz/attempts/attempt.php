@@ -14,8 +14,19 @@ if ( ! $quiz_attempt ) {
 	return;
 }
 
+$back_topic = array(
+	'type' => 'quiz',
+	'slug' => get_query_var( 'name' ),
+);
+
 ?>
 <div class="academy-quiz-attempt-content__wrapper">
+	<div class="academy-quiz-attempt-back academy-quiz-attempt-back--top">
+		<a class="academy-quiz-attempt-back__link" href="<?php echo esc_url( \Academy\Helper::get_topic_play_link( $back_topic ) ); ?>">
+			<span class="academy-icon academy-icon--arrow-left"></span>
+			<?php esc_html_e( 'Back', 'academy' ); ?>
+		</a>
+	</div>
 	<div class="academy-quiz-attempt-content__inner-wrapper">
 		<?php
 			\Academy\Helper::get_template( 'curriculums/quiz/attempts/attempt/overview.php', array( 'quiz_attempt' => $quiz_attempt ) );

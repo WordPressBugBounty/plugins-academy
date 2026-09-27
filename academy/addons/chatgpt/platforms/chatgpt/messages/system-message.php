@@ -16,7 +16,7 @@ class SystemMessage extends Message {
 		You are a helpful and approachable assistant. Your task is to generate a formal {type} for an online course based on the given content. The {type} should be concise, written in {language}, and limited to {character_limit} characters. Ensure the tone is {tone}.
 	';
 
-	public function get( array $input ) : array {
+	public function get( array $input ): array {
 		if ( boolval( $input['html'] ?? false ) ) {
 			$this->content .= '  Please use some html formatting tag if needed.';
 		} else {
@@ -24,7 +24,7 @@ class SystemMessage extends Message {
 		}
 		return parent::get( $input );
 	}
-	public function validate_character_limit( string $limit ) : bool {
+	public function validate_character_limit( string $limit ): bool {
 		if ( intval( $limit ) <= 0 ) {
 			throw new InvalidValueException( esc_html__( 'Character length must be greater than zero.', 'academy' ) );
 		}

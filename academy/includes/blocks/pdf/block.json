@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/pdf",
+	"title": "Academy PDF Viewer",
+	"category": "academy",
+	"description": "Shows a PDF file on the page.",
+	"keywords": [
+		"pdf",
+		"document",
+		"embed"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"src": {
+			"type": "string"
+		},
+		"width": {
+			"type": "string"
+		},
+		"height": {
+			"type": "string",
+			"default": "600px"
+		}
+	},
+	"supports": {
+		"html": false,
+		"spacing": {
+			"margin": true
+		},
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php"
+}

@@ -22,22 +22,22 @@ abstract class Collection extends Db implements Countable, IteratorAggregate {
 	protected array $meta_data = [];
 	protected bool $skip_meta = false;
 
-	public function get_page() : int {
-		return $this->pagel;
+	public function get_page(): int {
+		return $this->page;
 	}
-	public function get_per_page() : int {
+	public function get_per_page(): int {
 		return $this->per_page;
 	}
-	public function get_total() : int {
+	public function get_total(): int {
 		return $this->total;
 	}
-	public function get_total_pages() : int {
+	public function get_total_pages(): int {
 		return $this->total_pages;
 	}
-	public function get_offset() : int {
+	public function get_offset(): int {
 		return $this->offset;
 	}
-	abstract public function getIterator() : ArrayIterator;
-	abstract public function load_meta() : void;
-	abstract public function count() : int;
+	abstract public function getIterator(): ArrayIterator;
+	abstract public function load_meta(): void;
+	abstract public function count(): int;
 }

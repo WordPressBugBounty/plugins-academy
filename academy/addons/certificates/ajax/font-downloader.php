@@ -66,38 +66,87 @@ class FontDownloader extends AbstractAjaxHandler {
 		wp_send_json_success( $certificate_args );
 	}
 
+	/**
+	 * Restore the bundled certificates to their shipped design.
+	 *
+	 * Restores IN PLACE. This used to hard-delete each default and let the
+	 * installer insert a replacement, which gave every default a NEW post ID on
+	 * every reset — silently orphaning any course whose
+	 * `academy_course_certificate_id` (or the primary-certificate setting)
+	 * pointed at one. Those courses then served the course page instead of a
+	 * PDF, with nothing to say why. Keeping the post and rewriting its content
+	 * restores the design without breaking a single reference.
+	 *
+	 * Only the seven bundled titles are touched; anything the author created is
+	 * matched by neither slug nor title and is left completely alone.
+	 */
 	public function regenerate_academy_certificates() {
 		$certificates = Helper::necessary_certificates();
 		$post_type    = 'academy_certificate';
+		$restored     = 0;
+		$created      = 0;
 
-		if ( ! empty( $certificates ) ) {
-			foreach ( $certificates as $certificate ) {
-				$title = $certificate['title'] ?? '';
+		foreach ( $certificates as $index => $certificate ) {
+			$title = $certificate['title'] ?? '';
 
-				if ( '' === $title ) {
-					continue;
-				}
-
-				$post_slug = sanitize_title( $title );
-				$existing = \Academy\Helper::get_page_by_slug( $post_slug, $post_type );
-
-				if ( $existing instanceof \WP_Post ) {
-					wp_delete_post( $existing->ID, true );
-				}
+			if ( '' === $title ) {
+				continue;
 			}
-		}
 
-		// Recreate certificates & update options
+			$content   = Helper::get_default_certificate_content( $certificate['file'] ?? '' );
+			$tree      = Helper::default_certificate_tree( Helper::default_certificate_image( $index + 1 ) );
+			$post_slug = sanitize_title( $title );
+			$existing  = \Academy\Helper::get_page_by_slug( $post_slug, $post_type );
+
+			if ( ! $existing instanceof \WP_Post ) {
+				$existing = \Academy\Helper::get_page_by_title( $title, $post_type );
+			}
+
+			if ( $existing instanceof \WP_Post ) {
+				wp_update_post(
+					array(
+						'ID'           => $existing->ID,
+						'post_title'   => $title,
+						'post_content' => $content,
+						'post_status'  => 'publish',
+					)
+				);
+				// Re-seed the builder tree and drop the rendered html: the html
+				// is only regenerated when the author saves, so leaving a stale
+				// one would keep printing the design this reset just replaced.
+				update_post_meta( $existing->ID, '_academy_certificate_tree', wp_slash( wp_json_encode( $tree ) ) );
+				delete_post_meta( $existing->ID, '_academy_certificate_html' );
+				++$restored;
+				continue;
+			}
+
+			$new_id = wp_insert_post(
+				array(
+					'post_title'   => $title,
+					'post_content' => $content,
+					'post_status'  => 'publish',
+					'post_type'    => $post_type,
+				)
+			);
+			if ( $new_id && ! is_wp_error( $new_id ) ) {
+				update_post_meta( $new_id, '_academy_certificate_tree', wp_slash( wp_json_encode( $tree ) ) );
+			}
+			++$created;
+		}//end foreach
+
 		$installer = new Installer();
-		if ( method_exists( $installer, 'insert_default_certificate' ) ) {
-			$installer->insert_default_certificate();
-		}
-
 		if ( method_exists( $installer, 'save_option' ) ) {
 			$installer->save_option();
 		}
 
-		wp_send_json_success( __( 'Successfully Re-generated certificates.', 'academy' ) );
+		wp_send_json_success(
+			sprintf(
+				/* translators: 1: number of certificates restored in place. 2: number newly created. */
+				__( 'Restored %1$d default certificates (%2$d re-created). Your own certificates were not touched.', 'academy' ),
+				$restored,
+				$created
+			)
+		);
 	}
 
 	private function fonts_download(): void {
@@ -119,23 +168,24 @@ class FontDownloader extends AbstractAjaxHandler {
 		}
 
 		$filepath = trailingslashit( $fonts_dir ) . $filename;
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
-		$fp = fopen( $filepath, 'w+' );
-		if ( ! $fp ) {
+		if ( ! wp_is_writable( $fonts_dir ) ) {
 			$sse->emit_event( [
 				'type'    => 'message',
 				'message' => esc_html__( 'Failed to open file for writing.', 'academy' ),
 			], true );
 		}
-		fclose( $fp );// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
 		add_action( 'requests-curl.before_send', [ __CLASS__, 'percentage_callback' ] );
+		// Admin-only, one-time download of a large font pack, streamed to disk
+		// with live progress — hence the long timeout and plain wp_remote_get().
+		// phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 		$result = wp_remote_get( $font_zip_url, [
 			'stream'      => true,
 			'filename'    => $filepath,
 			'timeout'     => 300,
 			'redirection' => 5,
 		] );
+		// phpcs:enable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 		remove_action( 'requests-curl.before_send', [ __CLASS__, 'percentage_callback' ] );
 
 		if ( wp_remote_retrieve_response_code( $result ) >= 400 ) {
@@ -160,8 +210,8 @@ class FontDownloader extends AbstractAjaxHandler {
 		if ( is_wp_error( $unzip_result ) ) {
 			$sse->emit_event( [
 				'type'    => 'message',
-				// translators: %s is the error message returned while extracting the zip file.
-				'message' => sprintf( __( 'Failed to extract zip file: %s', 'academy' ), $unzip_result->get_error_message() ),
+				/* translators: %s: unzip error message. */
+				'message' => sprintf( esc_html__( 'Failed to extract zip file: %s', 'academy' ), esc_html( $unzip_result->get_error_message() ) ),
 			], true );
 		}
 
@@ -191,9 +241,9 @@ class FontDownloader extends AbstractAjaxHandler {
 	}
 
 	public static function percentage_callback( $args ) {
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+		// Hooks the WP HTTP API's own cURL handle to stream download progress; there is no WP API for this.
+		// phpcs:disable WordPress.WP.AlternativeFunctions.curl_curl_setopt
 		curl_setopt( $args, CURLOPT_NOPROGRESS, false );
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 		curl_setopt( $args, CURLOPT_PROGRESSFUNCTION, function ( $resource, $download_size, $downloaded ) {
 			if ( $download_size > 0 ) {
 				$percent = round( ( $downloaded / $download_size ) * 100 );
@@ -203,6 +253,6 @@ class FontDownloader extends AbstractAjaxHandler {
 				] );
 			}
 		} );
+		// phpcs:enable WordPress.WP.AlternativeFunctions.curl_curl_setopt
 	}
-
 }

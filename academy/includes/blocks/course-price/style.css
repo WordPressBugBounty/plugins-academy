@@ -1,0 +1,32 @@
+:where(.wp-block-academy-course-price) {
+	font-weight: 700;
+	color: var(--academy-primary-color, currentColor);
+}
+
+.wp-block-academy-course-price del {
+	margin-inline-end: 0.35em;
+	font-weight: 400;
+	opacity: 0.6;
+}
+
+.wp-block-academy-course-price ins {
+	text-decoration: none;
+}
+
+/* Style presets. */
+.wp-block-academy-course-price.is-style-large {
+	font-size: 1.6em;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+}
+
+.wp-block-academy-course-price.is-style-pill {
+	display: inline-block;
+	padding: 0.2em 0.75em;
+	border-radius: 999px;
+	font-size: 0.9em;
+}
+
+.wp-block-academy-course-price.is-style-pill:not(.has-background) {
+	background: var(--academy-secondary-color, #f2f0fd);
+}

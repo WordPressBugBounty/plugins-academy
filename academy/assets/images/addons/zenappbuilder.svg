@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <title>ZenApp Builder</title>
+  <path
+    d="M13.25 28H7.75A3.75 3.75 0 0 1 4 24.25V6.75A3.75 3.75 0 0 1 7.75 3h10.5A3.75 3.75 0 0 1 22 6.75v10"
+    stroke="#096EFF"
+    stroke-width="2.25"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path d="M11.25 6.5h3.5" stroke="#096EFF" stroke-width="2.25" stroke-linecap="round" />
+  <path
+    d="m23.035 17.94.41 1.217c.303.132.59.298.856.496l1.258-.26a1 1 0 0 1 1.087.51l1.012 1.754a1 1 0 0 1-.102 1.196l-.85.96c.04.33.04.662 0 .99l.85.96a1 1 0 0 1 .102 1.197l-1.012 1.753a1 1 0 0 1-1.087.51l-1.258-.26a5.1 5.1 0 0 1-.856.496l-.41 1.217a1 1 0 0 1-.948.68h-2.024a1 1 0 0 1-.948-.68l-.41-1.217a5.1 5.1 0 0 1-.856-.496l-1.258.26a1 1 0 0 1-1.087-.51l-1.012-1.753a1 1 0 0 1 .102-1.196l.85-.961a4.9 4.9 0 0 1 0-.99l-.85-.96a1 1 0 0 1-.102-1.196l1.012-1.754a1 1 0 0 1 1.087-.51l1.258.26c.266-.198.553-.364.856-.496l.41-1.217a1 1 0 0 1 .948-.68h2.024a1 1 0 0 1 .948.68Z"
+    stroke="#096EFF"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <circle cx="21.075" cy="24.308" r="2.35" stroke="#096EFF" stroke-width="1.8" />
+</svg>

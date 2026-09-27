@@ -41,7 +41,7 @@ class Role {
 
 	public static function add_student_role() {
 		remove_role( 'academy_student' );
-		add_role( 'academy_student', esc_html__( 'Academy Student', 'academy' ), array() );
+		self::create_role( 'academy_student', esc_html__( 'Academy Student', 'academy' ) );
 		$role_permission = array(
 			'read',
 			'edit_posts',
@@ -59,10 +59,67 @@ class Role {
 		}
 	}
 
+	/**
+	 * Guardian / parent role — a family account linked to one or more learners.
+	 * Read-only over their wards' learning; `manage_academy_guardian` gates the
+	 * guardian dashboard + the family REST endpoints.
+	 */
+	public static function add_guardian_role() {
+		remove_role( 'academy_guardian' );
+		self::create_role( 'academy_guardian', esc_html__( 'Academy Guardian', 'academy' ) );
+		$role_permission = array(
+			'read',
+			'read_academy_course',
+			'manage_academy_guardian',
+		);
+		$guardian = get_role( 'academy_guardian' );
+		if ( $guardian ) {
+			foreach ( $role_permission as $cap ) {
+				$guardian->add_cap( $cap );
+			}
+		}
+		// Administrators manage guardians too.
+		$admin = get_role( 'administrator' );
+		if ( $admin ) {
+			$admin->add_cap( 'manage_academy_guardian' );
+		}
+	}
+
+	/**
+	 * Manager role — a real, wp-admin-visible label for anyone Manage Roles
+	 * has granted at least one permission to (mirrors becoming an Instructor,
+	 * per the explicit product decision this shape went through several
+	 * revisions to land on). Deliberately carries no capabilities beyond the
+	 * `manage_academy_manager` marker: actual access is 100% governed by the
+	 * dotted-slug permissions Manage Roles grants, enforced by the existing
+	 * `role-permission` addon's own capability/menu/write-gating machinery
+	 * (Caps/RestGuard/AjaxGuard/Menu) — unchanged by, and applying normally
+	 * to, anyone holding this role. A role with its own broad capability
+	 * bundle was tried first and reverted: granting only "Courses" made every
+	 * area visible and readable, since the role's bundle doesn't know which
+	 * specific permission was actually picked.
+	 */
+	public static function add_manager_role() {
+		remove_role( 'academy_manager' );
+		self::create_role( 'academy_manager', esc_html__( 'Academy Manager', 'academy' ) );
+
+		$manager = get_role( 'academy_manager' );
+		if ( $manager ) {
+			foreach ( self::get_manager_caps() as $cap ) {
+				$manager->add_cap( $cap );
+			}
+		}
+		// Administrators are managers too.
+		$admin = get_role( 'administrator' );
+		if ( $admin ) {
+			$admin->add_cap( 'manage_academy_manager' );
+		}
+	}
+
 	public static function add_instructor_role() {
 		remove_role( 'academy_instructor' );
 
-		add_role( 'academy_instructor', esc_html__( 'Academy Instructor', 'academy' ), array() );
+		self::create_role( 'academy_instructor', esc_html__( 'Academy Instructor', 'academy' ) );
 
 		$role_permission = self::get_instructor_caps();
 		$instructor = get_role( 'academy_instructor' );
@@ -111,10 +168,19 @@ class Role {
 			'read_private_academy_bookings',
 			'edit_academy_bookings',
 			// Announcement
+			// NOTE: 'edit_others_academy_announcements' is deliberately NOT
+			// granted here. AnnouncementController::check_academy_announcement_action()
+			// uses that exact capability as an "act on any announcement, not
+			// just your own" bypass (for the Role & Permission pro addon's
+			// native-capability bridge) — granting it to every Instructor here
+			// would let any Instructor edit/delete any OTHER Instructor's
+			// announcements, defeating the per-instructor ownership check this
+			// controller exists to enforce. Confirmed unused elsewhere before
+			// this note was added (grep across both plugins turned up only the
+			// capability's own definition, this grant, and the bypass).
 			'edit_academy_announcement',
 			'read_academy_announcement',
 			'delete_academy_announcement',
-			'edit_others_academy_announcements',
 			'publish_academy_announcements',
 			'read_private_academy_announcements',
 			'edit_academy_announcements',
@@ -179,7 +245,7 @@ class Role {
 	}
 
 	protected static function get_administrator_caps() {
-		return [
+		return array_merge( [
 			'edit_posts',
 			'edit_others_posts',
 			'manage_academy_instructor',
@@ -196,7 +262,19 @@ class Role {
 			'delete_academy_webhooks',
 			'delete_academy_lessons',
 			'delete_academy_meetings',
-		];
+		], self::get_instructor_caps() );
+	}
+
+	/**
+	 * Manager caps = every cross-user capability an administrator has for
+	 * Academy's resources (via get_administrator_caps(), which already merges
+	 * get_instructor_caps() with the edit_others_ and delete_academy_ (plural)
+	 * caps), plus the manager-specific gating capability. Deliberately
+	 * excludes real WordPress admin-only capabilities (manage_options and
+	 * friends) — a manager is never a real administrator.
+	 */
+	protected static function get_manager_caps() {
+		return array( 'manage_academy_manager' );
 	}
 
 	/**
@@ -241,5 +319,20 @@ class Role {
 		}
 
 		\Academy\Helper::remove_instructor_role( $user_id );
+	}
+
+	/**
+	 * Create an (empty) role. On WordPress VIP roles must go through
+	 * wpcom_vip_add_role(), which also keeps them in sync across the network.
+	 *
+	 * @param string $role         Role slug.
+	 * @param string $display_name Role label.
+	 */
+	private static function create_role( $role, $display_name ) {
+		if ( function_exists( 'wpcom_vip_add_role' ) ) {
+			wpcom_vip_add_role( $role, $display_name, array() );
+			return;
+		}
+		add_role( $role, $display_name, array() ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.custom_role_add_role -- non-VIP fallback.
 	}
 }

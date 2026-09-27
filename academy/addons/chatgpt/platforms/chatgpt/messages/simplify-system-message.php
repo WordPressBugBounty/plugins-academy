@@ -16,7 +16,7 @@ class SimplifySystemMessage extends Message {
 		Your task is to simplify the provided text, ensuring it is easier to understand while keeping the original meaning intact. Ensuring the tone aligns with a {tone}.
 	';
 
-	public function get( array $input ) : array {
+	public function get( array $input ): array {
 		if ( boolval( $input['html'] ?? false ) ) {
 			$this->content .= '  Please use some html formatting tag if needed.';
 		} else {

@@ -1,5 +1,5 @@
 <?php
-namespace  Academy;
+namespace Academy;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -13,6 +13,130 @@ class Miscellaneous {
 		add_action( 'rest_delete_academy_courses', array( $self, 'delete_associated_enrollment' ) );
 		add_filter( 'post_type_link', array( $self, 'course_post_type_link' ), 10, 2 );
 		add_action( 'before_delete_post', array( $self, 'restrict_academy_post_type_deletion' ) );
+		// A lesson/quiz/assignment that is deleted for good must also leave every
+		// course curriculum that lists it, or the builder keeps a dead item.
+		add_action( 'deleted_post', array( $self, 'remove_deleted_post_from_curriculums' ), 10, 2 );
+		add_action( 'academy/lesson/deleted', array( $self, 'remove_deleted_lesson_from_curriculums' ) );
+	}
+
+	/**
+	 * `deleted_post` handler for the post-backed curriculum item types.
+	 *
+	 * @param int           $post_id Deleted post ID.
+	 * @param \WP_Post|null $post    Deleted post.
+	 */
+	public function remove_deleted_post_from_curriculums( $post_id, $post = null ) {
+		$types = array(
+			'academy_lessons'     => 'lesson',
+			'academy_quiz'        => 'quiz',
+			'academy_assignments' => 'assignment',
+		);
+		$post_type = $post ? $post->post_type : get_post_type( $post_id );
+		if ( isset( $types[ $post_type ] ) ) {
+			$this->remove_topic_from_curriculums( (int) $post_id, $types[ $post_type ] );
+		}
+	}
+
+	/**
+	 * Lessons kept in the custom tables aren't posts, so they announce their
+	 * own deletion (see HpLesson::delete()).
+	 *
+	 * @param int $lesson_id Deleted lesson ID.
+	 */
+	public function remove_deleted_lesson_from_curriculums( $lesson_id ) {
+		$this->remove_topic_from_curriculums( (int) $lesson_id, 'lesson' );
+	}
+
+	/**
+	 * Drop one item (top level or inside a sub-curriculum) from every course
+	 * curriculum that lists it. The module/sub-curriculum itself stays, even if
+	 * it ends up empty.
+	 *
+	 * @param int    $topic_id Item ID.
+	 * @param string $type     Item type: lesson, quiz or assignment.
+	 */
+	private function remove_topic_from_curriculums( $topic_id, $type ) {
+		global $wpdb;
+
+		if ( ! $topic_id ) {
+			return;
+		}
+
+		// The curriculum is a serialized (or JSON) array; narrow the courses down
+		// with the ways the id can appear, then confirm against the real array.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$course_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT post_id FROM {$wpdb->postmeta}
+				WHERE meta_key = 'academy_course_curriculum'
+				AND ( meta_value LIKE %s OR meta_value LIKE %s OR meta_value LIKE %s OR meta_value LIKE %s )",
+				'%"id";i:' . $topic_id . ';%',
+				'%"id";s:' . strlen( (string) $topic_id ) . ':"' . $topic_id . '";%',
+				'%"id":' . $topic_id . '%',
+				'%"id":"' . $topic_id . '"%'
+			)
+		);
+
+		foreach ( $course_ids as $course_id ) {
+			// Bulk delete sends one request per item, all at once. Each one reads,
+			// edits and rewrites the same meta, so without a lock they overwrite
+			// each other and the last writer brings back items another just
+			// removed. The lock is per course and waits up to 10 seconds.
+			$lock = 'academy_curriculum_' . (int) $course_id;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK( %s, 10 )', $lock ) );
+
+			try {
+				// Read fresh: another request may have just written it.
+				wp_cache_delete( (int) $course_id, 'post_meta' );
+				$this->strip_topic_from_course( (int) $course_id, $topic_id, $type );
+			} finally {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK( %s )', $lock ) );
+			}
+		}
+	}
+
+	/**
+	 * Remove one item from a single course's curriculum meta, if it is listed.
+	 *
+	 * @param int    $course_id Course ID.
+	 * @param int    $topic_id  Item ID.
+	 * @param string $type      Item type.
+	 */
+	private function strip_topic_from_course( $course_id, $topic_id, $type ) {
+		$curriculum = get_post_meta( $course_id, 'academy_course_curriculum', true );
+		if ( ! is_array( $curriculum ) ) {
+			return;
+		}
+
+		$changed = false;
+		$strip   = function ( array $topics ) use ( &$strip, &$changed, $topic_id, $type ) {
+			$kept = array();
+			foreach ( $topics as $topic ) {
+				if ( is_array( $topic ) ) {
+					if ( isset( $topic['id'], $topic['type'] ) && $type === $topic['type'] && (int) $topic['id'] === $topic_id ) {
+						$changed = true;
+						continue;
+					}
+					if ( ! empty( $topic['topics'] ) && is_array( $topic['topics'] ) ) {
+						$topic['topics'] = $strip( $topic['topics'] );
+					}
+				}
+				$kept[] = $topic;
+			}
+			return $kept;
+		};
+
+		foreach ( $curriculum as $index => $module ) {
+			if ( is_array( $module ) && ! empty( $module['topics'] ) && is_array( $module['topics'] ) ) {
+				$curriculum[ $index ]['topics'] = $strip( $module['topics'] );
+			}
+		}
+
+		if ( $changed ) {
+			update_post_meta( $course_id, 'academy_course_curriculum', $curriculum );
+		}
 	}
 
 	public function add_image_sizes() {

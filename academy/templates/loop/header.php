@@ -8,11 +8,15 @@ $image_class = 'layout_two' === $card_style || 'layout_four' === $card_style ? '
 ?>
 <?php
 	$level = get_post_meta( get_the_ID(), 'academy_course_difficulty_level', true );
+$is_sticky = \Academy\Helper::is_course_sticky( get_the_ID() );
 ?>
 <div class="academy-course__header">
 	<?php
 		do_action( 'academy/templates/before_course_loop_header_inner' );
 	?>
+	<?php if ( $is_sticky ) : ?>
+		<div class="academy-course__sticky-badge"><?php echo esc_html( apply_filters( 'academy/templates/loop/sticky_badge_label', __( 'Featured', 'academy' ), get_the_ID() ) ); ?></div>
+	<?php endif; ?>
 	<?php
 	if ( $wishlists_status ) :
 		?>
@@ -28,7 +32,7 @@ $image_class = 'layout_two' === $card_style || 'layout_four' === $card_style ? '
 	?>
 	<div class="academy-course__thumbnail">
 		<a href="<?php echo esc_url( get_the_permalink() ); ?>">
-			<img class="academy-course__thumbnail-image <?php echo esc_html( $image_class ); ?>" src="<?php echo esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ); ?>" alt="<?php esc_html_e( 'thumbnail', 'academy' ); ?>">
+			<img class="academy-course__thumbnail-image <?php echo esc_attr( $image_class ); ?>" src="<?php echo esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ); ?>" alt="<?php esc_attr_e( 'thumbnail', 'academy' ); ?>">
 		</a>
 	</div>
 	<?php

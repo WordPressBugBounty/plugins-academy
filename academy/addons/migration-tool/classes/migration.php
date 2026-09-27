@@ -132,12 +132,14 @@ class Migration {
 
 				// Reassign posts from the source term to the target term
 				if ( $target_term_id && ! is_wp_error( $target_term_id ) ) {
+					// phpcs:disable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page -- one-time migration over a bounded set
 					$posts = get_posts(array(
 						'post_type' => 'academy_courses',
 						'taxonomy' => $source_taxonomy,
 						'term' => $term_slug,
 						'posts_per_page' => -1,
 					));
+					// phpcs:enable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page
 
 					if ( $posts ) {
 						foreach ( $posts as $post ) {
@@ -156,7 +158,7 @@ class Migration {
 		// Get all terms from the source taxonomy
 		$terms = get_terms(array(
 			'taxonomy' => $source_taxonomy,
-			'hide_empty' => false, // Include empty terms
+			'hide_empty' => false, // Include empty terms too.
 		));
 
 		if ( is_array( $terms ) && ! empty( $terms ) ) {
@@ -193,12 +195,14 @@ class Migration {
 
 				// Reassign posts from the source term to the target term
 				if ( $target_term_id && ! is_wp_error( $target_term_id ) ) {
+					// phpcs:disable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page -- one-time migration over a bounded set
 					$posts = get_posts(array(
 						'post_type' => 'academy_courses', // Replace with your post type
 						'taxonomy' => $source_taxonomy,
 						'term' => $term_slug,
 						'posts_per_page' => -1,
 					));
+					// phpcs:enable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page
 
 					if ( $posts ) {
 						foreach ( $posts as $post ) {

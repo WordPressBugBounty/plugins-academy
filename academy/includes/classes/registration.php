@@ -107,9 +107,15 @@ class Registration {
 
 				$field_value = isset( $submitted_data[ $column['name'] ] ) ? sanitize_text_field( $submitted_data[ $column['name'] ] ) : '';
 
+				// A choice must be one of the field's own options.
+				if ( '' !== $field_value && ! empty( $column['options'] ) && in_array( $column['type'], [ 'select', 'radio', 'checkbox' ], true ) ) {
+					$allowed     = array_map( 'strval', wp_list_pluck( $column['options'], 'value' ) );
+					$field_value = implode( ',', array_intersect( array_map( 'trim', explode( ',', $field_value ) ), $allowed ) );
+				}
+
 				if ( $column['is_required'] && empty( $field_value ) ) {
-					/* translators: %s is the field label. */
 					$error = sprintf(
+						/* translators: %s: form field label. */
 						__( '%s is required.', 'academy' ),
 						$column['label']
 					);
@@ -131,11 +137,22 @@ class Registration {
 			'last_name' => $user_meta['last-name'] ?? '',
 		];
 
+		if ( ! empty( $login_data['user_login'] ) ) {
+			$username = sanitize_user( $login_data['user_login'], true );
+
+			while ( username_exists( $username ) ) {
+				$username = $login_data['user_login'] . wp_rand( 100, 999 );
+			}
+
+			$login_data['user_login'] = $username;
+		}
+
 		if ( isset( $user_meta['password'] ) && ! empty( $user_meta['password'] ) ) {
 			$login_data['user_pass'] = $user_meta['password'];
 		}
 
 		unset(
+			$user_meta['academy_form_id'],
 			$user_meta['file'],
 			$user_meta['password'],
 			$user_meta['confirm-password'],
@@ -151,7 +168,7 @@ class Registration {
 	protected function save_meta_info( $user_meta, $user_id ): void {
 		// Handle Phone Number
 		if ( ! empty( $user_meta['phone-number'] ) ) {
-			if ( get_user_meta( $user_id, 'academy_phone_number' ) ) {
+			if ( metadata_exists( 'user', $user_id, 'academy_phone_number' ) ) {
 				update_user_meta( $user_id, 'academy_phone_number', $user_meta['phone-number'] );
 			} else {
 				add_user_meta( $user_id, 'academy_phone_number', $user_meta['phone-number'] );
@@ -162,12 +179,11 @@ class Registration {
 			if ( 'phone-number' === $key ) {
 				continue;
 			}
-			if ( get_user_meta( $user_id, 'academy_' . $key ) ) {
+			if ( metadata_exists( 'user', $user_id, 'academy_' . $key ) ) {
 				update_user_meta( $user_id, 'academy_' . $key, $value );
 			} else {
 				add_user_meta( $user_id, 'academy_' . $key, $value );
 			}
 		}
 	}
-
 }

@@ -13,7 +13,7 @@ foreach ( $menu_lists as $endpoint => $menu ) : // phpcs:ignore WordPress.WP.Glo
 	?>
 	<li class="academy-dashboard-menu__item-<?php echo esc_attr( $endpoint ); ?> <?php echo get_query_var( 'academy_dashboard_page' ) === $endpoint || ( get_query_var( 'academy_dashboard_page' ) === '' && 'index' === $endpoint ) ? 'academy-dashboard-menu__item-current' : ''; ?>">
 		<a href="<?php echo esc_url( isset( $menu['permalink'] ) ? $menu['permalink'] : Helper::get_frontend_dashboard_endpoint_url( $endpoint ) ); ?>">
-			<i class="<?php echo esc_html( $menu['icon'] ); ?>"></i>
+			<i class="<?php echo esc_attr( $menu['icon'] ); ?>"></i>
 				<span class="academy-dashboard-menu__item-label"><?php echo esc_html( $menu['label'] ); ?></span>
 			<?php
 			if ( isset( $menu['child_items'] ) ) :
@@ -29,8 +29,14 @@ foreach ( $menu_lists as $endpoint => $menu ) : // phpcs:ignore WordPress.WP.Glo
 		<ul class="academy-dashboard-submenu" id="academy-<?php echo esc_attr( $endpoint ); ?>-submenu">
 			<li class="academy-dashboard-menu__child-item-<?php echo esc_attr( $endpoint ); ?> <?php echo get_query_var( 'academy_dashboard_page' ) === $endpoint && get_query_var( 'academy_dashboard_sub_page' ) === '' ? 'academy-dashboard-menu__item-current' : ''; ?>">
 				<a href="<?php echo esc_url( Helper::get_frontend_dashboard_endpoint_url( $endpoint ) ); ?>">
-				<?php /* translators: %s is the menu label (e.g. "Courses"). */ ?>
-				<span><?php echo sprintf( esc_html__( 'All %s', 'academy' ), esc_html( $menu['label'] ) ); ?></span>
+				<span>
+				<?php
+				// A parent can name this link itself; "All Campus" is not English.
+				echo isset( $menu['all_label'] )
+					? esc_html( $menu['all_label'] )
+					: sprintf( /* translators: %s: dashboard menu label. */ esc_html__( 'All %s', 'academy' ), esc_html( $menu['label'] ) );
+				?>
+				</span>
 				</a>
 			</li>
 			<?php

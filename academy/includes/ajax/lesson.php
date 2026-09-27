@@ -37,17 +37,24 @@ class Lesson extends AbstractAjaxHandler {
 				'callback'   => array( $this, 'complete_lesson_video' ),
 				'capability' => 'read',
 			),
+			'save_lesson_video_progress' => array(
+				'callback'   => array( $this, 'save_lesson_video_progress' ),
+				'capability' => 'read',
+			),
+			'save_external_video_dwell' => array(
+				'callback'   => array( $this, 'save_external_video_dwell' ),
+				'capability' => 'read',
+			),
 		);
 	}
 
 	public function import_lessons() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( ! isset( $_FILES['upload_file'] ) ) {
+		// Nonce + capability are verified by AbstractAjaxHandler::handle_ajax_request().
+		if ( ! isset( $_FILES['upload_file']['tmp_name'], $_FILES['upload_file']['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			wp_send_json_error( __( 'Upload File is empty.', 'academy' ) );
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$file = array_map( 'sanitize_text_field', wp_unslash( $_FILES['upload_file'] ) );
+		$file = $_FILES['upload_file']; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- uploaded-file array; only the PHP tmp path is read.
 
 		if ( 'csv' !== pathinfo( $file['name'], PATHINFO_EXTENSION ) ) {
 			wp_send_json_error(
@@ -57,8 +64,7 @@ class Lesson extends AbstractAjaxHandler {
 
 		$link_header = array();
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
-		$file_open = fopen( $file['tmp_name'], 'r' );
+		$file_open = fopen( $file['tmp_name'], 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reads the PHP upload tmp file
 
 		if ( false === $file_open ) {
 			wp_send_json_error( __( 'Failed to open the file', 'academy' ) );
@@ -68,17 +74,14 @@ class Lesson extends AbstractAjaxHandler {
 		$count   = 0;
 		$user_id = get_current_user_id();
 
-		// phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-		while ( false !== ( $item = fgetcsv( $file_open ) ) ) {
-			if ( 0 === $count ) {
-				$link_header = array_map( function( $col ) {
-					return strtolower( trim( str_replace( "\xEF\xBB\xBF", '', $col ) ) );
-				}, $item );
-				$count++;
-				continue;
+		while ( true ) {
+			$item = fgetcsv( $file_open );
+			if ( false === $item ) {
+				break;
 			}
-			if ( count( $link_header ) !== count( $item ) ) {
-				$results[] = __( 'Invalid row: column count does not match header', 'academy' );
+			if ( 0 === $count ) {
+				$link_header = array_map( 'strtolower', $item );
+				++$count;
 				continue;
 			}
 			$item = array_combine( $link_header, $item );
@@ -150,7 +153,7 @@ class Lesson extends AbstractAjaxHandler {
 			}//end try
 		}//end while
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the uploaded CSV opened with fopen() above
 		fclose( $file_open );
 
 		wp_send_json_success( $results );
@@ -194,9 +197,18 @@ class Lesson extends AbstractAjaxHandler {
 				do_action( 'academy/frontend/before_render_lesson', $lesson, $course_id, $lesson_id );
 
 				$lesson['lesson_title'] = stripslashes( $lesson['lesson_title'] );
+
+				$raw_content      = stripslashes( $lesson['lesson_content'] );
+				$rendered_content = \Academy\Helper::get_content_html( $raw_content );
+
 				$lesson['lesson_content'] = [
-					'raw' => stripslashes( $lesson['lesson_content'] ),
-					'rendered' => \Academy\Helper::get_content_html( stripslashes( $lesson['lesson_content'] ) ),
+					'raw'      => $raw_content,
+					'rendered' => $rendered_content,
+					// Content with a shortcode/block or inline script can't run
+					// in the SPA's DOM (assets never enqueue over AJAX). Flag it
+					// so the learn page renders it through the isolated
+					// full-page frame endpoint instead.
+					'needs_frame' => \Academy\Helper::content_needs_frame( $raw_content, $rendered_content ),
 				];
 
 				$lesson['author_name'] = get_the_author_meta( 'display_name', $lesson['lesson_author'] );
@@ -205,9 +217,11 @@ class Lesson extends AbstractAjaxHandler {
 					$lesson['meta']['featured_media'] = wp_get_attachment_url( $lesson['meta']['featured_media'] );
 				}
 
-				if ( ! empty( $lesson['meta']['attachment'] ?? '' ) ) {
-					$lesson['meta']['attachment'] = wp_get_attachment_url( $lesson['meta']['attachment'] );
-				}
+				// Sent as the raw attachment ID (not resolved to a URL) so the
+				// frontend can route the download through the tracked
+				// download-logging endpoint instead of linking straight to
+				// the media URL.
+				$lesson['meta']['attachment'] = ! empty( $lesson['meta']['attachment'] ?? '' ) ? (int) $lesson['meta']['attachment'] : 0;
 
 				if ( ! empty( $lesson['meta']['video_source'] ?? '' ) ) {
 					$video = $lesson['meta']['video_source'];
@@ -218,9 +232,32 @@ class Lesson extends AbstractAjaxHandler {
 					} elseif ( 'youtube' === $video['type'] ) {
 						$video['url'] = \Academy\Helper::youtube_id_from_url( $video['url'] );
 					} elseif ( 'vimeo' === $video['type'] ) {
-						$video['url'] = \Academy\Helper::youtube_id_from_url( $video['url'] );
+						$video['url'] = \Academy\Helper::vimeo_id_from_url( $video['url'] );
 					} elseif ( 'embedded' === $video['type'] ) {
-						$video['url'] = \Academy\Helper::parse_embedded_url( wp_unslash( $video['url'] ) );
+						$embedded = \Academy\Helper::parse_embedded_url( wp_unslash( $video['url'] ) );
+						$resolved = $embedded['url'] ?? '';
+						// A pasted embed code that resolves to a native provider
+						// plays (and is watch-tracked) through the same custom
+						// player as a lesson of that type. Anything else (Canva,
+						// Kaltura, …) keeps the opaque iframe fallback.
+						\Academy\Helper::apply_resolved_video_provider( $video, $resolved, $embedded );
+					} elseif ( 'gumlet' === $video['type'] ) {
+						// The field only ever holds the raw Gumlet asset ID (see
+						// LessonMeta.js's "Gumlet Asset ID" placeholder) — resolve
+						// it to a real (optionally signed) play.gumlet.io embed
+						// URL here so GumletPlayer gets something an iframe can
+						// actually load, instead of the bare ID passing straight
+						// through untouched.
+						if ( \Academy\Helper::get_addon_active_status( 'gumlet-video', false ) && ! empty( $video['url'] ) ) {
+							$generated    = \AcademyGumletVideo\Token::generate( $video['url'], $user_id );
+							$video['url'] = $generated['signed_url'];
+						}
+					} elseif ( 'short_code' === $video['type'] ) {
+						// A shortcode in the video field (map, player, embed …) is
+						// rendered on its own through the isolated full-page frame
+						// endpoint (field=video). The SPA keys off this type; no
+						// server-side transform is needed here.
+						$video['type'] = 'short_code';
 					} elseif ( 'external' === $video['type'] ) {
 						// first check external URL contain html5 video or not
 						if ( \Academy\Helper::is_html5_video_link( $video['url'] ) ) {
@@ -230,27 +267,54 @@ class Lesson extends AbstractAjaxHandler {
 								$video['url'] = $embed_url['url'];
 							}
 						} else {
-							$video['url'] = \Academy\Helper::get_basic_url_to_embed_url( $video['url'] );
+							$embed    = \Academy\Helper::get_basic_url_to_embed_url( $video['url'] );
+							$resolved = $embed['url'] ?? '';
+							// Same treatment as "Embedded" above.
+							\Academy\Helper::apply_resolved_video_provider( $video, $resolved, $embed );
 						}
-					} elseif ( in_array( $video['type'], [ 'offline', 'online' ] ) ) {
+					} elseif ( in_array( $video['type'], [ 'offline', 'online' ], true ) ) {
 						$video['url'] = ! empty( $video['url'] ) ? $video['url'] : \Academy\Helper::get_settings( 'lesson_offline_class_address' );
-					} elseif ( 'gumlet' === $video['type'] ) {
-						$gumlet_active = \Academy\Helper::get_addon_active_status( 'gumlet-video' );
-						if ( $gumlet_active && ! empty( $video['url'] ) ) {
-							try {
-								$token_data    = \AcademyGumletVideo\Token::generate( $video['url'], $user_id );
-								$video['url']  = $token_data['signed_url'];
-							} catch ( \Throwable $e ) {
-								$video['url'] = '';
-							}
-						} else {
-							$video['url'] = '';
-						}
 					} else {
 						$video['type'] = 'external';
 						$video['url'] = $video['url'];
 					}//end if
 					$lesson['meta']['video_source'] = $video;
+
+					// Custom player: saved resume position + completion-gate config.
+					// `$video['type']` is already resolved here (external mp4 -> html5).
+					$trackable = \Academy\Helper::is_trackable_video_source( $video['type'], $video['url'] );
+					$threshold = (int) \Academy\Helper::get_settings( 'lessons_video_completion_threshold' );
+
+					// Opaque third-party embeds (Wistia, Vidyard, Twitch, SoundCloud,
+					// Mixcloud, Facebook, Kaltura, …) report no playback position, so
+					// they get a coarse dwell-time (seconds open) gate instead.
+					$dwell_trackable = ! $trackable && \Academy\Helper::is_dwell_trackable_video_source( $video['type'], $video['url'] );
+					$dwell_threshold = (int) \Academy\Helper::get_settings( 'external_video_min_watch_seconds' );
+
+					$position      = 0;
+					$percent       = 0;
+					$dwell_seconds = 0;
+					if ( ( $trackable || $dwell_trackable ) && $user_id ) {
+						$saved = get_user_meta( $user_id, "academy_{$course_id}lesson_video_{$lesson_id}_progress", true );
+						if ( is_array( $saved ) ) {
+							$position      = isset( $saved['position'] ) ? (float) $saved['position'] : 0;
+							$percent       = isset( $saved['percent'] ) ? (int) $saved['percent'] : 0;
+							$dwell_seconds = isset( $saved['dwell_seconds'] ) ? (float) $saved['dwell_seconds'] : 0;
+						}
+					}
+
+					$lesson['meta']['video_progress'] = [
+						'position'      => $position,
+						'percent'       => $percent,
+						'dwell_seconds' => $dwell_seconds,
+					];
+					$lesson['meta']['video_gate'] = [
+						'trackable' => $trackable,
+						'threshold' => $threshold,
+						'lock_seek' => ( $trackable && $threshold > 0 && \Academy\Helper::get_settings( 'is_disabled_lessons_video_skip' ) ),
+						'dwell_trackable' => $dwell_trackable,
+						'dwell_threshold_seconds' => $dwell_threshold,
+					];
 				}//end if
 				wp_send_json_success( $lesson );
 			} catch ( Throwable $e ) {
@@ -265,6 +329,7 @@ class Lesson extends AbstractAjaxHandler {
 			'course_id' => 'integer',
 		], $payload_data );
 
+		// Always the current user's own note, never one named in the request.
 		$user_id   = get_current_user_id();
 		$course_id = $payload['course_id'] ?? 0;
 
@@ -282,6 +347,7 @@ class Lesson extends AbstractAjaxHandler {
 			$payload_data
 		);
 
+		// Always the current user's own note, never one named in the request.
 		$user_id   = get_current_user_id();
 		$course_id = $payload['course_id'] ?? 0;
 		$note      = isset( $payload_data['note'] ) ? wp_kses_post( $payload_data['note'] ) : '';
@@ -303,7 +369,7 @@ class Lesson extends AbstractAjaxHandler {
 			$payload_data
 		);
 
-		$user_id   = get_current_user_id();
+		$user_id   = (int) get_current_user_id();
 		$course_id = $payload['course_id'] ?? 0;
 		$topic_id  = $payload['topic_id'] ?? 0;
 
@@ -311,6 +377,10 @@ class Lesson extends AbstractAjaxHandler {
 			wp_send_json_error(
 				__( 'Invalid data. Please try again.', 'academy' )
 			);
+		}
+
+		if ( ! \Academy\Helper::is_enrolled( $course_id, $user_id ) ) {
+			wp_send_json_error( __( 'You must be enrolled in this course to mark lessons as complete.', 'academy' ) );
 		}
 
 		$meta_key     = "academy_{$course_id}lesson_video_{$topic_id}_completed";
@@ -321,6 +391,151 @@ class Lesson extends AbstractAjaxHandler {
 				'completed' => $is_completed,
 			)
 		);
+	}
+
+	/**
+	 * Persist a student's video watch progress (resume position + watched %).
+	 * When the configured completion threshold is reached, records the
+	 * watch-complete flag and auto-marks the lesson topic complete.
+	 *
+	 * @param array $payload_data
+	 */
+	public function save_lesson_video_progress( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload(
+			array(
+				'course_id' => 'integer',
+				'topic_id'  => 'integer',
+				'percent'   => 'integer',
+			),
+			$payload_data
+		);
+
+		$user_id   = (int) get_current_user_id();
+		$course_id = $payload['course_id'] ?? 0;
+		$topic_id  = $payload['topic_id'] ?? 0;
+
+		if ( ! $user_id || ! $course_id || ! $topic_id ) {
+			wp_send_json_error( __( 'Invalid data. Please try again.', 'academy' ) );
+		}
+
+		$position = max( 0, (float) ( $payload_data['position'] ?? 0 ) );
+		$furthest = max( 0, (float) ( $payload_data['furthest'] ?? 0 ) );
+		$duration = max( 0, (float) ( $payload_data['duration'] ?? 0 ) );
+		$percent  = min( 100, max( 0, (int) ( $payload['percent'] ?? 0 ) ) );
+
+		update_user_meta(
+			$user_id,
+			"academy_{$course_id}lesson_video_{$topic_id}_progress",
+			array(
+				'position' => $position,
+				'furthest' => $furthest,
+				'duration' => $duration,
+				'percent'  => $percent,
+				'updated'  => \Academy\Helper::get_time(),
+			)
+		);
+
+		$threshold      = (int) \Academy\Helper::get_settings( 'lessons_video_completion_threshold' );
+		$watch_complete = ( $threshold <= 0 ) || ( $percent >= $threshold );
+		$just_completed = false;
+
+		if ( $threshold > 0 && $percent >= $threshold ) {
+			update_user_meta( $user_id, "academy_{$course_id}lesson_video_{$topic_id}_completed", 1 );
+			$just_completed = $this->auto_complete_lesson_topic( $user_id, $course_id, $topic_id );
+		}
+
+		wp_send_json_success(
+			array(
+				'percent'        => $percent,
+				'threshold'      => $threshold,
+				'watch_complete' => $watch_complete,
+				'just_completed' => $just_completed,
+			)
+		);
+	}
+
+	/**
+	 * Persist dwell time on an opaque third-party video embed (Wistia,
+	 * Vidyard, Twitch, SoundCloud, Mixcloud, Facebook, Kaltura, …) — the only
+	 * signal available for a cross-origin iframe KodezenPlayer can't natively
+	 * drive. Gates completion on elapsed seconds instead of the
+	 * percent-of-duration threshold the native players use.
+	 *
+	 * @param array $payload_data
+	 */
+	public function save_external_video_dwell( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload(
+			array(
+				'course_id' => 'integer',
+				'topic_id'  => 'integer',
+			),
+			$payload_data
+		);
+
+		$user_id   = (int) get_current_user_id();
+		$course_id = $payload['course_id'] ?? 0;
+		$topic_id  = $payload['topic_id'] ?? 0;
+
+		if ( ! $user_id || ! $course_id || ! $topic_id ) {
+			wp_send_json_error( __( 'Invalid data. Please try again.', 'academy' ) );
+		}
+
+		$dwell_seconds = max( 0, (float) ( $payload_data['dwell_seconds'] ?? 0 ) );
+
+		update_user_meta(
+			$user_id,
+			"academy_{$course_id}lesson_video_{$topic_id}_progress",
+			array(
+				'dwell_seconds' => $dwell_seconds,
+				'updated'       => \Academy\Helper::get_time(),
+			)
+		);
+
+		$threshold      = (int) \Academy\Helper::get_settings( 'external_video_min_watch_seconds' );
+		$watch_complete = ( $threshold <= 0 ) || ( $dwell_seconds >= $threshold );
+		$just_completed = false;
+
+		if ( $threshold > 0 && $dwell_seconds >= $threshold ) {
+			update_user_meta( $user_id, "academy_{$course_id}lesson_video_{$topic_id}_completed", 1 );
+			$just_completed = $this->auto_complete_lesson_topic( $user_id, $course_id, $topic_id );
+		}
+
+		wp_send_json_success(
+			array(
+				'dwell_seconds'  => $dwell_seconds,
+				'threshold'      => $threshold,
+				'watch_complete' => $watch_complete,
+				'just_completed' => $just_completed,
+			)
+		);
+	}
+
+	/**
+	 * Add a lesson topic to the student's completed list (idempotent) and fire
+	 * the standard completion hook so certificates/progress update normally.
+	 * Returns true only when this call is what completed it.
+	 *
+	 * @param int $user_id
+	 * @param int $course_id
+	 * @param int $topic_id
+	 */
+	private function auto_complete_lesson_topic( $user_id, $course_id, $topic_id ) {
+		if ( ! \Academy\Helper::is_enrolled( $course_id, $user_id ) ) {
+			return false;
+		}
+
+		$option_name = 'academy_course_' . $course_id . '_completed_topics';
+		$saved       = (array) json_decode( get_user_meta( $user_id, $option_name, true ), true );
+
+		if ( isset( $saved['lesson'][ $topic_id ] ) ) {
+			return false;
+		}
+
+		$saved['lesson'][ $topic_id ] = \Academy\Helper::get_time();
+		update_user_meta( $user_id, $option_name, wp_json_encode( $saved ) );
+		do_action( 'academy/frontend/after_mark_topic_complete', 'lesson', $course_id, $topic_id, $user_id );
+
+		return true;
 	}
 
 	public function sanitize_video_source( $source, $url ) {

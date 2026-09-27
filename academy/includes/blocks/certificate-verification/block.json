@@ -1,0 +1,86 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/certificate-verification",
+	"title": "Certificate Verification",
+	"category": "academy",
+	"description": "A form where anyone can check that an Academy certificate is genuine (Academy Pro).",
+	"keywords": [
+		"certificate",
+		"verify",
+		"credential"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		},
+		"layout": {
+			"type": "string",
+			"enum": [
+				"stacked",
+				"split",
+				"inline",
+				"banner"
+			],
+			"default": "stacked"
+		},
+		"showImage": {
+			"type": "boolean",
+			"default": true
+		},
+		"showHeading": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		],
+		"color": {
+			"text": true,
+			"background": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true
+	},
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "card",
+			"label": "Card"
+		},
+		{
+			"name": "compact",
+			"label": "Compact"
+		}
+	],
+	"editorScript": "academy-blocks-editor",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

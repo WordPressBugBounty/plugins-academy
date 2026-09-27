@@ -35,7 +35,7 @@ class Lesson implements Interfaces\Insertable {
 		$this->wpdb     = $GLOBALS['wpdb'];
 	}
 
-	public function insert() : int {
+	public function insert(): int {
 
 		$res = $this->wpdb->insert( $this->wpdb->prefix . 'academy_lessons', [
 			'lesson_title'        => $this->title,
@@ -48,7 +48,7 @@ class Lesson implements Interfaces\Insertable {
 		] );
 
 		if ( false === $res ) {
-			throw new Exception( __( 'Error.', 'academy' ) );
+			throw new Exception( esc_html__( 'Error.', 'academy' ) );
 		}
 
 		$this->id = $this->wpdb->insert_id;
@@ -57,7 +57,7 @@ class Lesson implements Interfaces\Insertable {
 		return $this->id;
 	}
 
-	protected function insert_meta() : void {
+	protected function insert_meta(): void {
 		foreach ( $this->meta as $key => $value ) {
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			$res = $this->wpdb->insert( $this->wpdb->prefix . 'academy_lessonmeta', [
@@ -73,7 +73,7 @@ class Lesson implements Interfaces\Insertable {
 		}
 	}
 
-	public static function delete( int $id ) : bool {
+	public static function delete( int $id ): bool {
 		return $GLOBALS['wpdb']->delete( $GLOBALS['wpdb']->prefix . 'academy_lessons', [ 'id' => $id ] ) === false ? false : true;
 	}
 }

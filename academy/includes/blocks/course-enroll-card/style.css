@@ -1,0 +1,23 @@
+/* Style presets for the enroll box. */
+.wp-block-academy-course-enroll-card.is-style-card .academy-widget-enroll {
+	overflow: hidden;
+	padding-bottom: 12px;
+	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border-radius: 14px;
+	background: var(--academy-surface-color, #fff);
+	box-shadow: 0 12px 32px rgba(16, 24, 40, 0.1);
+}
+
+.wp-block-academy-course-enroll-card.is-style-soft .academy-widget-enroll {
+	overflow: hidden;
+	padding-bottom: 12px;
+	border-radius: 14px;
+	background: var(--academy-secondary-color, #f2f0fd);
+}
+
+.wp-block-academy-course-enroll-card.is-style-card .academy-widget-enroll__head,
+.wp-block-academy-course-enroll-card.is-style-soft .academy-widget-enroll__head,
+.wp-block-academy-course-enroll-card.is-style-soft .academy-widget-enroll__content,
+.wp-block-academy-course-enroll-card.is-style-soft .academy-widget-enroll__enroll-form {
+	background: transparent;
+}

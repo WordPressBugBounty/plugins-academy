@@ -10,6 +10,14 @@ $is_enabled_academy_login = \Academy\Helper::get_settings( 'is_enabled_academy_l
 $force_login_before_enroll = $is_enabled_academy_login && \Academy\Helper::get_settings( 'woo_force_login_before_enroll', true );
 $course_permalink         = get_permalink( $course_id );
 $continue_learning        = apply_filters( 'academy/templates/start_course_url', \Academy\Helper::get_start_course_permalink( $course_id ), $course_id );
+$start_course_link_attributes = apply_filters(
+	'academy/templates/start_course_link_attributes',
+	array(
+		'class' => 'academy-btn academy-btn--bg-purple',
+		'href'  => $continue_learning,
+	),
+	$course_id
+);
 $total_completed_lessons  = \Academy\Helper::get_total_number_of_completed_course_topics_by_course_and_student_id( $course_id );
 $is_enrolled              = \Academy\Helper::is_enrolled( $course_id, $user_id );
 $product_id               = isset( $product_id ) ? $product_id : null;
@@ -36,7 +44,16 @@ endif; ?>
 	</div>
 <?php elseif ( 'public' === $course_type && empty( $required_levels ) ) : ?>
 	<div class="academy-widget-enroll__continue">
-		<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $continue_learning ); ?>">
+		<a<?php foreach ( $start_course_link_attributes as $attribute_name => $attribute_value ) :
+			if ( '' === $attribute_value || null === $attribute_value || false === $attribute_value ) {
+				continue;
+			}
+			printf(
+				' %1$s="%2$s"',
+				esc_attr( $attribute_name ),
+				'href' === $attribute_name ? esc_url( $attribute_value ) : esc_attr( $attribute_value )
+			);
+		endforeach; ?>>
 			<?php echo esc_html__( 'Start Course', 'academy' ); ?>
 		</a>
 	</div>
@@ -50,7 +67,16 @@ endif; ?>
 	?>
 <?php elseif ( $is_enrolled ) : ?>
 	<div class="academy-widget-enroll__continue">
-		<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $continue_learning ); ?>">
+		<a<?php foreach ( $start_course_link_attributes as $attribute_name => $attribute_value ) :
+			if ( '' === $attribute_value || null === $attribute_value || false === $attribute_value ) {
+				continue;
+			}
+			printf(
+				' %1$s="%2$s"',
+				esc_attr( $attribute_name ),
+				'href' === $attribute_name ? esc_url( $attribute_value ) : esc_attr( $attribute_value )
+			);
+		endforeach; ?>>
 			<?php echo $total_completed_lessons ? esc_html__( 'Continue learning', 'academy' ) : esc_html__( 'Start Course', 'academy' ); ?> 
 		</a>
 	</div>
@@ -97,6 +123,15 @@ endif; ?>
 			'is_enabled_academy_login' => $is_enabled_academy_login,
 			'card_style'               => $card_style,
 			'download_id'              => $download_id,
+		]
+	); ?>
+<?php elseif ( 'mempr_membership' === $course_type && class_exists( 'MeprProduct' ) && class_exists( '\AcademyProMemberPress\Helper' ) ) :
+	\AcademyPro\Helper::get_template(
+		'member-press/loop-form.php',
+		[
+			'membership_id'            => \AcademyProMemberPress\Helper::get_current_course_memberships( $course_id ),
+			'card_style'               => $card_style,
+			'is_enabled_academy_login' => $is_enabled_academy_login,
 		]
 	); ?>
 <?php elseif ( 'free' === $course_type ) :

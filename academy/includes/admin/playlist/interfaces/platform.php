@@ -6,6 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 interface Platform {
-	public function detail() : array;
-	public function videos() : array;
+	public function detail(): array;
+	public function videos(): array;
 }

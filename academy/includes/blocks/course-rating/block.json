@@ -1,0 +1,71 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-rating",
+	"title": "Course Rating",
+	"category": "academy-course",
+	"description": "Star rating and number of reviews for a course.",
+	"keywords": [
+		"rating",
+		"stars",
+		"reviews",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"attributes": {
+		"showAverage": {
+			"type": "boolean",
+			"default": true
+		},
+		"showCount": {
+			"type": "boolean",
+			"default": true
+		},
+		"hideWhenEmpty": {
+			"type": "boolean",
+			"default": false
+		},
+		"starColor": {
+			"type": "string"
+		},
+		"emptyStarColor": {
+			"type": "string"
+		},
+		"starCount": {
+			"type": "string",
+			"enum": [
+				"five",
+				"one"
+			],
+			"default": "five"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": false
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontWeight": true,
+			"textAlign": true
+		},
+		"interactivity": {
+			"clientNavigation": true
+		}
+	},
+	"editorScript": "academy-blocks-editor",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

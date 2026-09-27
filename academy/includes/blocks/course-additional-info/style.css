@@ -1,0 +1,159 @@
+/* Course Benefits & Requirements: Tabs and Accordion layouts. */
+.academy-info {
+	--academy-info-accent: var(--academy-primary-color, #6c5ce7);
+	--academy-info-line: var(--academy-border-color, #e4e7ee);
+	--academy-info-surface: var(--academy-surface-color, #fff);
+}
+
+.academy-info__list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+	gap: 12px 24px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.academy-info__list li {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0;
+	line-height: 1.5;
+}
+
+.academy-info__list .academy-icon {
+	flex: none;
+	margin-top: 0.2em;
+	color: var(--academy-info-accent);
+}
+
+.academy-info__count {
+	display: inline-flex;
+	min-width: 1.6em;
+	justify-content: center;
+	padding: 1px 7px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--academy-info-accent) 12%, transparent);
+	color: var(--academy-info-accent);
+	font-size: 0.75em;
+	font-weight: 600;
+	line-height: 1.6;
+}
+
+/* Tabs */
+.academy-info--tabs {
+	overflow: hidden;
+	border: 1px solid var(--academy-info-line);
+	border-radius: 12px;
+	background: var(--academy-info-surface);
+}
+
+.academy-info__tabs {
+	display: flex;
+	overflow-x: auto;
+	border-bottom: 1px solid var(--academy-info-line);
+	scrollbar-width: none;
+}
+
+.wp-block-academy-course-additional-info .academy-info__tab {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 -1px;
+	padding: 14px 20px;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	border-radius: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-weight: 600;
+	opacity: 0.7;
+	cursor: pointer;
+	transition: color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.wp-block-academy-course-additional-info .academy-info__tab:hover {
+	opacity: 1;
+}
+
+.wp-block-academy-course-additional-info .academy-info__tab[aria-selected="true"] {
+	border-bottom-color: var(--academy-info-accent);
+	color: var(--academy-info-accent);
+	opacity: 1;
+}
+
+.wp-block-academy-course-additional-info .academy-info__tab:focus-visible {
+	outline: 2px solid var(--academy-info-accent);
+	outline-offset: -2px;
+}
+
+.academy-info__panel {
+	padding: 22px 20px;
+}
+
+.academy-info__panel:focus-visible {
+	outline: 2px solid var(--academy-info-accent);
+	outline-offset: -2px;
+}
+
+/* Accordion */
+.academy-info--accordion {
+	display: grid;
+	gap: 10px;
+}
+
+.academy-info__item {
+	border: 1px solid var(--academy-info-line);
+	border-radius: 12px;
+	background: var(--academy-info-surface);
+}
+
+.academy-info__item[open] {
+	border-color: color-mix(in srgb, var(--academy-info-accent) 40%, var(--academy-info-line));
+}
+
+.academy-info__summary {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 16px 20px;
+	font-weight: 600;
+	list-style: none;
+	cursor: pointer;
+}
+
+.academy-info__summary::-webkit-details-marker {
+	display: none;
+}
+
+.academy-info__summary:focus-visible {
+	border-radius: 12px;
+	outline: 2px solid var(--academy-info-accent);
+	outline-offset: -2px;
+}
+
+.academy-info__chevron {
+	flex: none;
+	width: 18px;
+	height: 18px;
+	margin-inline-start: auto;
+	transition: transform 0.2s ease;
+}
+
+.academy-info__item[open] .academy-info__chevron {
+	transform: rotate(180deg);
+}
+
+.academy-info__body {
+	padding: 0 20px 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.academy-info__chevron,
+	.wp-block-academy-course-additional-info .academy-info__tab {
+		transition: none;
+	}
+}

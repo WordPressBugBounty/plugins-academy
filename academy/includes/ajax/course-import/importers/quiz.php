@@ -36,7 +36,7 @@ class Quiz implements Interfaces\Insertable {
 		$this->quizzes = $quizzes;
 	}
 
-	public function insert() : int {
+	public function insert(): int {
 		$id = wp_insert_post( [
 			'post_title' => $this->title,
 			'post_type' => 'academy_quiz',
@@ -55,7 +55,7 @@ class Quiz implements Interfaces\Insertable {
 		return $this->id;
 	}
 
-	protected function insert_quizzes() : void {
+	protected function insert_quizzes(): void {
 		foreach ( $this->quizzes as $quiz ) {
 			$question_id = ( new QuizQuestion( $quiz, $this ) )->insert();
 			$this->meta['academy_quiz_questions'][] = [
@@ -64,13 +64,13 @@ class Quiz implements Interfaces\Insertable {
 			];
 		}
 	}
-	protected function insert_meta() : void {
+	protected function insert_meta(): void {
 		foreach ( $this->meta as $key => $value ) {
 			add_post_meta( $this->id, $key, $value, true );
 		}
 	}
 
-	public static function delete( int $id ) : bool {
+	public static function delete( int $id ): bool {
 		if ( ! empty( wp_delete_post( $id, true ) ) ) {
 			$GLOBALS['wpdb']->delete( $GLOBALS['wpdb']->prefix . 'academy_quiz_questions', [ 'quiz_id' => $id ] );
 			$GLOBALS['wpdb']->delete( $GLOBALS['wpdb']->prefix . 'academy_quiz_answers', [ 'quiz_id' => $id ] );

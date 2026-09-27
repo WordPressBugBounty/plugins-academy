@@ -39,12 +39,12 @@ class CourseLessonUpdater extends Db {
 		global $wpdb;
 
 		// Delete migration meta key
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 		$wpdb->delete(
 			$wpdb->postmeta,
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			[ 'meta_key' => 'lesson:migrate:course:update' ]
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( $this->is_hp ) {
 			// Escape table names
@@ -57,40 +57,45 @@ class CourseLessonUpdater extends Db {
 			return;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 		$post_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->posts} WHERE post_type = %s",
 				'academy_lessons'
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( empty( $post_ids ) ) {
 			return;
 		}
 
 		// Delete posts
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 		$wpdb->delete(
 			$wpdb->posts,
 			[ 'post_type' => 'academy_lessons' ]
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		// Delete post meta safely
 		$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders are generated to match the values
 		$prepared_sql = $wpdb->prepare(
-			"DELETE FROM {$wpdb->postmeta} WHERE post_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+			"DELETE FROM {$wpdb->postmeta} WHERE post_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			...array_map( 'absint', $post_ids )
 		);
+		// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 		$wpdb->query( $prepared_sql );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	/**
 	 * Count courses left to update.
 	 */
-	public function left() : int {
+	public function left(): int {
 		$sql = "
             SELECT COUNT(p.ID)
             FROM {$this->wpdb->posts} p
@@ -101,7 +106,6 @@ class CourseLessonUpdater extends Db {
             AND pm.meta_key IS NULL
         ";
 
-		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return (int) $this->wpdb->get_var(
 			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -114,7 +118,7 @@ class CourseLessonUpdater extends Db {
 	/**
 	 * Count courses already updated.
 	 */
-	public function updated() : int {
+	public function updated(): int {
 		$sql = "
             SELECT COUNT(p.ID)
             FROM {$this->wpdb->posts} p
@@ -123,7 +127,6 @@ class CourseLessonUpdater extends Db {
             WHERE pm.meta_key = %s
         ";
 
-		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return (int) $this->wpdb->get_var(
 			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -140,7 +143,7 @@ class CourseLessonUpdater extends Db {
 	 *
 	 * @return int Number of courses updated.
 	 */
-	public function update( callable $cb_updated, callable $cb_complete ) : int {
+	public function update( callable $cb_updated, callable $cb_complete ): int {
 
 		$data = $this->get_course_to_update();
 
@@ -165,7 +168,7 @@ class CourseLessonUpdater extends Db {
 		return count( $data );
 	}
 
-	public function update_new_lesson_ids( array $data, array $ids ) : array {
+	public function update_new_lesson_ids( array $data, array $ids ): array {
 		foreach ( $data as &$item ) {
 			if ( isset( $item['topics'] ) && is_array( $item['topics'] ) ) {
 				$item['topics'] = $this->update_lesson_ids( $item['topics'], $ids );
@@ -174,7 +177,7 @@ class CourseLessonUpdater extends Db {
 		return $data;
 	}
 
-	public function update_lesson_ids( array $topics, array $ids ) : array {
+	public function update_lesson_ids( array $topics, array $ids ): array {
 
 		foreach ( $topics as &$topic ) {
 
@@ -194,7 +197,7 @@ class CourseLessonUpdater extends Db {
 		return $topics;
 	}
 
-	public function get_lesson_ids( array $data ) : array {
+	public function get_lesson_ids( array $data ): array {
 		$ids = [];
 
 		foreach ( $data as $item ) {
@@ -209,7 +212,7 @@ class CourseLessonUpdater extends Db {
 		return $ids;
 	}
 
-	public function extract_lesson_id_from_topics( array $topics ) : array {
+	public function extract_lesson_id_from_topics( array $topics ): array {
 		$ids = [];
 
 		foreach ( $topics as $topic ) {
@@ -229,7 +232,7 @@ class CourseLessonUpdater extends Db {
 		return $ids;
 	}
 
-	protected function get_course_to_update() : array {
+	protected function get_course_to_update(): array {
 		global $wpdb;
 
 		$posts_table    = esc_sql( $wpdb->posts );
@@ -251,16 +254,17 @@ class CourseLessonUpdater extends Db {
             LIMIT %d
         ";
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 		return $wpdb->get_results(
 			$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$sql, 'academy_courses', 'academy_course_curriculum', 'lesson:migrate:course:update', $this->batch_size// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			),
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
-	public function get_new_lesson_id( array $ids ) : array {
+	public function get_new_lesson_id( array $ids ): array {
 
 		if ( empty( $ids ) ) {
 			return [];

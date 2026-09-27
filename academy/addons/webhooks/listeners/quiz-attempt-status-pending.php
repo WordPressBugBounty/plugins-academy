@@ -12,7 +12,7 @@ class QuizAttemptStatusPending implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy/frontend/quiz_attempt_status_pending',
-			function( $attempt_quiz ) use ( $deliver_callback, $webhook ) {
+			function ( $attempt_quiz ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(

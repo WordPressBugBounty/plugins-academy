@@ -6,26 +6,79 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 trait Student {
-	public static function get_all_students( $offset = 0, $per_page = 10, $search_keyword = '' ) {
+	public static function get_all_students( $offset = 0, $per_page = 10, $search_keyword = '', $course_id = 0 ) {
 		global $wpdb;
-		$query = $wpdb->prepare(
-			"SELECT ID, display_name, user_nicename, user_email, user_registered
+
+		// phpcs:disable WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- reporting JOIN on users/usermeta that get_users() cannot express
+		$query = "SELECT DISTINCT {$wpdb->users}.ID, display_name, user_nicename, user_email, user_registered
 			FROM {$wpdb->users}
 			INNER JOIN {$wpdb->usermeta}
-			ON ({$wpdb->users}.ID = {$wpdb->usermeta}.user_id)
-			WHERE {$wpdb->usermeta}.meta_key = %s",
-		'is_academy_student');
+			ON ({$wpdb->users}.ID = {$wpdb->usermeta}.user_id)";
+
+		// Restrict to students enrolled in a specific course (an `academy_enrolled`
+		// post authored by the user with the course as its parent).
+		if ( ! empty( $course_id ) ) {
+			$query .= $wpdb->prepare(
+				" INNER JOIN {$wpdb->posts} AS academy_enrolled
+				ON ( academy_enrolled.post_author = {$wpdb->users}.ID
+				AND academy_enrolled.post_type = 'academy_enrolled'
+				AND academy_enrolled.post_parent = %d )",
+				$course_id
+			);
+		}
+
+		$query .= $wpdb->prepare( " WHERE {$wpdb->usermeta}.meta_key = %s", 'is_academy_student' );
 
 		if ( ! empty( $search_keyword ) ) {
 			$wild = '%';
 			$like = $wild . $wpdb->esc_like( $search_keyword ) . $wild;
-			$query .= $wpdb->prepare( 'AND (display_name LIKE %s OR user_nicename LIKE %s OR user_email LIKE %s)', $like, $like, $like );
+			$query .= $wpdb->prepare( ' AND (display_name LIKE %s OR user_nicename LIKE %s OR user_email LIKE %s)', $like, $like, $like );
 		}
-		$query .= $wpdb->prepare( ' ORDER BY ID DESC LIMIT %d, %d;', $offset, $per_page );
+		$query .= $wpdb->prepare( " ORDER BY {$wpdb->users}.ID DESC LIMIT %d, %d;", $offset, $per_page );
+		// phpcs:enable WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 		// phpcs:ignore
 		$results = $wpdb->get_results( $query );
 
 		return $results;
+	}
+
+	/**
+	 * Total number of students matching the same filters as get_all_students(),
+	 * so the paginated list's x-wp-total header is correct when a search keyword
+	 * or a course filter is applied.
+	 *
+	 * @param string $search_keyword
+	 * @param int    $course_id
+	 */
+	public static function get_all_students_count( $search_keyword = '', $course_id = 0 ) {
+		global $wpdb;
+
+		// phpcs:disable WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- reporting JOIN on users/usermeta that get_users() cannot express
+		$query = "SELECT COUNT( DISTINCT {$wpdb->users}.ID )
+			FROM {$wpdb->users}
+			INNER JOIN {$wpdb->usermeta}
+			ON ({$wpdb->users}.ID = {$wpdb->usermeta}.user_id)";
+
+		if ( ! empty( $course_id ) ) {
+			$query .= $wpdb->prepare(
+				" INNER JOIN {$wpdb->posts} AS academy_enrolled
+				ON ( academy_enrolled.post_author = {$wpdb->users}.ID
+				AND academy_enrolled.post_type = 'academy_enrolled'
+				AND academy_enrolled.post_parent = %d )",
+				$course_id
+			);
+		}
+
+		$query .= $wpdb->prepare( " WHERE {$wpdb->usermeta}.meta_key = %s", 'is_academy_student' );
+
+		if ( ! empty( $search_keyword ) ) {
+			$wild = '%';
+			$like = $wild . $wpdb->esc_like( $search_keyword ) . $wild;
+			$query .= $wpdb->prepare( ' AND (display_name LIKE %s OR user_nicename LIKE %s OR user_email LIKE %s)', $like, $like, $like );
+		}
+		// phpcs:enable WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
+		// phpcs:ignore
+		return (int) $wpdb->get_var( $query );
 	}
 
 	public static function prepare_get_all_students_response( $students, $instructor_id = null ) {
@@ -78,27 +131,31 @@ trait Student {
 					'post__in'       => $course_ids,
 					'post_type'      => 'academy_courses',
 					'post_status'    => [ 'publish', 'private' ],
-					'posts_per_page' => -1,
+					'posts_per_page' => count( $course_ids ),
 				] );
 
 				$course_data = [];
 				foreach ( $courses as $course ) {
 					$course_data[ $course->ID ] = [
-						'title'     => html_entity_decode( get_the_title( $course->ID ) ),
-						'permalink' => get_the_permalink( $course->ID ),
+						'title'                => html_entity_decode( get_the_title( $course->ID ) ),
+						'permalink'            => get_the_permalink( $course->ID ),
+						'drip_content_enabled' => (bool) get_post_meta( $course->ID, 'academy_course_drip_content_enabled', true ),
+						'drip_content_type'    => (string) get_post_meta( $course->ID, 'academy_course_drip_content_type', true ),
 					];
 				}
 
 				foreach ( $enrolled_info as $info ) {
 					$cid = intval( $info['post_parent'] );
 					if ( isset( $course_data[ $cid ] ) ) {
-						$status = in_array( $cid, $completed_ids ) ? 'completed' : ( 'completed' === $info['post_status'] ? 'approved' : 'pending' );
+						$status = in_array( $cid, array_map( 'intval', (array) $completed_ids ), true ) ? 'completed' : ( 'completed' === $info['post_status'] ? 'approved' : 'pending' );
 						$enrolled_courses[] = [
-							'ID'        => $cid,
-							'enrolled_id' => intval( $info['ID'] ),
-							'title'     => $course_data[ $cid ]['title'],
-							'permalink' => $course_data[ $cid ]['permalink'],
-							'status'    => $status,
+							'ID'                   => $cid,
+							'enrolled_id'          => intval( $info['ID'] ),
+							'title'                => $course_data[ $cid ]['title'],
+							'permalink'            => $course_data[ $cid ]['permalink'],
+							'status'               => $status,
+							'drip_content_enabled' => $course_data[ $cid ]['drip_content_enabled'],
+							'drip_content_type'    => $course_data[ $cid ]['drip_content_type'],
 						];
 					}
 				}
@@ -133,13 +190,14 @@ trait Student {
 	}
 
 	public static function insert_student( $email, $first_name = '', $last_name = '', $username = '', $password = '' ) {
-		$error = [];
+		$error          = [];
+		$exists_user_id = 0;
 		// check email
 		if ( empty( $email ) || ! is_email( $email ) ) {
 			$error[] = __( 'Email is missing or Invalid.', 'academy' );
 		} elseif ( email_exists( $email ) ) {
 			$exists_user_id = email_exists( $email );
-			if ( get_user_meta( $exists_user_id, 'is_academy_student' ) ) {
+			if ( metadata_exists( 'user', $exists_user_id, 'is_academy_student' ) ) {
 				$error[] = __( 'The provided email is already registered with another account. Please login or reset password or use another email.', 'academy' );
 			} else {
 				$user = get_userdata( $exists_user_id );
@@ -152,7 +210,7 @@ trait Student {
 			$username = \Academy\Helper::generate_unique_username_from_email( $email );
 		} elseif ( username_exists( $username ) ) {
 			$exists_user_id = username_exists( $username );
-			if ( get_user_meta( $exists_user_id, 'is_academy_student' ) ) {
+			if ( metadata_exists( 'user', $exists_user_id, 'is_academy_student' ) ) {
 				$error[] = __( 'Invalid username provided or the username already registered as an academy student.', 'academy' );
 			} else {
 				$user = get_userdata( $exists_user_id );
@@ -257,13 +315,14 @@ trait Student {
 		$wild = '%';
 		$like = $wild . $wpdb->esc_like( $search_keyword ) . $wild;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- reporting JOIN on users/usermeta that get_users() cannot express
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT ID, user_login, display_name, user_nicename, user_email
 			FROM {$wpdb->users}
 			WHERE user_login LIKE %s OR display_name LIKE %s OR user_nicename LIKE %s OR user_email LIKE %s ",
 			$like, $like, $like, $like
 		) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 
 		return $results;
 	}

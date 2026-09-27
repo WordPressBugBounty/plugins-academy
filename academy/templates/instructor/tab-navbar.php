@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <ul class="academy-tabs-nav">
 	<?php do_action( 'academy/templates/instructor/tabs_add_nav_before' ); ?>
 	<li class="active"><a href="#courses"><?php esc_html_e( 'Courses', 'academy' ); ?></a>

@@ -12,6 +12,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Helper {
 
+	/**
+	 * Meta key holding the per-course "feature this course" flag.
+	 */
+	const STICKY_META_KEY = 'academy_course_is_sticky';
+
+	/**
+	 * Query var a course query sets to opt in to sticky-first ordering.
+	 *
+	 * Ordering is strictly opt-in rather than applied to every
+	 * `academy_courses` query, because plenty of them must NOT be reordered:
+	 * the admin list table (an admin clicking a column header expects that
+	 * column to sort), REST listings behind the React admin, and any embed
+	 * that asked for an explicit order.
+	 */
+	const STICKY_QUERY_VAR = 'academy_sticky_first';
+
+
 	use Traits\Courses;
 	use Traits\Lessons;
 	use Traits\Instructor;
@@ -27,6 +44,33 @@ class Helper {
 	 */
 	public static function flush_rewrite_rules() {
 		update_option( 'academy_required_rewrite_flush', 'yes' );
+	}
+
+	/**
+	 * Wraps attachment_url_to_postid(), using WordPress VIP's cached variant when available.
+	 *
+	 * @param string $url Attachment URL.
+	 * @return int Attachment ID, or 0.
+	 */
+	public static function attachment_url_to_postid( $url ) {
+		if ( function_exists( 'wpcom_vip_attachment_url_to_postid' ) ) {
+			return (int) wpcom_vip_attachment_url_to_postid( $url );
+		}
+		return (int) attachment_url_to_postid( $url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.attachment_url_to_postid_attachment_url_to_postid -- non-VIP fallback.
+	}
+
+	/**
+	 * Wraps count_user_posts(), using WordPress VIP's cached variant when available.
+	 *
+	 * @param int    $user_id   User ID.
+	 * @param string $post_type Post type.
+	 * @return int
+	 */
+	public static function count_user_posts( $user_id, $post_type = 'post' ) {
+		if ( function_exists( 'wpcom_vip_count_user_posts' ) ) {
+			return (int) wpcom_vip_count_user_posts( $user_id, $post_type );
+		}
+		return (int) count_user_posts( $user_id, $post_type ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.count_user_posts_count_user_posts -- non-VIP fallback.
 	}
 
 	public static function get_time() {
@@ -72,10 +116,17 @@ class Helper {
 				'parent_slug' => ACADEMY_PLUGIN_SLUG,
 				'title'       => __( 'Quizzes', 'academy' ),
 				'capability'  => 'manage_options',
-				'sub_items'   => [
+				// The page's route tabs (not a submenu). Kept apart from
+				// `sub_items` so a group can still use the page as its link;
+				// global search indexes both.
+				'tab_items'   => [
 					[
 						'slug'  => '',
 						'title' => __( 'All Quizzes', 'academy' ),
+					],
+					[
+						'slug'  => 'questions',
+						'title' => __( 'Questions', 'academy' ),
 					],
 					[
 						'slug'  => 'attempts',
@@ -83,7 +134,7 @@ class Helper {
 					]
 				]
 			];
-		}
+		}//end if
 		if ( self::is_active_academy_pro() ) {
 			if ( self::get_addon_active_status( 'meeting' ) ) {
 				$menu[ ACADEMY_PLUGIN_SLUG . '-meeting' ] = [
@@ -97,7 +148,10 @@ class Helper {
 					'parent_slug' => ACADEMY_PLUGIN_SLUG,
 					'title'       => __( 'Tutor Bookings', 'academy' ),
 					'capability'  => 'manage_options',
-					'sub_items'   => [
+					// The page's route tabs (not a submenu). Kept apart from
+					// `sub_items` so a group can still use the page as its link;
+					// global search indexes both.
+					'tab_items'   => [
 						[
 							'slug'  => '',
 							'title' => __( 'All Bookings', 'academy' ),
@@ -122,19 +176,22 @@ class Helper {
 					'parent_slug' => ACADEMY_PLUGIN_SLUG,
 					'title'       => __( 'Assignments', 'academy' ),
 					'capability'  => 'manage_options',
-					'sub_items'   => [
+					// The page's route tabs (not a submenu). Kept apart from
+					// `sub_items` so a group can still use the page as its link;
+					// global search indexes both.
+					'tab_items'   => [
 						[
 							'slug'  => '',
-							'title' => __( 'All Assign.', 'academy' ),
+							'title' => __( 'All Assignments', 'academy' ),
 						],
 						[
 							'slug'  => 'submitted-assignments',
-							'title' => __( 'Submitted Assign.', 'academy' ),
+							'title' => __( 'Submitted Assignments', 'academy' ),
 						]
 					]
 				];
 			}
-			if ( self::get_addon_active_status( 'course-bundle' ) && ( 'woocommerce' === self::get_settings( 'monetization_engine' ) || 'storeengine' === self::get_settings( 'monetization_engine' ) ) ) {
+			if ( self::get_addon_active_status( 'course-bundle' ) && ( self::is_active_woocommerce() || class_exists( \StoreEngine::class ) ) ) {
 				$menu[ ACADEMY_PLUGIN_SLUG . '-course-bundle' ] = [
 					'parent_slug' => ACADEMY_PLUGIN_SLUG,
 					'title'       => __( 'Course Bundle', 'academy' ),
@@ -155,6 +212,13 @@ class Helper {
 					'capability'  => 'manage_options',
 				];
 			}//end if
+			if ( self::get_addon_active_status( 'course-active-timer' ) ) {
+				$menu[ ACADEMY_PLUGIN_SLUG . '-course-timer' ]    = [
+					'parent_slug' => ACADEMY_PLUGIN_SLUG,
+					'title'       => __( 'Course Active Timer', 'academy' ),
+					'capability'  => 'manage_options',
+				];
+			}
 		}//end if
 		$menu[ ACADEMY_PLUGIN_SLUG . '-announcements' ]   = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
@@ -169,9 +233,12 @@ class Helper {
 		if ( self::is_active_academy_pro() && self::get_addon_active_status( 'grade_book' ) ) {
 			$menu[ ACADEMY_PLUGIN_SLUG . '-grade-book' ] = [
 				'parent_slug' => ACADEMY_PLUGIN_SLUG,
-				'title'       => __( 'GradeBook', 'academy' ),
+				'title'       => __( 'Gradebook', 'academy' ),
 				'capability'  => 'manage_options',
-				'sub_items'   => [
+				// The page's route tabs (not a submenu). Kept apart from
+				// `sub_items` so a group can still use the page as its link;
+				// global search indexes both.
+				'tab_items'   => [
 					[
 						'slug'  => '',
 						'title' => __( 'Student Grades', 'academy' ),
@@ -202,7 +269,7 @@ class Helper {
 			'title'       => __( 'Instructors', 'academy' ),
 			'capability'  => 'manage_options',
 		];
-		if ( self::get_addon_active_status( 'attendance' ) ) {
+		if ( self::is_active_academy_pro() && self::get_addon_active_status( 'attendance' ) ) {
 			$menu[ ACADEMY_PLUGIN_SLUG . '-attendance' ] = [
 				'parent_slug' => ACADEMY_PLUGIN_SLUG,
 				'title'       => __( 'Attendance', 'academy' ),
@@ -214,31 +281,44 @@ class Helper {
 			'title'       => __( 'Students', 'academy' ),
 			'capability'  => 'manage_options',
 		];
-		if ( self::get_addon_active_status( 'certificates' ) && self::is_active_ablocks() ) {
+		if ( self::get_addon_active_status( 'certificates' ) ) {
 			$menu[ ACADEMY_PLUGIN_SLUG . '-certificates' ]    = [
 				'parent_slug' => ACADEMY_PLUGIN_SLUG,
 				'title'       => __( 'Certificates', 'academy' ),
 				'capability'  => 'manage_options',
 			];
 		}
+		// Incoming webhooks are the Incoming tab of the Webhooks screen, not a
+		// menu entry of their own.
 		$menu[ ACADEMY_PLUGIN_SLUG . '-addons' ]      = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
 			'title'       => __( 'Add-ons', 'academy' ),
 			'capability'  => 'manage_options',
 		];
-		$menu[ ACADEMY_PLUGIN_SLUG . '-whats-new' ]       = [
-			'parent_slug' => ACADEMY_PLUGIN_SLUG,
-			'title'       => __( 'What\'s new!', 'academy' ),
-			'capability'  => 'manage_options',
-		];
+		// "What's new!" is no longer a visible menu item — it is a hidden page
+		// shown once per plugin update (see Menu::register_hidden_pages() and
+		// Menu::maybe_redirect_whats_new()).
 		$menu[ ACADEMY_PLUGIN_SLUG . '-tools' ]       = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
 			'title'       => __( 'Tools', 'academy' ),
 			'capability'  => 'manage_options',
 		];
+		// How the site looks sits next to how it behaves.
+		$menu[ ACADEMY_PLUGIN_SLUG . '-design' ]      = [
+			'parent_slug' => ACADEMY_PLUGIN_SLUG,
+			'title'       => __( 'Customize', 'academy' ),
+			'capability'  => 'manage_options',
+			// Shown beside the menu name.
+			'badge'       => __( 'New', 'academy' ),
+		];
 		$menu[ ACADEMY_PLUGIN_SLUG . '-settings' ]    = [
 			'parent_slug' => ACADEMY_PLUGIN_SLUG,
 			'title'       => __( 'Settings', 'academy' ),
+			'capability'  => 'manage_options',
+		];
+		$menu[ ACADEMY_PLUGIN_SLUG . '-discover' ]    = [
+			'parent_slug' => ACADEMY_PLUGIN_SLUG,
+			'title'       => __( 'Discover', 'academy' ),
 			'capability'  => 'manage_options',
 		];
 
@@ -251,7 +331,174 @@ class Helper {
 			];
 		}
 
-		return apply_filters( 'academy/admin_menu_list', $menu );
+		return self::order_admin_menu( self::nest_admin_menu_pages( apply_filters( 'academy/admin_menu_list', $menu ) ) );
+	}
+
+	/**
+	 * Show some pages inside another item's submenu instead of as their own
+	 * top-level menu item.
+	 *
+	 * - Course Bundle and Certificates go under Courses.
+	 * - Groups (People, Engagement) have no page of their own: the first
+	 *   available page is the group's link, renamed via `menu_title`, and
+	 *   the rest become its children. A group with one available page stays
+	 *   a plain item.
+	 *
+	 * The pages stay in the list, so they are still registered, keep their
+	 * `?page=` URLs and stay searchable; they are only marked `menu_parent`,
+	 * which hides them from the menu (see Menu::nested_pages_css() and the
+	 * React AdminMenu). Runs after the `academy/admin_menu_list` filter, so a
+	 * page removed there (e.g. by role permissions) is never linked.
+	 *
+	 * @param array $menu Admin menu list.
+	 * @return array
+	 */
+	public static function nest_admin_menu_pages( array $menu ) {
+		$slug    = ACADEMY_PLUGIN_SLUG;
+		$courses = $slug . '-courses';
+		$nested  = [
+			$slug . '-course-bundle' => __( 'Bundles', 'academy' ),
+			$slug . '-certificates'  => __( 'Certificates', 'academy' ),
+		];
+		if ( ! empty( $menu[ $courses ] ) ) {
+			foreach ( $nested as $page => $title ) {
+				if ( empty( $menu[ $page ] ) ) {
+					continue;
+				}
+				$menu[ $courses ]['sub_items'][] = [
+					'page'  => $page,
+					'title' => $title,
+				];
+				$menu[ $page ]['menu_parent']    = $courses;
+			}
+		}
+
+		$groups = [
+			[
+				'title' => __( 'Content', 'academy' ),
+				'pages' => [
+					$slug . '-lessons'       => __( 'Lessons', 'academy' ),
+					$slug . '-quizzes'       => __( 'Quizzes', 'academy' ),
+					$slug . '-meeting'       => __( 'Meeting', 'academy' ),
+					$slug . '-assignments'   => __( 'Assignments', 'academy' ),
+					$slug . '-tutor-booking' => __( 'Tutor Bookings', 'academy' ),
+				],
+			],
+			[
+				'title' => __( 'People', 'academy' ),
+				'pages' => [
+					$slug . '-students'    => __( 'Students', 'academy' ),
+					$slug . '-instructors' => __( 'Instructors', 'academy' ),
+					$slug . '-group-plus'  => __( 'Groups', 'academy' ),
+					$slug . '-withdraw'    => __( 'Payouts', 'academy' ),
+				],
+			],
+			[
+				'title' => __( 'Engagement', 'academy' ),
+				'pages' => [
+					$slug . '-announcements'   => __( 'Announcements', 'academy' ),
+					$slug . '-question_answer' => __( 'Q&A', 'academy' ),
+					$slug . '-course-timer'    => __( 'Time Tracking', 'academy' ),
+				],
+			],
+		];
+		foreach ( $groups as $group ) {
+			$pages = array_filter(
+				$group['pages'],
+				function ( $page ) use ( $menu ) {
+					return ! empty( $menu[ $page ] ) && empty( $menu[ $page ]['menu_parent'] );
+				},
+				ARRAY_FILTER_USE_KEY
+			);
+			if ( count( $pages ) < 2 ) {
+				continue;
+			}
+			$anchor    = array_key_first( $pages );
+			$sub_items = [];
+			foreach ( $pages as $page => $title ) {
+				$sub_items[] = [
+					'page'  => $page,
+					'title' => $title,
+				];
+				if ( $page !== $anchor ) {
+					$menu[ $page ]['menu_parent'] = $anchor;
+				}
+			}
+			$menu[ $anchor ]['menu_title'] = $group['title'];
+			$menu[ $anchor ]['sub_items']  = $sub_items;
+			$menu = self::move_admin_menu_item( $menu, $anchor, array_keys( $pages ) );
+		}//end foreach
+		return $menu;
+	}
+
+	/**
+	 * Order the top-level menu into sections and mark where the divider
+	 * lines go.
+	 *
+	 * Each section lists page keys; a key that is nested in a group (or
+	 * missing: addon off, removed by role permissions) is skipped, so a
+	 * group is placed by whichever of its pages is its link. The last item
+	 * placed in each section gets `separator_after` (drawn by
+	 * Menu::separators_css()). Keys in no section (e.g. added by another
+	 * plugin through the filter) keep their order and go at the end.
+	 *
+	 * @param array $menu Admin menu list.
+	 * @return array
+	 */
+	public static function order_admin_menu( array $menu ) {
+		$slug     = ACADEMY_PLUGIN_SLUG;
+		$sections = [
+			// Overview.
+			[ $slug ],
+			// What you teach.
+			[ $slug . '-courses', $slug . '-lessons', $slug . '-quizzes', $slug . '-meeting', $slug . '-assignments', $slug . '-tutor-booking', $slug . '-google-classroom' ],
+			// Who learns, and how they do.
+			[ $slug . '-students', $slug . '-instructors', $slug . '-group-plus', $slug . '-withdraw', $slug . '-announcements', $slug . '-question_answer', $slug . '-course-timer', $slug . '-grade-book', $slug . '-attendance' ],
+			// Extend and maintain.
+			[ $slug . '-addons', $slug . '-webhooks', $slug . '-tools' ],
+			// Look and configuration.
+			[ $slug . '-design', $slug . '-settings', $slug . '-discover' ],
+		];
+		$ordered  = [];
+		foreach ( $sections as $section ) {
+			$last = null;
+			foreach ( $section as $key ) {
+				if ( empty( $menu[ $key ] ) || ! empty( $menu[ $key ]['menu_parent'] ) || isset( $ordered[ $key ] ) ) {
+					continue;
+				}
+				$ordered[ $key ] = $menu[ $key ];
+				$last            = $key;
+			}
+			if ( $last ) {
+				$ordered[ $last ]['separator_after'] = true;
+			}
+		}
+		// Nothing after the final section's line.
+		if ( $ordered ) {
+			$keys = array_keys( $ordered );
+			unset( $ordered[ end( $keys ) ]['separator_after'] );
+		}
+		// Everything not placed: nested pages and items from other code.
+		return $ordered + $menu;
+	}
+
+	/**
+	 * Move a group's link to where its earliest page sat in the menu, so a
+	 * group shows up where its first member used to be.
+	 *
+	 * @param array  $menu    Admin menu list.
+	 * @param string $anchor  Key to move.
+	 * @param array  $members Keys of every page in the group.
+	 * @return array
+	 */
+	private static function move_admin_menu_item( array $menu, $anchor, array $members ) {
+		$keys     = array_keys( $menu );
+		$position = min( array_map( function ( $key ) use ( $keys ) {
+			return array_search( $key, $keys, true );
+		}, $members ) );
+		$item     = [ $anchor => $menu[ $anchor ] ];
+		unset( $menu[ $anchor ] );
+		return array_slice( $menu, 0, $position, true ) + $item + array_slice( $menu, $position, null, true );
 	}
 
 	public static function get_addon_active_status( $addon_name, $is_pro = false ) {
@@ -276,6 +523,14 @@ class Helper {
 		return class_exists( 'EasyContentManager' );
 	}
 
+	/**
+	 * QuizPress is an "Extensions & Integrations" companion plugin, not a
+	 * toggleable addon — the integration is on whenever the plugin is active.
+	 */
+	public static function is_active_quizpress() {
+		return self::is_plugin_active( 'quizpress/quizpress.php' );
+	}
+
 	public static function is_active_ablocks() {
 		$ablocks = 'ablocks/ablocks.php';
 
@@ -293,12 +548,48 @@ class Helper {
 		return self::is_plugin_active( $zencommunity );
 	}
 
+	public static function is_active_gemsecurity() {
+		$gemsecurity = 'gemsecurity/gemsecurity.php';
+		return self::is_plugin_active( $gemsecurity );
+	}
+
+	/**
+	 * Whether GemSecurity is active AND its own Social Login module reports
+	 * active via the `gemsecurity/module_active` filter. Backs the
+	 * both-active escalation in the Social Login deprecation notices —
+	 * default `false` (unlike `is_active_gemsecurity()`'s callers, which
+	 * default `true` for the Login Security check) so an ambiguous or
+	 * absent signal never triggers a false "you have both enabled" claim.
+	 *
+	 * @return bool
+	 */
+	public static function is_gemsecurity_social_login_active() {
+		return self::is_active_gemsecurity()
+			&& has_filter( 'gemsecurity/module_active' )
+			&& (bool) apply_filters( 'gemsecurity/module_active', false, 'social-login' );
+	}
+
 	public static function is_plugin_active( $basename ) {
 		if ( ! function_exists( 'get_plugins' ) ) {
 			include_once ABSPATH . '/wp-admin/includes/plugin.php';
 		}
 
 		return is_plugin_active( $basename );
+	}
+
+	/**
+	 * Whether course pages use block templates: always in block themes, and in
+	 * classic themes that opt in with `academy/templates/use_block_templates`
+	 * (unless the site kept the original course page layout).
+	 *
+	 * @return bool
+	 */
+	public static function use_block_templates() {
+		if ( self::is_fse_theme() ) {
+			return true;
+		}
+
+		return 'legacy' !== \Academy\Blocks::template_style() && (bool) apply_filters( 'academy/templates/use_block_templates', false );
 	}
 
 	public static function is_fse_theme() {
@@ -335,6 +626,13 @@ class Helper {
 		if ( is_admin() ) {
 			$screen = get_current_screen();
 
+			// get_current_screen() returns null when called before the
+			// `current_screen` hook has fired (e.g. while the setup wizard page
+			// renders), so guard before reading ->base.
+			if ( ! $screen instanceof \WP_Screen ) {
+				return false;
+			}
+
 			return self::plugin_page_hook_suffix( $screen->base );
 		}
 
@@ -349,7 +647,7 @@ class Helper {
 	 * @return bool
 	 */
 	public static function plugin_page_hook_suffix( $hook ) {
-		if ( strpos( $hook, '_page_' . ACADEMY_PLUGIN_SLUG ) !== false ) {
+		if ( is_string( $hook ) && strpos( $hook, '_page_' . ACADEMY_PLUGIN_SLUG ) !== false ) {
 			return true;
 		}
 
@@ -599,7 +897,7 @@ class Helper {
 
 	public static function calculate_percentage( $total_count, $completed_count ) {
 		if ( $total_count > 0 && $completed_count > 0 ) {
-			return number_format( ( $completed_count / $total_count ) * 100 );
+			return min( number_format( ( $completed_count / $total_count ) * 100 ), 100 );
 		}
 
 		return 0;
@@ -625,7 +923,7 @@ class Helper {
 	public static function parse_embedded_url( $string ) {
 		if ( wp_http_validate_url( $string ) ) {
 			$url = '';
-			if ( false !== strpos( wp_parse_url( $string )['host'], 'canva.com' ) ) {
+			if ( str_contains( wp_parse_url( $string )['host'], 'canva.com' ) ) {
 				$url = add_query_arg( 'embed', '', $string );
 			} else {
 				$oembed = _wp_oembed_get_object();
@@ -651,6 +949,148 @@ class Helper {
 		if ( preg_match( '/(https?:\/\/)?(www\.)?(player\.)?vimeo\.com\/([a-z]*\/)*([0-9]{6,11})[?]?.*/', $url, $output_array ) ) {
 			return $output_array[5];
 		}
+	}
+
+	/**
+	 * Resolve a bare URL down to the canonical provider KodezenPlayer natively
+	 * plays, or null if it doesn't match one — an opaque third-party embed
+	 * (Canva, Kaltura, …) with no native provider, kept on the iframe fallback.
+	 *
+	 * @param string $resolved An already-unwrapped URL — e.g. the `url` field
+	 *                          parse_embedded_url() returns for an "embedded"
+	 *                          source, or a raw "external" URL.
+	 * @return string|null
+	 */
+	public static function resolve_trackable_provider( $resolved ) {
+		if ( empty( $resolved ) ) {
+			return null;
+		}
+
+		if ( self::is_html5_video_link( $resolved ) ) {
+			return 'html5';
+		}
+
+		$host = wp_parse_url( $resolved, PHP_URL_HOST );
+		if ( $host && ( str_contains( $host, 'youtube.com' ) || str_contains( $host, 'youtu.be' ) ) ) {
+			return 'youtube';
+		}
+
+		if ( self::vimeo_id_from_url( $resolved ) ) {
+			return 'vimeo';
+		}
+
+		return null;
+	}
+
+	/**
+	 * Rewrite a video_source array in place to the native provider shape
+	 * (`youtube`/`vimeo`/`html5`) once `$resolved` has been matched by
+	 * resolve_trackable_provider() — or leave `$video['url']` as the opaque
+	 * `$fallback_url` shape (e.g. parse_embedded_url()'s {url,allow,...})
+	 * if nothing matched. Shared by the `embedded` and `external` branches
+	 * of Lesson::render_lesson() so both stay in sync as hosts are added.
+	 *
+	 * @param array  $video        The video_source array (by reference).
+	 * @param string $resolved     The already-unwrapped URL to resolve —
+	 *                             for a host WP's oEmbed recognizes, this may
+	 *                             already be an iframe embed src rather than
+	 *                             the canonical page URL.
+	 * @param mixed  $fallback_url What to leave `$video['url']` as when
+	 *                             nothing matches (kept opaque/untracked).
+	 */
+	public static function apply_resolved_video_provider( array &$video, $resolved, $fallback_url ) {
+		$provider = self::resolve_trackable_provider( $resolved );
+
+		switch ( $provider ) {
+			case 'youtube':
+				$video['type'] = 'youtube';
+				$video['url']  = self::youtube_id_from_url( $resolved );
+				break;
+			case 'vimeo':
+				$video['type'] = 'vimeo';
+				$video['url']  = self::vimeo_id_from_url( $resolved );
+				break;
+			case 'html5':
+				$video['type'] = 'html5';
+				$video['url']  = $resolved;
+				break;
+			default:
+				$video['url'] = $fallback_url;
+				break;
+		}
+	}
+
+	/**
+	 * Every video_source type KodezenPlayer natively plays + tracks. Kept as
+	 * one list so is_trackable_video_source() and anything else that needs
+	 * "is this a native player type" stay in sync as providers are added.
+	 */
+	public static function native_player_provider_types() {
+		return [ 'html5', 'youtube', 'vimeo' ];
+	}
+
+	/**
+	 * Whether a lesson's video source can actually be watch-tracked — i.e. it
+	 * plays through a player that reports progress back to the server
+	 * (a native provider type, or a direct match for one pasted as an
+	 * "external"/"embedded" source), as opposed to an opaque third-party
+	 * iframe with no completion signal at all. Used to gate both the
+	 * frontend's resume/lock-seek data and the server's watch-percentage
+	 * completion check consistently.
+	 *
+	 * @param string       $type The stored video_source type.
+	 * @param string|array $url  The stored/resolved URL — a plain string, or
+	 *                           (for an already-resolved "embedded" source)
+	 *                           the array shape returned by parse_embedded_url().
+	 */
+	public static function is_trackable_video_source( $type, $url ) {
+		if ( in_array( $type, self::native_player_provider_types(), true ) ) {
+			return true;
+		}
+
+		if ( ! in_array( $type, [ 'external', 'embedded' ], true ) ) {
+			return false;
+		}
+
+		if ( 'embedded' === $type ) {
+			$resolved = is_array( $url ) ? ( $url['url'] ?? '' ) : ( self::parse_embedded_url( (string) $url )['url'] ?? '' );
+		} else {
+			$resolved = is_array( $url ) ? ( $url['url'] ?? '' ) : $url;
+		}
+
+		return (bool) self::resolve_trackable_provider( $resolved );
+	}
+
+	/**
+	 * Whether a lesson's video source is the opaque third-party iframe
+	 * fallback (Wistia, Vidyard, Twitch, SoundCloud, Mixcloud, Facebook,
+	 * Kaltura, or any other embed/external source with no native provider
+	 * match) that nonetheless has a real src to play. A cross-origin iframe
+	 * reports no playback position or duration to the parent page, so these
+	 * lessons get a coarse dwell-time (seconds the lesson stayed open and
+	 * visible) watch gate instead of the real percent-of-duration one.
+	 *
+	 * @param string       $type The stored video_source type.
+	 * @param string|array $url  The stored/resolved URL — same shape accepted
+	 *                           by is_trackable_video_source().
+	 */
+	public static function is_dwell_trackable_video_source( $type, $url ) {
+		if ( ! in_array( $type, [ 'external', 'embedded' ], true ) ) {
+			return false;
+		}
+
+		if ( 'embedded' === $type ) {
+			$resolved = is_array( $url ) ? ( $url['url'] ?? '' ) : ( self::parse_embedded_url( (string) $url )['url'] ?? '' );
+		} else {
+			$resolved = is_array( $url ) ? ( $url['url'] ?? '' ) : $url;
+		}
+
+		// A native match means the real percent-of-duration gate applies instead.
+		if ( self::resolve_trackable_provider( $resolved ) ) {
+			return false;
+		}
+
+		return ! empty( $resolved );
 	}
 
 	public static function gumlet_id_from_url( $url ) {
@@ -873,6 +1313,28 @@ class Helper {
 		return $ip_address;
 	}
 
+	/**
+	 * Whether a curriculum item's content must be rendered through the
+	 * isolated full-page frame (vs. inline in the SPA). True when it contains
+	 * a registered shortcode or produces inline <script> — cases whose
+	 * enqueued assets never load over AJAX.
+	 *
+	 * @param mixed  $raw
+	 * @param string $rendered
+	 */
+	public static function content_needs_frame( $raw, $rendered = '' ) {
+		if ( is_string( $rendered ) && preg_match( '/<script[\\s>]/i', $rendered ) ) {
+			return true;
+		}
+		if ( is_string( $raw ) && '' !== trim( $raw ) ) {
+			$pattern = get_shortcode_regex();
+			if ( preg_match( '/' . $pattern . '/', $raw, $matches ) && ! empty( $matches[2] ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static function get_content_html( $content ) {
 		global $wp_embed;
 		$content = $wp_embed->run_shortcode( $content );
@@ -889,7 +1351,9 @@ class Helper {
 	}
 
 	public static function is_html5_video_link( $link ) {
-		$pattern = '/\.mp4$|\.webm$|\.ogg$/i';
+		// .m3u8 (HLS — e.g. Mux) plays through the same native <video> element
+		// as mp4/webm/ogg; KodezenPlayer's html5 provider picks hls.js for it.
+		$pattern = '/\.mp4$|\.webm$|\.ogg$|\.m3u8$/i';
 
 		return preg_match( $pattern, $link );
 	}
@@ -930,7 +1394,7 @@ class Helper {
 		return null;
 	}
 
-	public static function get_page_by_name( $page_name, $post_type = 'page' ) {
+	public static function get_post_by_name( $page_name, $post_type = 'page' ) {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -960,7 +1424,7 @@ class Helper {
 
 			// Modify the username to make it unique
 			while ( username_exists( $username . $suffix ) ) {
-				$suffix ++;
+				++$suffix;
 			}
 
 			$username .= $suffix;
@@ -987,7 +1451,6 @@ class Helper {
 
 	public static function maybe_define_constant( $name, $value ) {
 		if ( ! defined( $name ) ) {
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.VariableConstantNameFound
 			define( $name, $value );
 		}
 	}
@@ -1128,30 +1591,61 @@ class Helper {
 			if ( $lesson ) {
 				return (int) $lesson['ID'];
 			}
-			return 0;
+
+			// A lesson still kept as a post, from before Academy's lessons table.
+			$post = self::get_post_by_name( $slug, 'academy_lessons' );
+
+			return $post ? (int) $post->ID : 0;
 		} elseif ( 'quiz' === $topic_type ) {
-			$quiz = self::get_page_by_name( $slug, 'academy_quiz' );
+			$quiz = self::get_post_by_name( $slug, 'academy_quiz' );
 
 			return $quiz ? $quiz->ID : 0;
 		} elseif ( 'assignment' === $topic_type ) {
-			$assignment = self::get_page_by_name( $slug, 'academy_assignments' );
+			$assignment = self::get_post_by_name( $slug, 'academy_assignments' );
 
 			return ( ! empty( $assignment ) ) ? $assignment->ID : 0;
 		} elseif ( 'meeting' === $topic_type ) {
-			$meeting = self::get_page_by_name( $slug, 'academy_meeting' );
+			$meeting = self::get_post_by_name( $slug, 'academy_meeting' );
 
-			return $meeting ? current( $meeting )->ID : 0;
+			return ! empty( $meeting ) ? $meeting->ID : 0;
 		} elseif ( 'booking' === $topic_type ) {
-			$booking = self::get_page_by_name( $slug, 'academy_booking' );
+			$booking = self::get_post_by_name( $slug, 'academy_booking' );
 
 			return $booking ? $booking->ID : 0;
+		} elseif ( 'quizpress_quiz' === $topic_type ) {
+			$quizpress_quiz = self::get_post_by_name( $slug, 'quizpress_quiz' );
+
+			return $quizpress_quiz ? $quizpress_quiz->ID : 0;
 		}//end if
 
 		return false;
 	}
 
+	/**
+	 * Whether lessons are served as their own server-rendered pages
+	 * (/course/{course}/{type}/{topic}) — the PHP learn page or the block
+	 * learn page — rather than inside the React player.
+	 *
+	 * @return bool
+	 */
+	public static function is_server_learn_page() {
+		return 'blocks' === self::get_settings( 'learn_page_engine', 'react' )
+			|| (bool) self::get_settings( 'is_enabled_lessons_php_render' );
+	}
+
+	/**
+	 * Whether topic links use the server-rendered page URLs. The PHP learn page
+	 * also needs its lessons page picked; the block learn page does not.
+	 *
+	 * @return bool
+	 */
+	public static function uses_server_learn_links() {
+		return 'blocks' === self::get_settings( 'learn_page_engine', 'react' )
+			|| ( self::get_settings( 'is_enabled_lessons_php_render' ) && self::get_settings( 'lessons_page' ) );
+	}
+
 	public static function get_start_course_permalink( $course_id ): string {
-		if ( self::get_settings( 'is_enabled_lessons_php_render' ) && self::get_settings( 'lessons_page' ) ) {
+		if ( self::uses_server_learn_links() ) {
 			$curriculums = self::get_course_curriculum( $course_id, false );
 			$curriculum = ( ! empty( $curriculums ) ) ? current( $curriculums ) : '';
 			if ( is_array( $curriculum ) && isset( $curriculum['topics'] ) ) {
@@ -1171,7 +1665,7 @@ class Helper {
 	}
 
 	public static function get_prev_and_next_details_of_curriculum() {
-		if ( self::get_settings( 'is_enabled_lessons_php_render' ) && self::get_settings( 'lessons_page' ) ) {
+		if ( self::uses_server_learn_links() ) {
 			$slug = get_query_var( 'name' );
 			$type = get_query_var( 'curriculum_type' );
 			$topic_id = self::get_topic_id_by_topic_name_and_topic_type( $slug, $type );
@@ -1218,7 +1712,7 @@ class Helper {
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
 		}
-		$is_administrator = current_user_can( 'administrator' );
+		$is_administrator = current_user_can( 'manage_options' );
 		$is_instructor    = self::is_instructor_of_this_course( $user_id, $course_id );
 		$enrolled         = self::is_enrolled( $course_id, $user_id );
 		$is_public_course = self::is_public_course( $course_id );
@@ -1232,10 +1726,7 @@ class Helper {
 	}
 
 	public static function has_permission_to_access_lesson_curriculum( $course_id, $lesson_id, $user_id = null ) {
-		$is_previewable = $lesson_id
-			&& self::get_lesson_meta( $lesson_id, 'is_previewable' )
-			&& (bool) self::get_addon_active_status( 'course-preview' );
-		return self::has_permission_to_access_curriculum( $course_id, $user_id, $lesson_id, 'lesson' ) || $is_previewable;
+		return self::has_permission_to_access_curriculum( $course_id, $user_id, $lesson_id, 'lesson' ) || ( $lesson_id && self::get_lesson_meta( $lesson_id, 'is_previewable' ) );
 	}
 
 	public static function is_active_curriculum_content( $topic ) {
@@ -1252,62 +1743,74 @@ class Helper {
 		$items = array(
 			'index'           => array(
 				'label' => __( 'Dashboard', 'academy' ),
+				'area'  => 'all',
 				'icon'  => 'academy-icon academy-icon--grid-two',
 				'public' => true,
 				'priority' => 5,
 			),
 			'profile'           => array(
 				'label' => __( 'My Profile', 'academy' ),
+				'area'  => 'account',
 				'icon'  => 'academy-icon academy-icon--profile-two',
 				'public' => true,
 				'priority' => 10,
 			),
 			'enrolled-courses'           => array(
 				'label' => __( 'Enrolled Courses', 'academy' ),
+				'area'  => 'learning',
 				'icon'  => 'academy-icon academy-icon--enrollement',
 				'public' => true,
 				'priority' => 15,
 			),
 			'active-courses'           => array(
 				'label' => __( 'Enrolled Courses', 'academy' ),
+				'area'  => 'learning',
 				'public' => false,
 				'priority' => 15,
 			),
 			'complete-courses'           => array(
 				'label' => __( 'Enrolled Courses', 'academy' ),
+				'area'  => 'learning',
 				'public' => false,
 				'priority' => 15,
 			),
 			'wishlist'           => array(
 				'label' => __( 'Wishlist', 'academy' ),
+				'area'  => 'learning',
 				'icon'  => 'academy-icon academy-icon--wishlist',
 				'public' => true,
 				'priority' => 20,
 			),
 			'reviews'           => array(
-				'label' => __( 'Reviews', 'academy' ),
+				'label' => __( 'My Reviews', 'academy' ),
+				'area'  => 'learning',
 				'icon'  => 'academy-icon academy-icon--star-alt',
 				'public' => true,
 				'priority' => 25,
 			),
 			'received-reviews'           => array(
 				'label' => __( 'Received Reviews', 'academy' ),
-				'public' => false,
+				'area'  => 'teaching',
+				'icon'  => 'academy-icon academy-icon--star-alt',
+				'public' => true,
 				'priority' => 25,
 			),
 			'settings'           => array(
 				'label' => __( 'Settings', 'academy' ),
+				'area'  => 'account',
 				'icon'  => 'academy-icon academy-icon--settings',
 				'public' => true,
 				'priority' => 50,
 			),
 			'reset-password'           => array(
 				'label' => __( 'Reset Password', 'academy' ),
+				'area'  => 'account',
 				'public' => false,
 				'priority' => 50,
 			),
 			'logout'           => array(
 				'label' => __( 'Log Out', 'academy' ),
+				'area'  => 'account',
 				'icon'  => 'academy-icon academy-icon--logout',
 				'priority' => 99,
 				'public' => true,
@@ -1317,6 +1820,7 @@ class Helper {
 		if ( self::get_settings( 'is_enable_apply_instructor_menu' ) ) {
 			$items['become-an-instructor'] = array(
 				'label' => __( 'Become An Instructor', 'academy' ),
+				'area' => 'learning',
 				'icon'  => 'academy-icon academy-icon--instructor',
 				'public' => ! current_user_can( 'manage_academy_instructor' ) ? true : false,
 				'priority' => 2,
@@ -1326,6 +1830,7 @@ class Helper {
 		if ( current_user_can( 'manage_academy_instructor' ) ) {
 			$items['courses'] = array(
 				'label' => __( 'Courses', 'academy' ),
+				'area' => 'teaching',
 				'icon'  => 'academy-icon academy-icon--course-cap',
 				'public' => true,
 				'priority' => 30,
@@ -1344,24 +1849,28 @@ class Helper {
 			);
 			$items['lessons'] = array(
 				'label' => __( 'All Lessons', 'academy' ),
+				'area' => 'teaching',
 				'icon'  => 'academy-icon academy-icon--Lesson',
 				'public' => true,
 				'priority' => 35,
 			);
 			$items['announcements'] = array(
 				'label' => __( 'Announcements', 'academy' ),
+				'area' => 'teaching',
 				'icon'  => 'academy-icon academy-icon--announcement',
 				'public' => true,
 				'priority' => 45,
 			);
 			$items['question-answer'] = array(
 				'label' => __( 'Question & Answer', 'academy' ),
+				'area' => 'teaching',
 				'icon'  => 'academy-icon academy-icon--question',
 				'public' => true,
 				'priority' => 40,
 			);
 			$items['students'] = array(
 				'label' => __( 'Students', 'academy' ),
+				'area' => 'teaching',
 				'icon'  => 'academy-icon academy-icon--students-two',
 				'public' => true,
 				'priority' => 42,
@@ -1369,12 +1878,14 @@ class Helper {
 			if ( self::get_addon_active_status( 'multi_instructor' ) && self::get_settings( 'is_enabled_earning' ) ) {
 				$items['withdrawal']  = array(
 					'label' => __( 'Withdrawal', 'academy' ),
+					'area' => 'teaching',
 					'public' => true,
 					'icon'  => 'academy-icon academy-icon--wallet',
 					'priority' => 49,
 				);
 				$items['withdraw']  = array(
 					'label' => __( 'Withdraw', 'academy' ),
+					'area' => 'teaching',
 					'public' => false,
 					'priority' => 50,
 				);
@@ -1384,14 +1895,33 @@ class Helper {
 		if ( self::is_active_woocommerce() || self::is_active_storeengine() ) {
 			$items['purchase-history'] = array(
 				'label' => __( 'Purchase History', 'academy' ),
+				'area' => 'learning',
 				'icon' => 'academy-icon academy-icon--purchase',
 				'public' => true,
 				'priority' => 26,
 			);
 		}
+		// Grades is a quiz-results page, so it lives and dies with the quizzes
+		// addon: without it every row reads "No quizzes" and the page is just a
+		// worse copy of Enrolled Courses. Gated the same way `download-certificate`
+		// depends on `certificates`. This also drops the /grades/ rewrite rule,
+		// which PermalinkRewrite builds from this same list — and the quizzes
+		// addon already flushes rules on both activation and deactivation, so
+		// the route appears and disappears with it.
+		if ( self::get_addon_active_status( 'quizzes' ) ) {
+			$items['grades'] = array(
+				'label' => __( 'Grades', 'academy' ),
+				'area'  => 'learning',
+				'icon'  => 'academy-icon academy-icon--gradebook',
+				'public' => true,
+				'priority' => 16,
+			);
+		}
+
 		if ( self::get_addon_active_status( 'certificates' ) ) {
 			$items['download-certificate'] = array(
 				'label' => __( 'Download Certificates', 'academy' ),
+				'area' => 'learning',
 				'icon' => 'academy-icon academy-icon--certificate',
 				'public' => true,
 				'priority' => 17,
@@ -1399,6 +1929,182 @@ class Helper {
 		}
 
 		return apply_filters( 'academy/frontend_dashboard_menu_items', $items );
+	}
+
+	/**
+	 * The areas a dashboard can be viewed as.
+	 *
+	 * The dashboard used to be one flat list holding everything a person could
+	 * possibly do — an instructor got their learner items and their teaching
+	 * items interleaved by priority number, and an administrator got the union
+	 * of every role at once. An area is "what am I here to do right now":
+	 * Learning, Teaching, or Family. Each menu item declares which one (or
+	 * ones) it belongs to, and the sidebar shows a single area at a time.
+	 *
+	 * `account` is not an area you switch to — Profile, Settings and Log Out
+	 * belong to the person, not the role, so they show in every view.
+	 */
+	public static function dashboard_areas() {
+		$areas = array(
+			'learning' => array(
+				'label'     => __( 'Learning', 'academy' ),
+				'icon'      => 'academy-icon academy-icon--course-cap',
+				'order'     => 10,
+				// Everyone can learn, so this is always somewhere to stand.
+				'available' => true,
+			),
+			'teaching' => array(
+				'label'     => __( 'Teaching', 'academy' ),
+				'icon'      => 'academy-icon academy-icon--instructor',
+				'order'     => 20,
+				'available' => current_user_can( 'manage_academy_instructor' ),
+			),
+			'family'   => array(
+				'label'     => __( 'Family', 'academy' ),
+				'icon'      => 'academy-icon academy-icon--profile-two',
+				'order'     => 30,
+				'available' => self::has_family_area(),
+			),
+		);
+
+		/**
+		 * Register a dashboard area, or change whether one is available.
+		 *
+		 * @param array $areas key => [ label, icon, order, available ].
+		 */
+		return apply_filters( 'academy/frontend_dashboard_areas', $areas );
+	}
+
+	/** Whether this person has anyone to be a guardian of. */
+	private static function has_family_area() {
+		// The Store class autoloads whether or not the addon is on — its table
+		// only exists once Guardian::init() has actually installed it (which it
+		// skips entirely while the addon is off, see includes/guardian.php).
+		// class_exists() alone let this query a table that was never created.
+		if ( ! is_user_logged_in() || ! self::get_addon_active_status( 'guardian' ) || ! class_exists( '\Academy\Guardian\Store' ) ) {
+			return false;
+		}
+		return (bool) \Academy\Guardian\Store::get_children( get_current_user_id() );
+	}
+
+	/** The areas this user may switch between, in order. */
+	public static function available_dashboard_areas() {
+		$areas = array_filter( self::dashboard_areas(), function ( $area ) {
+			return ! empty( $area['available'] );
+		} );
+		uasort( $areas, function ( $a, $b ) {
+			return ( $a['order'] ?? 50 ) <=> ( $b['order'] ?? 50 );
+		} );
+		return $areas;
+	}
+
+	/**
+	 * Which area the dashboard is being viewed as.
+	 *
+	 * `?view=` wins and is remembered, so the switcher is a plain link and the
+	 * choice survives the next visit. An area the user no longer has — a
+	 * revoked instructor, say — falls back to the first one they do.
+	 */
+	public static function current_dashboard_view() {
+		if ( self::$forced_dashboard_view ) {
+			return self::$forced_dashboard_view;
+		}
+
+		static $resolved = null;
+		if ( null !== $resolved ) {
+			return $resolved;
+		}
+
+		$available = self::available_dashboard_areas();
+		$user_id   = get_current_user_id();
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$requested = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : '';
+		if ( $requested && isset( $available[ $requested ] ) ) {
+			if ( $user_id ) {
+				update_user_meta( $user_id, 'academy_dashboard_view', $requested );
+			}
+			$resolved = $requested;
+			return $resolved;
+		}
+
+		$saved = $user_id ? get_user_meta( $user_id, 'academy_dashboard_view', true ) : '';
+		if ( $saved && isset( $available[ $saved ] ) ) {
+			$resolved = $saved;
+			return $resolved;
+		}
+
+		$resolved = self::default_dashboard_view( $available );
+		return $resolved;
+	}
+
+	/**
+	 * Where someone lands before they have ever chosen.
+	 *
+	 * The most specific hat they wear, not the first in the list: an instructor
+	 * opens on Teaching, a guardian who doesn't teach opens on Family, and
+	 * everyone else opens on Learning.
+	 *
+	 * @param mixed $available
+	 */
+	public static function default_dashboard_view( $available = null ) {
+		$available = null === $available ? self::available_dashboard_areas() : $available;
+		foreach ( array( 'teaching', 'family', 'learning' ) as $preferred ) {
+			if ( isset( $available[ $preferred ] ) ) {
+				return $preferred;
+			}
+		}
+		return (string) array_key_first( $available );
+	}
+
+	/**
+	 * Force the view for the rest of this request.
+	 *
+	 * Opening a teaching page from a link while standing in Learning should
+	 * move the sidebar with you, rather than showing a menu that doesn't
+	 * contain the page you are looking at.
+	 *
+	 * @param mixed $area
+	 */
+	public static function set_dashboard_view( $area ) {
+		if ( isset( self::available_dashboard_areas()[ $area ] ) ) {
+			self::$forced_dashboard_view = $area;
+		}
+	}
+
+	/** @var string Set only by set_dashboard_view(), for this request. */
+	private static $forced_dashboard_view = '';
+
+	/**
+	 * Whether a menu item belongs in the area currently being viewed.
+	 *
+	 * @param array $item
+	 * @param mixed $view
+	 */
+	public static function dashboard_item_in_view( $item, $view = null ) {
+		$view = $view ? $view : self::current_dashboard_view();
+		// An item with no area is a third-party addition that predates areas.
+		// Leave it where everyone can still reach it rather than hiding it.
+		$area = $item['area'] ?? 'all';
+		if ( 'all' === $area || 'account' === $area ) {
+			return true;
+		}
+		return in_array( $view, (array) $area, true );
+	}
+
+	/**
+	 * The area a given dashboard page belongs to, or '' when it spans them.
+	 *
+	 * @param string $menu_key
+	 */
+	public static function dashboard_area_of( $menu_key ) {
+		$menu = self::get_frontend_dashboard_menu_items();
+		$area = $menu[ $menu_key ]['area'] ?? 'all';
+		if ( 'all' === $area || 'account' === $area ) {
+			return '';
+		}
+		$area = (array) $area;
+		return 1 === count( $area ) ? $area[0] : '';
 	}
 
 	public static function current_user_has_access_frontend_dashboard_menu( $menu_key ) {
@@ -1412,9 +2118,9 @@ class Helper {
 	public static function get_frontend_dashboard_page_title( $path, $sub_path ) {
 		$menu = self::get_frontend_dashboard_menu_items();
 		if ( $sub_path ) {
-			return $menu[ $path ]['child_items'][ $sub_path ]['label'];
+			return $menu[ $path ]['child_items'][ $sub_path ]['label'] ?? '';
 		}
-		return $menu[ $path ]['label'];
+		return $menu[ $path ]['label'] ?? '';
 	}
 
 	public static function get_endpoint_url( $endpoint, $value = '', $permalink = '' ) {
@@ -1463,7 +2169,10 @@ class Helper {
 	}
 
 	public static function get_logout_url( $redirect = '' ) {
-		$redirect = $redirect ? $redirect : apply_filters( 'academy/logout_default_redirect_url', self::get_page_permalink( 'dashboard_page' ) );
+		// Back to the dashboard page, which shows the login form once logged out
+		// (the setting is frontend_dashboard_page; "dashboard_page" doesn't exist,
+		// so this always fell back to the home page).
+		$redirect = $redirect ? $redirect : apply_filters( 'academy/logout_default_redirect_url', self::get_page_permalink( 'frontend_dashboard_page' ) );
 
 		return wp_logout_url( $redirect );
 	}
@@ -1483,7 +2192,7 @@ class Helper {
 		return $user_info->display_name;
 	}
 
-	public static function get_time_different_dynamically_for_any_time( $given_time ) : string {
+	public static function get_time_different_dynamically_for_any_time( $given_time ): string {
 		$current_time = new \DateTime();
 		$given_time = new \DateTime( $given_time );
 		$time_difference = $current_time->diff( $given_time );
@@ -1563,7 +2272,146 @@ class Helper {
 		return false;
 	}
 
-	public static function minify_js( ?string $js ) : string {
+	/**
+	 * Build the `orderby` a course query needs to rank featured courses
+	 * among themselves, and flag the query for `filter_sticky_posts_orderby()`
+	 * to pin them above everything else.
+	 *
+	 * Priority is `menu_order` — the course editor's featured drag-list writes
+	 * it, and `maybe_assign_sticky_priority()` appends a new featured course to
+	 * the end. It is a tiebreak *within* the featured group only: whether a
+	 * course is featured at all is decided solely by the meta flag, so a
+	 * leftover priority on an un-featured course can never float it up.
+	 *
+	 * The sticky-first boolean is deliberately NOT expressed as a named
+	 * meta_query orderby clause. WP_Meta_Query gives the first clause in a
+	 * query an unaliased JOIN whose ON checks only `post_id` (meta_key is
+	 * tested in WHERE), so once GROUP BY collapses a post's joined meta rows,
+	 * ORDER BY on that column reads an arbitrary row rather than the flag —
+	 * featured courses came out scattered. `filter_sticky_posts_orderby()`
+	 * prepends a correlated EXISTS instead, which needs no JOIN, no GROUP BY
+	 * and no meta_query at all.
+	 *
+	 * @param string $orderby The caller's own orderby key (e.g. 'date', 'post_title', 'menu_order').
+	 * @param string $order   The caller's own order direction ('ASC'/'DESC').
+	 * @return array{orderby: array, academy_sticky_first: bool} Query args to merge into the caller's own.
+	 */
+	public static function apply_sticky_course_ordering( $orderby, $order = 'DESC' ) {
+		$order = 'ASC' === strtoupper( (string) $order ) ? 'ASC' : 'DESC';
+
+		// A caller already ordering by menu_order keeps its own direction —
+		// re-adding the key would be a duplicate, and silently flipping a
+		// user-chosen "menu order" sort to ASC is not this function's call.
+		if ( 'menu_order' === $orderby ) {
+			$sticky_orderby = array( 'menu_order' => $order );
+		} else {
+			$sticky_orderby = array( 'menu_order' => 'ASC' );
+
+			// Guard against orderby keys WP_Query does not accept (the course
+			// search passes 'publish_date', for one). Left in, WP drops the
+			// invalid key and the query silently degrades to menu_order only;
+			// dropped here, WP's own "no valid key" fallback of post_date
+			// still applies as it did before sticky ordering existed.
+			if ( in_array( $orderby, self::get_supported_course_orderby_keys(), true ) ) {
+				$sticky_orderby[ $orderby ] = $order;
+			} else {
+				$sticky_orderby['date'] = $order;
+			}
+		}
+
+		return array(
+			'orderby'              => $sticky_orderby,
+			self::STICKY_QUERY_VAR => true,
+		);
+	}
+
+	/**
+	 * The `orderby` keys WP_Query accepts that a course listing can pass
+	 * through. Anything else is normalised to `date` by
+	 * `apply_sticky_course_ordering()` rather than being silently dropped.
+	 */
+	public static function get_supported_course_orderby_keys() {
+		return array(
+			'ID',
+			'author',
+			'title',
+			'post_title',
+			'name',
+			'date',
+			'post_date',
+			'modified',
+			'post_modified',
+			'parent',
+			'rand',
+			'comment_count',
+			'menu_order',
+			'relevance',
+		);
+	}
+
+	/**
+	 * `posts_orderby` filter: prepends "is this course featured?" to the
+	 * query's own ORDER BY, so featured courses lead each listing while the
+	 * caller's ordering still applies within the featured and non-featured
+	 * groups.
+	 *
+	 * Hooked once, globally, in Template::dispatch_hook(), but it acts only on
+	 * queries that opted in via `apply_sticky_course_ordering()` — see
+	 * STICKY_QUERY_VAR. Opting in by query var rather than by sniffing
+	 * `post_type` matters for taxonomy archives: WP resolves a tax archive's
+	 * post type into a local variable inside WP_Query::get_posts() and never
+	 * writes it back, so `$query->get( 'post_type' )` is an empty string
+	 * there and a post-type check would skip the very listings the category
+	 * pages render.
+	 *
+	 * @param mixed            $orderby_sql
+	 * @param \WP_Query|string $query
+	 */
+	public static function filter_sticky_posts_orderby( $orderby_sql, $query ) {
+		if ( ! $query->get( self::STICKY_QUERY_VAR ) ) {
+			return $orderby_sql;
+		}
+
+		global $wpdb;
+		$sticky_expr = $wpdb->prepare(
+			"EXISTS ( SELECT 1 FROM {$wpdb->postmeta} WHERE {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID AND {$wpdb->postmeta}.meta_key = %s AND {$wpdb->postmeta}.meta_value = '1' ) DESC",
+			self::STICKY_META_KEY
+		);
+
+		return $orderby_sql ? $sticky_expr . ', ' . $orderby_sql : $sticky_expr;
+	}
+
+	/**
+	 * Whether a course carries the featured flag.
+	 *
+	 * @param int $course_id
+	 */
+	public static function is_course_sticky( $course_id ) {
+		return (bool) get_post_meta( $course_id, self::STICKY_META_KEY, true );
+	}
+
+	/**
+	 * Highest priority currently in use across featured courses, or 0 when
+	 * none has one yet. Used to append a newly-featured course to the end of
+	 * the list instead of dropping it in at an arbitrary position.
+	 */
+	public static function get_max_sticky_priority() {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT MAX( p.menu_order ) FROM {$wpdb->posts} p
+				INNER JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID
+				WHERE p.post_type = %s AND p.post_status != 'trash'
+				AND pm.meta_key = %s AND pm.meta_value = '1'",
+				'academy_courses',
+				self::STICKY_META_KEY
+			)
+		);
+	}
+
+	public static function minify_js( ?string $js ): string {
 		$js = preg_replace( '/\/\*.*?\*\//s', '', $js );
 		$js = preg_replace( '/\/\/.*?[\r\n]/', '', $js );
 		$js = preg_replace( '/\s+/', ' ', $js );
@@ -1574,11 +2422,11 @@ class Helper {
 
 	public static function get_course_expire_duration( $course_id ) {
 		$user_id = get_current_user_id();
-		// course expire enrollment time 
+		// course expire enrollment time
 		$expire_enrollment = (int) get_post_meta( $course_id, 'academy_course_expire_enrollment', true );
 		// get extend time
 		$extend_time = 0;
-		if ( \Academy\Helper::is_enrolled( $course_id, $user_id ) ) {
+		if ( self::is_enrolled( $course_id, $user_id ) ) {
 			$extend_time = (int) get_user_meta( $user_id, "academy_course_extended_expire_time_{$course_id}", true );
 		}
 		// total expire time

@@ -15,9 +15,9 @@ if ( 0 === count( $tabs_nav ) ) {
 			$class_name = '';
 			if ( 0 === $nav_count ) {
 				$class_name = 'active';
-				$nav_count++;
+				++$nav_count;
 			} ?>
-				<li class="<?php echo esc_attr( $class_name ); ?>"><a href="<?php echo esc_attr( '#' . $nav_key ); ?>"><?php echo esc_html( $nav_name ); ?></a></li>
+				<li class="<?php echo esc_attr( $class_name ); ?>"><a href="<?php echo esc_url( '#' . $nav_key ); ?>"><?php echo esc_html( $nav_name ); ?></a></li>
 				<?php
 		}
 		?>

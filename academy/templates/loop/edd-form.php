@@ -9,7 +9,10 @@ if ( class_exists( 'EDD_Download' ) ) {
 	$download = new EDD_Download( $download_id );
 	$purchase_link = edd_get_purchase_link( [
 		'download_id' => $download->ID,
-		'text'        => 'layout_two' !== $card_style ? esc_html__( 'Add To Cart', 'academy' ) : '',
+		// The cart icon goes inside the button itself, as on the other engines' cards:
+		// EDD prints this button when logged in, and with an empty text on the "layout
+		// two" card it was a blank, invisible button.
+		'text'        => '<span class="academy-icon academy-icon--cart" aria-hidden="true"></span>' . ( 'layout_two' !== $card_style ? ' ' . esc_html__( 'Add To Cart', 'academy' ) : '' ),
 		'price'       => 'no',
 		'class'       => 'academy-btn academy-btn--preset-purple',
 		'color'       => '',

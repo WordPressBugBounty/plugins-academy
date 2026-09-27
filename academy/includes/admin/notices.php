@@ -32,7 +32,7 @@ class Notices {
 			]);
 		}
 
-		if ( ! current_user_can( 'manage_options' ) || ! get_option( 'users_can_register' ) ) {
+		if ( current_user_can( 'manage_options' ) && ! get_option( 'users_can_register' ) ) {
 			self::add_notice('users_can_register', [
 				'type'      => 'info',
 				'message'   => wp_kses_post( __( 'Membership option is turned off, students and instructors will not be able to sign up. <strong>Press Enable</strong> or go to <strong>Settings > General > Membership</strong> and enable "Anyone can register".', 'academy' ) ),
@@ -76,6 +76,93 @@ class Notices {
 				'button_action' => esc_url( admin_url( 'options-general.php?page=academy-pro' ) ),
 			]);
 		}
+
+		self::maybe_add_gemsecurity_notice();
+		self::maybe_add_recaptcha_deprecation_notice();
+	}
+
+	/**
+	 * Cascading GemSecurity compatibility notice: install → activate → enable
+	 * Login Security. At most one of the three fires per request, evaluated
+	 * in severity order, so admins never see stacked/contradictory warnings.
+	 *
+	 * Only surfaces for sites that actually use Academy's deprecated Social
+	 * Login or reCAPTCHA features — GemSecurity is their unified replacement
+	 * (Social Login + reCAPTCHA + brute-force protection for the
+	 * `academy/v1/login` endpoint), so the recommendation is irrelevant, and
+	 * the notice stays hidden, on installs that use neither.
+	 */
+	public static function maybe_add_gemsecurity_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// Gate: only relevant when Social Login or reCAPTCHA is in use.
+		$uses_social_login = Helper::get_addon_active_status( 'social-login', true );
+		$uses_recaptcha    = (bool) Helper::get_settings( 'is_enabled_recaptcha', false );
+		if ( ! $uses_social_login && ! $uses_recaptcha ) {
+			return;
+		}
+
+		if ( ! Helper::is_plugin_installed( 'gemsecurity/gemsecurity.php' ) ) {
+			self::add_notice( 'academy_gemsecurity_status', [
+				'type'          => 'warning',
+				'message'       => esc_html__( 'You\'re using Academy\'s Social Login and/or reCAPTCHA. GemSecurity is their all-in-one replacement — it handles Social Login, reCAPTCHA, and adds brute-force protection to your login. Download and install it to get started.', 'academy' ),
+				'button_text'   => __( 'Download GemSecurity', 'academy' ),
+				'button_action' => 'https://store.kodezen.com/se-download/free/gemsecurity/latest/',
+				'dismissible'   => true,
+			] );
+			return;
+		}
+
+		if ( ! Helper::is_active_gemsecurity() ) {
+			self::add_notice( 'academy_gemsecurity_status', [
+				'type'          => 'warning',
+				'message'       => esc_html__( 'GemSecurity is installed but not active. Activate it to replace Academy\'s Social Login and reCAPTCHA with its own modules and protect your login against brute-force attacks.', 'academy' ),
+				'button_text'   => __( 'Activate GemSecurity', 'academy' ),
+				'button_action' => esc_url( add_query_arg( array(
+					'academy-gemsecurity-activate' => true,
+					'security'                     => wp_create_nonce( 'academy_nonce' ),
+				) ) ),
+				'dismissible'   => true,
+			] );
+			return;
+		}
+
+		// GemSecurity is active — check whether Login Security (the one
+		// module Academy's integration actually relies on) is on. Guarded
+		// with has_filter() and a `true` default so an older GemSecurity
+		// version without this filter, or an unrecognized module id, never
+		// falsely triggers the notice (fail silent, not fail nagging).
+		if ( has_filter( 'gemsecurity/module_active' ) && ! apply_filters( 'gemsecurity/module_active', true, 'login-security' ) ) {
+			self::add_notice( 'academy_gemsecurity_status', [
+				'type'          => 'warning',
+				'message'       => esc_html__( 'GemSecurity\'s Login Security module is disabled. Enable it to protect Academy\'s login against brute-force attacks.', 'academy' ),
+				'button_text'   => __( 'Enable Protection', 'academy' ),
+				'button_action' => esc_url( admin_url( 'admin.php?page=gemsecurity-modules' ) ),
+				'dismissible'   => true,
+			] );
+		}
+	}
+
+	/**
+	 * The reCAPTCHA option is deprecated ahead of GemSecurity's own replacement, which
+	 * does not exist yet for Academy — so this notice never says "switch
+	 * now" or escalates; the message is constant until v4.1.0 actually ships
+	 * a working alternative.
+	 */
+	public static function maybe_add_recaptcha_deprecation_notice() {
+		if ( ! \Academy\Helper::get_settings( 'is_enabled_recaptcha', false ) ) {
+			return;
+		}
+
+		self::add_notice( 'deprecated_recaptcha_feature', [
+			'type'          => 'warning',
+			'message'       => esc_html__( 'Academy\'s built-in reCAPTCHA is deprecated and will be replaced by GemSecurity\'s own reCAPTCHA integration in v4.1.0.', 'academy' ),
+			'button_text'   => __( 'Learn More', 'academy' ),
+			'button_action' => 'https://academylms.net/docs/how-to-use-google-recaptcha-with-academy-lms/',
+			'dismissible'   => true,
+		] );
 	}
 
 
@@ -91,7 +178,33 @@ class Notices {
 
 		$args = wp_parse_args( $args, $defaults );
 
+		// A dismissible notice the current user already closed (see
+		// Ajax\Miscellaneous::dismiss_admin_notice()) never gets added in the
+		// first place — filtered here, once, for every call site, so it can't
+		// flash on render and any future notice added through this same
+		// method automatically gets persistent per-user dismissal for free.
+		// `pro_upgrade_discount_offer` keeps its own pre-existing site-wide
+		// dismissal (gated earlier in has_upgrade_to_pro_notice()), untouched.
+		if ( ! empty( $args['dismissible'] ) && in_array( $notice_name, self::get_dismissed_notices(), true ) ) {
+			return;
+		}
+
 		self::$notices[ $notice_name ] = $args;
+	}
+
+	/**
+	 * Notice keys the current user has dismissed (per-user, via user meta —
+	 * see Ajax\Miscellaneous::dismiss_admin_notice()).
+	 *
+	 * @return string[]
+	 */
+	private static function get_dismissed_notices() {
+		$user_id = get_current_user_id();
+		if ( ! $user_id ) {
+			return array();
+		}
+		$dismissed = get_user_meta( $user_id, 'academy_dismissed_admin_notices', true );
+		return is_array( $dismissed ) ? $dismissed : array();
 	}
 
 	public static function get_notices() {
@@ -121,6 +234,8 @@ class Notices {
 				$this->pro_upgrade_discount_offer();
 			} elseif ( isset( $_GET['deactivate-academy-certificates'] ) && (bool) $_GET['deactivate-academy-certificates'] ) {
 				$this->deactivated_certificate_addon();
+			} elseif ( isset( $_GET['academy-gemsecurity-activate'] ) && (bool) $_GET['academy-gemsecurity-activate'] ) {
+				$this->activate_gemsecurity();
 			}
 		}
 	}
@@ -142,6 +257,17 @@ class Notices {
 	public function deactivated_certificate_addon() {
 		if ( current_user_can( 'activate_plugins' ) ) {
 			deactivate_plugins( 'academy-certificates/academy-certificates.php' );
+			wp_safe_redirect( admin_url( 'admin.php?page=academy' ) );
+			exit;
+		}
+	}
+
+	public function activate_gemsecurity() {
+		if ( current_user_can( 'activate_plugins' ) ) {
+			if ( ! function_exists( 'activate_plugin' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/plugin.php';
+			}
+			activate_plugin( 'gemsecurity/gemsecurity.php' );
 			wp_safe_redirect( admin_url( 'admin.php?page=academy' ) );
 			exit;
 		}

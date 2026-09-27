@@ -386,7 +386,6 @@ class LearnPress extends Migration implements MigrationInterface {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->update( $wpdb->comments,
 					array(
-						'comment_approved' => 'approved',
 						'comment_type' => 'academy_courses',
 						'comment_agent' => 'academy',
 						'comment_approved' => 1,

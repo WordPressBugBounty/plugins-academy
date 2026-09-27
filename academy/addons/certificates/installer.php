@@ -31,15 +31,13 @@ class Installer {
 
 		$certificates = Helper::necessary_certificates();
 
-		foreach ( $certificates as $certificate ) {
+		foreach ( $certificates as $index => $certificate ) {
 			$title = $certificate['title'];
-			$file_path = ACADEMY_ADDONS_DIR_PATH . $certificate['file'];
-
-			if ( file_exists( $file_path ) ) {
-				ob_start();
-				require_once $file_path;
-				$post_content = ob_get_clean();
-			}
+			// Shared with the reset tool, and deliberately not `require_once`:
+			// see Helper::get_default_certificate_content(). Reading it per
+			// iteration also stops a missing template silently reusing the
+			// previous certificate's markup.
+			$post_content = Helper::get_default_certificate_content( $certificate['file'] );
 
 				$have_certificate = \Academy\Helper::get_page_by_title( $title, $post_type );
 			if ( $have_certificate ) {
@@ -55,10 +53,18 @@ class Installer {
 					'post_status'  => 'publish',
 					'post_type'    => $post_type,
 				);
-				wp_insert_post( $new_post );
-			}
+				$new_id = wp_insert_post( $new_post );
+				// Ships with BOTH representations: the classic markup prints the
+				// PDF until someone saves it, and the tree is what the block
+				// builder opens — without it the editor shows a blank page.
+				if ( $new_id && ! is_wp_error( $new_id ) ) {
+					update_post_meta(
+						$new_id,
+						'_academy_certificate_tree',
+						wp_slash( wp_json_encode( Helper::default_certificate_tree( Helper::default_certificate_image( $index + 1 ) ) ) )
+					);
+				}
+			}//end if
 		}//end foreach
-
 	}
-
 }

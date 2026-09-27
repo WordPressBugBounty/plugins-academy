@@ -6,8 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use \Academy\Helper;
+use Academy\Helper;
 use AcademyStoreEngine\Storeengine;
+use AcademyEasyContentManager\EasyContentManager;
 
 class Addons {
 
@@ -35,6 +36,9 @@ class Addons {
 			'course-preview' => 'CoursePreview',
 			'chatgpt' => 'Chatgpt',
 			'gumlet-video' => 'GumletVideo',
+			'notes' => 'Notes',
+			'seeder' => 'Seeder',
+			'quizpress' => 'Quizpress',
 		]);
 
 		foreach ( $addons as $addon_name => $addon_class_name ) {
@@ -49,8 +53,13 @@ class Addons {
 		}
 
 		$Autoload->add_namespace_directory( 'AcademyStoreEngine', ACADEMY_ADDONS_DIR_PATH . 'storeengine/' );
-		$Autoload->add_namespace_directory( 'AcademyZenApp', ACADEMY_ADDONS_DIR_PATH . 'zen-app/' );
 		Storeengine::init();
+
+		// Not a user-toggleable addon (no on/off entry in Settings > Addons) —
+		// same reasoning as Storeengine above: always-on glue code, gated
+		// purely on whether the sibling plugin is active.
+		$Autoload->add_namespace_directory( 'AcademyEasyContentManager', ACADEMY_ADDONS_DIR_PATH . 'easy-content-manager/' );
+		EasyContentManager::init();
 	}
 
 	public function get_all_addons() {
@@ -77,9 +86,7 @@ class Addons {
 		}
 
 		if ( $status ) {
-			// Individual fields are sanitized after decoding (see below); JSON payload cannot be pre-sanitized without corruption.
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$required_plugin = ( isset( $_POST['required_plugin'] ) ? json_decode( wp_unslash( $_POST['required_plugin'] ), true ) : '' );
+			$required_plugin = ( isset( $_POST['required_plugin'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['required_plugin'] ) ), true ) : '' );
 			do_action( 'academy/before_active_addon', $addon_slug, $required_plugin );
 			if ( $required_plugin && is_array( $required_plugin ) ) {
 				foreach ( $required_plugin as $plugin ) {
@@ -114,6 +121,16 @@ class Addons {
 	public function check_addon_pre_active_requirement( $addon_slug, $requirement ) {
 		if ( 'certificates' === $addon_slug && Helper::is_plugin_active( 'academy-certificates/academy-certificates.php' ) ) {
 			wp_send_json_error( esc_html__( 'To avoid conflicts, please first deactivate the Academy Certificate plugin.', 'academy' ) );
+		}
+
+		// Course Bundle has no monetization of its own - its admin page, REST
+		// routes, and CPT only bootstrap when one of these is active (see
+		// AcademyProCourseBundle\CourseBundle::init_addon() and
+		// Helper::get_admin_menu_list()). Without this gate the addon could be
+		// switched "on" with neither active, leaving admin.php?page=academy-course-bundle
+		// unregistered and throwing WordPress's generic access-denied wall.
+		if ( 'course-bundle' === $addon_slug && ! Helper::is_active_woocommerce() && ! class_exists( \StoreEngine::class ) ) {
+			wp_send_json_error( esc_html__( 'WooCommerce or StoreEngine must be active to enable the Course Bundle addon.', 'academy' ) );
 		}
 	}
 }

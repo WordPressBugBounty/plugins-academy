@@ -1,0 +1,81 @@
+:where(.wp-block-academy-course-announcements) {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.academy-course-announcements__item {
+	margin: 0;
+}
+
+.academy-course-announcements__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.25em 1em;
+}
+
+.academy-course-announcements__title {
+	margin: 0;
+	font-size: 1.05em;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.academy-course-announcements__date {
+	font-size: 0.85em;
+	opacity: 0.7;
+	white-space: nowrap;
+}
+
+.academy-course-announcements__content {
+	margin-top: 0.4em;
+}
+
+.academy-course-announcements__content > :first-child {
+	margin-top: 0;
+}
+
+.academy-course-announcements__content > :last-child {
+	margin-bottom: 0;
+}
+
+/* List: items divided by a line. */
+.wp-block-academy-course-announcements:not([class*="is-style-"]) .academy-course-announcements__item + .academy-course-announcements__item,
+.wp-block-academy-course-announcements.is-style-list .academy-course-announcements__item + .academy-course-announcements__item {
+	padding-top: 1rem;
+	border-top: 1px solid var(--academy-border-color, #e4e7ee);
+}
+
+/* Cards: each announcement on its own surface. */
+.wp-block-academy-course-announcements.is-style-cards .academy-course-announcements__item {
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border-radius: 10px;
+	background: var(--academy-surface-color, #fff);
+}
+
+/* Timeline: a line down the side with a dot per announcement. */
+/* In the editor the preview repeats the block's class inside its wrapper, so the line is drawn once. */
+.wp-block-academy-course-announcements.is-style-timeline:not(:has(> .wp-block-academy-course-announcements)) {
+	gap: 1.5rem;
+	padding-inline-start: 1.5rem;
+	border-inline-start: 2px solid var(--academy-border-color, #e4e7ee);
+}
+
+.wp-block-academy-course-announcements.is-style-timeline .academy-course-announcements__item {
+	position: relative;
+}
+
+.wp-block-academy-course-announcements.is-style-timeline .academy-course-announcements__item::before {
+	content: "";
+	position: absolute;
+	top: 0.45em;
+	inset-inline-start: calc(-1.5rem - 7px);
+	width: 12px;
+	height: 12px;
+	border: 2px solid var(--academy-surface-color, #fff);
+	border-radius: 50%;
+	background: var(--academy-primary-color, currentColor);
+}

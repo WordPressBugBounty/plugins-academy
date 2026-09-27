@@ -10,6 +10,7 @@ class Integration {
 	public static function init() {
 		$self = new self();
 		$self->add_cache_plugin_integration();
+		$self->add_security_plugin_integration();
 	}
 
 	public function add_cache_plugin_integration() {
@@ -24,4 +25,7 @@ class Integration {
 		Integration\BerqWp::init();
 	}
 
+	public function add_security_plugin_integration() {
+		Integration\GemSecurity::init();
+	}
 }

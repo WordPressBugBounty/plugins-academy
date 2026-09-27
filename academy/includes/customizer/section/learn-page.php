@@ -585,7 +585,6 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 				)
 			)
 		);
-
 	}
 	public function add_sidebar_topic_styling( $wp_customize ) {
 		// Topic Section Style
@@ -731,7 +730,6 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 				)
 			)
 		);
-
 	}
 	public function add_sidebar_topic_active_styling( $wp_customize ) {
 		// Topic Section Style
@@ -877,7 +875,6 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 				)
 			)
 		);
-
 	}
 
 	public function add_sidebar_sub_topics_styling( $wp_customize ) {
@@ -992,7 +989,6 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 				)
 			)
 		);
-
 	}
 	public function add_sidebar_sub_topic_styling( $wp_customize ) {
 		// Sub Topic Section Style
@@ -1138,7 +1134,6 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 				)
 			)
 		);
-
 	}
 	public function add_sidebar_sub_topic_active_styling( $wp_customize ) {
 		// Sub Topic Section Style
@@ -1284,7 +1279,6 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 				)
 			)
 		);
-
 	}
 
 	public function add_qa_form_styling( $wp_customize ) {
@@ -1463,7 +1457,6 @@ class LearnPage extends SectionBase implements CustomizerSectionInterface {
 				)
 			)
 		);
-
 	}
 
 	public function add_announcement_item_styling( $wp_customize ) {

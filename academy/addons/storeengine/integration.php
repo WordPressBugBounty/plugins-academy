@@ -33,6 +33,7 @@ class Integration {
 		if ( \Academy\Helper::get_settings( 'store_link_inside_frontend_dashboard', true ) ) {
 			$menu['store-dashboard'] = array(
 				'label' => Helper::get_settings( 'store_link_label_inside_frontend_dashboard', __( 'Store Dashboard', 'academy' ) ),
+				'area'     => 'learning',
 				'icon'  => 'academy-icon academy-icon--calender',
 				'permalink' => \StoreEngine\Utils\Helper::get_page_permalink( 'dashboard_page' ),
 				'public' => true,
@@ -63,7 +64,7 @@ class Integration {
 			return;
 		}
 		$table = $wpdb->prefix . 'storeengine_integrations';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		$integration_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT integration_id FROM $table WHERE provider = %s AND product_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -71,6 +72,7 @@ class Integration {
 				$product_id
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( empty( $integration_id ) ) {
 			return;

@@ -1,0 +1,96 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/enrolled-courses",
+	"title": "Enrolled Courses",
+	"category": "academy",
+	"description": "Courses the signed-in student is enrolled in, with progress.",
+	"keywords": [
+		"my courses",
+		"enrolled",
+		"progress",
+		"student"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		},
+		"count": {
+			"type": "number",
+			"default": 6
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"pagination": {
+			"type": "boolean",
+			"default": true
+		},
+		"show": {
+			"type": "string",
+			"enum": [
+				"all",
+				"in-progress",
+				"completed"
+			],
+			"default": "all"
+		},
+		"showImage": {
+			"type": "boolean",
+			"default": true
+		},
+		"showTopics": {
+			"type": "boolean",
+			"default": true
+		},
+		"showEnrolled": {
+			"type": "boolean",
+			"default": true
+		},
+		"showButton": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"style": "file:./style.css"
+}

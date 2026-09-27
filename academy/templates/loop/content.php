@@ -18,7 +18,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$categories = apply_filters( 'academy/templates/course_categories', ! empty( $raw_categories ) ? array_slice( $raw_categories, 0, 1 ) : '', $course_id, $raw_categories );
 	if ( ! empty( $categories ) ) {
 		foreach ( $categories as $category ) {
-			echo '<p class="academy-course__meta academy-course__meta--category"><a href="' . esc_url( get_term_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a></p>';
+			$category_link = get_term_link( $category );
+			if ( is_wp_error( $category_link ) ) {
+				continue;
+			}
+			echo '<p class="academy-course__meta academy-course__meta--category"><a href="' . esc_url( $category_link ) . '"><img class="academy-course__meta--category-thumb" src="' . esc_url( \Academy\Helper::get_the_course_category_image_url( $category->term_id ) ) . '" alt="" />' . esc_html( $category->name ) . '</a></p>';
 		}
 	}
 	?>

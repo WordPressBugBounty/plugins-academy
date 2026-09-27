@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Ajax;
+namespace Academy\Ajax;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -17,6 +17,10 @@ use Academy\Lesson\LessonApi\Lesson as LessonApi;
 class Course extends AbstractAjaxHandler {
 	public function __construct() {
 		$this->actions = array(
+			'preview_curriculum_item' => array(
+				'callback'   => array( $this, 'preview_curriculum_item' ),
+				'capability' => 'manage_academy_instructor',
+			),
 			'get_course_slug' => array(
 				'callback' => array( $this, 'get_course_slug' ),
 				'capability'    => 'manage_academy_instructor'
@@ -49,6 +53,14 @@ class Course extends AbstractAjaxHandler {
 				'callback' => array( $this, 'get_my_courses' ),
 				'capability'    => 'manage_academy_instructor'
 			),
+			'enroll_course' => array(
+				'callback' => array( $this, 'enroll_course' ),
+				'allow_visitor_action'    => true
+			),
+			'complete_course' => array(
+				'callback' => array( $this, 'complete_course' ),
+				'capability'    => 'read'
+			),
 			'add_course_review' => array(
 				'callback' => array( $this, 'add_course_review' ),
 				'capability'    => 'read'
@@ -69,8 +81,148 @@ class Course extends AbstractAjaxHandler {
 				'callback'   => [ $this, 'import_from_playlist' ],
 				'capability' => 'manage_options',
 			],
+			'get_sticky_courses_priorities' => array(
+				'callback'   => array( $this, 'get_sticky_courses_priorities' ),
+				'capability' => 'manage_academy_instructor',
+			),
+			'reorder_sticky_courses' => array(
+				'callback'   => array( $this, 'reorder_sticky_courses' ),
+				'capability' => 'manage_academy_instructor',
+			),
 		);
+	}
 
+	/**
+	 * Lists the other featured courses and their priority (`menu_order`) so
+	 * the course editor can show, and drag-reorder, where this course ranks
+	 * among them. `exclude_id` leaves out the course being edited — the client
+	 * splices that one in itself at its in-progress priority.
+	 *
+	 * Ordered the same way the catalog orders featured courses, so the list
+	 * mirrors what a visitor actually sees.
+	 *
+	 * @param array $payload_data
+	 */
+	public function get_sticky_courses_priorities( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload( array(
+			'exclude_id' => 'integer',
+		), $payload_data );
+
+		$exclude_id = ! empty( $payload['exclude_id'] ) ? $payload['exclude_id'] : 0;
+
+		$sticky_courses = get_posts( array(
+			'post_type'      => 'academy_courses',
+			'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
+			'posts_per_page' => -1, // phpcs:ignore WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page -- admin reorder screen needs every featured course; a hand-picked, short list.
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				array(
+					'key'   => \Academy\Helper::STICKY_META_KEY,
+					'value' => '1',
+				),
+			),
+			'orderby'        => array(
+				'menu_order' => 'ASC',
+				'date'       => 'DESC',
+			),
+		) );
+
+		$result = array();
+		foreach ( $sticky_courses as $course ) {
+			// Excluded here rather than with post__not_in, which defeats the query cache.
+			if ( (int) $exclude_id === (int) $course->ID ) {
+				continue;
+			}
+			// Every instructor can see the featured ORDER — it is public
+			// information the moment the catalog renders — but the titles of
+			// courses that are not yet public are not. Show those as a
+			// placeholder rather than leaking another author's draft.
+			$is_visible = 'publish' === $course->post_status || current_user_can( 'edit_post', $course->ID );
+
+			$result[] = array(
+				'id'         => $course->ID,
+				'title'      => $is_visible ? get_the_title( $course ) : esc_html__( 'Another featured course', 'academy' ),
+				'menu_order' => (int) $course->menu_order,
+				'can_edit'   => current_user_can( 'edit_post', $course->ID ),
+			);
+		}
+
+		wp_send_json_success( $result );
+	}
+
+	/**
+	 * Persists a new drag-order for featured courses from the course editor's
+	 * priority list. `order` is an array of course IDs in their new
+	 * top-to-bottom sequence; a course's 1-based position becomes its
+	 * `menu_order`. Position 0 is left unused so it keeps meaning "no priority
+	 * set yet" (see `Database::maybe_assign_sticky_priority()`).
+	 *
+	 * Every course is authorised individually with `edit_post`: holding
+	 * `manage_academy_instructor` is enough to reach this endpoint, but not to
+	 * reorder a course you cannot edit — otherwise any instructor could demote
+	 * a colleague's featured course and promote their own. IDs that fail the
+	 * check, are not `academy_courses` posts, or are no longer featured are
+	 * skipped, so a stale client cannot resurrect them either.
+	 *
+	 * The course open in the editor is included here too — its own
+	 * `menu_order` Formik field is kept in sync client-side, but this endpoint
+	 * is what persists it and every other listed course immediately, since the
+	 * rest of the list is not part of this course's save payload.
+	 *
+	 * @param array $payload_data
+	 */
+	public function reorder_sticky_courses( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload( array(
+			'order' => 'array',
+		), $payload_data );
+
+		$order = ! empty( $payload['order'] ) && is_array( $payload['order'] ) ? array_values( $payload['order'] ) : array();
+
+		if ( empty( $order ) ) {
+			wp_send_json_error( esc_html__( 'No course order provided.', 'academy' ) );
+		}
+
+		$updated = 0;
+		$skipped = 0;
+
+		foreach ( $order as $index => $course_id ) {
+			$course_id = absint( $course_id );
+
+			if ( ! $course_id || 'academy_courses' !== get_post_type( $course_id ) ) {
+				continue;
+			}
+
+			if ( ! \Academy\Helper::is_course_sticky( $course_id ) ) {
+				continue;
+			}
+
+			if ( ! current_user_can( 'edit_post', $course_id ) ) {
+				++$skipped;
+				continue;
+			}
+
+			$priority = $index + 1;
+
+			if ( (int) get_post_field( 'menu_order', $course_id ) === $priority ) {
+				continue;
+			}
+
+			$result = wp_update_post(
+				array(
+					'ID'         => $course_id,
+					'menu_order' => $priority,
+				),
+				true
+			);
+
+			if ( ! is_wp_error( $result ) ) {
+				++$updated;
+			}
+		}//end foreach
+
+		wp_send_json_success( array(
+			'updated' => $updated,
+			'skipped' => $skipped,
+		) );
 	}
 
 	public function get_course_slug( $payload_data ) {
@@ -81,6 +233,39 @@ class Course extends AbstractAjaxHandler {
 		], $payload_data );
 		$new_slug = isset( $payload['new_slug'] ) ? $payload['new_slug'] : '';
 		wp_send_json_success( Helper::get_sample_permalink_args( $payload['ID'], $payload['new_title'], $new_slug ) );
+	}
+
+	/**
+	 * Redirect to a curriculum item's frontend learn page. Because the learn URL
+	 * depends on the `is_enabled_lessons_php_render` setting (pretty permalink vs
+	 * React-player hash route) and on the item's slug — neither of which the
+	 * course builder holds — the URL is resolved here via the shared helper and
+	 * the browser is redirected. Opened in a new tab by the builder's preview
+	 * links (course row eye icons / editors).
+	 */
+	public function preview_curriculum_item() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- nonce already verified in handle_ajax_request().
+		$course_id = isset( $_GET['course_id'] ) ? absint( $_GET['course_id'] ) : 0;
+		$type      = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( $_GET['type'] ) ) : '';
+		$item_id   = isset( $_GET['item_id'] ) ? absint( $_GET['item_id'] ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		$allowed_types = array( 'lesson', 'quiz', 'assignment', 'meeting', 'booking', 'quizpress_quiz' );
+		if ( ! $course_id || ! $item_id || ! in_array( $type, $allowed_types, true ) ) {
+			wp_die( esc_html__( 'Invalid preview request.', 'academy' ) );
+		}
+
+		$url = Helper::get_topic_play_link( array(
+			'type' => $type,
+			'id'   => $item_id,
+		), $course_id );
+
+		if ( empty( $url ) ) {
+			$url = get_the_permalink( $course_id );
+		}
+
+		wp_safe_redirect( $url );
+		exit;
 	}
 
 	public function fetch_course_category( $payload_data ) {
@@ -134,11 +319,13 @@ class Course extends AbstractAjaxHandler {
 			$post_in      = array_diff( $enrolled_course_ids, $complete_course_ids );
 		}
 
+		// An empty post__in is ignored by WP_Query (it would list every course), so pin it to nothing.
+		$post_in     = $post_in ? array_values( $post_in ) : array( 0 );
 		$course_args = array(
 			'post_type'      => 'academy_courses',
 			'post_status'    => 'publish',
 			'post__in'       => $post_in,
-			'posts_per_page' => -1,
+			'posts_per_page' => count( $post_in ),
 		);
 		$courses = new \WP_Query( apply_filters( 'academy/enrolled_courses_args', $course_args ) );
 		ob_start();
@@ -161,7 +348,7 @@ class Course extends AbstractAjaxHandler {
 
 							<?php
 							// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
-							echo '<img class="academy-course__thumbnail-image" src="' . esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ) . '" alt="' . esc_html__( 'thumbnail', 'academy' ) . '">';
+							echo '<img class="academy-course__thumbnail-image" src="' . esc_url( Academy\Helper::get_the_course_thumbnail_url( 'academy_thumbnail' ) ) . '" alt="' . esc_attr__( 'thumbnail', 'academy' ) . '">';
 							?>
 						</a>
 					</div>
@@ -207,7 +394,7 @@ class Course extends AbstractAjaxHandler {
 		</div>
 				<?php
 
-				wp_reset_postdata(); else : ?>
+				wp_reset_query(); else : ?>
 				<div class='academy-mycourse'>
 					<h3 class='academy-not-found'>
 						<?php
@@ -239,7 +426,7 @@ class Course extends AbstractAjaxHandler {
 			'post_type'      => 'academy_courses',
 			'post_status'    => 'publish',
 			'post__in'       => $pending_enrolled_course_ids,
-			'posts_per_page' => -1,
+			'posts_per_page' => count( $pending_enrolled_course_ids ),
 		);
 		$courses = new \WP_Query( apply_filters( 'academy/pending_enrolled_course_args', $course_args ) );
 		$response = [];
@@ -252,7 +439,7 @@ class Course extends AbstractAjaxHandler {
 					'title' => get_the_title(),
 				);
 			endwhile;
-			wp_reset_postdata();
+			wp_reset_query();
 		}
 		wp_send_json_success( $response );
 	}
@@ -272,7 +459,7 @@ class Course extends AbstractAjaxHandler {
 							$courses->the_post();
 							\Academy\Helper::get_template_part( 'content', 'course' );
 						endwhile;
-						wp_reset_postdata();
+						wp_reset_query();
 					else :
 						?>
 					<div class='academy-mycourse'>
@@ -293,7 +480,7 @@ class Course extends AbstractAjaxHandler {
 		if ( ! is_user_logged_in() ) {
 			if ( \Academy\Helper::get_settings( 'is_enabled_academy_login', true ) ) {
 				ob_start();
-				echo do_shortcode( '[academy_login_form form_title="' . esc_html__( 'Hi, Welcome back!', 'academy' ) . '" show_logged_in_message="false"]' );
+				echo do_shortcode( '[academy_login_form form_title="' . esc_attr__( 'Hi, Welcome back!', 'academy' ) . '" show_logged_in_message="false"]' );
 				$markup = ob_get_clean();
 				wp_send_json_error( array( 'markup' => $markup ) );
 			}
@@ -357,12 +544,14 @@ class Course extends AbstractAjaxHandler {
 
 	public function get_my_courses() {
 		$response = [];
+		// phpcs:disable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page -- needs the complete (small, bounded) set
 		$course_args = array(
 			'post_type'         => 'academy_courses',
 			'post_status'       => 'publish',
 			'author'            => get_current_user_id(),
 			'posts_per_page'    => -1,
 		);
+		// phpcs:enable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page
 		$courses = new \WP_Query( apply_filters( 'academy/my_courses_args', $course_args ) );
 		if ( $courses->have_posts() ) :
 			while ( $courses->have_posts() ) :
@@ -379,9 +568,135 @@ class Course extends AbstractAjaxHandler {
 					'total_enrolled'    => $total_enrolled
 				);
 			endwhile;
-			wp_reset_postdata();
+			wp_reset_query();
 		endif;
 		wp_send_json_success( $response );
+	}
+
+	public function enroll_course( $payload_data ) {
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'is_required_logged_in' => true ) );
+		}
+
+		$user_id = get_current_user_id();
+		$payload = Sanitizer::sanitize_payload([
+			'course_id' => 'integer',
+		], $payload_data );
+
+		$course_id = (int) $payload['course_id'];
+		// Only a published course takes enrollments from this endpoint.
+		if ( 'academy_courses' !== get_post_type( $course_id ) || 'publish' !== get_post_status( $course_id ) ) {
+			wp_send_json_error( __( 'This course is not available for enrollment.', 'academy' ) );
+		}
+		$course_type = \Academy\Helper::get_course_type( $course_id );
+		$is_enrolled = false;
+		$course_type = apply_filters( 'academy/before_enroll_course_type', $course_type, $course_id );
+		if ( 'free' === $course_type || 'public' === $course_type ) {
+			$is_enrolled = \Academy\Helper::do_enroll( $course_id, $user_id );
+		}
+
+		if ( $is_enrolled ) {
+			wp_send_json_success( __( 'Successfully Enrolled.', 'academy' ) );
+		}
+		wp_send_json_error( __( 'Failed to enrolled course.', 'academy' ) );
+	}
+
+	public function complete_course( $payload_data ) {
+		$user_id = get_current_user_id();
+		$payload = Sanitizer::sanitize_payload([
+			'course_id' => 'integer',
+		], $payload_data );
+		$course_id = (int) $payload['course_id'];
+		// Only a learner of a published course can complete it (and earn its
+		// certificate): enrolled, or any logged-in user on a public course.
+		if ( 'academy_courses' !== get_post_type( $course_id ) || 'publish' !== get_post_status( $course_id ) ) {
+			wp_send_json_error( __( 'This course is not available.', 'academy' ) );
+		}
+		if ( ! \Academy\Helper::is_enrolled( $course_id, $user_id ) && ! \Academy\Helper::is_public_course( $course_id ) ) {
+			wp_send_json_error( __( 'You are not enrolled in this course.', 'academy' ) );
+		}
+		$has_incomplete_topic = false;
+		$curriculum_lists = \Academy\Helper::get_course_curriculum( $course_id );
+		foreach ( $curriculum_lists as $curriculum_list ) {
+			if ( is_array( $curriculum_list['topics'] ) ) {
+				foreach ( $curriculum_list['topics'] as $topic ) {
+					if ( empty( $topic['is_completed'] ) && 'sub-curriculum' !== $topic['type'] ) {
+						$has_incomplete_topic = true;
+						break;
+					}
+					if ( isset( $topic['topics'] ) && is_array( $topic['topics'] ) ) {
+						foreach ( $topic['topics'] as $child_topic ) {
+							if ( empty( $child_topic['is_completed'] ) ) {
+								$has_incomplete_topic = true;
+								break;
+							}
+						}
+					}
+				}
+			}
+			// found incomplete topic then break loop
+			if ( $has_incomplete_topic ) {
+				break;
+			}
+		}//end foreach
+
+		if ( $has_incomplete_topic ) {
+			wp_send_json_error( __( 'To complete this course, please make sure that you have finished all the topics.', 'academy' ) );
+		}
+
+		do_action( 'academy/admin/course_complete_before', $course_id );
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$completed = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(comment_ID) from {$wpdb->comments} 
+				WHERE comment_agent = 'academy' AND comment_type = 'course_completed' 
+				AND comment_post_ID = %d AND user_id = %d",
+				$course_id, $user_id
+			),
+		);
+
+		if ( $completed > 0 ) {
+			wp_send_json_error( __( 'You have already completed this course.', 'academy' ) );
+		}
+
+		$date = gmdate( 'Y-m-d H:i:s', \Academy\Helper::get_time() );
+
+		// hash is unique.
+		do {
+			$hash    = substr( md5( wp_generate_password( 32 ) . $date . $course_id . $user_id ), 0, 16 );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$hasHash = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(comment_ID) from {$wpdb->comments} 
+				WHERE comment_agent = 'academy' AND comment_type = 'course_completed' AND comment_content = %s ",
+					$hash
+				)
+			);
+
+		} while ( $hasHash > 0 );
+
+		$data = array(
+			'comment_post_ID'  => $course_id,
+			'comment_author'   => $user_id,
+			'comment_date'     => $date,
+			'comment_date_gmt' => get_gmt_from_date( $date ),
+			'comment_content'  => $hash,
+			'comment_approved' => 'approved',
+			'comment_agent'    => 'academy',
+			'comment_type'     => 'course_completed',
+			'user_id'          => $user_id,
+		);
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$is_complete = $wpdb->insert( $wpdb->comments, $data );
+
+		do_action( 'academy/admin/course_complete_after', $course_id, $user_id );
+
+		if ( $is_complete ) {
+			wp_send_json_success( __( 'Successfully Completed.', 'academy' ) );
+		}
+		wp_send_json_error( __( 'Failed, try again.', 'academy' ) );
 	}
 
 	public function add_course_review( $payload_data ) {
@@ -451,7 +766,7 @@ class Course extends AbstractAjaxHandler {
 			'courseID' => 'integer',
 		], $payload_data );
 		$course_id = isset( $payload['courseID'] ) ? $payload['courseID'] : 0;
-		$is_administrator = current_user_can( 'administrator' );
+		$is_administrator = current_user_can( 'manage_options' );
 		$is_instructor    = \Academy\Helper::is_instructor_of_this_course( $student_id, $course_id );
 		$enrolled         = \Academy\Helper::is_enrolled( $course_id, $student_id );
 		$response = [];
@@ -476,28 +791,16 @@ class Course extends AbstractAjaxHandler {
 			wp_die();
 		}
 
-		if ( ! isset( $_FILES['upload_file']['tmp_name'], $_FILES['upload_file']['name'] ) ) {
+		if ( ! isset( $_FILES['upload_file'] ) ) {
 			wp_send_json_error( __( 'Upload File is empty.', 'academy' ) );
 		}
 
-		// `tmp_name` is a PHP-generated upload path, not user text. Running it through 
-		// sanitize_text_field() (which strips tags/whitespace and `%XX` octets) can mangle
-		// the path and break fopen() below, so validate it is a genuine upload instead.
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-		$tmp_name  = $_FILES['upload_file']['tmp_name'];
-		$file_name = sanitize_file_name( wp_unslash( $_FILES['upload_file']['name'] ) );
-
-		if ( ! is_uploaded_file( $tmp_name ) ) {
-			wp_send_json_error( __( 'Invalid file upload.', 'academy' ) );
-		}
-
-		$filetype = wp_check_filetype( $file_name, [ 'csv' => 'text/csv' ] );
-		if ( 'csv' !== $filetype['ext'] ) {
+		$file = $_FILES['upload_file']; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked by AbstractAjaxHandler; uploaded-file array, only the PHP tmp path is read.
+		if ( 'csv' !== pathinfo( $file['name'] )['extension'] ) {
 			wp_send_json_error( __( 'Wrong File Format! Please import csv file.', 'academy' ) );
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
-		$file_open = fopen( $tmp_name, 'r' );
+		$file_open = fopen( $file['tmp_name'], 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reads the PHP upload tmp file
 		if ( false !== $file_open ) {
 			$has_course = false;
 			$has_course_meta = false;
@@ -518,23 +821,34 @@ class Course extends AbstractAjaxHandler {
 			$course_ids = [];
 			$new_curr_item = [];
 			$response = [];
-			// phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-			while ( false !== ( $item = fgetcsv( $file_open, null, ',', '"', '\\' ) ) ) {
+			while ( true ) {
+				$item = fgetcsv( $file_open, null, ',', '"', '\\' );
+				if ( false === $item ) {
+					break;
+				}
 				if ( in_array( 'post_title', $item, true ) ) {
 					$course_header = array_map( 'strtolower', $item );
 					$has_course = true;
+					$has_question = false;
+					$has_answer = false;
 					continue;
 				} elseif ( in_array( 'course_expire_enrollment', $item, true ) ) {
 					$course_meta_header = array_map( 'strtolower', $item );
 					$has_course_meta = true;
+					$has_question = false;
+					$has_answer = false;
 					continue;
 				} elseif ( in_array( 'lesson_title', $item, true ) ) {
 					$lesson_header = array_map( 'strtolower', $item );
 					$has_lesson = true;
+					$has_question = false;
+					$has_answer = false;
 					continue;
 				} elseif ( in_array( 'quiz_title', $item, true ) ) {
 					$quiz_header = array_map( 'strtolower', $item );
 					$has_quiz = true;
+					$has_question = false;
+					$has_answer = false;
 					continue;
 				} elseif ( in_array( 'question_title', $item, true ) ) {
 					$question_header = array_map( 'strtolower', $item );
@@ -548,6 +862,8 @@ class Course extends AbstractAjaxHandler {
 				} elseif ( in_array( 'assignment_title', $item, true ) ) {
 					$assignment_header = array_map( 'strtolower', $item );
 					$has_assignment = true;
+					$has_question = false;
+					$has_answer = false;
 					continue;
 				}//end if
 
@@ -563,11 +879,13 @@ class Course extends AbstractAjaxHandler {
 					$slug_exist = \Academy\Helper::is_course_slug_exist( $course_item['post_title'] );
 					if ( $slug_exist ) {
 						$course = \Academy\Helper::get_page_by_title( $course_item['post_title'], 'academy_courses' );
+						$new_course_id = 0;
 						$old_course_id = $course->ID;
 						$course_ids[] = $old_course_id;
 						$response[] = __( 'Failed, Already Inserted the Course', 'academy' ) . ' - ' . $course_item['post_title'];
 						continue;
 					}
+					$old_course_id = 0;
 					$new_course_id = $this->course_data_set( $course_item );
 					$response[] = $new_course_id ? __( 'Successfully Inserted the Course - ', 'academy' ) . $course_item['post_title'] : __( 'Sorry, Failed to Inserted the Course - ', 'academy' ) . $course_item['post_title'];
 					$course_ids[] = $new_course_id;
@@ -577,7 +895,7 @@ class Course extends AbstractAjaxHandler {
 					$course_meta_item = array_combine( $course_meta_header, $item );
 					$meta = isset( $course_meta_item['course_curriculum'] ) ? json_decode( $course_meta_item['course_curriculum'], true ) : false;
 					$new_curr_item[] = [
-						'course_id' => $new_course_id ?? $old_course_id,
+						'course_id' => $new_course_id ? $new_course_id : $old_course_id,
 						'curriculum' => $meta
 					];
 					if ( $new_course_id ) {
@@ -594,7 +912,7 @@ class Course extends AbstractAjaxHandler {
 					$response[] = ! empty( $new_lesson_id ) ? __( 'Successfully Inserted the Lesson - ', 'academy' ) . $lesson_item['lesson_title'] : __( 'Sorry, Already have the Lesson - ', 'academy' ) . $lesson_item['lesson_title'];
 				} elseif ( $has_quiz ) {
 					$has_quiz = false;
-					if ( ! \Academy\Helper::get_addon_active_status( 'quizzes' ) ) {
+					if ( ! \Academy\Helper::is_active_academy_pro() ) {
 						continue;
 					}
 					$item = self::combine_csv_item( $item, $quiz_header );
@@ -611,13 +929,13 @@ class Course extends AbstractAjaxHandler {
 					$new_question_id = apply_filters( 'academy_pro/export-import/insert_question_data', $question_item, $new_quiz_id );
 					$response[] = $new_question_id ? __( 'Successfully Inserted the Question - ', 'academy' ) . $question_item['question_title'] : __( 'Sorry, Already have the Question - ', 'academy' ) . $question_item['question_title'];
 				} elseif ( $has_answer && $new_quiz_id && $new_question_id ) {
-					$has_answer = false;
+					// Keep reading answers: the export writes one header per question, then one row per answer.
 					$item = self::combine_csv_item( $item, $answer_header );
 					$answer_item = array_combine( $answer_header, $item );
 					apply_filters( 'academy_pro/export-import/insert_answer_data', $answer_item, $new_quiz_id, $new_question_id );
 				} elseif ( $has_assignment ) {
 					$has_assignment = false;
-					if ( ! \Academy\Helper::get_addon_active_status( 'assignments', true ) ) {
+					if ( ! \Academy\Helper::is_active_academy_pro() ) {
 						continue;
 					}
 					$item = self::combine_csv_item( $item, $assignment_header );
@@ -635,7 +953,7 @@ class Course extends AbstractAjaxHandler {
 					$this->update_course_curriculum( $item['curriculum'], $item['course_id'] );
 				}
 			}
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the uploaded CSV opened with fopen() above
 			fclose( $file_open );
 
 			wp_send_json_success( $response );
@@ -835,8 +1153,8 @@ class Course extends AbstractAjaxHandler {
 	}
 
 	public function update_course_curriculum( $curriculums, $new_course_id ) {
-		$new_curriculum = array();
 		if ( is_array( $curriculums ) ) {
+			$new_curriculum = array();
 			foreach ( $curriculums as $curriculum ) {
 				$new_topics = array();
 				foreach ( $curriculum['topics'] as $topic ) {
@@ -861,8 +1179,10 @@ class Course extends AbstractAjaxHandler {
 					'topics' => $new_topics,
 				);
 			}//end foreach
+			if ( is_array( $new_curriculum ) ) {
+				update_post_meta( $new_course_id, 'academy_course_curriculum', $new_curriculum );
+			}
 		}//end if
-		update_post_meta( $new_course_id, 'academy_course_curriculum', $new_curriculum );
 	}
 
 	private function set_topics( $topic ) {
@@ -897,6 +1217,16 @@ class Course extends AbstractAjaxHandler {
 					);
 				}
 				break;
+			case 'quizpress_quiz':
+				$quizpress_quiz = \Academy\Helper::get_page_by_title( $topic['name'], 'quizpress_quiz' );
+				if ( $quizpress_quiz ) {
+					return array(
+						'id' => $quizpress_quiz->ID,
+						'name' => $topic['name'],
+						'type'  => 'quizpress_quiz',
+					);
+				}
+				break;
 		}//end switch
 	}
 
@@ -924,7 +1254,7 @@ class Course extends AbstractAjaxHandler {
 		}
 
 		$url = "https://www.googleapis.com/youtube/v3/videos?part=id&id=dQw4w9WgXcQ&key={$api_key}";
-		$response = wp_remote_get( $url, [ 'timeout' => 10 ] );
+		$response = wp_safe_remote_get( $url, [ 'timeout' => 3 ] );
 
 		if ( is_wp_error( $response ) ) {
 			wp_send_json_error( esc_html__( 'Failed to validate API key. Please try again.', 'academy' ) );
@@ -948,7 +1278,7 @@ class Course extends AbstractAjaxHandler {
 		wp_send_json_success( esc_html__( 'Successfully update your YouTube API Key.', 'academy' ) );
 	}
 
-	public function import_from_playlist( $payload_data ) : void {
+	public function import_from_playlist( $payload_data ): void {
 		$payload = Sanitizer::sanitize_payload([
 			'playlist_url'  => 'string',
 			'course_status' => 'string',

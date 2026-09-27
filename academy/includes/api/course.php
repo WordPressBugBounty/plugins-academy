@@ -93,6 +93,34 @@ class Course extends \WP_REST_Controller {
 			)
 		);
 
+		// 03b — Enroll, resource-nested alias. Third-party integrations (e.g. the
+		// zenappbuilder mobile-app checkout flow) call enroll at this REST-conventional
+		// path — /academy_courses/{id}/enroll — instead of the flat /enroll above.
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/enroll',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'enroll_course' ),
+					'permission_callback' => array( $this, 'enroll_permission' ),
+				),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'enroll_course' ),
+					'permission_callback' => array( $this, 'enroll_permission' ),
+				),
+				'args' => array(
+					'id' => array(
+						'description'       => esc_html__( 'Course ID.', 'academy' ),
+						'type'              => 'integer',
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
+
 		// 04 — Complete course
 		register_rest_route(
 			$this->namespace,
@@ -108,7 +136,7 @@ class Course extends \WP_REST_Controller {
 							'type'              => 'integer',
 							'required'          => true,
 							'sanitize_callback' => 'absint',
-							'validate_callback' => function( $param ) {
+							'validate_callback' => function ( $param ) {
 								return $param > 0;
 							},
 						),
@@ -137,7 +165,7 @@ class Course extends \WP_REST_Controller {
 							'description'       => esc_html__( 'Topic type.', 'academy' ),
 							'type'              => 'string',
 							'required'          => true,
-							'validate_callback' => function( $param ) {
+							'validate_callback' => function ( $param ) {
 								return in_array( $param, array( 'lesson', 'quiz', 'assignment' ), true );
 							},
 						),
@@ -179,6 +207,8 @@ class Course extends \WP_REST_Controller {
 							'description'       => esc_html__( 'Maximum number of reviews to be returned in result set.', 'academy' ),
 							'type'              => 'integer',
 							'default'           => 10,
+							'minimum'           => 1,
+							'maximum'           => 100,
 							'sanitize_callback' => 'absint',
 						),
 					),
@@ -193,7 +223,7 @@ class Course extends \WP_REST_Controller {
 							'type'              => 'integer',
 							'required'          => true,
 							'sanitize_callback' => 'absint',
-							'validate_callback' => function( $value ) {
+							'validate_callback' => function ( $value ) {
 								$value = absint( $value );
 								return $value >= 1 && $value <= 5;
 							},
@@ -245,7 +275,7 @@ class Course extends \WP_REST_Controller {
 							'type'              => 'string',
 							'default'           => 'all',
 							'sanitize_callback' => 'sanitize_key',
-							'validate_callback' => function( $value ) {
+							'validate_callback' => function ( $value ) {
 								return in_array( $value, array( 'all', 'enrolled', 'in_progress', 'completed' ), true );
 							},
 						),
@@ -274,6 +304,11 @@ class Course extends \WP_REST_Controller {
 	// Permission Callbacks
 	// =========================================================================
 
+	/**
+	 * Whether the current user may enroll: they must be logged in.
+	 *
+	 * @param \WP_REST_Request $request
+	 */
 	public function enroll_permission( $request ) {
 		if ( ! is_user_logged_in() ) {
 			return new \WP_Error(
@@ -314,6 +349,14 @@ class Course extends \WP_REST_Controller {
 			return new \WP_Error(
 				'invalid_course',
 				esc_html__( 'Invalid course ID.', 'academy' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( 'academy_courses' !== get_post_type( $course_id ) || 'publish' !== get_post_status( $course_id ) ) {
+			return new \WP_Error(
+				'invalid_course',
+				esc_html__( 'This course is not available.', 'academy' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -371,9 +414,9 @@ class Course extends \WP_REST_Controller {
 		}
 
 		// Capability checks
-		$can_manage   = current_user_can( 'administrator' ) || current_user_can( 'read_academy_course' );
+		$can_manage   = current_user_can( 'manage_options' ) || current_user_can( 'read_academy_course' );
 
-		 // Final permission decision
+		// Final permission decision
 		$course_id = absint( $request->get_param( 'id' ) );
 		if ( ! $this->get_course_post( $course_id ) ) {
 			return new \WP_Error(
@@ -438,7 +481,7 @@ class Course extends \WP_REST_Controller {
 			return $settings_permission;
 		}
 
-		if ( current_user_can( 'administrator' ) ) {
+		if ( current_user_can( 'manage_options' ) ) {
 			return true;
 		}
 
@@ -472,6 +515,11 @@ class Course extends \WP_REST_Controller {
 	// Route Callbacks
 	// =========================================================================
 
+	/**
+	 * A course's curriculum (sections and their topics).
+	 *
+	 * @param \WP_REST_Request $request
+	 */
 	public function get_item_topics( $request ) {
 		$course_id   = $request->get_param( 'id' );
 		$curriculums = \Academy\Helper::get_course_curriculum( $course_id );
@@ -503,7 +551,7 @@ class Course extends \WP_REST_Controller {
 				'post_type'      => 'academy_announcement',
 				'post_status'    => 'publish',
 				'post__in'       => $announcement_ids,
-				'posts_per_page' => -1,
+				'posts_per_page' => count( $announcement_ids ),
 			)
 		);
 	}
@@ -636,7 +684,7 @@ class Course extends \WP_REST_Controller {
 				'academy_rating' => $rating,
 			);
 			$review_id = (int) wp_insert_comment( $comment_data );
-		}
+		}//end if
 
 		if ( ! $review_id ) {
 			return new \WP_Error(
@@ -726,7 +774,22 @@ class Course extends \WP_REST_Controller {
 
 	public function enroll_course( WP_REST_Request $request ) {
 		$user_id   = get_current_user_id();
+		// `course_id` is the body/query param the '/enroll' route takes; the
+		// '/academy_courses/{id}/enroll' alias instead carries it as the URL's
+		// `id` capture group, so fall back to that when course_id is absent.
 		$course_id = (int) $request->get_param( 'course_id' );
+		if ( ! $course_id ) {
+			$course_id = (int) $request->get_param( 'id' );
+		}
+
+		// Only a published course takes enrollments.
+		if ( 'academy_courses' !== get_post_type( $course_id ) || 'publish' !== get_post_status( $course_id ) ) {
+			return new \WP_Error(
+				'enroll_failed',
+				esc_html__( 'This course is not available for enrollment.', 'academy' ),
+				array( 'status' => 400 )
+			);
+		}
 
 		$course_type = \Academy\Helper::get_course_type( $course_id );
 		$course_type = apply_filters( 'academy/before_enroll_course_type', $course_type, $course_id );
@@ -735,6 +798,19 @@ class Course extends \WP_REST_Controller {
 			return new \WP_Error(
 				'enroll_failed',
 				esc_html__( 'Failed to enroll course.', 'academy' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		// Already enrolled (and not cancelled — do_enroll() itself allows re-enrolling
+		// over a cancelled record) is not itself a failure — callers (e.g. a checkout
+		// flow retrying enrollment) need to tell this apart from a real error, so it
+		// gets its own message rather than the generic one.
+		$existing_enrollment = \Academy\Helper::is_enrolled( $course_id, $user_id, 'any' );
+		if ( ! empty( $existing_enrollment ) && 'cancel' !== $existing_enrollment->enrolled_status ) {
+			return new \WP_Error(
+				'already_enrolled',
+				esc_html__( 'You are already enrolled in this course.', 'academy' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -868,24 +944,42 @@ class Course extends \WP_REST_Controller {
 		$topic_type = $request->get_param( 'topic_type' );
 		$topic_id   = (int) $request->get_param( 'topic_id' );
 
+		// check_permission() lets a course with a preview lesson through for
+		// reading; progress needs access to this topic of this course (a
+		// preview lesson itself stays markable).
+		$is_preview_lesson = 'lesson' === $topic_type
+			&& \Academy\Helper::get_lesson_meta( $topic_id, 'is_previewable' )
+			&& \Academy\Helper::is_course_curriculum( $course_id, $topic_id, 'lesson' );
+		if ( ! $user_id || ( ! \Academy\Helper::has_permission_to_access_curriculum( $course_id, $user_id, $topic_id, $topic_type ) && ! $is_preview_lesson ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				esc_html__( 'Sorry, you are not allowed to update this topic.', 'academy' ),
+				array( 'status' => 403 )
+			);
+		}
+
 		do_action( 'academy/frontend/before_mark_topic_complete', $topic_type, $course_id, $topic_id, $user_id );
 
-		$is_skip_disabled = \Academy\Helper::get_settings( 'is_disabled_lessons_video_skip' )
-			&& \Academy\Helper::get_settings( 'is_enabled_academy_player' );
+		// Same video completion gate as the AJAX mark_topic_complete: a
+		// trackable video must be watched past the threshold, an opaque embed
+		// kept open for the minimum time.
+		$threshold       = (int) \Academy\Helper::get_settings( 'lessons_video_completion_threshold' );
+		$dwell_threshold = (int) \Academy\Helper::get_settings( 'external_video_min_watch_seconds' );
+		if ( ( $threshold > 0 || $dwell_threshold > 0 ) && 'lesson' === $topic_type ) {
+			$video              = \Academy\Helper::get_lesson_meta( $topic_id, 'video_source' );
+			$vtype              = is_array( $video ) ? ( $video['type'] ?? '' ) : '';
+			$vurl               = is_array( $video ) ? ( $video['url'] ?? '' ) : '';
+			$is_trackable       = \Academy\Helper::is_trackable_video_source( $vtype, $vurl );
+			$is_dwell_trackable = ! $is_trackable && $dwell_threshold > 0
+				&& \Academy\Helper::is_dwell_trackable_video_source( $vtype, $vurl );
 
-		if ( $is_skip_disabled && 'lesson' === $topic_type ) {
-			$video_meta = \Academy\Helper::get_lesson_meta( $topic_id, 'video_source' );
-
-			if ( ! empty( $video_meta['type'] ) && 'youtube' === $video_meta['type'] ) {
-				$meta_key = "academy_{$course_id}lesson_video_{$topic_id}_completed";
-
-				if ( ! get_user_meta( $user_id, $meta_key, true ) ) {
-					return new \WP_Error(
-						'video_incomplete',
-						esc_html__( 'Please complete the lesson video first.', 'academy' ),
-						array( 'status' => 400 )
-					);
-				}
+			if ( ( ( $threshold > 0 && $is_trackable ) || $is_dwell_trackable )
+				&& ! get_user_meta( $user_id, "academy_{$course_id}lesson_video_{$topic_id}_completed", true ) ) {
+				return new \WP_Error(
+					'video_incomplete',
+					esc_html__( 'Please complete the lesson video first.', 'academy' ),
+					array( 'status' => 400 )
+				);
 			}
 		}
 
@@ -972,11 +1066,11 @@ class Course extends \WP_REST_Controller {
 			} else {
 				$in_progress[] = $item;
 			}
-		}
+		}//end foreach
 
-		$sort = function( $a, $b ) {
+		$sort = function ( $a, $b ) {
 			return ( $b['last_completed_topic_at'] ?? 0 ) <=> ( $a['last_completed_topic_at'] ?? 0 )
-				?: ( $b['enrolled_at'] ?? 0 ) <=> ( $a['enrolled_at'] ?? 0 );
+				? ( $b['last_completed_topic_at'] ?? 0 ) <=> ( $a['last_completed_topic_at'] ?? 0 ) : ( $b['enrolled_at'] ?? 0 ) <=> ( $a['enrolled_at'] ?? 0 );
 		};
 
 		usort( $in_progress, $sort );
@@ -1054,8 +1148,16 @@ class Course extends \WP_REST_Controller {
 	// REST Response Filters
 	// =========================================================================
 
+	/**
+	 * Adds the author's display name to a course in REST responses.
+	 *
+	 * @param array            $item
+	 * @param \WP_Post         $post
+	 * @param \WP_REST_Request $request
+	 */
 	public function add_author_name_to_rest_response( $item, $post, $request ) {
-		$author_data             = get_userdata( $item->data['author'] );
+		// A deleted author leaves no user behind; show no name rather than warn.
+		$author_data = ! empty( $item->data['author'] ) ? get_userdata( $item->data['author'] ) : false;
 		$item->data['author_name'] = $author_data ? $author_data->display_name : '';
 		return $item;
 	}
@@ -1067,12 +1169,16 @@ class Course extends \WP_REST_Controller {
 		return $item;
 	}
 
-	// Unused — kept for backwards-compatibility with any external hook consumers.
+	/**
+	 * Unused — kept for backwards-compatibility with any external hook consumers.
+	 *
+	 * @param \WP_REST_Request $request
+	 */
 	public function get_announcements_permissions_check( $request ) {
 		$course_id = $request->get_param( 'id' );
 		$user_id   = (int) get_current_user_id();
 
-		if ( current_user_can( 'administrator' )
+		if ( current_user_can( 'manage_options' )
 			|| \Academy\Helper::is_instructor_of_this_course( $user_id, $course_id )
 			|| \Academy\Helper::is_enrolled( $course_id, $user_id )
 			|| \Academy\Helper::is_public_course( $course_id )
@@ -1087,8 +1193,14 @@ class Course extends \WP_REST_Controller {
 	// Private Helpers
 	// =========================================================================
 
+	/**
+	 * Whether a user may use a course: an administrator, its instructor, or enrolled.
+	 *
+	 * @param int $course_id
+	 * @param int $user_id
+	 */
 	private function check_course_access( $course_id, $user_id ) {
-		if ( current_user_can( 'administrator' )
+		if ( current_user_can( 'manage_options' )
 			|| \Academy\Helper::is_instructor_of_this_course( $user_id, $course_id )
 			|| \Academy\Helper::is_enrolled( $course_id, $user_id )
 		) {
@@ -1103,6 +1215,7 @@ class Course extends \WP_REST_Controller {
 	}
 
 	private function get_user_enrollment_dates( $user_id ) {
+		// phpcs:disable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page -- one user's own enrollments: a small, bounded set that must be complete.
 		$enrollments = get_posts(
 			array(
 				'post_type'      => 'academy_enrolled',
@@ -1115,6 +1228,7 @@ class Course extends \WP_REST_Controller {
 				'no_found_rows'  => true,
 			)
 		);
+		// phpcs:enable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page
 
 		$dates = array();
 		foreach ( $enrollments as $enrollment_id ) {
@@ -1292,6 +1406,7 @@ class Course extends \WP_REST_Controller {
 	}
 
 	private function get_user_enrollment_course_ids_any_status( $user_id ) {
+		// phpcs:disable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page -- one user's own enrollments: a small, bounded set that must be complete.
 		$enrollments = get_posts(
 			array(
 				'post_type'      => 'academy_enrolled',
@@ -1302,6 +1417,7 @@ class Course extends \WP_REST_Controller {
 				'no_found_rows'  => true,
 			)
 		);
+		// phpcs:enable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page
 
 		$course_ids = array();
 		foreach ( $enrollments as $enrollment_id ) {
@@ -1332,7 +1448,7 @@ class Course extends \WP_REST_Controller {
 			'title'        => html_entity_decode( get_the_title( $course_id ) ),
 			'slug'         => $post->post_name,
 			'link'         => get_permalink( $course_id ),
-			'thumbnail'    => $thumbnail_url ?: '',
+			'thumbnail'    => $thumbnail_url ? $thumbnail_url : '',
 			'instructor'   => array(
 				'id'   => $author_id,
 				'name' => $author_data ? $author_data->display_name : '',
@@ -1349,7 +1465,7 @@ class Course extends \WP_REST_Controller {
 		$course_id = (int) $request['id'];
 
 		// 1. Allow admins immediately (full access)
-		if ( current_user_can( 'administrator' ) ) {
+		if ( current_user_can( 'manage_options' ) ) {
 			return true;
 		}
 
@@ -1372,11 +1488,11 @@ class Course extends \WP_REST_Controller {
 
 		// 4. Public course (only if published)
 		if ( 'publish' === $status ) {
-			if( \Academy\Helper::is_public_course( $course_id ) || \Academy\Helper::get_addon_active_status( 'course-preview' ) ) {
+			if ( \Academy\Helper::is_public_course( $course_id ) || \Academy\Helper::get_addon_active_status( 'course-preview' ) ) {
 				return true;
 			}
 		}
-		
+
 		// 5. Must be logged in beyond this point
 		if ( ! is_user_logged_in() ) {
 			return new \WP_Error(
@@ -1405,5 +1521,4 @@ class Course extends \WP_REST_Controller {
 			array( 'status' => 403 )
 		);
 	}
-
 }

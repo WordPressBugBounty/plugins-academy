@@ -13,7 +13,7 @@ class NewCourseReview implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy/frontend/after_course_rating',
-			function( $comment_id, $comment_post_id, $rating ) use ( $deliver_callback, $webhook ) {
+			function ( $comment_id, $comment_post_id, $rating ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(

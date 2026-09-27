@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class LocoTranslateSync {
-	public static function utils() : object {
+	public static function utils(): object {
 		return new class() extends Loco_cli_Utils {
 			public static function debug() {}
 		};
@@ -30,7 +30,7 @@ class LocoTranslateSync {
 		string $plugin_bootstrap_file_path,
 		bool $noop = false,
 		bool $force = false
-	) : void {
+	): void {
 		if ( ! is_plugin_active( 'loco-translate/loco.php' ) ) {
 			return;
 		}
@@ -257,7 +257,7 @@ class LocoTranslateSync {
 						$bytes,
 						$pofile->basename()
 					);
-					$updated++;
+					++$updated;
 
 					// Compile MO files
 					$bytes = $compiler->writeMo( $po );
@@ -267,12 +267,12 @@ class LocoTranslateSync {
 							$bytes,
 							$mofile->basename()
 						);
-						$compiled++;
+						++$compiled;
 					}
 
 					$jsons = $compiler->writeJson( $project, $po );
 					foreach ( $jsons as $file ) {
-						$compiled++;
+						++$compiled;
 						$param = new Loco_mvc_FileParams( [], $file );
 						static::utils()::debug(
 							'Written %u bytes to JSON file: %s',
@@ -315,7 +315,7 @@ class LocoTranslateSync {
 		}
 	}
 
-	private static function file_log_msg( Loco_fs_File $file ) : string {
+	private static function file_log_msg( Loco_fs_File $file ): string {
 		$dir = new Loco_fs_LocaleDirectory( $file->dirname() );
 		return sprintf(
 			'%s (%s)',
@@ -324,9 +324,9 @@ class LocoTranslateSync {
 		);
 	}
 
-	private static function log( string $msg ) : void {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( $msg ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	private static function log( string $msg ): void {
+		if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+			error_log( $msg ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- opt-in debug log only.
 		}
 	}
 }

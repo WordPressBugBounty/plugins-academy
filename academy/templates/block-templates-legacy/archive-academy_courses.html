@@ -1,0 +1,28 @@
+<!-- wp:template-part {"slug":"header"} /-->
+
+<!-- wp:group {"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group"><!-- wp:columns {"className":"is-style-academylms","style":{"spacing":{"padding":{"top":"50px","bottom":"0px","left":"0px","right":"0px"}}}} -->
+    <div class="wp-block-columns is-style-academylms" style="padding-top:50px;padding-right:0px;padding-bottom:0px;padding-left:0px"><!-- wp:column {"style":{"spacing":{"padding":{"right":"10px","left":"0px","top":"0px","bottom":"0px"},"blockGap":"var:preset|spacing|40"}}} -->
+        <div class="wp-block-column" style="padding-top:0px;padding-right:10px;padding-bottom:0px;padding-left:0px"><!-- wp:shortcode -->
+            [academy_course_header_filters]
+            <!-- /wp:shortcode --></div>
+        <!-- /wp:column --></div>
+    <!-- /wp:columns -->
+
+    <!-- wp:columns {"className":"is-style-academylms","style":{"spacing":{"padding":{"top":"0px","bottom":"0px","left":"0px","right":"0px"}}}} -->
+    <div class="wp-block-columns is-style-academylms" style="padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px"><!-- wp:column {"style":{"spacing":{"padding":{"right":"10px","left":"0px","top":"0px","bottom":"0px"},"blockGap":"var:preset|spacing|40"}}} -->
+        <div class="wp-block-column" style="padding-top:0px;padding-right:10px;padding-bottom:0px;padding-left:0px"><!-- wp:shortcode -->
+            [academy_courses has_pagination="true"]
+            <!-- /wp:shortcode --></div>
+        <!-- /wp:column -->
+
+        <!-- wp:column {"width":"270px","style":{"spacing":{"blockGap":"var:preset|spacing|50","padding":{"top":"0px","bottom":"0px","left":"0px","right":"0px"}}}} -->
+        <div class="wp-block-column" style="padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;flex-basis:270px"><!-- wp:shortcode -->
+            [academy_course_filters]
+            <!-- /wp:shortcode --></div>
+        <!-- /wp:column --></div>
+    <!-- /wp:columns --></div>
+<!-- /wp:group -->
+
+    
+    <!-- wp:template-part {"slug":"footer"} /-->

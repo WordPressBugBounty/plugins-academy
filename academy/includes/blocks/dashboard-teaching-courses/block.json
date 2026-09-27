@@ -1,0 +1,37 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/dashboard-teaching-courses",
+	"title": "Teaching Courses",
+	"category": "academy",
+	"description": "An instructor's courses with their enrollments and ratings, in the Teaching view.",
+	"textdomain": "academy",
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"spacing": {
+			"padding": true,
+			"margin": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"interactivity": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"ancestor": [
+		"academy/dashboard"
+	]
+}

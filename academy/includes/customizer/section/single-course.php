@@ -3478,8 +3478,5 @@ class SingleCourse extends SectionBase implements CustomizerSectionInterface {
 				'type'     => 'academy_dimensions',
 			)
 		);
-
 	}
-
-
 }

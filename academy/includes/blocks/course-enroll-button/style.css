@@ -1,0 +1,82 @@
+.wp-block-academy-course-enroll-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.wp-block-academy-course-enroll-button.is-full-width {
+	display: flex;
+	width: 100%;
+}
+
+.wp-block-academy-course-enroll-button.is-enroll-form {
+	display: block;
+	padding: 0;
+	background: none;
+	cursor: auto;
+}
+
+/* Style presets. The button's own colour settings still win. */
+.wp-block-academy-course-enroll-button.is-style-outline:not(.is-enroll-form):not(.has-background) {
+	border: 1.5px solid currentColor !important;
+	background: transparent !important;
+}
+
+.wp-block-academy-course-enroll-button.is-style-soft:not(.is-enroll-form),
+.wp-block-academy-course-enroll-button.is-style-link:not(.is-enroll-form) {
+	border-color: transparent !important;
+}
+
+.wp-block-academy-course-enroll-button.is-style-outline:not(.is-enroll-form):not(.has-text-color),
+.wp-block-academy-course-enroll-button.is-style-link:not(.is-enroll-form):not(.has-text-color) {
+	color: var(--academy-primary-color, currentColor) !important;
+}
+
+.wp-block-academy-course-enroll-button.is-style-soft:not(.is-enroll-form):not(.has-background) {
+	background: var(--academy-secondary-color, #f2f0fd) !important;
+}
+
+.wp-block-academy-course-enroll-button.is-style-soft:not(.is-enroll-form):not(.has-text-color) {
+	color: var(--academy-primary-color, currentColor) !important;
+}
+
+.wp-block-academy-course-enroll-button.is-style-link:not(.is-enroll-form) {
+	gap: 0.35em;
+	padding-inline: 0 !important;
+	background: transparent !important;
+	box-shadow: none;
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.wp-block-academy-course-enroll-button.is-style-link:not(.is-enroll-form)::after {
+	content: "\2192";
+	text-decoration: none;
+}
+
+/* Alignment from the block toolbar: the button sits on its own row, at the
+   left, centre or right of it. */
+.wp-block-academy-course-enroll-button.has-text-align-left,
+.wp-block-academy-course-enroll-button.has-text-align-center,
+.wp-block-academy-course-enroll-button.has-text-align-right {
+	display: flex;
+	width: fit-content;
+}
+
+.wp-block-academy-course-enroll-button.has-text-align-center {
+	margin-inline: auto;
+}
+
+.wp-block-academy-course-enroll-button.has-text-align-right {
+	margin-inline-start: auto;
+	margin-inline-end: 0;
+}
+
+.wp-block-academy-course-enroll-button.is-full-width[class*="has-text-align-"],
+.wp-block-academy-course-enroll-button.is-enroll-form[class*="has-text-align-"] {
+	width: 100%;
+}

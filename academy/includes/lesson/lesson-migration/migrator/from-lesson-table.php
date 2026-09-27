@@ -13,7 +13,7 @@ class FromLessonTable extends Base\Migrator {
 	/**
 	 * Migrate lesson from legacy lesson table to PostLesson.
 	 */
-	public function migrate() : void {
+	public function migrate(): void {
 		if ( ! empty( $this->from->id() ) && ! $this->is_migrated() ) {
 			$data = $this->from->get_data();
 			$meta = $data['meta'];
@@ -58,7 +58,7 @@ class FromLessonTable extends Base\Migrator {
 			AND pm.meta_value = %d
 		";
 
-		// Use $wpdb->prepare() only for values
+		// Only values go through prepare(); table names are prefix-built above.
 		$count = (int) $this->wpdb->get_var(
 			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -68,5 +68,4 @@ class FromLessonTable extends Base\Migrator {
 
 		return $count > 0;
 	}
-
 }

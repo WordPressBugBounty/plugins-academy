@@ -1,0 +1,62 @@
+.wp-block-academy-course-wishlist {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4em;
+	min-width: 2.25em;
+	min-height: 2.25em;
+	padding: 0.35em;
+	border: 0;
+	border-radius: 999px;
+	background: var(--academy-surface-color, #fff);
+	color: var(--academy-primary-color, currentColor);
+	font: inherit;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.wp-block-academy-course-wishlist:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+/* Style presets. */
+.wp-block-academy-course-wishlist.is-style-outline {
+	padding-inline: 0.6em;
+	border: 1px solid var(--academy-border-color, #e4e7ee);
+}
+
+.wp-block-academy-course-wishlist.is-style-soft {
+	padding-inline: 0.6em;
+	background: var(--academy-secondary-color, #f2f0fd);
+}
+
+/* Alignment from the block toolbar: the button sits on its own row, at the
+   left, centre or right of it. */
+.wp-block-academy-course-wishlist.has-text-align-left,
+.wp-block-academy-course-wishlist.has-text-align-center,
+.wp-block-academy-course-wishlist.has-text-align-right {
+	display: flex;
+	width: fit-content;
+}
+
+.wp-block-academy-course-wishlist.has-text-align-center {
+	margin-inline: auto;
+}
+
+.wp-block-academy-course-wishlist.has-text-align-right {
+	margin-inline-start: auto;
+	margin-inline-end: 0;
+}
+
+/* The heart is an icon-font glyph: give it a size of its own that follows the button. */
+.wp-block-academy-course-wishlist .academy-icon {
+	display: inline-block;
+	font-size: 1.15em;
+	line-height: 1;
+	vertical-align: middle;
+}
+
+.wp-block-academy-course-wishlist.is-saved .academy-icon {
+	color: var(--academy-primary-color, #e5484d);
+}

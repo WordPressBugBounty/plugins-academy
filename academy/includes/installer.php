@@ -48,6 +48,10 @@ class Installer {
 		Role::add_student_role();
 		// instructor role
 		Role::add_instructor_role();
+		// guardian / parent role
+		Role::add_guardian_role();
+		// manager role
+		Role::add_manager_role();
 		// instructor role
 		Role::add_existing_administrator_instructor_role();
 	}

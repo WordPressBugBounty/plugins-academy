@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <div class="academy-courses-instructor-reviews">
 	<?php
 	if ( count( $reviews ) ) :

@@ -13,13 +13,12 @@ class Youtube implements Platform {
 	public function __construct( Info $info ) {
 		$this->info    = $info;
 		$this->request = new Request( 'https://www.googleapis.com/youtube/v3' );
-
 	}
 
-	public function detail() : array {
+	public function detail(): array {
 		return $this->request->get( "/playlists?part=snippet&id={$this->info->playlist_id}&key={$this->info->api}" )['items'] ?? [];
 	}
-	public function videos() : array {
+	public function videos(): array {
 		return $this->request->get_items( $this->info->playlist_id, $this->info->api );
 	}
 }

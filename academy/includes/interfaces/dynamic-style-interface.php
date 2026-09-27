@@ -8,5 +8,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 interface DynamicStyleInterface {
 
 	public static function get_css();
-
 }

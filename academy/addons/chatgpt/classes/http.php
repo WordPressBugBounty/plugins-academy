@@ -40,11 +40,11 @@ class Http {
 		return new self( $url );
 	}
 
-	public function get( string $path = '' ) : HttpResponse {
+	public function get( string $path = '' ): HttpResponse {
 		return $this->make( $path, self::METHOD_GET );
 	}
 
-	public function post( string $path = '' ) : HttpResponse {
+	public function post( string $path = '' ): HttpResponse {
 		return $this->make( $path, self::METHOD_POST );
 	}
 
@@ -71,7 +71,7 @@ class Http {
 		return $this;
 	}
 
-	public function make( string $path = '', ?string $method = null ) : HttpResponse {
+	public function make( string $path = '', ?string $method = null ): HttpResponse {
 		if ( empty( $this->url . $path ) ) {
 			throw new EmptyUrlException( esc_html__( 'URL is empty', 'academy' ) );
 		}
@@ -114,6 +114,5 @@ class Http {
 		}
 
 		return new HttpResponse( $response );
-
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Ajax;
+namespace Academy\Ajax;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -18,7 +18,8 @@ class Instructor extends AbstractAjaxHandler {
 				'callback' => array( $this, 'update_instructor_status' )
 			),
 			'get_approved_instructors_for_select' => array(
-				'callback' => array( $this, 'get_approved_instructors_for_select' )
+				'callback'   => array( $this, 'get_approved_instructors_for_select' ),
+				'capability' => 'manage_academy_instructor',
 			),
 		);
 	}
@@ -65,6 +66,13 @@ class Instructor extends AbstractAjaxHandler {
 			wp_send_json_error( __( 'Same user will be not able to update status', 'academy' ) );
 		}
 
+		// Administrators are always instructors (Role::add_admin_caps()) — never
+		// let this endpoint pending/remove one, even if a disabled UI control
+		// is bypassed directly.
+		if ( user_can( $ID, 'manage_options' ) ) {
+			wp_send_json_error( __( 'Administrators are always instructors and cannot be changed.', 'academy' ) );
+		}
+
 		if ( 'approved' === $status ) {
 			\Academy\Helper::set_instructor_role( $ID );
 		} elseif ( 'pending' === $status ) {
@@ -84,7 +92,10 @@ class Instructor extends AbstractAjaxHandler {
 	public function get_approved_instructors_for_select() {
 		$results     = [];
 		$instructors = \Academy\Helper::get_all_approved_instructors();
-		foreach ( $instructors as $instructor ) {
+		// get_all_approved_instructors() returns `false` (not an empty array)
+		// when there are none — `(array) false` casts to `[false]`, a
+		// one-element array holding the boolean, not an empty one.
+		foreach ( is_array( $instructors ) ? $instructors : array() as $instructor ) {
 			$instructor_id        = (int) $instructor->ID;
 			$instructor_full_name = \Academy\Helper::get_the_author_name( $instructor_id );
 			$results[]            = array(

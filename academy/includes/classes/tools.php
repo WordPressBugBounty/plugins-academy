@@ -64,4 +64,3 @@ class Tools {
 		// phpcs:enable
 	}
 }
-

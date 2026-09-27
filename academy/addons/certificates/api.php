@@ -125,14 +125,14 @@ class API extends \WP_REST_Controller {
 	 */
 	private function build_certificate_data( int $course_id, int $user_id, $completion = null ) {
 		$certificate_id     = get_post_meta( $course_id, 'academy_course_certificate_id', true )
-			?: \Academy\Helper::get_settings( 'academy_primary_certificate_id' );
+			? get_post_meta( $course_id, 'academy_course_certificate_id', true ) : \Academy\Helper::get_settings( 'academy_primary_certificate_id' );
 		$enable_certificate = (bool) get_post_meta( $course_id, 'academy_course_enable_certificate', true );
 
 		if ( ! $certificate_id || ! $enable_certificate ) {
 			return null;
 		}
 
-		if ( $completion === null ) {
+		if ( null === $completion ) {
 			$completion = \Academy\Helper::is_completed_course( $course_id, $user_id, true );
 		}
 
@@ -154,7 +154,10 @@ class API extends \WP_REST_Controller {
 			$hash = \AcademyProCertificates\Helper::get_certificate_verification_hash_by_course_and_student_id( $user_id, $course_id );
 			if ( $hash ) {
 				$data['verify_url'] = add_query_arg(
-					array( 'source' => 'certificate', 'verify' => $hash ),
+					array(
+						'source' => 'certificate',
+						'verify' => $hash
+					),
 					get_permalink( $course_id )
 				);
 			}
@@ -164,7 +167,8 @@ class API extends \WP_REST_Controller {
 	}
 
 	public function add_author_name_to_rest_response( $item, $post, $request ) {
-		$author_data = get_userdata( $item->data['author'] );
+		// A deleted author leaves no user behind; show no name rather than warn.
+		$author_data = ! empty( $item->data['author'] ) ? get_userdata( $item->data['author'] ) : false;
 		$item->data['author_name'] = $author_data ? $author_data->display_name : '';
 		return $item;
 	}

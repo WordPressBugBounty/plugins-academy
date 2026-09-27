@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Post;
+namespace Academy\Post;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -65,6 +65,7 @@ class Settings extends AbstractPostHandler {
 
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 		wp_safe_redirect( $referer_url );
+		exit;
 	}
 
 	public function save_frontend_dashboard_reset_password() {
@@ -103,6 +104,7 @@ class Settings extends AbstractPostHandler {
 		reset_password( $current_user, $new_password );
 
 		// Send confirmation email
+		// phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail -- single transactional email
 		wp_mail(
 			$current_user->user_email,
 			esc_html__( 'Your password has been changed', 'academy' ),
@@ -116,6 +118,7 @@ class Settings extends AbstractPostHandler {
 				site_url()
 			)
 		);
+		// phpcs:enable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
 		wp_signon([
 			'user_login'     => $current_user->user_login,
 			'user_password'  => $new_password,
@@ -126,5 +129,4 @@ class Settings extends AbstractPostHandler {
 		wp_safe_redirect( $referer_url );
 		exit;
 	}
-
 }

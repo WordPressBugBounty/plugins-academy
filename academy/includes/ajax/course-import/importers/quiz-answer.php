@@ -23,7 +23,7 @@ class QuizAnswer implements Interfaces\Insertable {
 		$this->quiz_question = $quiz_question;
 	}
 
-	public function insert() : int {
+	public function insert(): int {
 
 		$res = $this->wpdb->insert( $this->wpdb->prefix . 'academy_quiz_answers', [
 			'quiz_id'             => $this->quiz_question->quiz->id,
@@ -31,7 +31,7 @@ class QuizAnswer implements Interfaces\Insertable {
 			'question_type'       => $this->type,
 			'answer_title'        => $this->answer_title(),
 			'answer_content'      => 'fillInTheBlanks' === $this->type ? $this->answer[0] : '',
-			'is_correct'          => ( in_array( $this->slug, $this->answer ) && 'fillInTheBlanks' !== $this->type ) ? 1 : 0,
+			'is_correct'          => ( in_array( (string) $this->slug, array_map( 'strval', (array) $this->answer ), true ) && 'fillInTheBlanks' !== $this->type ) ? 1 : 0,
 			'view_format'       => 'text',
 			'answer_order'      => 0,
 			'answer_created_at' => current_time( 'mysql' ),
@@ -46,7 +46,7 @@ class QuizAnswer implements Interfaces\Insertable {
 
 		return $this->id;
 	}
-	protected function answer_title() : string {
+	protected function answer_title(): string {
 		if ( 'fillInTheBlanks' !== $this->type ) {
 			return $this->title;
 		}

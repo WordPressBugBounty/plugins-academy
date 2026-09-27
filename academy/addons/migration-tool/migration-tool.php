@@ -42,6 +42,5 @@ final class MigrationTool implements AddonInterface {
 	}
 
 	public function addon_activation_hook() {
-
 	}
 }

@@ -29,7 +29,6 @@ class FrontendDashboard extends SectionBase implements CustomizerSectionInterfac
 	}
 
 	public function dispatch_settings( $wp_customize ) {
-
 	}
 	public function dispatch_style_settings( $wp_customize ) {
 		/**
@@ -517,7 +516,5 @@ class FrontendDashboard extends SectionBase implements CustomizerSectionInterfac
 				)
 			)
 		);
-
 	}
-
 }

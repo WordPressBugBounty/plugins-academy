@@ -44,7 +44,7 @@ class Membership extends AbstractAjaxHandler {
 
 		$current_rule = 'post-' . $args['course_id'] . '-|';
 
-		if ( ! in_array( $current_rule, $group_content['specifics'] ) ) {
+		if ( ! in_array( $current_rule, (array) $group_content['specifics'], true ) ) {
 			wp_send_json_error( array(
 				'message' => esc_html__( 'No integration rules found.', 'academy' ),
 			) );

@@ -10,11 +10,13 @@ class API {
 		$self = new self();
 		API\Course::init();
 		API\Settings::init();
+		API\CourseDesign::init();
+		API\GettingStarted::init();
 		API\Lessons::init();
 		API\QuestionAnswer::init();
 		API\CourseFilterHandler::init();
 		API\Auth::init();
-		API\Notes::init();
+		API\AttachmentDownloads::init();
 		add_action( 'rest_after_insert_academy_courses', array( $self, 'course_instructor_meta_data_save' ), 10, 2 );
 		add_action( 'rest_prepare_academy_courses', [ $self, 'add_custom_meta_in_courses' ], 11, 2 );
 	}

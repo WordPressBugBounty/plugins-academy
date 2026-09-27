@@ -1,0 +1,22 @@
+/*
+ * Editor only: the course in the editor has no reviews and "Hide when there
+ * are no reviews" is on, so students will not see this block. It stays visible
+ * here — a block that vanished could not be selected or switched back on — but
+ * it is dimmed and says why.
+ */
+.wp-block-academy-course-rating.academy-is-hidden-on-front {
+	opacity: 0.55;
+}
+
+.academy-course-rating__editor-note {
+	flex: none;
+	padding: 0.1em 0.5em;
+	border-radius: 2px;
+	background: #f0f0f0;
+	color: #1e1e1e;
+	font-size: 11px;
+	font-style: normal;
+	font-weight: 500;
+	line-height: 1.6;
+	white-space: nowrap;
+}

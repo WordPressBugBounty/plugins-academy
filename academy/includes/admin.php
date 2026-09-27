@@ -25,7 +25,7 @@ class Admin {
 		add_action( 'current_screen', array( $this, 'conditional_loaded' ) );
 		add_filter( 'plugin_action_links_' . ACADEMY_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
 		add_filter( 'plugin_row_meta', array( $this, 'add_plugin_links' ), 10, 2 );
-		add_filter( 'admin_init', array( $this, 'redirect_academy_course' ) );
+		add_action( 'admin_init', array( $this, 'redirect_academy_course' ) );
 		add_action( 'set_user_role', array( $this, 'handle_administrator_role_change' ), 10, 3 );
 	}
 	public function add_white_listed_redirect_hosts( $hosts ) {
@@ -80,9 +80,18 @@ class Admin {
 				Admin\User::init();
 				break;
 			case 'academy-lms_page_academy-get-pro':
+				// wp_safe_redirect() only follows allow-listed hosts; without this it
+				// silently falls back to wp-admin instead of the pricing page.
+				add_filter(
+					'allowed_redirect_hosts',
+					static function ( $hosts ) {
+						$hosts[] = 'academylms.net';
+						return $hosts;
+					}
+				);
 				wp_safe_redirect( 'https://academylms.net/pricing/' );
-				break;
-		}
+				exit;
+		}//end switch
 	}
 	public function add_plugin_links( $links, $file ) {
 		if ( ACADEMY_PLUGIN_BASENAME !== $file ) {
@@ -172,6 +181,15 @@ class Admin {
 			]
 		);
 	}
+	/**
+	 * Sends course screens to the course builder.
+	 *
+	 * The post.php?post=X&action=edit screen for a course is intentionally left
+	 * reachable — it's the target of the Courses table's "WordPress
+	 * Editor" action (same as LessonsTable.js already does for lessons),
+	 * which is expected to open the native editor in a new tab rather
+	 * than bounce back into the course builder.
+	 */
 	public function redirect_academy_course() {
 		global $pagenow;
 		$post_type = isset( $_GET['post_type'] ) ? sanitize_key( $_GET['post_type'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -194,5 +212,4 @@ class Admin {
 	public static function handle_administrator_role_change( $user_id, $new_role, $old_roles ) {
 		\Academy\Classes\Role::administrator_role_change_handler( $user_id, $new_role, $old_roles );
 	}
-
 }

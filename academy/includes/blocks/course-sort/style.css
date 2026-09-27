@@ -1,0 +1,50 @@
+:where(.wp-block-academy-course-sort) {
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+
+/*
+ * Editor only. The server preview prints this wrapper again inside the
+ * editor's own block element, and the copy carries no style of its own (the
+ * preview sends no block-support attributes), so the base size above would
+ * undo the size set on the block. On the front there is one wrapper, so this
+ * never matches there.
+ */
+.wp-block-academy-course-sort .wp-block-academy-course-sort {
+	font-size: inherit;
+	line-height: inherit;
+}
+
+.wp-block-academy-course-sort {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75em 1.5em;
+}
+
+.academy-course-sort__count {
+	margin: 0;
+	color: var(--academy-text-color-black, inherit);
+	font-weight: 500;
+}
+
+.academy-course-sort__form {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6em;
+	margin-inline-start: auto;
+}
+
+.academy-course-sort__label {
+	white-space: nowrap;
+}
+
+.academy-course-sort__select {
+	padding: 0.5em 2em 0.5em 0.75em;
+	border: 1px solid var(--academy-border-color, #d8dbe2);
+	border-radius: 6px;
+	background-color: var(--academy-surface-color, #fff);
+	color: inherit;
+	font: inherit;
+}

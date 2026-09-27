@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/learn-topbar",
+	"title": "Learn Page Top Bar",
+	"category": "academy",
+	"parent": [
+		"academy/learn-page"
+	],
+	"description": "Back to the course, progress, notes, announcements, questions and the more menu.",
+	"textdomain": "academy",
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"spacing": {
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true
+		},
+		"interactivity": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"usesContext": [
+		"academy/previewCourse"
+	]
+}

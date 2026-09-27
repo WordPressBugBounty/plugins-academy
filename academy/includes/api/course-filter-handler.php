@@ -34,7 +34,7 @@ class CourseFilterHandler {
 						'required'          => false,
 						'type'              => 'array',
 						'description'       => 'Array of category slugs to filter courses.',
-						'sanitize_callback' => function( $value ) {
+						'sanitize_callback' => function ( $value ) {
 							return array_map( 'sanitize_text_field', (array) $value );
 						},
 					),
@@ -42,7 +42,7 @@ class CourseFilterHandler {
 						'required'          => false,
 						'type'              => 'array',
 						'description'       => 'Array of tag slugs to filter courses.',
-						'sanitize_callback' => function( $value ) {
+						'sanitize_callback' => function ( $value ) {
 							return array_map( 'sanitize_text_field', (array) $value );
 						},
 					),
@@ -50,7 +50,7 @@ class CourseFilterHandler {
 						'required'          => false,
 						'type'              => 'array',
 						'description'       => 'Array of course levels to filter courses.',
-						'sanitize_callback' => function( $value ) {
+						'sanitize_callback' => function ( $value ) {
 							return array_map( 'sanitize_text_field', (array) $value );
 						},
 					),
@@ -58,7 +58,7 @@ class CourseFilterHandler {
 						'required'          => false,
 						'type'              => 'array',
 						'description'       => 'Array of course types to filter courses.',
-						'sanitize_callback' => function( $value ) {
+						'sanitize_callback' => function ( $value ) {
 							return array_map( 'sanitize_text_field', (array) $value );
 						},
 					),
@@ -108,7 +108,7 @@ class CourseFilterHandler {
 						'required'          => false,
 						'type'              => 'array',
 						'description'       => 'Array of category slugs to exclude from filtering.',
-						'sanitize_callback' => function( $value ) {
+						'sanitize_callback' => function ( $value ) {
 							return array_map( 'sanitize_text_field', (array) $value );
 						},
 					),
@@ -116,7 +116,7 @@ class CourseFilterHandler {
 						'required'          => false,
 						'type'              => 'array',
 						'description'       => 'Array of tag slugs to exclude from filtering.',
-						'sanitize_callback' => function( $value ) {
+						'sanitize_callback' => function ( $value ) {
 							return array_map( 'sanitize_text_field', (array) $value );
 						},
 					),
@@ -166,10 +166,15 @@ class CourseFilterHandler {
 			'tablet'  => 2,
 			'mobile'  => 1
 		) ) );
-		$per_page = ( isset( $payload['per_page'] ) ? $payload['per_page'] : (int) \Academy\Helper::get_settings( 'course_archive_courses_per_page', 12 ) );
+		$default_per_page = (int) \Academy\Helper::get_settings( 'course_archive_courses_per_page', 12 );
+		$per_page = ( isset( $payload['per_page'] ) ? $payload['per_page'] : $default_per_page );
 		if ( $count ) {
 			$per_page = $count;
 		}
+		// Public endpoint: cap the page size a visitor can ask for, but never
+		// below what the site itself is set to show.
+		$max_per_page = max( $default_per_page, (int) apply_filters( 'academy/courses_filter/max_per_page', 100 ) );
+		$per_page     = min( $per_page, $max_per_page );
 		if ( $cat_not_in || $tag_not_in ) {
 			$category = array_diff( $category, $cat_not_in );
 			$tags = array_diff( $tags, $tag_not_in );
@@ -204,13 +209,15 @@ class CourseFilterHandler {
 			$args['paged'] = $page_num;
 		}
 		$grid_class = \Academy\Helper::get_responsive_column( $per_row );
+		// phpcs:ignore WordPress.WP.DiscouragedFunctions.query_posts_query_posts
+		wp_reset_query();
 		wp_reset_postdata();
 		// remove empty values
 		if ( isset( $args['tax_query'] ) ) {
 			foreach ( $args['tax_query'] as $i => $tax ) {
 				if ( isset( $tax['terms'] ) ) {
 
-					$tax['terms'] = array_filter( $tax['terms'], function( $t ) {
+					$tax['terms'] = array_filter( $tax['terms'], function ( $t ) {
 						return ! empty( trim( $t ) );
 					});
 
@@ -224,8 +231,7 @@ class CourseFilterHandler {
 			}
 
 			// re-index tax_query
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-			$args['tax_query'] = array_values( $args['tax_query'] );
+			$args['tax_query'] = array_values( $args['tax_query'] ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- meta/tax lookup the feature depends on; no cheaper equivalent
 		}
 		$courses_query = new \WP_Query( apply_filters( 'academy_courses_filter_args', $args ) );
 
@@ -250,6 +256,7 @@ class CourseFilterHandler {
 					'paged' => $paged,
 					'max_num_pages' => $courses_query->max_num_pages,
 				) );
+				wp_reset_query();
 				wp_reset_postdata();
 			} else {
 				\Academy\Helper::get_template( 'archive/course-none.php' );
@@ -280,7 +287,7 @@ class CourseFilterHandler {
 			's' => $keyword,
 			'post_type' => 'academy_courses',
 		);
-		$query = new \WP_Query( apply_filters( 'academy/course_search_query_args', $args ) );
+		$query = new \WP_Query( apply_filters( ' academy/course_search_query_args', $args ) );
 		$item_markup = '';
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) :
@@ -307,5 +314,4 @@ class CourseFilterHandler {
 			200
 		);
 	}
-
 }

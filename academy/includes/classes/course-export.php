@@ -185,6 +185,8 @@ class CourseExport extends ExportBase {
 				return apply_filters( 'academy_pro/export-import/get_quiz_data', $topic ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
 			case 'assignment':
 				return apply_filters( 'academy_pro/export-import/get_assignment_data', $topic ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
+			case 'quizpress_quiz':
+				return apply_filters( 'academy/export-import/get_quizpress_quiz_data', $topic ); // phpcs::ignore Squiz.PHP.NonExecutableCode.Unreachable
 		}
 	}
 
@@ -231,9 +233,9 @@ class CourseExport extends ExportBase {
 			|| isset( $flattenRow['assignment_title'] )
 			|| ( isset( $flattenRow['answer_title'] ) && ! isset( $previousItem['answer_title'] ) ) ) {
 				$row_header = array_keys( $flattenRow );
-				fputcsv( $fp, $row_header, ',', '"', '\\' );
+				fputcsv( $fp, $row_header, ',', '"', '\\' ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fputcsv -- writes to php://output (download stream), not the filesystem
 			}
-			fputcsv( $fp, $flattenRow, ',', '"', '\\' );
+			fputcsv( $fp, $flattenRow, ',', '"', '\\' ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fputcsv -- writes to php://output (download stream), not the filesystem
 			$previousItem = $row;
 		}
 	}

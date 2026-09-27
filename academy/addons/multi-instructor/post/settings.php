@@ -1,5 +1,5 @@
 <?php
-namespace  AcademyMultiInstructor\Post;
+namespace AcademyMultiInstructor\Post;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -56,6 +56,7 @@ class Settings extends AbstractPostHandler {
 
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 		wp_safe_redirect( $referer_url );
+		exit;
 	}
 
 	public function instructor_earning_withdrawal( $form_data ) {
@@ -97,5 +98,6 @@ class Settings extends AbstractPostHandler {
 		do_action( 'academy/frontend/after_withdraw_data_insert', $withdraw_id, $withdraw_args );
 		$referer_url = Helper::sanitize_referer_url( wp_get_referer() );
 		wp_safe_redirect( $referer_url );
+		exit;
 	}
 }

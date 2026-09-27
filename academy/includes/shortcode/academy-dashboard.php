@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Shortcode;
+namespace Academy\Shortcode;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -17,7 +17,7 @@ class AcademyDashboard {
 
 		if ( ! is_user_logged_in() ) {
 			$login_redirect_page     = \Academy\Helper::get_settings( 'academy_frontend_dashboard_redirect_login_page' ) ?? 'academy_login';
-			$default_form_shortcode  = '[academy_login_form form_title="' . esc_html__( 'Sign in to Access Your Dashboard', 'academy' ) . '" show_logged_in_message="false"]';
+			$default_form_shortcode  = '[academy_login_form form_title="' . esc_attr__( 'Sign in to Access Your Dashboard', 'academy' ) . '" show_logged_in_message="false"]';
 			switch ( $login_redirect_page ) {
 				case 'academy_login':
 					if ( ! \Academy\Helper::get_settings( 'is_enabled_academy_login' ) ) {
@@ -52,7 +52,17 @@ class AcademyDashboard {
 			if ( 'pending' === $instructor_status ) {
 				echo '<p class="academy-instructor-pending-status-message">' . esc_html__( 'Please wait for admin\'s to approve you as an instructor.', 'academy' ) . '</p>';
 			}
-			\Academy\Helper::get_template( 'shortcode/frontend-dashboard.php' );
+			if ( \Academy\FrontendDashboard\Dashboard::uses_blocks() ) {
+				// The block dashboard: its blocks, as arranged on Customize.
+				printf(
+					'<div class="%1$s academy-frontend-dashboard--blocks"><div class="%2$s">%3$s</div></div>',
+					esc_attr( \Academy\FrontendDashboard\Dashboard::wrapper_class() ),
+					esc_attr( \Academy\FrontendDashboard\Dashboard::inner_container_class() ),
+					do_blocks( \Academy\FrontendDashboard\Layout::markup() ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
+			} else {
+				\Academy\Helper::get_template( 'shortcode/frontend-dashboard.php' );
+			}
 		}//end if
 		return apply_filters( 'academy/templates/shortcode/dashboard', ob_get_clean() );
 	}

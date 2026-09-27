@@ -9,7 +9,7 @@ $attempts = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details_by_quiz_id( 
 ));
 $successful_attempts     = \AcademyQuizzes\Helper::get_successful_attempts_from_attempts( $attempts, $quiz_id );
 $quiz                    = \AcademyQuizzes\Helper::render_quiz_by_course_and_quiz_id( $course_id, $quiz_id );
-$max_attempt             = ( 'retry' === $quiz['settings']['quiz_feedback_mode'] ) ? $quiz['settings']['quiz_max_attempts_allowed'] : 1;
+$max_attempt             = in_array( $quiz['settings']['quiz_feedback_mode'], array( 'retry', 'resume' ), true ) ? $quiz['settings']['quiz_max_attempts_allowed'] : 1;
 $quiz_time               = $quiz['settings']['quiz_time'];
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $attempt_id = isset( $_GET['attempt_id'] ) ? (int) sanitize_text_field( wp_unslash( $_GET['attempt_id'] ) ) : 0;
@@ -153,7 +153,7 @@ if ( $attempt_id ) {
 												</span>
 											</div>
 											<div class="academy-table__row-cell">
-												<a href="<?php echo esc_url( add_query_arg( array( 'attempt_id' => $successful_attempt->attempt_id ), isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' ) ); ?>">
+												<a href="<?php echo esc_url( add_query_arg( array( 'attempt_id' => $successful_attempt->attempt_id ) ) ); ?>">
 													<button type="button" class="academy-btn academy-btn--md academy-btn--preset-light-purple academy-btn--border-purple academy-btn--border-rounded">
 														<?php echo esc_html__( 'Details', 'academy' ); ?>
 													</button>

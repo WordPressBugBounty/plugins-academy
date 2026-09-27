@@ -1,0 +1,44 @@
+.wp-block-academy-course-instructors {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.academy-course-instructors__avatars {
+	display: inline-flex;
+	flex: none;
+}
+
+.academy-course-instructors__avatars img {
+	display: block;
+	border: 2px solid var(--academy-surface-color, #fff);
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.academy-course-instructors__avatars img + img {
+	margin-inline-start: -0.5em;
+}
+
+.wp-block-academy-course-instructors a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.wp-block-academy-course-instructors a:hover,
+.wp-block-academy-course-instructors a:focus-visible {
+	text-decoration: underline;
+}
+
+.academy-course-instructors__prefix {
+	opacity: 0.75;
+}
+
+/* Alignment from the block toolbar. */
+.wp-block-academy-course-instructors.has-text-align-center {
+	justify-content: center;
+}
+
+.wp-block-academy-course-instructors.has-text-align-right {
+	justify-content: flex-end;
+}

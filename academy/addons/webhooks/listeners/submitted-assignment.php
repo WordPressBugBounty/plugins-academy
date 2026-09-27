@@ -13,7 +13,7 @@ class SubmittedAssignment implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy_pro/frontend/submitted_assignment',
-			function( $response ) use ( $deliver_callback, $webhook ) {
+			function ( $response ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(

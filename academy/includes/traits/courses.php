@@ -96,7 +96,7 @@ trait Courses {
 	public static function get_courses_reviews( $course_id, $offset = 0, $limit = 200 ) {
 		global $wpdb;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- reporting JOIN on users/usermeta that get_users() cannot express
 		$reviews = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT {$wpdb->comments}.comment_ID, 
@@ -124,6 +124,7 @@ trait Courses {
 				$limit
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 
 		return $reviews;
 	}
@@ -188,12 +189,10 @@ trait Courses {
 
 			if ( $intRating >= $i ) {
 				$output .= '<i class="academy-icon academy-icon--star" data-rating-value="' . $i . '"></i>';
-			} else {
-				if ( ( $current_rating - $i ) === -0.5 ) {
+			} elseif ( ( $current_rating - $i ) === -0.5 ) {
 					$output .= '<i class="academy-icon academy-icon--star-half" data-rating-value="' . $i . '"></i>';
-				} else {
-					$output .= '<i class="academy-icon academy-icon--star-alt" data-rating-value="' . $i . '"></i>';
-				}
+			} else {
+				$output .= '<i class="academy-icon academy-icon--star-alt" data-rating-value="' . $i . '"></i>';
 			}
 		}
 		$output .= '</span>';
@@ -244,8 +243,8 @@ trait Courses {
 
 		// Handle errors
 		if ( is_wp_error( $enroll_id ) ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'Enrollment failed: ' . $enroll_id->get_error_message() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+				error_log( 'Enrollment failed: ' . $enroll_id->get_error_message() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- opt-in debug log only.
 			}
 			return false;
 		}
@@ -342,8 +341,9 @@ trait Courses {
 			if ( 'completed' === $status ) {
 				$query .= $wpdb->prepare( ' AND post_status = %s', $status );
 			}
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 			$getEnrolled = $wpdb->get_row( $query );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			return apply_filters( 'academy/course/is_enrolled', $getEnrolled, $course_id, $user_id );
 		}//end if
@@ -540,15 +540,16 @@ trait Courses {
 	public static function get_total_enrolled_courses_info_by_student_id( int $user_id ) {
 		global $wpdb;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT *
-			FROM {$wpdb->posts}
-			WHERE post_type = %s
+			FROM {$wpdb->posts} 
+			WHERE post_type = %s 
 			AND post_author = %d",
 			'academy_enrolled',
 			$user_id
 		), ARRAY_A );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $results ?? [];
 	}
@@ -556,7 +557,7 @@ trait Courses {
 	public static function get_total_enrolled_courses_info_by_student_and_instructor_id( int $student_id, int $instructor_id ) {
 		global $wpdb;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT DISTINCT p.*
 			FROM {$wpdb->posts} AS p
@@ -573,6 +574,7 @@ trait Courses {
 			$instructor_id,
 			$student_id
 		), ARRAY_A);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $results ?? [];
 	}
@@ -584,7 +586,7 @@ trait Courses {
 				'post_type'      => [ 'academy_courses', 'alms_course_bundle' ],
 				'post_status'    => $post_status,
 				'post__in'       => $course_ids,
-				'posts_per_page' => -1,
+				'posts_per_page' => count( $course_ids ),
 			);
 			return new WP_Query( $course_args );
 		}
@@ -621,7 +623,7 @@ trait Courses {
 					continue;
 				}
 
-				$count++;
+				++$count;
 			}
 		}
 
@@ -657,6 +659,41 @@ trait Courses {
 			return apply_filters( 'academy/course/is_course_purchasable', true, $course_id );
 		}
 		return apply_filters( 'academy/course/is_course_purchasable', false, $course_id );
+	}
+
+	/**
+	 * Formatted price for the plain, engine-independent `academy_course_price`
+	 * meta — the price source that drives the course builder's Free/Paid
+	 * derivation whenever WooCommerce/EDD isn't the configured monetization
+	 * engine (StoreEngine, or no engine at all). The frontend price displays
+	 * (`loop/price.php`, `single-course/enroll/pricing.php`) only ever looked
+	 * up a WooCommerce/EDD product price — a course priced this way showed no
+	 * number at all, just the generic "Paid" text. Used as the last-resort
+	 * fallback in those templates, after the engine-specific lookups have had
+	 * their turn and come back empty.
+	 *
+	 * @param int $course_id
+	 */
+	public static function get_plain_course_price_html( $course_id ) {
+		$price = (float) get_post_meta( $course_id, 'academy_course_price', true );
+		if ( $price <= 0 ) {
+			return '';
+		}
+
+		$monetization_engine = self::get_settings( 'monetization_engine' );
+		$currency_symbol     = '$';
+		if ( 'woocommerce' === $monetization_engine && self::is_active_woocommerce() ) {
+			$currency_symbol = html_entity_decode( get_woocommerce_currency_symbol(), ENT_HTML5, 'UTF-8' );
+		} elseif ( 'storeengine' === $monetization_engine && self::is_plugin_active( 'storeengine/storeengine.php' ) ) {
+			$currency_symbol = \StoreEngine\Utils\Helper::get_currency_symbol();
+		}
+
+		return apply_filters(
+			'academy/course/plain_price_html',
+			'<span class="academy-price-amount">' . esc_html( $currency_symbol . number_format_i18n( $price, 2 ) ) . '</span>',
+			$price,
+			$course_id
+		);
 	}
 
 	public static function get_course_type( $course_id ) {
@@ -713,7 +750,6 @@ trait Courses {
 				$download_id
 			)
 		);
-
 	}
 
 	public static function is_course_slug_exist( $post_title ) {
@@ -796,7 +832,7 @@ trait Courses {
 		}
 		return false;
 	}
-	public static function get_available_seats( $course_id ) : int {
+	public static function get_available_seats( $course_id ): int {
 		$total_enrolled = self::count_course_enrolled( $course_id );
 		$max_students   = (int) get_post_meta( $course_id, 'academy_course_max_students', true );
 
@@ -881,7 +917,7 @@ trait Courses {
 	public static function get_total_students_by_instructor( $instructor_id ) {
 		global $wpdb;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		$student_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT DISTINCT enrollment.post_author
@@ -905,13 +941,14 @@ trait Courses {
 				'academy_enrolled'
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $student_ids;
 	}
 
 	public static function get_reviews_by_user( $user_id, $offset = 0, $limit = 150 ) {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- reporting JOIN on users/usermeta that get_users() cannot express
 		$reviews = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT {$wpdb->comments}.comment_ID,
@@ -942,6 +979,7 @@ trait Courses {
 				$limit
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 		return $reviews;
 	}
 
@@ -1178,7 +1216,7 @@ trait Courses {
 
 	public static function get_instructors_by_course_id( $course_id, $offset = 0, $per_page = 10 ) {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- reporting JOIN on users/usermeta that get_users() cannot express
 		$query = $wpdb->prepare(
 			"SELECT 
 				u.ID,
@@ -1205,15 +1243,17 @@ trait Courses {
 			$offset,
 			$per_page
 		);
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		$instructors = $wpdb->get_results( $query );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return ! empty( $instructors ) ? $instructors : [];
 	}
 
 	public static function get_instructor_by_author_id( $author_id ) {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users -- reporting JOIN on users/usermeta that get_users() cannot express
 		$instructors = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID,
@@ -1234,6 +1274,7 @@ trait Courses {
 				$author_id
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users
 
 		if ( count( $instructors ) ) {
 			return $instructors;
@@ -1350,7 +1391,7 @@ trait Courses {
 					$args['order']   = 'asc';
 					break;
 				case 'date':
-					$args['orderby'] = 'publish_date';
+					$args['orderby'] = 'date';
 					$args['order']   = 'desc';
 					break;
 				case 'modified':
@@ -1370,6 +1411,15 @@ trait Courses {
 					$args['order']   = 'desc';
 			}//end switch
 		}//end if
+
+		$order_field = isset( $args['orderby'] ) ? $args['orderby'] : 'ID';
+		$order_dir   = isset( $args['order'] ) ? $args['order'] : 'desc';
+
+		// `orderby` becomes an array, which carries its own per-key direction —
+		// a lone `order` alongside it is ignored by WP_Query.
+		$args = array_merge( $args, self::apply_sticky_course_ordering( $order_field, $order_dir ) );
+		unset( $args['order'] );
+
 		return apply_filters( 'academy/get_course_archive_search_query_args', $args, $data );
 	}
 
@@ -1411,13 +1461,11 @@ trait Courses {
 		if ( current_user_can( 'read_post', $post->ID ) ) {
 			if ( 'draft' === $post->post_status || empty( $post->post_name ) ) {
 				$view_link      = get_preview_post_link( $post );
-			} else {
-				if ( 'publish' === $post->post_status || 'attachment' === $post->post_type ) {
+			} elseif ( 'publish' === $post->post_status || 'attachment' === $post->post_type ) {
 					$view_link = get_permalink( $post );
-				} else {
-					// Allow non-published (private, future) to be viewed at a pretty permalink, in case $post->post_name is set.
-					$view_link = str_replace( array( '%pagename%', '%postname%' ), $post->post_name, $permalink );
-				}
+			} else {
+				// Allow non-published (private, future) to be viewed at a pretty permalink, in case $post->post_name is set.
+				$view_link = str_replace( array( '%pagename%', '%postname%' ), $post->post_name, $permalink );
 			}
 		}
 		if ( false !== $view_link ) {
@@ -1544,7 +1592,7 @@ trait Courses {
 					}
 				}
 			}
-		}
+		}//end foreach
 
 		return false;
 	}
@@ -1576,6 +1624,9 @@ trait Courses {
 							continue;
 						}
 						if ( 'booking' === $topic['type'] && ! \Academy\Helper::get_addon_active_status( 'tutor-booking', true ) ) {
+							continue;
+						}
+						if ( 'quizpress_quiz' === $topic['type'] && ! \Academy\Helper::is_active_quizpress() ) {
 							continue;
 						}
 
@@ -1615,13 +1666,16 @@ trait Courses {
 								if ( 'booking' === $child_topic['type'] && ! \Academy\Helper::get_addon_active_status( 'tutor-booking', true ) ) {
 									continue;
 								}
+								if ( 'quizpress_quiz' === $child_topic['type'] && ! \Academy\Helper::is_active_quizpress() ) {
+									continue;
+								}
 
 								$child_topic['is_completed'] = false;
 
 								// if topic type is lesson then set duration
 								if ( 'lesson' === $child_topic['type'] ) {
 									$child_topic['duration']            = Helper::get_lesson_video_duration( $child_topic['id'] );
-									$child_topic['is_accessible']       = \Academy\Helper::get_lesson_meta( $child_topic['id'], 'is_previewable' ) && (bool) \Academy\Helper::get_addon_active_status( 'course-preview' );
+									$child_topic['is_accessible']       = \Academy\Helper::get_lesson_meta( $child_topic['id'], 'is_previewable' );
 									$child_topic['slug']                = \Academy\Helper::get_lesson_slug( $child_topic['id'] );
 								} else {
 									$child_topic['slug'] = basename( get_permalink( $child_topic['id'] ) );
@@ -1659,8 +1713,7 @@ trait Courses {
 	public static function is_favorite_course( $course_id ) {
 		global $wpdb;
 		$user_id = get_current_user_ID();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$has_data = $wpdb->get_row( $wpdb->prepare( "SELECT * from {$wpdb->usermeta} WHERE user_id = %d AND meta_key = 'academy_course_favorite' AND meta_value = %d;", $user_id, $course_id ) );
+		$has_data = $wpdb->get_row( $wpdb->prepare( "SELECT * from {$wpdb->usermeta} WHERE user_id = %d AND meta_key = 'academy_course_favorite' AND meta_value = %d;", $user_id, $course_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		if ( $has_data ) {
 			return true;
 		}
@@ -1684,6 +1737,10 @@ trait Courses {
 
 			case 'booking':
 				$icon_class .= 'add';
+				break;
+
+			case 'quizpress_quiz':
+				$icon_class .= 'quiz-alt';
 				break;
 
 			default:
@@ -1727,6 +1784,17 @@ trait Courses {
 		return ACADEMY_ASSETS_URI . '/images/thumbnail-placeholder.png';
 	}
 
+	public static function get_the_course_category_image_url( $term_id, $size = 'thumbnail' ) {
+		$image_id = get_term_meta( $term_id, 'academy_category_image', true );
+		if ( $image_id ) {
+			$image_url = wp_get_attachment_image_url( $image_id, $size );
+			if ( $image_url ) {
+				return $image_url;
+			}
+		}
+		return ACADEMY_ASSETS_URI . '/images/thumbnail-placeholder.png';
+	}
+
 	public static function prepare_category_results( $terms, $parent_id = 0 ) {
 		$category = array();
 		foreach ( $terms as $term ) {
@@ -1753,7 +1821,7 @@ trait Courses {
 		$id = isset( $topic['id'] ) ? $topic['id'] : '';
 		$slug = isset( $topic['slug'] ) ? $topic['slug'] :
 			( self::get_topics_post_slug( $id, $type ) ?? '' );
-		if ( \Academy\Helper::get_settings( 'is_enabled_lessons_php_render' ) ) {
+		if ( \Academy\Helper::is_server_learn_page() ) {
 			$permalinks = \Academy\Helper::get_permalink_structure();
 			if ( empty( $course_id ) ) {
 				$course_id = ( false === \Academy\Helper::get_the_current_course_id() ) ? get_the_ID() : \Academy\Helper::get_the_current_course_id();
@@ -1763,7 +1831,7 @@ trait Courses {
 			$url = home_url( "/{$course_rewrite_slug}/{$course_name}/{$type}/{$slug}" );
 			return add_query_arg( array(), $url );
 		}
-		return add_query_arg( array( 'source' => "curriculums#/$type/$id" ), get_the_permalink() );
+		return add_query_arg( array( 'source' => "curriculums#/$type/$id" ), get_the_permalink( $course_id ) );
 	}
 
 	public static function get_topics_post_slug( $id, $type ) {
@@ -1778,6 +1846,8 @@ trait Courses {
 				return get_post( $id )->post_name;
 			case 'booking':
 				return get_post( $id )->post_name;
+			case 'quizpress_quiz':
+				return get_post( $id )->post_name;
 		}
 	}
 
@@ -1788,6 +1858,7 @@ trait Courses {
 			'total_quizzes' => 0,
 			'total_zoom_meetings' => 0,
 			'total_tutor_bookings' => 0,
+			'total_quizpress_quizzes' => 0,
 		];
 
 		$course_topic = get_post_meta( $course_id, 'academy_course_curriculum', true );
@@ -1799,41 +1870,47 @@ trait Courses {
 						if ( isset( $lesson['type'] ) ) {
 							switch ( $lesson['type'] ) {
 								case 'lesson':
-									$curriculum_counts['total_lessons']++;
+									++$curriculum_counts['total_lessons'];
 									break;
 								case 'assignment':
-									$curriculum_counts['total_assignments']++;
+									++$curriculum_counts['total_assignments'];
 									break;
 								case 'quiz':
-									$curriculum_counts['total_quizzes']++;
+									++$curriculum_counts['total_quizzes'];
 									break;
 								case 'meeting':
-									$curriculum_counts['total_zoom_meetings']++;
+									++$curriculum_counts['total_zoom_meetings'];
 									break;
 								case 'booking':
-									$curriculum_counts['total_tutor_bookings']++;
+									++$curriculum_counts['total_tutor_bookings'];
+									break;
+								case 'quizpress_quiz':
+									++$curriculum_counts['total_quizpress_quizzes'];
 									break;
 								case 'sub-curriculum':
 									foreach ( $lesson['topics'] as $sub_topic ) {
 										switch ( $sub_topic['type'] ) {
 											case 'lesson':
-												$curriculum_counts['total_lessons']++;
+												++$curriculum_counts['total_lessons'];
 												break;
 											case 'assignment':
-												$curriculum_counts['total_assignments']++;
+												++$curriculum_counts['total_assignments'];
 												break;
 											case 'quiz':
-												$curriculum_counts['total_quizzes']++;
+												++$curriculum_counts['total_quizzes'];
 												break;
 											case 'meeting':
-												$curriculum_counts['total_zoom_meetings']++;
+												++$curriculum_counts['total_zoom_meetings'];
 												break;
 											case 'booking':
-												$curriculum_counts['total_tutor_bookings']++;
+												++$curriculum_counts['total_tutor_bookings'];
+												break;
+											case 'quizpress_quiz':
+												++$curriculum_counts['total_quizpress_quizzes'];
 												break;
 											default:
 												break;
-										}
+										}//end switch
 									}//end foreach
 								default:
 									break;
@@ -1926,7 +2003,7 @@ trait Courses {
 				'post_type'         => 'academy_announcement',
 				'post_status'       => 'publish',
 				'post__in'          => $announcement_ids,
-				'posts_per_page'    => -1,
+				'posts_per_page'    => count( $announcement_ids ),
 			);
 			$announcements = get_posts( $args );
 			return $announcements;
@@ -1968,7 +2045,7 @@ trait Courses {
 	public static function is_course_curriculum( $course_id, $topic_id, $topic_type ): bool {
 		$course_curriculum = get_post_meta( $course_id, 'academy_course_curriculum', true );
 
-		foreach ( $course_curriculum as $curriculum ) {
+		foreach ( (array) $course_curriculum as $curriculum ) {
 			foreach ( $curriculum['topics'] as $topic ) {
 				if ( 'sub-curriculum' === $topic['type'] ) {
 					foreach ( $topic['topics'] as $sub_topic ) {
@@ -2004,8 +2081,9 @@ trait Courses {
 
 		$params = array_merge( [ $like, $like ], $post_status );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		$results = $wpdb->get_results( $wpdb->prepare( $sql, ...$params ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $results;
 	}
 	/**
@@ -2021,10 +2099,10 @@ trait Courses {
 		$user_id   = (int) $user_id;
 
 		// Get comment IDs first.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom query with no WP API equivalent
 		$comment_ids = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT comment_ID
+				"SELECT comment_ID 
 				FROM {$wpdb->comments}
 				WHERE comment_post_ID = %d
 				AND user_id = %d
@@ -2037,22 +2115,26 @@ trait Courses {
 				'academy_assignments'
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( empty( $comment_ids ) ) {
 			return;
 		}
 
-		$ids = implode( ',', array_map( 'intval', $comment_ids ) );
+		$comment_ids = array_map( 'intval', $comment_ids );
 
-		// $ids is a comma-separated list of integer-cast comment IDs, safe to interpolate.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- bulk delete; clean_comment_cache() below.
 		$wpdb->query(
-			"DELETE c, cm
-			FROM {$wpdb->comments} AS c
-			LEFT JOIN {$wpdb->commentmeta} AS cm
-			ON cm.comment_id = c.comment_ID
-			WHERE c.comment_ID IN ($ids)"
+			$wpdb->prepare(
+				"DELETE c, cm
+				FROM {$wpdb->comments} AS c
+				LEFT JOIN {$wpdb->commentmeta} AS cm
+				ON cm.comment_id = c.comment_ID
+				WHERE c.comment_ID IN (" . implode( ',', array_fill( 0, count( $comment_ids ), '%d' ) ) . ')',
+				$comment_ids
+			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		clean_comment_cache( $comment_ids );
 	}
-
 }

@@ -18,8 +18,36 @@ class PluginDownloader extends AbstractAjaxHandler {
 			'install_plugins' => [
 				'callback' => [ $this, 'install_plugins' ],
 				'capability' => 'manage_options',
-			]
+			],
+			'install_integration' => [
+				'callback' => [ $this, 'install_integration' ],
+				'capability' => 'manage_options',
+			],
 		);
+	}
+
+	/**
+	 * One-click install/activate for an "Extensions & Integrations" catalog
+	 * entry. Key-gated — the package URL is resolved server-side from the
+	 * catalog, never taken from the client.
+	 *
+	 * @param array $payload_data
+	 */
+	public function install_integration( $payload_data ) {
+		$payload = Sanitizer::sanitize_payload( [ 'key' => 'string' ], $payload_data );
+		$key     = isset( $payload['key'] ) ? $payload['key'] : '';
+
+		$result = \Academy\Admin\Integrations::install_and_activate( $key );
+
+		if ( is_wp_error( $result ) ) {
+			$data = $result->get_error_data();
+			wp_send_json_error( [
+				'message' => $result->get_error_message(),
+				'status'  => isset( $data['status'] ) ? $data['status'] : 400,
+			] );
+		}
+
+		wp_send_json_success( $result );
 	}
 
 	public function check_installed_plugins( $payload_data ) {
@@ -127,5 +155,4 @@ class PluginDownloader extends AbstractAjaxHandler {
 			'is_installed' => true,
 		] );
 	}
-
 }

@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Ajax;
+namespace Academy\Ajax;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -196,7 +196,6 @@ class Registration extends AbstractAjaxHandler {
 			update_option( 'academy_form_builder_settings', wp_json_encode( $form_settings ) );
 		}//end if
 		wp_send_json_success( isset( $form_settings['student'] ) ? $form_settings['student'] : [] );
-
 	}
 
 	public function set_redirect_url_after_register( $redirect_url ) {
@@ -209,5 +208,4 @@ class Registration extends AbstractAjaxHandler {
 
 		return $redirect_url;
 	}
-
 }

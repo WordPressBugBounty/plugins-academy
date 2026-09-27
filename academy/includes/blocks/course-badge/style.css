@@ -1,0 +1,53 @@
+:where(.wp-block-academy-course-badge) {
+	display: inline-block;
+	width: fit-content;
+	padding: 0.25em 0.7em;
+	border-radius: 999px;
+	background: var(--academy-primary-color, #1e1e1e);
+	color: #fff;
+	font-size: 0.75em;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+/* Style presets. */
+.wp-block-academy-course-badge.is-style-soft:not(.has-background) {
+	background: var(--academy-secondary-color, #f2f0fd);
+}
+
+.wp-block-academy-course-badge.is-style-soft:not(.has-text-color) {
+	color: var(--academy-primary-color, #1e1e1e);
+}
+
+.wp-block-academy-course-badge.is-style-outline:not(.has-background) {
+	background: transparent;
+	box-shadow: inset 0 0 0 1.5px currentColor;
+}
+
+.wp-block-academy-course-badge.is-style-outline:not(.has-text-color) {
+	color: var(--academy-primary-color, #1e1e1e);
+}
+
+.wp-block-academy-course-badge.is-style-square {
+	border-radius: 4px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+/* Alignment from the block toolbar: it sits on its own row, at the
+   left, centre or right of it. */
+.wp-block-academy-course-badge.has-text-align-left,
+.wp-block-academy-course-badge.has-text-align-center,
+.wp-block-academy-course-badge.has-text-align-right {
+	display: flex;
+	width: fit-content;
+}
+
+.wp-block-academy-course-badge.has-text-align-center {
+	margin-inline: auto;
+}
+
+.wp-block-academy-course-badge.has-text-align-right {
+	margin-inline-start: auto;
+	margin-inline-end: 0;
+}

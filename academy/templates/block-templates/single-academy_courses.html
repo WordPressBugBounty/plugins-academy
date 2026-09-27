@@ -1,54 +1,43 @@
 <!-- wp:template-part {"slug":"header"} /-->
 
-<!-- wp:group {"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<div class="wp-block-group"><!-- wp:columns {"className":"is-style-academylms","style":{"spacing":{"padding":{"right":"10px","left":"10px","top":"50px","bottom":"50px"},"blockGap":{"top":"30px","left":"30px"},"margin":{"top":"0","bottom":"0"}},"typography":{"fontSize":"1rem"},"border":{"radius":"38px"}}} -->
-	<div class="wp-block-columns is-style-academylms" style="border-radius:38px;margin-top:0;margin-bottom:0;padding-top:50px;padding-right:10px;padding-bottom:50px;padding-left:10px;font-size:1rem"><!-- wp:column {"verticalAlignment":"top","width":"108%","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"blockGap":"var:preset|spacing|10"},"border":{"width":"0px","style":"none","radius":"0px"}},"layout":{"type":"default"}} -->
-		<div class="wp-block-column is-vertically-aligned-top" style="border-style:none;border-width:0px;border-radius:0px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;flex-basis:108%"><!-- wp:post-featured-image {"style":{"spacing":{"margin":{"top":"17px"}}}} /-->
+<!-- wp:group {"tagName":"main","style":{"spacing":{"padding":{"top":"48px","bottom":"64px","left":"16px","right":"16px"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<main id="content" class="wp-block-group" style="padding-top:48px;padding-right:16px;padding-bottom:64px;padding-left:16px"><!-- wp:columns {"className":"is-style-academylms","style":{"spacing":{"blockGap":{"left":"48px"}}}} -->
+<div class="wp-block-columns is-style-academylms"><!-- wp:column {"width":"66.66%","style":{"spacing":{"blockGap":"24px"}}} -->
+<div class="wp-block-column" style="flex-basis:66.66%"><!-- wp:academy/course-media /-->
 
-			<!-- wp:post-terms {"term":"academy_courses_category","className":"is-style-customcategoriesstyle"} /-->
+<!-- wp:post-terms {"term":"academy_courses_category"} /-->
 
-			<!-- wp:post-title /-->
+<!-- wp:post-title {"level":1} /-->
 
-			<!-- wp:shortcode -->
-			[academy_course_instructors]
-			<!-- /wp:shortcode -->
+<!-- wp:group {"style":{"spacing":{"blockGap":"12px 28px"}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
+<div class="wp-block-group"><!-- wp:academy/course-instructors {"avatarSize":32} /-->
 
-			<!-- wp:shortcode -->
-			[academy_single_course_description]
-			<!-- /wp:shortcode -->
+<!-- wp:academy/course-rating {"hideWhenEmpty":true} /-->
 
-			<!-- wp:shortcode -->
-			[academy_single_course_addition_info]
-			<!-- /wp:shortcode -->
+<!-- wp:academy/course-meta {"showEnrolled":true} /--></div>
+<!-- /wp:group -->
 
-			<!-- wp:shortcode -->
-			[academy_single_course_attachment_files]
-			<!-- /wp:shortcode -->
+<!-- wp:academy/course-description /-->
 
-			<!-- wp:shortcode -->
-			[academy_single_course_curriculums]
-			<!-- /wp:shortcode -->
+<!-- wp:academy/course-additional-info /-->
 
-			<!-- wp:shortcode -->
-			[academy_single_course_review_rating]
-			<!-- /wp:shortcode -->
-	
-			<!-- wp:shortcode -->
-			[academy_single_course_review_form]
-			<!-- /wp:shortcode -->
+<!-- wp:academy/course-curriculum /-->
 
-			 <!-- wp:shortcode -->
-			[academy_course_reviews]
-			<!-- /wp:shortcode --></div>
-			 
-		<!-- /wp:column -->
+<!-- wp:academy/course-attachments /-->
 
-		<!-- wp:column {"verticalAlignment":"top","width":"52.1%","className":"is-style-academylmssticky"} -->
-		<div class="wp-block-column is-vertically-aligned-top is-style-academylmssticky" style="flex-basis:52.1%"><!-- wp:shortcode -->
-			[academy_course_enroll_widget]
-			<!-- /wp:shortcode --></div>
-		<!-- /wp:column --></div>
-	<!-- /wp:columns --></div>
+<!-- wp:academy/course-instructor-profiles /-->
+
+<!-- wp:academy/course-rating-summary /-->
+
+<!-- wp:academy/course-review-form /-->
+
+<!-- wp:academy/course-reviews /--></div>
+<!-- /wp:column -->
+
+<!-- wp:column {"width":"33.33%","className":"is-style-academylmssticky"} -->
+<div class="wp-block-column is-style-academylmssticky" style="flex-basis:33.33%"><!-- wp:academy/course-enroll-card /--></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></main>
 <!-- /wp:group -->
 
 <!-- wp:template-part {"slug":"footer"} /-->

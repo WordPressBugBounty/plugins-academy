@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use \Academy\Classes\ScriptsBase;
+use Academy\Classes\ScriptsBase;
 
 class Assets extends ScriptsBase {
 
@@ -219,11 +219,8 @@ class Assets extends ScriptsBase {
 	}
 
 	public function load_web_font_and_icon() {
-		// load global styles
-		if ( Helper::get_settings( 'is_enabled_academy_web_font' ) || is_admin() ) {
-			// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-			wp_enqueue_style( 'academy-web-font', $this->web_fonts_url( 'Inter:wght@400,500,600,700&display=swap' ), array() );
-		}
+		// No web font is loaded and no font family is set: text follows the
+		// theme on the front end and WordPress in wp-admin.
 		wp_enqueue_style( 'academy-icon', ACADEMY_ASSETS_URI . 'lib/css/academy-icon.css', array(), filemtime( ACADEMY_ASSETS_DIR_PATH . 'lib/css/academy-icon.css' ), 'all' );
 	}
 }

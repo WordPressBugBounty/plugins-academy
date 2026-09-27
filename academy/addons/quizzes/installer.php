@@ -18,7 +18,8 @@ class Installer {
 		$self->save_option();
 	}
 	public function create_database() {
-		Database::create_initial_custom_table();
+		// Creates missing tables and brings existing ones up to date.
+		Database::sync_schema();
 	}
 	public function saved_settings() {
 		Settings::save_settings();

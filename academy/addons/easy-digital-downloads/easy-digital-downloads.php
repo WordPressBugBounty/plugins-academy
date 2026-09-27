@@ -49,6 +49,5 @@ final class EasyDigitalDownloads implements AddonInterface {
 	}
 
 	public function addon_activation_hook() {
-
 	}
 }

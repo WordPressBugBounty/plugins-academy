@@ -1,0 +1,51 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/social-login",
+	"title": "Social Login Buttons",
+	"category": "academy",
+	"description": "Sign in or sign up with Google or Facebook (Academy Pro).",
+	"keywords": [
+		"google",
+		"facebook",
+		"login",
+		"sign in",
+		"social"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"isRegister": {
+			"type": "boolean",
+			"default": false
+		},
+		"role": {
+			"type": "string",
+			"default": "academy_student"
+		},
+		"showDivider": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"styles": [
+		{
+			"name": "stacked",
+			"label": "Stacked",
+			"isDefault": true
+		},
+		{
+			"name": "side-by-side",
+			"label": "Side by side"
+		}
+	],
+	"editorScript": "academy-blocks-editor",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

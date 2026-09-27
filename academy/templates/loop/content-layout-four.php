@@ -24,7 +24,11 @@ global $authordata;
 	// Display course category if available
 	if ( ! empty( $categories ) ) {
 		foreach ( $categories as $category ) {
-			echo '<p class="academy-course__meta academy-course__meta--category"><a href="' . esc_url( get_term_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a></p>';
+			$category_link = get_term_link( $category );
+			if ( is_wp_error( $category_link ) ) {
+				continue;
+			}
+			echo '<p class="academy-course__meta academy-course__meta--category"><a href="' . esc_url( $category_link ) . '">' . esc_html( $category->name ) . '</a></p>';
 		}
 	}
 	?>

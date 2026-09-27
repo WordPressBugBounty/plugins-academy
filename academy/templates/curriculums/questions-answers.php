@@ -11,9 +11,8 @@ if ( ! is_user_logged_in() ) {
 
 
 ?>
-<div class="academy-lesson-tab__body">
-	<div class="academy-lesson-browseqa-wrap">
-		<div class="academy-question-lists">
+<div class="academy-lesson-browseqa-wrap">
+	<div class="academy-question-lists">
 		<?php
 		if ( empty( $qas ) ) {
 			\Academy\Helper::get_template( 'curriculums/question-answer/no-question-message.php' );
@@ -48,4 +47,3 @@ if ( ! is_user_logged_in() ) {
 		?>
 		</div>
 	</div>
-</div>

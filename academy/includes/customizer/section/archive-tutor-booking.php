@@ -1248,7 +1248,5 @@ class ArchiveTutorBooking extends SectionBase implements CustomizerSectionInterf
 				)
 			)
 		);
-
 	}
-
 }

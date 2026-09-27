@@ -17,12 +17,12 @@ abstract class Message {
 		$this->find_placeholders();
 	}
 
-	protected function find_placeholders() : void {
+	protected function find_placeholders(): void {
 		preg_match_all( '|\{(.+?)\}|mi', $this->content, $matches );
 		$this->placeholders = array_filter( array_unique( $matches[1] ?? [] ) );
 	}
 
-	public function get( array $input ) : array {
+	public function get( array $input ): array {
 		$input = Sanitizer::sanitize_payload(
 			array_combine(
 				$this->placeholders,
@@ -41,16 +41,16 @@ abstract class Message {
 				if ( method_exists( $this, "validate_{$placeholder}" ) &&
 					false === boolval( call_user_func( [ $this, "validate_{$placeholder}" ], $input[ $placeholder ] ?? '' ) )
 				) {
-					// translators: %s is the placeholder key that received an invalid value.
-					throw new InvalidValueException( sprintf( esc_html__( 'Invalid value is provided for: %s.', 'academy' ), esc_html( $placeholder ) ) );
+					/* translators: %s: prompt placeholder name. */
+					throw new InvalidValueException( esc_html( sprintf( __( 'Invalid value is provided for: %s.', 'academy' ), $placeholder ) ) );
 				}
 				$this->content = str_replace( '{' . $placeholder . '}', $input[ $placeholder ] ?? '', $this->content );
 			}
 
 			$this->is_filled = true;
 		} else {
-			// translators: %s is the comma-separated list of missing field keys.
-			throw new PlaceholderMissingException( sprintf( esc_html__( '%s fields are missing.', 'academy' ), esc_html( implode( ',', $missing_keys ) ) ) );
+			/* translators: %s: comma-separated list of missing field names. */
+			throw new PlaceholderMissingException( esc_html( sprintf( __( '%s fields are missing.', 'academy' ), implode( ',', $missing_keys ) ) ) );
 		}
 		return [
 			'role' => trim( $this->role ),

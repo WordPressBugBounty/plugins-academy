@@ -40,7 +40,7 @@ class Import {
 		$this->course_type   = $course_type;
 	}
 
-	public function run() : ?int {
+	public function run(): ?int {
 		foreach ( $this->platform_data->videos() as $video ) {
 			$exist_lesson = \Academy\Helper::get_lesson_by_title(
 				$video['title'] ?? ''

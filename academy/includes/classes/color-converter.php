@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class ColorConverter {
-	public static function rgb_to_hex( string $string ) : string {
+	public static function rgb_to_hex( string $string ): string {
 		return preg_replace_callback(
 			'/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/mi',
 			function ( $matches ) {
@@ -19,7 +19,7 @@ class ColorConverter {
 			$string
 		);
 	}
-	public static function convert_rgb_to_hex( int $r, int $g, int $b ) : string {
+	public static function convert_rgb_to_hex( int $r, int $g, int $b ): string {
 		return '#' . strtoupper( implode( '', [
 			str_pad(
 				dechex( max( 0, min( 255, $r ) ) ), 2, '0', STR_PAD_LEFT

@@ -1,0 +1,95 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-categories",
+	"title": "Course Categories",
+	"category": "academy",
+	"description": "Course categories in a choice of layouts: cards, image tiles, circles, a carousel and more.",
+	"keywords": [
+		"categories",
+		"topics",
+		"subjects",
+		"course"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"columns": {
+			"type": "number",
+			"default": 4
+		},
+		"showImage": {
+			"type": "boolean",
+			"default": true
+		},
+		"showCount": {
+			"type": "boolean",
+			"default": true
+		},
+		"hideEmpty": {
+			"type": "boolean",
+			"default": true
+		},
+		"parentOnly": {
+			"type": "boolean",
+			"default": true
+		},
+		"max": {
+			"type": "number",
+			"default": 8
+		},
+		"layout": {
+			"type": "string",
+			"enum": [
+				"cards",
+				"horizontal",
+				"image-cards",
+				"overlay",
+				"featured",
+				"circles",
+				"carousel",
+				"pills",
+				"list"
+			]
+		},
+		"showDescription": {
+			"type": "boolean",
+			"default": false
+		},
+		"showArrow": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		],
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"blockGap": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontWeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

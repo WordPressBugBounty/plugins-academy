@@ -13,7 +13,7 @@ class ReplyCourseQA implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy/frontend/insert_course_qa_answered',
-			function( $comment ) use ( $deliver_callback, $webhook ) {
+			function ( $comment ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(

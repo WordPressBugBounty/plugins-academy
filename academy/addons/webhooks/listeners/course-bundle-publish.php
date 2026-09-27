@@ -11,16 +11,20 @@ use AcademyWebhooks\Classes\Payload;
 class CourseBundlePublish implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
-			'rest_after_insert_alms_course_bundle',
-			function( $course_bundle ) use ( $deliver_callback, $webhook ) {
+			'transition_post_status',
+			function ( $new_status, $old_status, $post ) use ( $deliver_callback, $webhook ) {
+				if ( 'alms_course_bundle' !== $post->post_type || 'publish' !== $new_status || 'publish' === $old_status ) {
+					return;
+				}
+
 				call_user_func_array(
 					$deliver_callback,
 					array(
 						$webhook,
-						self::get_payload( $course_bundle )
+						self::get_payload( $post )
 					)
 				);
-			}, 10
+			}, 10, 3
 		);
 	}
 
@@ -31,7 +35,7 @@ class CourseBundlePublish implements ListenersInterface {
 		$featured_id = get_post_meta( $course_bundle->ID, '_thumbnail_id', true );
 		$symbol = function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol(), ENT_HTML5, 'UTF-8' ) : '';
 		$courses = get_post_meta( $course_bundle->ID, 'academy_course_bundle_courses_ids', true );
-		foreach ( $courses as $course ) {
+		foreach ( (array) $courses as $course ) {
 			$course_num = count( $course );
 			$total_course[] = Payload::get_course_data( $course['value'] );
 		}

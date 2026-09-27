@@ -41,7 +41,7 @@ class HpLessonCollection extends Base\Collection {
 		if ( ! empty( $search ) ) {
 			$this->where[] = $this->wpdb->prepare(
 				'lesson_title LIKE %s',
-				'%' . $search . '%'
+				'%' . $this->wpdb->esc_like( $search ) . '%'
 			);
 		}
 
@@ -88,7 +88,7 @@ class HpLessonCollection extends Base\Collection {
 
 		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$this->lessons = $this->wpdb->get_results(
-			$this->wpdb->prepare( $query ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$query, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- already built from individually-prepared fragments above
 			ARRAY_A
 		) ?? [];
 
@@ -98,15 +98,15 @@ class HpLessonCollection extends Base\Collection {
 		$this->total_pages = (int) ceil( $this->total / $this->per_page );
 	}
 
-	public function join() : string {
+	public function join(): string {
 		return " JOIN {$this->meta_table} lm ON l.ID = lm.lesson_id ";
 	}
 
-	public function getIterator() : ArrayIterator {
+	public function getIterator(): ArrayIterator {
 		return new ArrayIterator( $this->lessons );
 	}
 
-	public function load_meta() : void {
+	public function load_meta(): void {
 		$ids = array_map(
 			'absint',
 			array_column( $this->lessons, 'ID' )
@@ -122,16 +122,17 @@ class HpLessonCollection extends Base\Collection {
 			array_fill( 0, count( $ids ), '%d' )
 		);
 
+		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- placeholders are generated to match the values
 		$meta_data = $this->skip_meta
 			? []
-			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 			: $this->wpdb->get_results(
-				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					"SELECT * FROM {$this->meta_table} WHERE lesson_id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					...$ids// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				),
 				ARRAY_A
 			) ?? [];
+		// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		foreach ( $meta_data as $meta ) {
 			$this->meta_data[ $meta['lesson_id'] ][ $meta['meta_key'] ] = $meta['meta_value'];
@@ -147,17 +148,16 @@ class HpLessonCollection extends Base\Collection {
 		$this->lessons = $lessons;
 	}
 
-	public function count() : int {
+	public function count(): int {
 		$query = "
 			SELECT COUNT( DISTINCT l.ID )
 			FROM {$this->table} l
 			" . ( empty( $this->by_meta ) ? '' : $this->join() ) . '
 			' . ( empty( $this->where ) ? '' : 'WHERE ' . implode( ' AND ', $this->where ) );
-
 		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return (int) (
 			$this->wpdb->get_var(
-				$this->wpdb->prepare( $query ) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$query // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			) ?? 0
 		);
 	}

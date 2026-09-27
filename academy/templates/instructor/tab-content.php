@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <div class="academy-tabs-content">
 	<?php do_action( 'academy/templates/instructor/tabs_add_content_before' ); ?>
 	<div id="courses">

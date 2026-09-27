@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/dashboard-content",
+	"title": "Dashboard Pages",
+	"category": "academy",
+	"description": "Shows each dashboard page. On the home page it shows the blocks inside it.",
+	"textdomain": "academy",
+	"supports": {
+		"html": false,
+		"spacing": {
+			"padding": true,
+			"blockGap": false
+		},
+		"interactivity": false
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"ancestor": [
+		"academy/dashboard"
+	],
+	"parent": [
+		"academy/dashboard"
+	]
+}

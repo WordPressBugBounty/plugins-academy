@@ -1,0 +1,704 @@
+/* Block dashboard: a menu beside a top bar and the page, drawn from blocks. */
+.academy-dash {
+	--academy-dash-gap: 24px;
+	--academy-dash-radius: 12px;
+	--academy-dash-collapsed: 76px;
+	display: grid;
+	grid-template-columns: var(--academy-dashboard-sidebar-width, 260px) minmax(0, 1fr);
+	grid-template-areas: "side top" "side main";
+	grid-template-rows: auto 1fr;
+	column-gap: var(--academy-dash-gap);
+	row-gap: 0;
+	align-items: start;
+	box-sizing: border-box;
+	width: 100%;
+	color: var(--academy-text-color);
+	transition: grid-template-columns 0.2s ease;
+}
+
+.academy-dash *,
+.academy-dash *::before,
+.academy-dash *::after {
+	box-sizing: border-box;
+}
+
+.academy-dash[data-sidebar="right"] {
+	grid-template-columns: minmax(0, 1fr) var(--academy-dashboard-sidebar-width, 260px);
+	grid-template-areas: "top side" "main side";
+}
+
+.academy-dash.is-collapsed {
+	grid-template-columns: var(--academy-dash-collapsed) minmax(0, 1fr);
+}
+
+.academy-dash[data-sidebar="right"].is-collapsed {
+	grid-template-columns: minmax(0, 1fr) var(--academy-dash-collapsed);
+}
+
+/* Anything else dropped into the frame takes the page column. */
+.academy-dash > * {
+	grid-column: main;
+	min-width: 0;
+}
+
+/* Menu */
+.academy-dash-sidebar {
+	grid-area: side;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 0;
+	padding: 12px 0;
+	border: 1px solid var(--academy-border-color);
+	border-radius: var(--academy-dash-radius);
+	background: var(--academy-surface-color);
+}
+
+.academy-dash-sidebar.is-sticky {
+	position: sticky;
+	top: calc(var(--wp-admin--admin-bar--height, 0px) + 16px);
+	max-height: calc(100vh - var(--wp-admin--admin-bar--height, 0px) - 32px);
+	overflow-y: auto;
+	scrollbar-width: thin;
+}
+
+.academy-dash-sidebar__head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 12px;
+}
+
+/* Only on small screens, where the menu slides in. */
+.academy-dash-sidebar .academy-dash-sidebar__close {
+	display: none;
+}
+
+.academy-dash-sidebar__collapse {
+	margin-left: auto;
+}
+
+.academy-dash.is-collapsed .academy-dash-sidebar__head {
+	flex-direction: column;
+	padding: 0 8px;
+}
+
+.academy-dash.is-collapsed .academy-dash-sidebar__collapse {
+	margin-left: 0;
+	transform: scaleX(-1);
+}
+
+.academy-dash-icon-button {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	border: 1px solid var(--academy-border-color);
+	border-radius: 8px;
+	background: var(--academy-surface-color);
+	color: var(--academy-description-color);
+	cursor: pointer;
+	transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.academy-dash-icon-button:hover {
+	background: var(--academy-gray-color);
+	color: var(--academy-heading-color);
+}
+
+.academy-dash-icon-button .academy-icon::before {
+	font-size: 16px;
+	color: currentColor;
+}
+
+.academy-dash button:focus-visible,
+.academy-dash a:focus-visible {
+	outline: 2px solid var(--academy-primary-color);
+	outline-offset: 2px;
+}
+
+/* The person and their account menu */
+.academy-dash-user {
+	position: relative;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.academy-dash-user__toggle {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 6px;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.academy-dash-user__toggle:hover {
+	background: var(--academy-gray-color);
+}
+
+.academy-dash-user__avatar {
+	flex: none;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.academy-dash-user__text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	line-height: 1.3;
+}
+
+.academy-dash-user__text b {
+	overflow: hidden;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--academy-heading-color);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.academy-dash-user__text small {
+	font-size: 12px;
+	color: var(--academy-description-color);
+}
+
+.academy-dash-user__caret {
+	margin-left: auto;
+	transition: transform 0.15s ease;
+}
+
+.academy-dash-user__caret::before {
+	font-size: 11px;
+	color: var(--academy-description-color);
+}
+
+.academy-dash-user.is-open .academy-dash-user__caret {
+	transform: rotate(180deg);
+}
+
+.academy-dash-user__menu {
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	z-index: 50;
+	display: none;
+	flex-direction: column;
+	width: 240px;
+	padding: 8px;
+	border: 1px solid var(--academy-border-color);
+	border-radius: 10px;
+	background: var(--academy-surface-color);
+	box-shadow: var(--academy-shadow-hard);
+}
+
+.academy-dash-user.is-open .academy-dash-user__menu {
+	display: flex;
+}
+
+.academy-dash-user__email {
+	overflow: hidden;
+	padding: 4px 8px 8px;
+	font-size: 12px;
+	color: var(--academy-description-color);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.academy-dash-user__label {
+	padding: 6px 8px 2px;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--academy-description-color);
+}
+
+.academy-dash-user__item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px;
+	border-radius: 6px;
+	font-size: 14px;
+	color: var(--academy-heading-color);
+	text-decoration: none;
+}
+
+.academy-dash-user__item:hover {
+	background: var(--academy-gray-color);
+	color: var(--academy-heading-color);
+}
+
+.academy-dash-user__item.is-current {
+	font-weight: 600;
+	color: var(--academy-primary-color);
+}
+
+.academy-dash-user__item .academy-icon::before,
+.academy-dash-user__item i::before {
+	font-size: 16px;
+	color: currentColor;
+}
+
+.academy-dash-user__check {
+	margin-left: auto;
+}
+
+.academy-dash-user__menu hr {
+	width: 100%;
+	margin: 6px 0;
+	border: 0;
+	border-top: 1px solid var(--academy-border-color);
+}
+
+/* The menu reuses the classic menu's items, full width in the frame. */
+.academy-dash-sidebar .academy-dash-menu {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	padding: 4px 12px;
+	border-radius: 0;
+	background: transparent;
+}
+
+.academy-dash.is-collapsed .academy-dash-sidebar .academy-dash-menu {
+	padding: 4px 8px;
+}
+
+.academy-dash.is-collapsed .academy-dash-label,
+.academy-dash.is-collapsed .academy-dash-menu .academy-dashboard-menu__item-label,
+.academy-dash.is-collapsed .academy-dash-menu .menu-icon,
+.academy-dash.is-collapsed .academy-dash-menu .academy-dashboard-submenu,
+.academy-dash.is-collapsed .academy-dash-menu .academy-dashboard-menu__divider {
+	display: none !important;
+}
+
+.academy-dash.is-collapsed .academy-dash-menu > li > a {
+	justify-content: center;
+}
+
+.academy-dash.is-collapsed .academy-dash-user__toggle {
+	justify-content: center;
+}
+
+.academy-dash.is-collapsed .academy-dash-user__menu {
+	left: 0;
+}
+
+/* Top bar */
+.academy-dash-topbar {
+	grid-area: top;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-width: 0;
+	padding: 4px 0 16px;
+}
+
+.academy-dash-topbar__start,
+.academy-dash-topbar__end {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+.academy-dash-topbar__end .academy-dashboard-theme-toggle {
+	margin: 0;
+}
+
+.academy-dash-topbar__title {
+	margin: 0;
+	font-size: 22px;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--academy-heading-color);
+	text-wrap: balance;
+}
+
+.academy-dash-topbar .academy-dash-topbar__menu {
+	display: none;
+}
+
+/* Page */
+.academy-dash-content {
+	grid-area: main;
+	display: flex;
+	flex-direction: column;
+	gap: var(--academy-dash-gap);
+	min-width: 0;
+	padding: 0;
+}
+
+.academy-dash-content > * {
+	margin-block: 0;
+	text-align: start;
+}
+
+/* Welcome */
+.academy-dash-welcome {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin: 0;
+}
+
+.academy-dash-welcome__avatar {
+	flex: none;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.academy-dash-welcome__text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.academy-dash-welcome__date {
+	margin: 0;
+	font-size: 14px;
+	color: var(--academy-description-color);
+}
+
+/* Numbers */
+.academy-dash-stats .academy-dash-stats__grid {
+	display: grid;
+	grid-template-columns: repeat(var(--academy-dash-stats-columns, 3), minmax(0, 1fr));
+	gap: 16px;
+	margin: 0;
+}
+
+.academy-dash-stats .academy-dash-stats__card {
+	width: auto;
+	height: auto;
+	min-height: 104px;
+	padding: 20px;
+	gap: 16px;
+	border-radius: var(--academy-dash-radius);
+	color: inherit;
+	text-decoration: none;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.academy-dash-stats .academy-dash-stats__card:hover {
+	border-color: color-mix(in srgb, var(--academy-primary-color) 40%, var(--academy-border-color));
+}
+
+.academy-dash-stats .academy-analytics-card--icon {
+	min-width: 52px;
+	min-height: 52px;
+	border-radius: 10px;
+}
+
+.academy-dash-stats .academy-analytics-card--data {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.academy-dash-stats .academy-analytics-card--value {
+	font-size: 26px;
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--academy-heading-color);
+	font-variant-numeric: tabular-nums;
+}
+
+.academy-dash-stats .academy-analytics-card--label {
+	font-size: 14px;
+	color: var(--academy-description-color);
+}
+
+.academy-dash-stats.is-style-soft .academy-dash-stats__card {
+	border-color: transparent;
+	background: color-mix(in srgb, var(--academy-primary-color) 7%, var(--academy-surface-color));
+	box-shadow: none;
+}
+
+.academy-dash-stats.is-style-minimal .academy-dash-stats__card {
+	min-height: 0;
+	padding: 4px 0 4px 16px;
+	border: 0;
+	border-left: 3px solid var(--academy-primary-color);
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.academy-dash-stats.is-style-minimal .academy-analytics-card--icon {
+	min-width: 40px;
+	min-height: 40px;
+	border: 0;
+}
+
+/* Continue learning, teaching */
+.academy-dash-continue .academy-dashboard-continue {
+	margin: 0;
+}
+
+.academy-dashboard-continue--list .academy-dashboard-continue__list {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 10px;
+}
+
+.academy-dashboard-continue--list .academy-dashboard-continue__course {
+	flex-direction: row;
+	align-items: center;
+}
+
+.academy-dashboard-continue--list .academy-dashboard-continue__thumb {
+	flex: none;
+	width: 120px;
+	align-self: stretch;
+	aspect-ratio: auto;
+}
+
+.academy-dashboard-continue--list .academy-dashboard-continue__body {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.academy-dash-teaching__title {
+	margin: 0 0 12px;
+	font-size: 17px;
+	font-weight: 600;
+	color: var(--academy-heading-color);
+}
+
+.academy-dash__scrim {
+	display: none;
+}
+
+/* Small screens: the menu slides in over the page. */
+@media (max-width: 1024px) {
+	.academy-dash,
+	.academy-dash[data-sidebar="right"],
+	.academy-dash.is-collapsed {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas: "top" "main";
+	}
+
+	.academy-dash > * {
+		grid-column: 1;
+	}
+
+	.academy-dash-sidebar,
+	.academy-dash-sidebar.is-sticky {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 100000;
+		width: min(300px, 86vw);
+		max-height: none;
+		overflow-y: auto;
+		border-radius: 0;
+		transform: translateX(-100%);
+		visibility: hidden;
+		transition: transform 0.2s ease, visibility 0.2s;
+	}
+
+	.academy-dash[data-sidebar="right"] .academy-dash-sidebar {
+		right: 0;
+		left: auto;
+		transform: translateX(100%);
+	}
+
+	.academy-dash.is-menu-open .academy-dash-sidebar {
+		transform: none;
+		visibility: visible;
+	}
+
+	/* Collapsing is for large screens; the slide-in menu is always full. */
+	.academy-dash.is-collapsed .academy-dash-label,
+	.academy-dash.is-collapsed .academy-dash-menu .academy-dashboard-menu__item-label {
+		display: revert !important;
+	}
+
+	.academy-dash.is-collapsed .academy-dash-sidebar__head {
+		flex-direction: row;
+	}
+
+	.academy-dash-sidebar .academy-dash-sidebar__collapse {
+		display: none;
+	}
+
+	.academy-dash-sidebar .academy-dash-sidebar__close,
+	.academy-dash-topbar .academy-dash-topbar__menu {
+		display: inline-flex;
+	}
+
+	.academy-dash__scrim {
+		position: fixed;
+		inset: 0;
+		z-index: 99999;
+		padding: 0;
+		border: 0;
+		background: rgb(15 23 42 / 45%);
+		cursor: default;
+	}
+
+	.academy-dash.is-menu-open .academy-dash__scrim {
+		display: block;
+	}
+
+	.academy-dash-stats .academy-dash-stats__grid {
+		grid-template-columns: repeat(min(2, var(--academy-dash-stats-columns, 3)), minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 600px) {
+	.academy-dash-stats .academy-dash-stats__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.academy-dash-topbar__title {
+		font-size: 19px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.academy-dash,
+	.academy-dash-sidebar,
+	.academy-dash-user__caret {
+		transition: none;
+	}
+}
+
+/* Pages from the menu, drawn by their classic templates and screens, inside
+   the block frame. They were laid out for the classic dashboard's own top
+   bar and widths, so a few things are set straight here. */
+.academy-dash-content {
+	position: relative; /* Buttons placed on the page (profile edit) sit in it. */
+}
+
+/* Classic tab bars were pulled up under the classic top bar. */
+.academy-dash-content .academy_dashboard-tabs {
+	margin-top: 0;
+}
+
+/* The block top bar already names the page; the page's own title row keeps
+   only its buttons. */
+.academy-dash-content .academy-sub-top-header {
+	justify-content: flex-end;
+}
+
+.academy-dash-content .academy-sub-top-header__title {
+	display: none;
+}
+
+/* Table toolbars: status tabs stay on one line; the search moves under
+   them when there isn't room. */
+.academy-dash-content .academy-table__sub-header {
+	flex-wrap: wrap;
+	row-gap: 12px;
+}
+
+.academy-dash-content .academy-table__sub-header-actions-left > *,
+.academy-dash-content .academy-table__sub-header-actions-left button {
+	flex-shrink: 0;
+	white-space: nowrap;
+}
+
+/* Titles get room to read; the table scrolls sideways when it runs out.
+   (The table's own sizing rule is more specific, hence !important.) */
+.academy-dash-content .academy-table__head-row > .academy-table__row-cell:nth-child(2),
+.academy-dash-content .academy-table__body-row > .academy-table__row-cell:nth-child(2) {
+	min-width: 180px !important;
+	flex-grow: 2;
+}
+
+/* The profile's edit button: top right of the page, by the title. */
+.academy-dash-content .academy-edit-btn {
+	top: 0;
+	right: 0;
+	left: auto;
+}
+
+.academy-dash-content .academy-dropdown-option {
+	white-space: nowrap;
+}
+
+/* Cards added to the numbers by add-ons (meetings) fill their grid cell. */
+.academy-dash-stats .academy-dash-stats__grid > .academy-analytics-cards--card {
+	width: auto;
+	height: auto;
+	min-height: 104px;
+	padding: 20px;
+	gap: 16px;
+	border-radius: var(--academy-dash-radius);
+	color: inherit;
+	text-decoration: none;
+}
+
+.academy-dash-stats .academy-dash-stats__grid > .academy-analytics-cards--card .academy-analytics-card--data {
+	min-width: 0;
+}
+
+/*
+ * Colour set on a dashboard block.
+ *
+ * The dashboard's own parts — the menu items, the person's name, a section
+ * title, the rows of a table — carry Academy's palette variables and, for the
+ * table, an opaque surface of their own. A colour set on the block therefore
+ * only ever reached its wrapper: the menu kept its dark text and the table
+ * painted white over whatever background was chosen.
+ *
+ * These apply only once the block carries the setting (WordPress adds
+ * `has-text-color` and `has-background`), so a dashboard that has set neither
+ * looks exactly as it did.
+ */
+
+/* Text colour reaches the parts that hard-code one. */
+.wp-block-academy-dashboard-sidebar.has-text-color :where(
+	.academy-dash-menu li a,
+	.academy-dash-menu li a .academy-icon::before,
+	.academy-dashboard-menu__item-label,
+	.academy-dashboard-menu__divider,
+	.academy-dash-user__text b,
+	.academy-dash-user__text small,
+	.academy-dash-user__email,
+	.academy-dash-user__item
+) {
+	color: inherit;
+}
+
+.wp-block-academy-dashboard-topbar.has-text-color :where(.academy-dash-topbar__title, .academy-dash-icon-button),
+.wp-block-academy-dashboard-welcome.has-text-color :where(.academy-dash-welcome__title, .academy-dash-welcome__text),
+.wp-block-academy-dashboard-stats.has-text-color :where(.academy-dash-stat__value, .academy-dash-stat__label),
+.wp-block-academy-dashboard-teaching-courses.has-text-color :where(.academy-dash-teaching__title) {
+	color: inherit;
+}
+
+/*
+ * A background set on the block has to be what shows. The table and its rows
+ * paint their own surface, which sat on top of it.
+ */
+.wp-block-academy-dashboard-teaching-courses.has-background :where(
+	.academy-table,
+	.academy-table__table,
+	.academy-table__container,
+	.academy-table__body-row,
+	.academy-table__row-cell,
+	.academy-table__header-row-cell
+) {
+	background: transparent;
+}

@@ -1,0 +1,132 @@
+/*
+ * The Academy look for course cards built from blocks: Academy's font, type
+ * scale and palette, so a card matches the rest of Academy on any theme.
+ * Anything set on a block in the editor (a size, a colour, a background) wins
+ * over these rules.
+ */
+
+:where(.academy-course-card) {
+	background-color: var(--academy-surface-color, #fff);
+	color: var(--academy-text-color, #111);
+	overflow: hidden;
+}
+
+/* Title */
+.academy-course-card .wp-block-post-title {
+	font-family: inherit;
+	font-weight: 600;
+	letter-spacing: 0;
+}
+
+.academy-course-card .wp-block-post-title:not(.has-text-color),
+.academy-course-card .wp-block-post-title:not(.has-link-color) a {
+	color: var(--academy-text-color-black, #111);
+}
+
+.academy-course-card .wp-block-post-title a {
+	text-decoration: none;
+}
+
+.academy-course-card .wp-block-post-title:not(.has-link-color) a:hover,
+.academy-course-card .wp-block-post-title:not(.has-link-color) a:focus-visible {
+	color: var(--academy-primary-color, currentColor);
+}
+
+/* Categories, on a card and above a course page's title */
+.academy-course-card .wp-block-post-terms,
+.academy-course-page__categories {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.academy-course-card .wp-block-post-terms__separator,
+.academy-course-page__categories .wp-block-post-terms__separator {
+	display: none;
+}
+
+.academy-course-card .wp-block-post-terms a,
+.academy-course-page__categories a {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	padding: 0.2em 0.7em;
+	border-radius: 999px;
+	text-decoration: none;
+}
+
+.academy-course-card .wp-block-post-terms:not(.has-link-color) a,
+.academy-course-page__categories:not(.has-link-color) a {
+	background-color: var(--academy-secondary-color, #f2f0fd);
+	color: var(--academy-primary-color, currentColor);
+}
+
+.academy-course-card .wp-block-post-terms.is-style-academy-with-images a:has(img),
+.academy-course-page__categories.is-style-academy-with-images a:has(img) {
+	padding-inline-start: 0.25em;
+}
+
+/* Instructors, details and rating */
+.academy-course-card .wp-block-academy-course-instructors,
+.academy-course-card .wp-block-academy-course-meta,
+.academy-course-card .wp-block-academy-course-rating,
+.academy-course-card .academy-course-card__excerpt {
+	line-height: 1.5;
+}
+
+.academy-course-card .wp-block-academy-course-instructors a {
+	font-weight: 500;
+}
+
+.academy-course-card .wp-block-academy-course-meta {
+	gap: 4px 14px;
+}
+
+.academy-course-card .wp-block-academy-course-meta:not(.has-text-color),
+.academy-course-card .academy-course-card__excerpt:not(.has-text-color) {
+	color: var(--academy-secondary-gray-color, #575e6c);
+}
+
+/* Price and button */
+.academy-course-card .wp-block-academy-course-price {
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.academy-course-card .wp-block-academy-course-enroll-button {
+	padding: 0.6em 1.1em;
+	border-radius: var(--academy-button-radius, 6px);
+	font-family: inherit;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.academy-course-card .wp-block-academy-course-enroll-button:not(.has-background):not(.is-enroll-form) {
+	background-color: var(--academy-primary-color, #5b47e0);
+}
+
+.academy-course-card .wp-block-academy-course-enroll-button:not(.has-text-color):not(.is-enroll-form) {
+	color: #fff;
+}
+
+/* Course page: categories and the line under the title */
+:where(.academy-course-page__categories) {
+	font-size: var(--wp--preset--font-size--small, 0.8125rem);
+}
+
+/* The theme's small size, so it follows the theme. */
+:where(.academy-course-page__meta) {
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	line-height: 1.5;
+}
+
+.academy-course-page__meta .wp-block-academy-course-meta:not(.has-text-color) {
+	color: var(--academy-secondary-gray-color, #575e6c);
+}
+
+.academy-course-page__meta .wp-block-academy-course-instructors a {
+	font-weight: 500;
+}

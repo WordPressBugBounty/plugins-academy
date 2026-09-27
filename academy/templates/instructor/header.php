@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <div class="academy-courses-instructor-header"
 	style="background-image: url(<?php echo esc_url( $cover_photo_url ); ?>);">
 	<div class="academy-container">

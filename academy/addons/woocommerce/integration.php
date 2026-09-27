@@ -11,6 +11,7 @@ use Academy\Traits\Earning;
 class Integration {
 
 	use Earning;
+
 	public static function init() {
 		$self = new self();
 		add_filter( 'academy/frontend_dashboard_menu_items', array( $self, 'add_store_dashboard_menu' ), 10, 1 );
@@ -71,6 +72,7 @@ class Integration {
 		if ( function_exists( 'wc_get_page_permalink' ) && \Academy\Helper::get_settings( 'store_link_inside_frontend_dashboard', true ) ) {
 			$menu['store-dashboard'] = array(
 				'label' => \Academy\Helper::get_settings( 'store_link_label_inside_frontend_dashboard', __( 'Store Dashboard', 'academy' ) ),
+				'area'     => 'learning',
 				'icon'  => 'academy-icon academy-icon--calender',
 				'permalink' => wc_get_page_permalink( 'myaccount' ),
 				'public' => true,
@@ -131,39 +133,37 @@ class Integration {
 					do_action( 'academy/course/after_enroll', $enrolled_info['course_id'], $enrolled_info['enrolled_id'], $enrolled_user_id );
 				}
 			}
-		} else {
-			if ( $order ) {
-				$order_status = \Academy\Helper::get_settings( 'woo_order_auto_complete_status' ) ?? [ 'on-hold', 'pending', 'processing', 'completed' ];
-				$items = $order->get_items();
-				foreach ( $items as $item ) {
-					$product_id = $item->get_product_id();
-					$has_course = \Academy\Helper::product_belongs_with_course( $product_id );
-					if ( $has_course ) {
-						if ( $order && in_array( $order->get_status(), $order_status, true ) ) {
-							$customer_id = $order->get_customer_id();
-							if ( ! $customer_id ) {
-								$customer_id = $this->create_user_by_order_details( $order );
+		} elseif ( $order ) {
+			$order_status = \Academy\Helper::get_settings( 'woo_order_auto_complete_status' ) ?? [ 'on-hold', 'pending', 'processing', 'completed' ];
+			$items = $order->get_items();
+			foreach ( $items as $item ) {
+				$product_id = $item->get_product_id();
+				$has_course = \Academy\Helper::product_belongs_with_course( $product_id );
+				if ( $has_course ) {
+					if ( $order && in_array( $order->get_status(), $order_status, true ) ) {
+						$customer_id = $order->get_customer_id();
+						if ( ! $customer_id ) {
+							$customer_id = $this->create_user_by_order_details( $order );
+						}
+						$course_id = $has_course->post_id;
+						$course_attach_product_id = $has_course->meta_value;
+						if ( $course_id && $course_attach_product_id ) {
+							$enroll_id = \Academy\Helper::do_enroll( $course_id, $customer_id, $order_id );
+							// make order auto complete
+							if ( ! is_admin() && self::is_order_will_be_automatically_completed( $order_id ) ) {
+								$status_to = 'completed';
+								self::order_mark_as_completed( $order_id );
 							}
-							$course_id = $has_course->post_id;
-							$course_attach_product_id = $has_course->meta_value;
-							if ( $course_id && $course_attach_product_id ) {
-								$enroll_id = \Academy\Helper::do_enroll( $course_id, $customer_id, $order_id );
-								// make order auto complete
-								if ( ! is_admin() && self::is_order_will_be_automatically_completed( $order_id ) ) {
-									$status_to = 'completed';
-									self::order_mark_as_completed( $order_id );
-								}
-								// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-								$wpdb->update( $wpdb->posts, array( 'post_status' => $status_to ), array( 'ID' => $enroll_id ) );
-								if ( 'completed' === $status_to ) {
-									$enrolled_user_id = get_post_field( 'post_author', $enroll_id );
-									do_action( 'academy/course/after_enroll', $course_id, $enroll_id, $enrolled_user_id );
-								}
+							// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+							$wpdb->update( $wpdb->posts, array( 'post_status' => $status_to ), array( 'ID' => $enroll_id ) );
+							if ( 'completed' === $status_to ) {
+								$enrolled_user_id = get_post_field( 'post_author', $enroll_id );
+								do_action( 'academy/course/after_enroll', $course_id, $enroll_id, $enrolled_user_id );
 							}
-						}//end if
+						}
 					}//end if
-				}//end foreach
-			}//end if
+				}//end if
+			}//end foreach
 		}//end if
 	}
 
@@ -179,8 +179,12 @@ class Integration {
 	}
 
 	public function save_wc_product_meta( $post_ID ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$is_academy_product = sanitize_text_field( wp_unslash( isset( $_POST['_academy_product'] ) ? $_POST['_academy_product'] : '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		// Only the product edit screen posts this checkbox. Any other save (quick edit,
+		// REST, bulk edit) must leave the flag alone rather than read "unchecked".
+		if ( ! isset( $_POST['woocommerce_meta_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['woocommerce_meta_nonce'] ) ), 'woocommerce_save_data' ) ) {
+			return;
+		}
+		$is_academy_product = isset( $_POST['_academy_product'] ) ? sanitize_text_field( wp_unslash( $_POST['_academy_product'] ) ) : '';
 		if ( 'on' === $is_academy_product ) {
 			update_post_meta( $post_ID, '_academy_product', 'yes' );
 		} else {
@@ -243,9 +247,9 @@ class Integration {
 	}
 
 	public function add_frontend_dashboard_menu_item( $menu_links ) {
-		$allow_frontend_dashboard = (bool) \Academy\Helper::get_settings( 'store_link_inside_frontend_dashboard' );
-		$frontend_dashboard_label = (string) \Academy\Helper::get_settings( 'store_link_label_inside_frontend_dashboard' );
-		if ( ! $allow_frontend_dashboard || empty( $frontend_dashboard_label ) ) {
+		$allow_fontend_dashbaord = (bool) \Academy\Helper::get_settings( 'is_enabled_fd_link_inside_woo_dashboard' );
+		$fontend_dashbaord_label = (string) \Academy\Helper::get_settings( 'store_link_label_inside_frontend_dashboard' );
+		if ( ! $allow_fontend_dashbaord || empty( $fontend_dashbaord_label ) ) {
 			return $menu_links;
 		}
 
@@ -253,7 +257,7 @@ class Integration {
 		foreach ( $menu_links as $key => $value ) {
 			$menu[ $key ] = $value;
 			if ( 'dashboard' === $key ) {
-				$menu['academy_frontend_dashboard'] = esc_html( $frontend_dashboard_label );
+				$menu['academy_frontend_dashboard'] = esc_html( $fontend_dashbaord_label );
 			}
 		}
 		return $menu;
@@ -415,11 +419,13 @@ class Integration {
 	}
 
 	public function academy_courses_linked_with_woo_product() {
+		// phpcs:disable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page -- needs the complete (small, bounded) set
 		$courses = get_posts( [
 			'post_type' => 'academy_courses',
 			'posts_per_page' => -1,
 			'post_status' => 'publish'
 		] );
+		// phpcs:enable WordPressVIPMinimum.Performance.NoPaging.posts_per_page_posts_per_page
 
 		if ( $courses ) {
 			woocommerce_wp_select( [
@@ -430,7 +436,6 @@ class Integration {
 				'description' => __( 'Select a course to link with this product.', 'academy' ),
 			] );
 		}
-
 	}
 
 	public function save_academy_courses_meta( $product ) {

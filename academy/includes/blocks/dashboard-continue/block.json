@@ -1,0 +1,53 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/dashboard-continue",
+	"title": "Continue Learning",
+	"category": "academy",
+	"description": "Courses in progress, with a link back to where the student left off.",
+	"textdomain": "academy",
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": ""
+		},
+		"count": {
+			"type": "number",
+			"default": 0
+		},
+		"layout": {
+			"type": "string",
+			"enum": [
+				"grid",
+				"list"
+			],
+			"default": "grid"
+		},
+		"showImage": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"spacing": {
+			"padding": true,
+			"margin": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"interactivity": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"ancestor": [
+		"academy/dashboard"
+	]
+}

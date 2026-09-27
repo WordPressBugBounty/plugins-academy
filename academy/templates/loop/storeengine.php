@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 $cart_icon = '<span class="academy-icon academy-icon--cart" aria-hidden="true"></span>';
 $current = current( $integration );
-if ( $is_enabled_academy_login && ! is_user_logged_in() ) : ?>
+if ( $is_enabled_academy_login && ! is_user_logged_in() && Academy\Helper::get_settings( 'store_force_login_before_enroll' ) ) : ?>
 	<button type="button" class="academy-btn academy-btn--bg-purple academy-btn-popup-login">
 		<span class="academy-icon academy-icon--cart" aria-hidden="true"></span>
 		<?php

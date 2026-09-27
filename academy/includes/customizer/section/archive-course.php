@@ -1346,7 +1346,5 @@ class ArchiveCourse extends SectionBase implements CustomizerSectionInterface {
 				)
 			)
 		);
-
 	}
-
 }

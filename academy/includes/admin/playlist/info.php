@@ -21,7 +21,7 @@ class Info {
 		$this->platform    = $platform_ins;
 	}
 
-	public function get() : Platform {
+	public function get(): Platform {
 		return $this->platform;
 	}
 }

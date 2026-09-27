@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</p>
 		<div class="academy-author-info__course-details">
 			<div>
-				<span class="academy-author-info__course-details-number"><?php echo esc_html( count_user_posts( $author_ID, 'academy_courses' ) ); ?></span>
+				<span class="academy-author-info__course-details-number"><?php echo esc_html( Academy\Helper::count_user_posts( $author_ID, 'academy_courses' ) ); ?></span>
 				<span class="academy-author-info__course-details-text"><?php esc_html_e( 'Courses', 'academy' ); ?></span>
 			</div>
 			<div>

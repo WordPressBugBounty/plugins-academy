@@ -8,6 +8,7 @@ use Academy\Lesson\LessonApi\Common\Db;
 use Academy\Lesson\LessonApi\Models\Traits\Sanitizer;
 abstract class Lesson extends Db {
 	use Sanitizer;
+
 	protected ?int $id;
 	protected bool $is_insert = false;
 	public bool $ignore_slug_check = false;
@@ -22,7 +23,7 @@ abstract class Lesson extends Db {
 		$this->ignore_slug_check = $ignore_slug_check;
 	}
 
-	protected function sanitize_data( array $data, bool $is_meta = false ) : array {
+	protected function sanitize_data( array $data, bool $is_meta = false ): array {
 		$sanitized_data = [];
 		foreach ( $data as $key => $value ) {
 			$key_ = $this->inspect_key( $key );
@@ -40,27 +41,27 @@ abstract class Lesson extends Db {
 		return $sanitized_data;
 	}
 
-	protected function inspect_key( string $key, bool $is_meta = false ) : string {
+	protected function inspect_key( string $key, bool $is_meta = false ): string {
 		return $key;
 	}
 
-	public function set_data( array $data ) : self {
+	public function set_data( array $data ): self {
 		$this->data = array_merge( $this->data, $this->sanitize_data( $data ) );
 		$this->id = $this->data['ID'] ?? null;
 		return $this;
 	}
 
-	public function set_meta_data( array $meta ) : self {
+	public function set_meta_data( array $meta ): self {
 		$this->meta = array_merge( $this->meta, $this->sanitize_data( $meta, true ) );
 		return $this;
 	}
 
-	public function get_data() : array {
+	public function get_data(): array {
 		$output = $this->data;
 		$output['meta'] = $this->meta;
 		return apply_filters( 'academy/lesson', $output, $this->id );
 	}
-	public function save() : self {
+	public function save(): self {
 		$this->save_data();
 		$this->save_meta_data();
 		$ins = static::by_id( $this->id );
@@ -72,15 +73,15 @@ abstract class Lesson extends Db {
 		return $this;
 	}
 
-	public function id() : ?int {
+	public function id(): ?int {
 		return $this->id;
 	}
-	abstract public static function by_id( int $id ) : self;
-	abstract public static function by_slug( string $slug ) : self;
-	abstract public static function by_title( string $title ) : self;
-	abstract protected function set_default() : void;
-	abstract public function is_slug_available() : bool;
-	abstract public function save_data() : void;
-	abstract public function save_meta_data() : void;
-	abstract public function delete() : void;
+	abstract public static function by_id( int $id ): self;
+	abstract public static function by_slug( string $slug ): self;
+	abstract public static function by_title( string $title ): self;
+	abstract protected function set_default(): void;
+	abstract public function is_slug_available(): bool;
+	abstract public function save_data(): void;
+	abstract public function save_meta_data(): void;
+	abstract public function delete(): void;
 }

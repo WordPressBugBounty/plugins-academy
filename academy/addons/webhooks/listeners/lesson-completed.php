@@ -13,7 +13,11 @@ class LessonCompleted implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy/frontend/after_mark_topic_complete',
-			function( $topic_type, $course_id, $topic_id, $user_id ) use ( $deliver_callback, $webhook ) {
+			function ( $topic_type, $course_id, $topic_id, $user_id ) use ( $deliver_callback, $webhook ) {
+				if ( 'lesson' !== $topic_type ) {
+					return;
+				}
+
 				call_user_func_array(
 					$deliver_callback,
 					array(

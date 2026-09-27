@@ -330,7 +330,7 @@ class Lifterlms extends Migration implements MigrationInterface {
 					'question_order' => $question_order,
 					'question_negative_score' => 0,
 					 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-					 //'question_image_id' => 0,
+					// 'question_image_id' => 0,
 					'question_settings' => wp_json_encode([
 						'display_points' => false,
 						'answer_required' => false,

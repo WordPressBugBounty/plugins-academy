@@ -46,6 +46,5 @@ final class CoursePreview implements AddonInterface {
 	}
 
 	public function addon_activation_hook() {
-
 	}
 }

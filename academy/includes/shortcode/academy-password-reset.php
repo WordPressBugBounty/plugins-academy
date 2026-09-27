@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Shortcode;
+namespace Academy\Shortcode;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -9,7 +9,6 @@ class AcademyPasswordReset {
 
 	public function __construct() {
 		add_shortcode( 'academy_password_reset_form', array( $this, 'password_reset_form' ) );
-
 	}
 	public function password_reset_form( $atts ) {
 		$attributes = shortcode_atts(array(
@@ -45,5 +44,4 @@ class AcademyPasswordReset {
 		}//end if
 		return apply_filters( 'academy/shortcode/password-reset', ob_get_clean() );
 	}
-
 }

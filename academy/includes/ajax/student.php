@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Ajax;
+namespace Academy\Ajax;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -42,20 +42,29 @@ class Student extends AbstractAjaxHandler {
 			'page' => 'integer',
 			'per_page' => 'integer',
 			'search' => 'string',
+			'course_id' => 'integer',
 		], $payload_data );
 
-		$page     = ( isset( $payload['page'] ) ? $payload['page'] : 1 );
-		$per_page = ( isset( $payload['per_page'] ) ? $payload['per_page'] : 10 );
-		$search   = ( isset( $payload['search'] ) ? $payload['search'] : '' );
-		$offset   = ( $page - 1 ) * $per_page;
+		$page      = ( isset( $payload['page'] ) ? $payload['page'] : 1 );
+		$per_page  = ( isset( $payload['per_page'] ) ? $payload['per_page'] : 10 );
+		$search    = ( isset( $payload['search'] ) ? $payload['search'] : '' );
+		$course_id = ( isset( $payload['course_id'] ) ? $payload['course_id'] : 0 );
+		$offset    = ( $page - 1 ) * $per_page;
 
-		$Analytics      = new \Academy\Classes\Analytics();
-		$total_students = $Analytics->get_total_number_of_students();
+		// A search keyword or a course filter narrows the set, so the total the
+		// list paginates against has to reflect that filter, not the site-wide
+		// student count.
+		if ( $course_id || '' !== $search ) {
+			$total_students = \Academy\Helper::get_all_students_count( $search, $course_id );
+		} else {
+			$Analytics      = new \Academy\Classes\Analytics();
+			$total_students = $Analytics->get_total_number_of_students();
+		}
 
 		// Set the x-wp-total header
 		header( 'x-wp-total: ' . $total_students );
 
-		$students = \Academy\Helper::get_all_students( $offset, $per_page, $search );
+		$students = \Academy\Helper::get_all_students( $offset, $per_page, $search, $course_id );
 		$students = \Academy\Helper::prepare_get_all_students_response( $students );
 		wp_send_json_success( $students );
 		wp_die();
@@ -100,7 +109,7 @@ class Student extends AbstractAjaxHandler {
 		header( 'x-wp-total: ' . count( $student_ids ) );
 
 		if ( $search ) {
-			$results = array_filter( $student_data, function( $student ) use ( $search ) {
+			$results = array_filter( $student_data, function ( $student ) use ( $search ) {
 				return stripos( $student->display_name, $search ) !== false;
 			});
 			foreach ( $results as $result ) {
@@ -128,9 +137,9 @@ class Student extends AbstractAjaxHandler {
 			wp_send_json_error( __( 'Course ID, Enrolled ID and Student ID is Required', 'academy' ) );
 		}
 
-		// Only an administrator or an instructor of this specific course may change
-		// its enrollments; otherwise any instructor could alter enrollments on
-		// courses owned by other instructors.
+		// The 'manage_academy_instructor' capability alone doesn't scope this to
+		// the caller's own courses — without an ownership check, any instructor
+		// could change enrollment status for any other instructor's students.
 		if ( ! current_user_can( 'manage_options' ) && ! \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), $course_id ) ) {
 			wp_send_json_error( __( 'Sorry, you are not allowed to manage enrollments for this course.', 'academy' ) );
 		}

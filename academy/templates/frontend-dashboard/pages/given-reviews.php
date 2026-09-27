@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							?>
 						<div class="academy-dashboard-reviews__given">
 						<div class="academy-dashboard-review">
-							<div class="academy-dashboard-review__header">Course:<a href="<?php echo esc_html( $post_permalink ); ?>"><?php echo esc_html( $post_title ); ?></a></div>
+							<div class="academy-dashboard-review__header">Course:<a href="<?php echo esc_url( $post_permalink ); ?>"><?php echo esc_html( $post_title ); ?></a></div>
 							<div class="academy-dashboard-review__content"><div>
 									<?php echo wp_kses_post( \Academy\Helper::star_rating_generator( $review->rating ) ); ?>
 								<span class="time"><?php echo esc_html( $review->comment_date ); ?> </span>
@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</div>
 						<?php endforeach; ?>
 						<?php else : ?>
-						<div class="academy-not-found"><?php echo esc_html__( 'You havent given any reviews yet.', 'academy' ); ?></div>
+						<div class="academy-not-found"><?php echo esc_html__( 'You haven’t reviewed any courses yet.', 'academy' ); ?></div>
 					<?php endif; ?>
 				</div>
 			</div>

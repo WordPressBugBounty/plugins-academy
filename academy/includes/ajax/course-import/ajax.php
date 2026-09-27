@@ -37,5 +37,4 @@ class Ajax extends AbstractAjaxHandler {
 			wp_send_json_error( [ 'message' => $e->getMessage() ], 422 );
 		}
 	}
-
 }

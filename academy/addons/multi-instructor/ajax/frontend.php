@@ -154,5 +154,4 @@ class Frontend extends AbstractAjaxHandler {
 		wp_send_json_success( $withdraw_args );
 		wp_die();
 	}
-
 }

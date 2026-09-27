@@ -101,6 +101,10 @@ class Lessons extends \WP_REST_Controller {
 						'description' => esc_html__( 'Unique identifier for the object.', 'academy' ),
 						'type'        => 'integer',
 					),
+					'course_id' => array(
+						'description' => esc_html__( 'Course the lesson is being accessed from.', 'academy' ),
+						'type'        => 'integer',
+					),
 				),
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
@@ -112,12 +116,12 @@ class Lessons extends \WP_REST_Controller {
 			)
 		);
 	}
-	
-	public function student_permission_check( $request ){
+
+	public function student_permission_check( $request ) {
 		$user = wp_get_current_user();
 
-	    return is_user_logged_in() && (
-			in_array( 'academy_student', (array) $user->roles ) || 
+		return is_user_logged_in() && (
+			in_array( 'academy_student', (array) $user->roles, true ) ||
 			current_user_can( 'manage_options' ) ||
 			current_user_can( 'manage_academy_instructor' )
 		);
@@ -135,19 +139,19 @@ class Lessons extends \WP_REST_Controller {
 	}
 
 	public function get_topic_permissions_check( $request ) {
-        if (
-            current_user_can( 'manage_academy_instructor' ) ||
-            current_user_can( 'read_academy_course' )
-        ) {
-            return true;
-        }
+		if (
+			current_user_can( 'manage_academy_instructor' ) ||
+			current_user_can( 'read_academy_course' )
+		) {
+			return true;
+		}
 
-        return new \WP_Error(
-            'forbidden',
-            __( 'You do not have permission to access this resource.', 'academy' ),
-            [ 'status' => 403 ]
-        );
-    }
+		return new \WP_Error(
+			'forbidden',
+			__( 'You do not have permission to access this resource.', 'academy' ),
+			[ 'status' => 403 ]
+		);
+	}
 
 
 	/**
@@ -159,11 +163,13 @@ class Lessons extends \WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error Response object on success, or \WP_Error object on failure.
 	 */
 	public function get_items( $request ) {
+		global $wpdb;
 		$author_id = current_user_can( 'manage_options' ) ? $request->get_param( 'author' ) : get_current_user_id();
 		$page = $request->get_param( 'page' );
 		$per_page = $request->get_param( 'per_page' );
 		$search_keyword = $request->get_param( 'search' );
 		$lesson_status = $request->get_param( 'lesson_status' );
+		$offset = ( $page - 1 ) * $per_page;
 
 		$data = [];
 		$lessons = LessonApi::get( $page, $per_page, $author_id, $search_keyword, $lesson_status );
@@ -173,20 +179,45 @@ class Lessons extends \WP_REST_Controller {
 				$data[] = $this->rest_prepare_item( $lesson->get_data(), $request );
 			}
 		}
+		rest_ensure_response( $data );
 		$response = rest_ensure_response( $data );
 		$response->header( 'x-wp-total', $total );
 		return $response;
 	}
 
+	/**
+	 * Non-admin instructors may edit lessons in courses they were assigned to
+	 * by an admin, not only ones they authored themselves — `post_author`
+	 * alone doesn't reflect that, so fall back to it only when the lesson
+	 * isn't found in any course the current user is an instructor of.
+	 *
+	 * @param int $lesson_id
+	 * @return int|null Author id to restrict the lesson lookup to, or null
+	 *                   for no restriction (admin, or an assigned instructor).
+	 */
+	protected function resolve_lesson_author_restriction( $lesson_id ) {
+		if ( current_user_can( 'manage_options' ) ) {
+			return null;
+		}
+
+		$user_id = get_current_user_id();
+		$assigned_course_ids = \Academy\Helper::get_assigned_courses_ids_by_instructor_id( $user_id );
+		foreach ( (array) $assigned_course_ids as $assigned_course_id ) {
+			if ( \Academy\Helper::is_course_curriculum( (int) $assigned_course_id, $lesson_id, 'lesson' ) ) {
+				return null;
+			}
+		}
+
+		return $user_id;
+	}
+
 	public function get_item( $request ) {
 		$ID = (int) $request->get_param( 'id' );
 
-		if ( current_user_can( 'manage_options' ) ) {
-			// Administrators may read any lesson.
-			$author_id = null;
-		} elseif ( current_user_can( 'manage_academy_instructor' ) ) {
-			// Instructors are scoped to lessons they authored.
-			$author_id = get_current_user_id();
+		if ( current_user_can( 'manage_academy_instructor' ) ) {
+			// Instructors (including those merely assigned to the course) are
+			// scoped via resolve_lesson_author_restriction().
+			$author_id = $this->resolve_lesson_author_restriction( $ID );
 		} else {
 			// Students may only read a lesson that belongs to a course they can access
 			// (enrolled/public/previewable). Without this, any student could read every
@@ -214,6 +245,36 @@ class Lessons extends \WP_REST_Controller {
 		}
 	}
 
+	public function render_lesson( $request ) {
+		$ID = absint( $request->get_param( 'id' ) );
+
+		if ( ! current_user_can( 'manage_academy_instructor' ) ) {
+			// 'read_academy_course' alone is held by every academy_student account,
+			// not just those enrolled in THIS lesson's course — without this check,
+			// any student could read any published lesson's content by ID.
+			$course_id = absint( $request->get_param( 'course_id' ) );
+			if ( ! $course_id || ! \Academy\Helper::has_permission_to_access_lesson_curriculum( $course_id, $ID ) ) {
+				return new \WP_Error(
+					'academy_lesson_forbidden',
+					esc_html__( 'Sorry, you are not allowed to view this lesson.', 'academy' ),
+					[ 'status' => rest_authorization_required_code() ]
+				);
+			}
+		}
+
+		try {
+			$lesson = LessonApi::get_by_id( $ID, false, null, 'publish' );
+			$response = $this->rest_prepare_item( $lesson->get_data(), $request );
+			return rest_ensure_response( $response );
+		} catch ( Throwable $e ) {
+			return new \WP_Error(
+				'academy_lesson_rest_error',
+				$e->getMessage(),
+				[ 'status' => 404 ]
+			);
+		}
+	}
+
 	/**
 	 * Creates a single post.
 	 *
@@ -223,12 +284,22 @@ class Lessons extends \WP_REST_Controller {
 	 * @return \WP_Error Response object on success, or \WP_Error object on failure.
 	 */
 	public function create_item( $request ) {
-		$prepared_lesson = $this->prepare_item_for_database( $request );
+		$prepared_lesson = (array) $this->prepare_item_for_database( $request );
 		$lesson_meta     = (array) $this->prepare_item_meta_for_database( $request );
+
+		// Guarantee a unique slug so create never fails on a duplicate (mirrors
+		// WP core's -2/-3 suffixing for posts). The slug field is collapsed in
+		// the course builder, so the user can't manually resolve a collision.
+		$base_slug = ! empty( $prepared_lesson['lesson_name'] )
+			? $prepared_lesson['lesson_name']
+			: ( $prepared_lesson['lesson_title'] ?? '' );
+		if ( '' !== trim( (string) $base_slug ) ) {
+			$prepared_lesson['lesson_name'] = \Academy\Helper::generate_unique_lesson_slug( $base_slug );
+		}
 
 		try {
 			$lesson = LessonApi::create(
-				wp_slash( (array) $prepared_lesson ),
+				wp_slash( $prepared_lesson ),
 				(array) $lesson_meta
 			);
 			$lesson->save();
@@ -248,7 +319,7 @@ class Lessons extends \WP_REST_Controller {
 		$prepared_lesson = $this->prepare_item_for_database( $request );
 		$lesson_meta     = (array) $this->prepare_item_meta_for_database( $request );
 		$ID = (int) $request->get_param( 'id' );
-		$author_id = current_user_can( 'manage_options' ) ? null : get_current_user_id();
+		$author_id = $this->resolve_lesson_author_restriction( $ID );
 
 		try {
 			$lesson = LessonApi::get_by_id( $ID, false, $author_id );
@@ -268,7 +339,7 @@ class Lessons extends \WP_REST_Controller {
 	}
 	public function delete_item( $request ) {
 		$ID = (int) $request->get_param( 'id' );
-		$author_id = current_user_can( 'manage_options' ) ? null : get_current_user_id();
+		$author_id = $this->resolve_lesson_author_restriction( $ID );
 
 		try {
 			$lesson = LessonApi::get_by_id( $ID, false, $author_id );
@@ -279,21 +350,6 @@ class Lessons extends \WP_REST_Controller {
 				'academy_lesson_rest_error',
 				$e->getMessage(),
 				[ 'status' => 422 ]
-			);
-		}
-	}
-
-	public function render_lesson( $request ) {
-		$ID = absint( $request->get_param( 'id' ) );
-		try {
-			$lesson = LessonApi::get_by_id( $ID, false, null, 'publish' );
-			$response = $this->rest_prepare_item( $lesson->get_data(), $request );
-			return rest_ensure_response( $response );
-		} catch ( Throwable $e ) {
-			return new \WP_Error(
-				'academy_lesson_rest_error',
-				$e->getMessage(),
-				[ 'status' => 404 ]
 			);
 		}
 	}
@@ -344,7 +400,7 @@ class Lessons extends \WP_REST_Controller {
 			$data['comment_status'] = $lesson['comment_status'];
 		}
 		if ( isset( $schema['properties']['comment_count'] ) ) {
-			$data['comment_count'] = $lesson['comment_count'];
+			$data['comment_status'] = $lesson['comment_count'];
 		}
 
 		if ( isset( $schema['properties']['lesson_modified'] ) ) {

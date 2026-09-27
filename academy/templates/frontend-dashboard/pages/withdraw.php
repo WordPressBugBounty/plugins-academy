@@ -49,8 +49,8 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 				<h3 class="academy-withdraw-method__heading"><?php echo esc_html__( 'Paypal', 'academy' ); ?></h3>
 				<p class="academy-withdraw-method__subheading">
 					<?php
-						echo sprintf(
-							// translators: %1$s is the currency symbol, %2$s is the minimum withdrawal amount.
+						printf(
+							/* translators: 1: currency symbol, 2: minimum withdraw amount. */
 							esc_html__( 'Min withdraw %1$s%2$s', 'academy' ),
 							esc_html( $currency ),
 							esc_html( $min_amount )
@@ -67,8 +67,8 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 				<h3 class="academy-withdraw-method__heading">E-Check</h3>
 				<p class="academy-withdraw-method__subheading">
 					<?php
-						echo sprintf(
-							// translators: %1$s is the currency symbol, %2$s is the minimum withdrawal amount.
+						printf(
+							/* translators: 1: currency symbol, 2: minimum withdraw amount. */
 							esc_html__( 'Min withdraw %1$s%2$s', 'academy' ),
 							esc_html( $currency ),
 							esc_html( $min_amount )
@@ -85,8 +85,8 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 				<h3 class="academy-withdraw-method__heading"><?php echo esc_html__( 'Bank Transfer', 'academy' ); ?></h3>
 				<p class="academy-withdraw-method__subheading">
 					<?php
-						echo sprintf(
-							// translators: %1$s is the currency symbol, %2$s is the minimum withdrawal amount.
+						printf(
+							/* translators: 1: currency symbol, 2: minimum withdraw amount. */
 							esc_html__( 'Min withdraw %1$s%2$s', 'academy' ),
 							esc_html( $currency ),
 							esc_html( $min_amount )
@@ -104,7 +104,7 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 		<!-- Paypal -->
 		<div id="paypal" class="<?php echo esc_attr( 'academy-form-block academy-withdraw-method-form' . ( 'paypal' === $withdraw_method_type ? ' academy-withdraw-method-form--active' : '' ) ); ?>">
 			<label for="paypalEmailAddress"><?php echo esc_html__( 'PayPal E-Mail Address', 'academy' ); ?></label>
-			<input name="paypalEmailAddress" id="paypalEmailAddress" type="text" value="<?php echo esc_html( get_user_meta( $user_id, 'academy_instructor_withdraw_paypal_email', true ) ); ?>">
+			<input name="paypalEmailAddress" id="paypalEmailAddress" type="text" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_instructor_withdraw_paypal_email', true ) ); ?>">
 			<p class="academy-note"><?php echo esc_html__( 'We will use this email address to send the money to your Paypal account', 'academy' ); ?></p>
 		</div>
 			<?php
@@ -125,27 +125,27 @@ if ( \Academy\Helper::current_user_has_access_frontend_dashboard_menu( 'withdraw
 		<div id="bank" class="<?php echo esc_attr( 'academy-form-block academy-withdraw-method-form' . ( 'bank' === $withdraw_method_type ? ' academy-withdraw-method-form--active' : '' ) ); ?>">
 			<div class="academy-form-block">
 				<label for="bankAccountName"><?php echo esc_html__( 'Account Name', 'academy' ); ?></label>
-				<input name="bankAccountName" id="bankAccountName" type="text" value="<?php echo esc_html( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_acocunt_name', true ) ); ?>">
+				<input name="bankAccountName" id="bankAccountName" type="text" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_acocunt_name', true ) ); ?>">
 			</div>
 
 			<div class="academy-form-block">
 				<label for="bankAccountNumber"><?php echo esc_html__( 'Account Number', 'academy' ); ?></label>
-				<input name="bankAccountNumber" id="bankAccountNumber" type="text" value="<?php echo esc_html( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_acocunt_number', true ) ); ?>">
+				<input name="bankAccountNumber" id="bankAccountNumber" type="text" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_acocunt_number', true ) ); ?>">
 			</div>
 
 			<div class="academy-form-block">
 				<label for="bankName"><?php echo esc_html__( 'Bank Name', 'academy' ); ?></label>
-				<input name="bankName" id="bankName" type="text" value="<?php echo esc_html( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_name', true ) ); ?>">
+				<input name="bankName" id="bankName" type="text" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_name', true ) ); ?>">
 			</div>
 
 			<div class="academy-form-block">
 				<label for="bankIBAN"><?php echo esc_html__( 'IBAN', 'academy' ); ?></label>
-				<input name="bankIBAN" id="bankIBAN" type="text" value="<?php echo esc_html( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_iban', true ) ); ?>">
+				<input name="bankIBAN" id="bankIBAN" type="text" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_iban', true ) ); ?>">
 			</div>
 
 			<div class="academy-form-block">
 				<label for="bankSWIFTCode"><?php echo esc_html__( 'BIC / SWIFT', 'academy' ); ?></label>
-				<input name="bankSWIFTCode" id="bankSWIFTCode" type="text" value="<?php echo esc_html( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_swiftcode', true ) ); ?>">
+				<input name="bankSWIFTCode" id="bankSWIFTCode" type="text" value="<?php echo esc_attr( get_user_meta( $user_id, 'academy_instructor_withdraw_bank_swiftcode', true ) ); ?>">
 			</div>
 		</div>
 		<?php endif; ?>

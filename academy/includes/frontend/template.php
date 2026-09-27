@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Frontend;
+namespace Academy\Frontend;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -18,6 +18,10 @@ class Template {
 
 	public function dispatch_hook() {
 		add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ), 30 );
+		// Priority 5 — must run before the other template_redirect gates below
+		// (and before any theme/page routing), since an active lockout should
+		// pre-empt them rather than let a redirect happen first.
+		add_action( 'template_redirect', array( $this, 'maintenance_mode_template_redirect' ), 5 );
 		add_action( 'template_redirect', array( $this, 'archive_course_template_redirect' ) );
 		add_action( 'template_redirect', array( $this, 'course_curriculum_learn_page_redirect' ) );
 		add_action( 'template_redirect', array( $this, 'frontend_dashboard_template_redirect' ) );
@@ -25,6 +29,10 @@ class Template {
 		add_filter( 'post_type_archive_title', array( $this, 'archive_course_document_title' ), 30, 2 );
 		add_action( 'init', [ $this, 'register_block_styles' ] );
 		add_filter( 'render_block', [ $this, 'custom_featured_image_with_default' ], 10, 2 ); // Add the filter here
+		add_filter( 'render_block', [ $this, 'add_category_images_to_post_terms' ], 10, 2 );
+		// Safe to leave attached everywhere (admin and REST included): it acts
+		// only on queries that opted in via Helper::apply_sticky_course_ordering().
+		add_filter( 'posts_orderby', [ Helper::class, 'filter_sticky_posts_orderby' ], 10, 2 );
 	}
 
 	/**
@@ -48,19 +56,35 @@ class Template {
 			} elseif ( is_post_type_archive( 'academy_courses' ) && ! $q->is_tax( 'academy_courses_category' ) ) {
 				$paged = ( get_query_var( 'paged' ) ) ? absint( get_query_var( 'paged' ) ) : 1;
 				$orderby = ( get_query_var( 'orderby' ) ) ? get_query_var( 'orderby' ) : Academy\Helper::get_settings( 'course_archive_courses_order' );
-				$q->set( 'post_type', apply_filters( 'academy/course_archive_post_types', array( 'academy_courses' ) ) );
-				$q->set( 'posts_per_page', $per_page );
-				$q->set( 'paged', $paged );
-				if ( 'name' === $orderby ) {
-					$q->set( 'orderby', 'title' );
-					$q->set( 'order', 'ASC' );
-				} else {
-					$q->set( 'orderby', $orderby );
-				}
+				$q->set( 'post_type', apply_filters( 'academy/course_archive_post_types', array( 'academy_courses' ) ) ); // phpcs:ignore WordPressVIPMinimum.Hooks.PreGetPosts.PreGetPosts -- guarded by is_main_query() && ! is_admin() above
+				$q->set( 'posts_per_page', $per_page ); // phpcs:ignore WordPressVIPMinimum.Hooks.PreGetPosts.PreGetPosts -- guarded by is_main_query() && ! is_admin() above
+				$q->set( 'paged', $paged ); // phpcs:ignore WordPressVIPMinimum.Hooks.PreGetPosts.PreGetPosts -- guarded by is_main_query() && ! is_admin() above
+
+				$this->set_sticky_course_ordering( $q, $orderby );
 			} elseif ( $q->is_tax( 'academy_courses_category' ) || ( $q->is_search() && isset( $q->query['academy_courses_category'] ) ) ) {
-				$q->set( 'posts_per_page', $per_page );
+				$q->set( 'posts_per_page', $per_page ); // phpcs:ignore WordPressVIPMinimum.Hooks.PreGetPosts.PreGetPosts -- guarded by is_main_query() && ! is_admin() above
+
+				$orderby = ( get_query_var( 'orderby' ) ) ? get_query_var( 'orderby' ) : Academy\Helper::get_settings( 'course_archive_courses_order' );
+
+				$this->set_sticky_course_ordering( $q, $orderby );
 			}//end if
 		}//end if
+	}
+
+	/**
+	 * Apply the archive's configured sort to a course query and pin featured
+	 * courses above the rest.
+	 *
+	 * @param WP_Query $q       The query being prepared.
+	 * @param string   $orderby The archive's configured sort key.
+	 */
+	private function set_sticky_course_ordering( $q, $orderby ) {
+		$order_field = 'name' === $orderby ? 'title' : $orderby;
+		$order_dir   = 'name' === $orderby ? 'ASC' : 'DESC';
+
+		foreach ( Helper::apply_sticky_course_ordering( $order_field, $order_dir ) as $key => $value ) {
+			$q->set( $key, $value );
+		}
 	}
 
 	public function archive_course_template_redirect() {
@@ -80,6 +104,7 @@ class Template {
 			$course_id = Helper::get_last_course_id();
 			if ( $course_id ) {
 				wp_safe_redirect( Helper::get_start_course_permalink( $course_id ) );
+				exit;
 			}
 		}
 	}
@@ -90,6 +115,92 @@ class Template {
 				exit;
 			}
 		}
+	}
+
+	/**
+	 * Maintenance mode — a frontend-only lockout for the LMS surfaces (course
+	 * archive/single/learn pages), never wp-admin. Scope is either the whole
+	 * LMS ('full_site') or a specific set of courses ('course'), configured
+	 * in Settings → General. Administrators and instructors always bypass it
+	 * so they can keep working while it's active.
+	 */
+	public function maintenance_mode_template_redirect() {
+		$scope = Helper::get_settings( 'academy_maintenance_scope', 'off' );
+		if ( 'off' === $scope ) {
+			return;
+		}
+
+		if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_academy_instructor' ) ) {
+			return;
+		}
+
+		$end_time = Helper::get_settings( 'academy_maintenance_end_time' );
+		if ( ! empty( $end_time ) && strtotime( $end_time ) <= time() ) {
+			// The window has passed — treat the lockout as expired without
+			// having to flip the stored setting back (no cron needed).
+			return;
+		}
+
+		if ( ! $this->is_maintenance_locked_request( $scope ) ) {
+			return;
+		}
+
+		status_header( 503 );
+		nocache_headers();
+		Helper::get_template(
+			'maintenance-mode.php',
+			array(
+				'message'  => Helper::get_settings( 'academy_maintenance_message' ),
+				'end_time' => $end_time,
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * @param string $scope 'full_site' or 'course'.
+	 */
+	private function is_maintenance_locked_request( $scope ) {
+		$is_course_archive = is_post_type_archive( 'academy_courses' )
+			|| is_tax( 'academy_courses_category' )
+			|| is_tax( 'academy_courses_tag' );
+		$is_single_course = is_singular( 'academy_courses' );
+
+		// The learn/curriculum page (lesson, quiz, assignment, …) doesn't
+		// have its own singular template — it's always this one page with a
+		// `curriculum_type` query var, so its presence IS "on a learn page".
+		$is_learn_page = '' !== (string) get_query_var( 'curriculum_type' );
+
+		if ( 'full_site' === $scope ) {
+			return $is_course_archive || $is_single_course || $is_learn_page;
+		}
+
+		if ( 'course' === $scope ) {
+			// The archive listing isn't tied to any single course, so it's
+			// gated by its own standalone toggle instead of the per-course
+			// page-type selection below.
+			if ( $is_course_archive ) {
+				return (bool) Helper::get_settings( 'academy_maintenance_lock_archive', false );
+			}
+
+			$locked_pages = (array) Helper::get_settings( 'academy_maintenance_locked_pages', array( 'single', 'learn' ) );
+
+			$current_course_id = 0;
+			if ( $is_single_course && in_array( 'single', $locked_pages, true ) ) {
+				$current_course_id = get_the_ID();
+			} elseif ( $is_learn_page && in_array( 'learn', $locked_pages, true ) ) {
+				$current_course_id = (int) Helper::get_the_current_course_id();
+			}
+
+			if ( ! $current_course_id ) {
+				return false;
+			}
+
+			$locked_course_ids = array_map( 'intval', (array) Helper::get_settings( 'academy_maintenance_course_ids', array() ) );
+			return in_array( (int) $current_course_id, $locked_course_ids, true );
+		}//end if
+
+		return false;
 	}
 
 	public function get_post_type_archive_link( $post_type ) {
@@ -110,7 +221,6 @@ class Template {
 				$link = get_home_url();
 			}
 			/** This filter is documented in wp-includes/link-template.php */
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			return apply_filters( 'post_type_archive_link', $link, $post_type );
 		}
 
@@ -141,7 +251,8 @@ class Template {
 			$page_id = (int) get_queried_object_id();
 			$course_page = (int) \Academy\Helper::get_settings( 'course_page' );
 			if ( $page_id === $course_page ) {
-				return;
+				// Empty = let core (and the SEO plugin) build the title.
+				return '';
 			}
 		} elseif ( get_query_var( 'name' ) && get_query_var( 'curriculum_type' ) ) {
 			if ( 'lesson' === get_query_var( 'curriculum_type' ) ) {
@@ -156,7 +267,7 @@ class Template {
 				return $post->post_title;
 			}
 			return get_query_var( 'name' );
-		}
+		}//end if
 		return $title;
 	}
 
@@ -236,6 +347,56 @@ class Template {
 		);
 	}
 
+	/**
+	 * FSE/block-theme single course template (templates/block-templates/single-academy_courses.html)
+	 * shows categories via the core `wp:post-terms` block, which has no concept of a category
+	 * image. This injects the existing category image (see includes/traits/courses.php
+	 * get_the_course_category_image_url(), the same helper the classic-theme templates use) into
+	 * each term link's output, without altering the block's own markup/attrs.
+	 *
+	 * @param mixed     $block_content
+	 * @param \WP_Block $block
+	 */
+	public function add_category_images_to_post_terms( $block_content, $block ) {
+		if (
+			'core/post-terms' !== $block['blockName'] ||
+			! is_singular( 'academy_courses' ) ||
+			'academy_courses_category' !== ( $block['attrs']['term'] ?? '' )
+		) {
+			return $block_content;
+		}
+
+		$categories = \Academy\Helper::get_the_course_category( get_the_ID() );
+
+		if ( empty( $categories ) || is_wp_error( $categories ) ) {
+			return $block_content;
+		}
+
+		foreach ( $categories as $category ) {
+			$term_link = get_term_link( $category->term_id );
+
+			if ( is_wp_error( $term_link ) ) {
+				continue;
+			}
+
+			$image = sprintf(
+				'<img class="academy-post-terms__category-thumb" src="%s" alt="" />',
+				esc_url( \Academy\Helper::get_the_course_category_image_url( $category->term_id ) )
+			);
+
+			$block_content = preg_replace_callback(
+				'/<a\s+href="' . preg_quote( esc_url( $term_link ), '/' ) . '"[^>]*>/',
+				function ( $matches ) use ( $image ) {
+					return $matches[0] . $image;
+				},
+				$block_content,
+				1
+			);
+		}//end foreach
+
+		return $block_content;
+	}
+
 	public static function get_course_fsc_preview_videos( $id ) {
 		$output      = '';
 		$intro_video = get_post_meta( $id, 'academy_course_intro_video', true );
@@ -268,6 +429,4 @@ class Template {
 		}//end if
 		return $output;
 	}
-
-
 }

@@ -5,8 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 
-	<div class="academy-frontend-dashboard">
-		<div class="academy-container">
+	<div class="<?php echo esc_attr( \Academy\FrontendDashboard\Dashboard::wrapper_class() ); ?>">
+		<div class="<?php echo esc_attr( \Academy\FrontendDashboard\Dashboard::inner_container_class() ); ?>">
 			<div class="academy-row">
 				<div class="academy-col-lg-12">
 					<?php

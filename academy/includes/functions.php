@@ -180,7 +180,20 @@ if ( ! function_exists( 'academy_archive_course_header' ) ) {
 if ( ! function_exists( 'academy_archive_course_header_filter' ) ) {
 	function academy_archive_course_header_filter() {
 		global $wp_query;
-		$orderby = ( get_query_var( 'orderby' ) ) ? get_query_var( 'orderby' ) : ''; ?>
+		// Not get_query_var( 'orderby' ): pre_get_posts rewrites the main
+		// query's orderby into a compound array (sticky courses first, then
+		// the chosen field) before this renders, and passing that array into
+		// selected() below throws "Array to string conversion" once per
+		// option. The dropdown's own GET param still holds the plain value
+		// the visitor picked.
+		// A visitor who hasn't picked anything is still seeing the site's
+		// configured default order (pre_get_posts applies it either way) — so
+		// without a ?orderby= fall back to that setting for what shows
+		// selected, or the dropdown always read "Default Sorting" even when
+		// the site was actually sorted by name, date, etc.
+		$orderby = ! empty( $_GET['orderby'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only archive sort param.
+			? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			: Helper::get_settings( 'course_archive_courses_order', 'DESC' ); ?>
 		<div class="academy-courses__header-filter">
 			<p class="academy-courses__header-result-count"><?php esc_html_e( 'Showing all', 'academy' ); ?>
 				<span><?php echo esc_html( $wp_query->found_posts ); ?></span> <?php esc_html_e( 'results', 'academy' ); ?>
@@ -305,6 +318,14 @@ if ( ! function_exists( 'academy_course_loop_footer_inner_price' ) ) {
 					}
 				}
 			}
+			// No WooCommerce/EDD product price found (StoreEngine, or no
+			// engine configured at all) — fall back to the plain
+			// `academy_course_price` meta the course builder writes
+			// directly in that case, so a paid course still shows an
+			// actual amount instead of just the generic "Paid" text.
+			if ( $is_paid && empty( $price ) ) {
+				$price = Academy\Helper::get_plain_course_price_html( $course_id );
+			}
 			Helper::get_template(
 				'loop/price.php',
 				apply_filters('academy/template/loop/price_args', array(
@@ -399,12 +420,14 @@ if ( ! function_exists( 'academy_review_rating_edit_icon' ) ) {
 	/**
 	 * Display the reviewers star rating
 	 *
+	 * @param mixed $comment
+	 *
 	 * @return void
 	 */
 	function academy_review_rating_edit_icon( $comment ) {
 		if ( post_type_supports( 'academy_courses', 'comments' ) ) {
 			$rating = intval( get_comment_meta( $comment->comment_ID, 'academy_rating', true ) );
-			if ( \Academy\Helper::get_settings( 'is_enable_course_review_edit', false ) && (int) $comment->user_id === get_current_user_id() ) {
+			if ( \Academy\Helper::get_settings( 'is_enable_course_review_edit', false ) && get_current_user_id() === (int) $comment->user_id ) {
 				?>
 				<button class="academy-review_container__edit-btn academy-review-edit-btn"
 					data-comment-id="<?php echo esc_attr( $comment->comment_ID ); ?>"
@@ -417,11 +440,11 @@ if ( ! function_exists( 'academy_review_rating_edit_icon' ) ) {
 						<path d="M12.4248 3.4585C12.9831 5.45016 14.5415 7.0085 16.5415 7.57516" stroke="#7B68EE" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 					</svg>
 				</button>
-			<?php
+				<?php
 			}
 		}
 	}
-}
+}//end if
 
 if ( ! function_exists( 'academy_review_display_meta' ) ) {
 	/**
@@ -447,22 +470,22 @@ if ( ! function_exists( 'academy_review_display_comment_text' ) ) {
 	}
 }
 
-if ( ! function_exists( 'academy_review_display_comment_text_update_form') ) {
+if ( ! function_exists( 'academy_review_display_comment_text_update_form' ) ) {
 	function academy_review_display_comment_text_update_form( $comment ) {
 		$edit_permission = \Academy\Helper::get_settings( 'is_enable_course_review_edit', false );
 		$rating = intval( get_comment_meta( $comment->comment_ID, 'academy_rating', true ) );
 		ob_start();
-			if (
-				$edit_permission && (int) $comment->user_id === get_current_user_id()
+		if (
+				$edit_permission && get_current_user_id() === (int) $comment->user_id
 			) :
-				?>
+			?>
 
 				<div id="academy-review-edit-form" class="academy-review-edit-form academy-review-edit-form academy-mt-6" style="display:none;">
 					<span>
-						<?php echo esc_html__( 'Select Rating : ', 'academy' ); ?>
+					<?php echo esc_html__( 'Select Rating : ', 'academy' ); ?>
 					</span>
 					<select id="academy-review-edit-rating" name="academy_review_rating">
-						<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
+					<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
 							<option value="<?php echo esc_attr( $i ); ?>" 
 								<?php selected( $rating, $i ); ?>>
 								<?php echo esc_html( $i ) . ' ' . esc_html__( 'Star', 'academy' ); ?>
@@ -476,19 +499,18 @@ if ( ! function_exists( 'academy_review_display_comment_text_update_form') ) {
 					<div class="academy-review_container__update">
 						<button id="academy-review-update-btn"
 							class="academy-btn academy-btn--bg-purple academy-btn--xs">
-							<?php esc_html_e( 'Update Review', 'academy' ); ?>
+						<?php esc_html_e( 'Update Review', 'academy' ); ?>
 						</button>
 						<button type="button" id="academy-review-cancel-btn"
 							class="academy-btn academy-btn--preset-gray academy-btn--xs">
-							<?php esc_html_e( 'Cancel', 'academy' ); ?>
+						<?php esc_html_e( 'Cancel', 'academy' ); ?>
 						</button>
 					</div>
 				</div>
 			<?php endif;
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Buffered markup is static and all dynamic values are individually escaped above.
-		echo ob_get_clean();
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered markup escaped above.
 	}
-}
+}//end if
 
 
 if ( ! function_exists( 'academy_get_rating_html' ) ) {
@@ -520,7 +542,6 @@ if ( ! function_exists( 'academy_single_course_enroll' ) ) {
  * Handles password protection for Academy courses.
  */
 if ( ! function_exists( 'handle_academy_course_password_form' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Function name contains the academy prefix and is referenced by name in hooks.php.
 	function handle_academy_course_password_form( $data ) {
 		if ( is_singular( 'academy_courses' ) && post_password_required() && ! \Academy\Helper::is_enrolled( get_the_ID(), get_current_user_id() ) ) {
 			remove_all_filters( 'template_include' );
@@ -565,7 +586,6 @@ if ( ! function_exists( 'academy_bypass_password_for_enrolled' ) ) {
 }//end if
 
 if ( ! function_exists( 'handle_academy_course_password_submit' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Function name contains the academy prefix and is referenced by name in hooks.php.
 	function handle_academy_course_password_submit() {
 
 		$user_id = get_current_user_id();
@@ -602,7 +622,7 @@ if ( ! function_exists( 'academy_single_course_enroll_content' ) ) {
 		$language       = get_post_meta( $course_id, 'academy_course_language', true );
 		$max_students   = (int) get_post_meta( $course_id, 'academy_course_max_students', true );
 		$last_update    = get_the_modified_time( get_option( 'date_format' ), $course_id );
-		$course_expired_date = \Academy\Helper::get_settings( 'is_expire_course_enrollment', false ) ? 
+		$course_expired_date = \Academy\Helper::get_settings( 'is_expire_course_enrollment', false ) ?
 			\Academy\Helper::get_course_expire_duration( $course_id ) : 0;
 
 		ob_start();
@@ -660,6 +680,14 @@ if ( ! function_exists( 'academy_course_pricing_type' ) ) {
 			}
 		}
 
+		// No WooCommerce/EDD product price found (StoreEngine, or no engine
+		// configured at all) — fall back to the plain `academy_course_price`
+		// meta the course builder writes directly in that case, so a paid
+		// course still shows an actual amount instead of just "Paid".
+		if ( $is_paid && empty( $price ) ) {
+			$price = Academy\Helper::get_plain_course_price_html( $course_id );
+		}
+
 		ob_start();
 
 		Helper::get_template(
@@ -692,7 +720,7 @@ if ( ! function_exists( 'academy_course_enroll_form' ) ) {
 		$user_ID   = get_current_user_id();
 		$enrolled  = Helper::is_enrolled( get_the_ID(), get_current_user_id(), 'any' );
 		// Course Materials Access
-		$is_administrator = current_user_can( 'administrator' );
+		$is_administrator = current_user_can( 'manage_options' );
 		$is_instructor    = Helper::is_instructor_of_this_course( $user_ID, get_the_ID() );
 		$is_public_course = Helper::is_public_course( get_the_ID() );
 		ob_start();
@@ -805,7 +833,7 @@ if ( ! function_exists( 'academy_archive_course_filter_widget' ) ) {
 			]
 		);
 		// make it single array
-		$filters = array_reduce($filters, function( $carry, $item ) {
+		$filters = array_reduce($filters, function ( $carry, $item ) {
 			return array_merge( $carry, (array) $item );
 		}, []);
 
@@ -831,8 +859,9 @@ if ( ! function_exists( 'academy_archive_course_filter_by_search' ) ) {
 if ( ! function_exists( 'academy_archive_course_filter_by_category' ) ) {
 	function academy_archive_course_filter_by_category() {
 		$categories = Academy\Helper::get_all_courses_category_lists();
+		$use_dropdown = (bool) Helper::get_settings( 'course_archive_category_filter_dropdown', false );
 		Helper::get_template(
-			'archive/widgets/category.php',
+			$use_dropdown ? 'archive/widgets/category-dropdown.php' : 'archive/widgets/category.php',
 			apply_filters(
 				'academy/archive/course_filter_by_category_args',
 				[
@@ -1134,8 +1163,17 @@ if ( ! function_exists( 'academy_get_footer' ) ) {
 if ( ! function_exists( 'academy_curriculum_lesson_content' ) ) {
 	function academy_curriculum_lesson_content( $course_id, $topic_id ) {
 		$lesson = \Academy\Helper::get_lesson( $topic_id );
-		$lesson_meta = \Academy\Helper::get_lesson_meta_data( $topic_id );
 		$course_id = \Academy\Helper::get_the_current_course_id();
+
+		// A lesson the site cannot read — most often one still kept as a post
+		// while lessons are stored in Academy's own table, or one that was
+		// deleted but is still listed in the course.
+		if ( ! $lesson ) {
+			\Academy\Helper::get_template( 'curriculums/not-found.php' );
+			return;
+		}
+
+		$lesson_meta  = \Academy\Helper::get_lesson_meta_data( $topic_id );
 		$lesson->meta = $lesson_meta;
 
 		do_action( 'academy/templates/curriculums/before_render_lesson_content', $lesson, $course_id, $topic_id );
@@ -1146,10 +1184,10 @@ if ( ! function_exists( 'academy_curriculum_lesson_content' ) ) {
 			return;
 		}
 
+		// The next-lesson URL feeds the player's auto-load-next behaviour, so it
+		// has to be resolved whenever that setting is on.
 		$next_topic_play_url = '';
-		$needs_next_url = \Academy\Helper::get_settings( 'is_enabled_academy_player' )
-			|| \Academy\Helper::get_addon_active_status( 'gumlet-video' );
-		if ( $needs_next_url ) {
+		if ( \Academy\Helper::is_auto_load_next_lesson() ) {
 			$curriculums = \Academy\Helper::get_course_curriculum_array( $course_id );
 
 			if ( ! empty( $curriculums ) ) {
@@ -1183,11 +1221,18 @@ if ( ! function_exists( 'academy_curriculum_lesson_content' ) ) {
 
 if ( ! function_exists( 'academy_curriculum_previous_next_template' ) ) {
 	function academy_curriculum_previous_next_template() {
-		$result = \Academy\Helper::get_prev_and_next_details_of_curriculum();
+		$result       = \Academy\Helper::get_prev_and_next_details_of_curriculum();
+		$course_id    = \Academy\Helper::get_the_current_course_id();
+		$current_type = get_query_var( 'curriculum_type' );
+		$current_slug = get_query_var( 'name' );
+		$current_id   = \Academy\Helper::get_topic_id_by_topic_name_and_topic_type( $current_slug, $current_type );
 		\Academy\Helper::get_template( 'curriculums/prev-next-btn.php',
 			array(
-				'previous' => $result['previous'],
-				'next' => $result['next'],
+				'previous'     => $result['previous'],
+				'next'         => $result['next'],
+				'course_id'    => $course_id,
+				'current_type' => $current_type,
+				'current_id'   => $current_id,
 			)
 		);
 	}
@@ -1210,8 +1255,37 @@ function academy_frontend_dashboard_content() {
 	}
 
 	// No endpoint found? Default to dashboard.
+	$home = academy_frontend_dashboard_home_data();
+	\Academy\Helper::get_template(
+		'frontend-dashboard/pages/dashboard.php',
+		[
+			'data'        => $home['data'],
+			'course_ids'  => $home['course_ids'],
+			'is_teaching' => $home['is_teaching'],
+			'view'        => $home['view'],
+		]
+	);
+}
+
+/**
+ * What the dashboard's home page shows for the current person and view: its
+ * number cards, and the instructor's courses when teaching.
+ *
+ * @return array data, course_ids, is_teaching, view.
+ */
+function academy_frontend_dashboard_home_data() {
+	// Several dashboard blocks read it on one page.
+	static $home = null;
+	if ( null !== $home ) {
+		return $home;
+	}
 	$user_id = get_current_user_id();
 	$total_course = \Academy\Helper::get_course_ids_by_instructor_id( $user_id );
+	// The landing answers the question the current view is asking. It used to
+	// answer all of them at once — a learner's two cards with an instructor's
+	// six appended, in one undifferentiated grid.
+	$academy_view = \Academy\Helper::current_dashboard_view();
+	$is_teaching  = 'teaching' === $academy_view && current_user_can( 'manage_academy_instructor' );
 
 	$data = [
 		'enrolled_course' => [
@@ -1229,7 +1303,48 @@ function academy_frontend_dashboard_content() {
 			'link' => esc_url( \Academy\Helper::get_frontend_dashboard_endpoint_url( 'complete-courses' ) )
 		]
 	];
-	if ( current_user_can( 'manage_academy_instructor' ) ) {
+	// Family answers about the children, not about the guardian's own courses —
+	// a parent who never enrolls in anything was being shown two zeroes.
+	if ( 'family' === $academy_view && class_exists( '\Academy\Guardian\Store' ) ) {
+		$children = (array) \Academy\Guardian\Store::get_children( $user_id );
+		$enrolled = 0;
+		$finished = 0;
+		foreach ( $children as $child_id ) {
+			$courses   = (array) \Academy\Guardian\Store::child_courses( $child_id );
+			$enrolled += count( $courses );
+			$finished += count( array_filter( $courses, function ( $course ) {
+				return ! empty( $course['is_completed'] );
+			} ) );
+		}
+		$family_link = esc_url( \Academy\Helper::get_frontend_dashboard_endpoint_url( 'guardian' ) );
+		$data = [
+			'children' => [
+				'label' => esc_html__( 'Children', 'academy' ),
+				'value' => count( $children ),
+				'color' => 'instructor',
+				'icon'  => 'academy-icon academy-icon--students-two',
+				'link'  => $family_link,
+			],
+			'children_courses' => [
+				'label' => esc_html__( 'Their Courses', 'academy' ),
+				'value' => $enrolled,
+				'color' => 'course',
+				'icon'  => 'academy-icon academy-icon--course-enrolled-two',
+				'link'  => $family_link,
+			],
+			'children_completed' => [
+				'label' => esc_html__( 'Completed', 'academy' ),
+				'value' => $finished,
+				'color' => 'complete',
+				'icon'  => 'academy-icon academy-icon--certificate',
+				'link'  => $family_link,
+			],
+		];
+	}//end if
+
+	if ( $is_teaching ) {
+		// Teaching stands on its own numbers, not on top of the learner ones.
+		$data = [];
 		$data['total_students'] = [
 			'label' => esc_html__( 'Total Students', 'academy' ),
 			'value' => \Academy\Helper::get_total_number_of_students_by_instructor( $user_id ),
@@ -1260,7 +1375,7 @@ function academy_frontend_dashboard_content() {
 		];
 	}//end if
 
-	if ( \Academy\Helper::get_addon_active_status( 'quizzes' ) && current_user_can( 'manage_academy_instructor' ) ) {
+	if ( \Academy\Helper::get_addon_active_status( 'quizzes' ) && $is_teaching ) {
 		$data['total_quizzes'] = array(
 			'label' => esc_html__( 'Total Quizzes', 'academy' ),
 			'value' => \AcademyQuizzes\Classes\Query::get_total_number_of_quizzes_by_instructor_id( $user_id ),
@@ -1270,7 +1385,7 @@ function academy_frontend_dashboard_content() {
 		);
 	}
 
-	if ( \Academy\Helper::get_addon_active_status( 'assignments', true ) && current_user_can( 'manage_academy_instructor' ) ) {
+	if ( \Academy\Helper::get_addon_active_status( 'assignments', true ) && $is_teaching ) {
 		$data['total_assignments'] = array(
 			'label' => esc_html__( 'Total Assignments', 'academy' ),
 			'value' => \AcademyProAssignments\Classes\Query::get_total_number_of_assignments_by_instructor_id( $user_id ),
@@ -1280,18 +1395,51 @@ function academy_frontend_dashboard_content() {
 		);
 	}
 
-	\Academy\Helper::get_template(
-		'frontend-dashboard/pages/dashboard.php',
-		[
-			'data' => $data,
-			'course_ids' => $total_course
-		]
-	);
+	/**
+	 * The home page's cards, key => [ label, value, color, icon, link ].
+	 *
+	 * @param array  $data Cards.
+	 * @param string $view learning|teaching|family.
+	 */
+	$data = apply_filters( 'academy/frontend_dashboard/home_cards', $data, $academy_view );
+
+	$home = [
+		'data'        => $data,
+		'course_ids'  => $total_course,
+		'is_teaching' => $is_teaching,
+		'view'        => $academy_view,
+	];
+
+	return $home;
 }
 
 function academy_frontend_dashboard_menu() {
+	// Standing on a page from another area moves the sidebar with you, so the
+	// menu always contains the page being looked at.
+	$page = (string) get_query_var( 'academy_dashboard_page' );
+	if ( $page ) {
+		$area = \Academy\Helper::dashboard_area_of( $page );
+		if ( $area ) {
+			\Academy\Helper::set_dashboard_view( $area );
+		}
+	}
+
 	$menu_lists = \Academy\Helper::get_frontend_dashboard_menu_items();
-	uasort($menu_lists, function( $a, $b ) {
+	$menu_lists = array_filter( $menu_lists, array( '\Academy\Helper', 'dashboard_item_in_view' ) );
+	// A parent can span areas while its children don't — Campus is a family's
+	// record in one view and a teacher's working area in another. The full set
+	// stays registered so every child keeps its rewrite rule; only the display
+	// is narrowed.
+	foreach ( $menu_lists as $key => $item ) {
+		if ( empty( $item['child_items'] ) ) {
+			continue;
+		}
+		$menu_lists[ $key ]['child_items'] = array_filter(
+			$item['child_items'],
+			array( '\Academy\Helper', 'dashboard_item_in_view' )
+		);
+	}
+	uasort($menu_lists, function ( $a, $b ) {
 		return $a['priority'] <=> $b['priority'];
 	});
 
@@ -1331,7 +1479,7 @@ function academy_frontend_dashboard_become_an_instructor_page() {
 function academy_frontend_dashboard_profile_page() {
 	$user_id = get_current_user_id();
 	$user_info = get_userdata( $user_id );
-	$user_role = in_array( 'academy_student', $user_info->roles ) ? 'student' : 'instructor';
+	$user_role = in_array( 'academy_student', (array) $user_info->roles, true ) ? 'student' : 'instructor';
 	$user_fields = \Academy\Helper::get_form_builder_fields( $user_role );
 	$user_meta = \Academy\Helper::prepare_user_meta_data( $user_fields, $user_id );
 
@@ -1388,13 +1536,9 @@ function academy_frontend_dashboard_profile_page() {
 			'label' => esc_html__( 'Linkedin URL', 'academy' ),
 			'value' => get_user_meta( $user_id, 'academy_linkedin_url', true )
 		],
-		'linkedin_url' => [
-			'label' => esc_html__( 'Linkedin URL', 'academy' ),
-			'value' => get_user_meta( $user_id, 'academy_linkedin_url', true )
-		],
 	];
 
-	$user_data = array_filter( $user_data, function( $data ) {
+	$user_data = array_filter( $user_data, function ( $data ) {
 		return ! empty( $data['value'] );
 	});
 
@@ -1458,6 +1602,86 @@ function academy_frontend_dashboard_download_certificate_page() {
 	\Academy\Helper::get_template(
 		'frontend-dashboard/pages/download-certificate.php', [
 			'completed_courses' => $completed_courses,
+		]
+	);
+}
+
+function academy_frontend_dashboard_grades_page() {
+	$user_id = get_current_user_id();
+	// One enrolment record per enrolment, so a course a student enrolled in
+	// more than once comes back more than once and would render a duplicate row.
+	$enrolled_courses = array_values( array_unique( (array) \Academy\Helper::get_enrolled_courses_ids_by_user( $user_id ) ) );
+	$completed_courses = \Academy\Helper::get_completed_courses_ids_by_user( $user_id );
+	// The menu item is already gated on the quizzes addon, but the endpoint
+	// stays reachable by direct URL and the menu can be re-added through
+	// academy/frontend_dashboard_menu_items, so re-check here.
+	$quizzes_active = \Academy\Helper::get_addon_active_status( 'quizzes' ) && class_exists( '\AcademyQuizzes\Classes\Query' );
+	// The GradeBook addon (Pro) is the only source of a letter/scale grade —
+	// core only has raw percentages. Pro's own AcademyProGradeBook\Helper
+	// already stores a grade_name per user/course/quiz (populated on every
+	// quiz submission via its own academy_quizzes/after_quiz_insert hook), so
+	// this reads that directly rather than recomputing a grade scale in core.
+	$grade_book_active = \Academy\Helper::get_addon_active_status( 'grade_book', true ) && class_exists( '\AcademyProGradeBook\Helper' );
+
+	$courses = [];
+	foreach ( (array) $enrolled_courses as $course_id ) {
+		$total_topics = \Academy\Helper::get_total_number_of_course_topics( $course_id );
+		$completed_topics = \Academy\Helper::get_total_number_of_completed_course_topics_by_course_and_student_id( $course_id, $user_id );
+
+		$quiz_results = [];
+		if ( $quizzes_active ) {
+			$attempts_by_quiz_id = [];
+			foreach ( \AcademyQuizzes\Classes\Query::get_students_own_quiz_grades_by_course( $user_id, $course_id ) as $attempt ) {
+				$attempts_by_quiz_id[ (int) $attempt->quiz_id ] = $attempt;
+			}
+			foreach ( \AcademyQuizzes\Classes\Query::get_course_quiz_ids( $course_id ) as $quiz_id ) {
+				$attempt = $attempts_by_quiz_id[ $quiz_id ] ?? null;
+				$grade_letter = null;
+				if ( $grade_book_active && $attempt ) {
+					$grade_result = \AcademyProGradeBook\Helper::get_student_quiz_grade_by_course_quiz_and_user_id( array(
+						'user_id' => $user_id,
+						'course_id' => $course_id,
+						'quiz_id' => $quiz_id,
+					) );
+					if ( ! empty( $grade_result ) ) {
+						$grade_letter = current( $grade_result )->grade_name;
+					}
+				}
+				$quiz_results[] = [
+					'quiz_id' => $quiz_id,
+					'quiz_title' => html_entity_decode( get_the_title( $quiz_id ) ),
+					'attempt' => $attempt,
+					'grade_letter' => $grade_letter,
+				];
+			}
+		}//end if
+
+		$attempted_quizzes = array_filter( $quiz_results, function ( $quiz ) {
+			return null !== $quiz['attempt'];
+		} );
+
+		$courses[] = [
+			'course_id' => $course_id,
+			'course_title' => html_entity_decode( get_the_title( $course_id ) ),
+			'course_permalink' => get_permalink( $course_id ),
+			'progress_percentage' => \Academy\Helper::calculate_percentage( $total_topics, $completed_topics ),
+			'is_completed' => in_array( (int) $course_id, array_map( 'intval', (array) $completed_courses ), true ),
+			'quiz_results' => $quiz_results,
+			'quiz_summary' => [
+				'total' => count( $quiz_results ),
+				'attempted' => count( $attempted_quizzes ),
+				'passed' => count( array_filter( $attempted_quizzes, function ( $quiz ) {
+					return 'passed' === $quiz['attempt']->attempt_status;
+				} ) ),
+			],
+		];
+	}//end foreach
+
+	\Academy\Helper::get_template(
+		'frontend-dashboard/pages/grades.php',
+		[
+			'courses' => $courses,
+			'grade_book_active' => $grade_book_active,
 		]
 	);
 }
@@ -1672,6 +1896,10 @@ if ( ! function_exists( 'academy_allowed_third_party_assets' ) ) {
 			$allowed[] = 'mathjax-latex';
 		}
 
+		if ( \Academy\Helper::is_plugin_active( 'quizpress/quizpress.php' ) ) {
+			$allowed[] = 'quizpress';
+		}
+
 		return $allowed;
 	}
 }
@@ -1711,11 +1939,11 @@ if ( ! function_exists( 'academy_handle_password_reset' ) ) {
 		}
 
 		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'academy_nonce' ) ) {
-			wp_die( 'Invalid request' );
+			wp_die( esc_html__( 'Invalid request', 'academy' ) );
 		}
 
-		$key   = sanitize_text_field( wp_unslash( $_GET['reset_key'] ?? '' ) );
-		$login = sanitize_text_field( wp_unslash( $_GET['login'] ?? '' ) );
+		$key   = isset( $_GET['reset_key'] ) ? sanitize_text_field( wp_unslash( $_GET['reset_key'] ) ) : '';
+		$login = isset( $_GET['login'] ) ? sanitize_text_field( wp_unslash( $_GET['login'] ) ) : '';
 
 		// 🔒 This is the magic line
 		$user = check_password_reset_key( $key, $login );
@@ -1724,10 +1952,9 @@ if ( ! function_exists( 'academy_handle_password_reset' ) ) {
 			wp_die( 'Invalid or expired reset link' );
 		}
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Password value must not be altered by sanitization; it is validated and passed to reset_password() below.
-		$pass1 = isset( $_POST['new_password'] ) ? wp_unslash( $_POST['new_password'] ) : '';
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Password value must not be altered by sanitization; it is validated and passed to reset_password() below.
-		$pass2 = isset( $_POST['confirm_new_password'] ) ? wp_unslash( $_POST['confirm_new_password'] ) : '';
+		// Passwords are never sanitized — that would silently change them. Unslash only, as core does.
+		$pass1 = isset( $_POST['new_password'] ) ? wp_unslash( $_POST['new_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$pass2 = isset( $_POST['confirm_new_password'] ) ? wp_unslash( $_POST['confirm_new_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		if ( $pass1 !== $pass2 || empty( $pass1 ) ) {
 			wp_die( 'Passwords do not match' );
@@ -1767,7 +1994,7 @@ if ( ! function_exists( 'academy_auto_enroll_after_registration' ) || \Academy\H
 		$role_values = array_values( $selected_roles );
 		$matched_roles = array_intersect( $roles, $role_values );
 
-		if ( empty( $matched_roles ) && ! in_array( 'all', $role_values ) ) {
+		if ( empty( $matched_roles ) && ! in_array( 'all', $role_values, true ) ) {
 			return;
 		}
 
@@ -1785,12 +2012,11 @@ if ( ! function_exists( 'academy_auto_enroll_after_registration' ) || \Academy\H
 }//end if
 
 if ( ! function_exists( 'academy_loco_translate_sync' ) ) {
-	function academy_loco_translate_sync() : void {
+	function academy_loco_translate_sync(): void {
 		if (
 			empty( get_current_user_id() ) &&
 			! defined( 'LOCO_TEST' )
 		) {
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- LOCO_TEST is a marker constant for the external Loco Translate integration and must not be renamed.
 			define( 'LOCO_TEST', false );
 		}
 
@@ -1829,7 +2055,7 @@ if ( ! function_exists( 'academy_allowed_learnpage_content_tags' ) ) {
 			'style'             => true,
 		);
 
-		add_filter( 'safe_style_css', function( $styles ) {
+		add_filter( 'safe_style_css', function ( $styles ) {
 			$styles[] = 'display';
 			$styles[] = 'align-items';
 			$styles[] = 'justify-content';

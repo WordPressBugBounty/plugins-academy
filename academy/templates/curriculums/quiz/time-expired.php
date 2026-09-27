@@ -9,7 +9,7 @@ $attempts = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details_by_quiz_id( 
 ));
 $total_attempt = count( $attempts );
 $quiz          = \AcademyQuizzes\Helper::render_quiz_by_course_and_quiz_id( $course_id, $quiz_id );
-$max_attempt   = ( 'retry' === $quiz['settings']['quiz_feedback_mode'] ) ? $quiz['settings']['quiz_max_attempts_allowed'] : 1;
+$max_attempt   = in_array( $quiz['settings']['quiz_feedback_mode'], array( 'retry', 'resume' ), true ) ? $quiz['settings']['quiz_max_attempts_allowed'] : 1;
 
 ?>
 

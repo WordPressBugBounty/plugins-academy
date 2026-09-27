@@ -20,18 +20,18 @@ class Ajax extends AbstractAjaxHandler {
 	}
 
 
-	public function migrate() : void {
+	public function migrate(): void {
 		header( 'Content-Type: text/event-stream' );
 		header( 'Cache-Control: no-cache' );
 		header( 'Connection: keep-alive' );
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$flow = sanitize_title( strtolower( sanitize_text_field( wp_unslash( $_GET['lesson_migrator_flow'] ?? '' ) ) ) );
+		$flow = isset( $_GET['lesson_migrator_flow'] ) ? sanitize_title( wp_unslash( $_GET['lesson_migrator_flow'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified by AbstractAjaxHandler::handle_ajax_request().
 		if ( ! in_array(
 			$flow,
 			[
 				'lesson-to-post',
 				'post-to-lesson'
-			]
+			],
+			true
 		)
 		) {
 			echo 'data: ' . wp_json_encode( [

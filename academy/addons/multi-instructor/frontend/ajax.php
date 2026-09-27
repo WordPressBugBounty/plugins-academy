@@ -16,5 +16,4 @@ class Ajax {
 	public function dispatch_hooks() {
 		( new Frontend() )->dispatch_actions();
 	}
-
 }

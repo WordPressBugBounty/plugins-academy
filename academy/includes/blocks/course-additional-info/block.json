@@ -1,0 +1,89 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/course-additional-info",
+	"title": "Course Benefits & Requirements",
+	"category": "academy-course",
+	"description": "What students will learn, who the course is for, requirements and included materials.",
+	"keywords": [
+		"benefits",
+		"requirements",
+		"audience",
+		"materials",
+		"learn",
+		"course"
+	],
+	"textdomain": "academy",
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"html": false,
+		"multiple": true,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		},
+		"layout": {
+			"type": "string",
+			"enum": [
+				"default",
+				"tabs",
+				"accordion"
+			],
+			"default": "default"
+		},
+		"openFirst": {
+			"type": "boolean",
+			"default": true
+		},
+		"titleFontSize": {
+			"type": "number"
+		},
+		"titleColor": {
+			"type": "string"
+		},
+		"titleAlign": {
+			"type": "string"
+		}
+	},
+	"style": "file:./style.css",
+	"viewScript": "file:./view.js"
+}

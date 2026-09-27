@@ -21,7 +21,7 @@ class QuizController extends WP_REST_Posts_Controller {
 
 	public function get_items_permissions_check( $request ) {
 		if ( ! is_user_logged_in() ||
-			! current_user_can( 'edit_academy_courses' )
+			! current_user_can( 'edit_academy_quizzes' )
 		) {
 			return new WP_Error( 'unauthorized', __( 'Unauthorized.', 'academy' ), [ 'status' => 401 ] );
 		}
@@ -30,7 +30,7 @@ class QuizController extends WP_REST_Posts_Controller {
 
 	public function create_item_permissions_check( $request ) {
 		if ( ! is_user_logged_in() ||
-			! current_user_can( 'edit_academy_courses' )
+			! current_user_can( 'edit_academy_quizzes' )
 		) {
 			return new WP_Error( 'unauthorized', __( 'Unauthorized.', 'academy' ), [ 'status' => 401 ] );
 		}
@@ -70,11 +70,31 @@ class QuizController extends WP_REST_Posts_Controller {
 		}
 
 		$user_id = get_current_user_id();
-		if ( (int) $post->post_author !== $user_id ) {
+		if ( (int) $post->post_author !== $user_id && ! $this->is_assigned_instructor_for_quiz( $user_id, $post_id ) ) {
 			return new WP_Error( 'forbidden', __( 'You are not the owner of this quiz.', 'academy' ), [ 'status' => 403 ] );
 		}
 
 		return true;
+	}
+
+	/**
+	 * Non-admin instructors may edit quizzes in courses they were assigned to
+	 * by an admin, not only ones they authored themselves — `post_author`
+	 * alone doesn't reflect that. Mirrors the equivalent lesson-author
+	 * fallback in `Academy\API\Lessons::resolve_lesson_author_restriction()`.
+	 *
+	 * @param int $user_id
+	 * @param int $quiz_id
+	 * @return bool
+	 */
+	private function is_assigned_instructor_for_quiz( $user_id, $quiz_id ) {
+		$assigned_course_ids = \Academy\Helper::get_assigned_courses_ids_by_instructor_id( $user_id );
+		foreach ( (array) $assigned_course_ids as $assigned_course_id ) {
+			if ( \Academy\Helper::is_course_curriculum( (int) $assigned_course_id, $quiz_id, 'quiz' ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

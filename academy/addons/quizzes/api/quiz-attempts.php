@@ -171,7 +171,7 @@ class QuizAttempts extends \WP_REST_Controller {
 		}
 		$course_id = $request->get_param( 'course_id' );
 		$is_public = \Academy\Helper::get_course_type( $course_id ) === 'public' ? true : false;
-		$is_administrator = current_user_can( 'administrator' );
+		$is_administrator = current_user_can( 'manage_options' );
 		$is_instructor  = \Academy\Helper::is_instructor_of_this_course( get_current_user_id(), $course_id );
 		$enrolled    = \Academy\Helper::is_enrolled( $course_id, get_current_user_id() );
 		if ( $is_administrator || $is_instructor || $enrolled || $is_public ) {
@@ -230,6 +230,11 @@ class QuizAttempts extends \WP_REST_Controller {
 		if ( empty( $attempt ) ) {
 			return rest_ensure_response( [] );
 		}
+
+		// `permissions_check()` only validates the client-supplied `course_id` param,
+		// not the attempt's actual course — without this, a caller enrolled in any
+		// course could read another student's attempt (answers, score) by passing
+		// their own course_id alongside a different attempt's `id`.
 		if ( ! $this->can_access_attempt( $attempt ) ) {
 			return new \WP_Error(
 				'rest_forbidden_context',
@@ -274,8 +279,6 @@ class QuizAttempts extends \WP_REST_Controller {
 		return false;
 	}
 
-
-
 	/**
 	 * Creates a single post.
 	 *
@@ -294,6 +297,22 @@ class QuizAttempts extends \WP_REST_Controller {
 		}
 
 		$prepared_attempt = $this->prepare_item_for_database( $request );
+		// Resume Mode: seed `resume.submitted = false` right at creation —
+		// not just on the first autosave — so a student who abandons the
+		// quiz before ever answering a question (e.g. hits Back on the very
+		// first question) is still detected as resumable next time. Without
+		// this, attempt_info only gets a `resume` key once insert_quiz_answer()
+		// fires at least once (see update_quiz_attempt_resume_info()).
+		if ( ! empty( $request['quiz_id'] ) && 'resume' === get_post_meta( $request['quiz_id'], 'academy_quiz_feedback_mode', true ) ) {
+			$prepared_attempt->attempt_info = wp_json_encode(
+				array(
+					'resume' => array(
+						'submitted'          => false,
+						'current_step_index' => 0,
+					),
+				)
+			);
+		}
 		do_action( 'academy_quizzes/api/before_quiz_attempt_start', $prepared_attempt );
 		$attempt_id = Query::quiz_attempt_insert( wp_unslash( (array) $prepared_attempt ) );
 		$attempt = Query::get_quiz_attempt( $attempt_id );
@@ -322,15 +341,29 @@ class QuizAttempts extends \WP_REST_Controller {
 		$total_earned_marks = Query::get_quiz_attempt_answers_earned_marks( get_current_user_id(), $params['attempt_id'] );
 		$params['total_marks'] = $total_questions_marks;
 		$params['earned_marks'] = $total_earned_marks;
+		// Server-computed, same as the marks/correct-count above — never
+		// trust the client for this. The "start new after abandoning a
+		// resumable attempt" flow (QuizContent/index.js's
+		// handleStartNewAfterAbandon) finalizes the old attempt without ever
+		// sending total_answered_questions at all, which otherwise left it
+		// stuck at 0 from attempt creation even though answers were saved
+		// via Resume Mode's per-question autosave — showing e.g. "Answered:
+		// 0" next to "Correct: 2" and a negative Incorrect count.
+		$params['total_answered_questions'] = Query::get_total_quiz_attempt_answered_questions( $params['attempt_id'] );
 		$passing_grade = (int) get_post_meta( $params['quiz_id'], 'academy_quiz_passing_grade', true );
 		$earned_percentage  = \Academy\Helper::calculate_percentage( $total_questions_marks, $total_earned_marks );
 		$params['attempt_status'] = ( $earned_percentage >= $passing_grade ? 'passed' : 'failed' );
 		if ( 'failed' === $params['attempt_status'] && Query::is_required_manually_reviewed( $params['quiz_id'] ) ) {
 			$params['attempt_status'] = 'pending';
 		}
-		$params['attempt_info'] = array(
+		// Merge instead of overwrite so a client-supplied extra (e.g. Browser
+		// Lock's fullscreen_exit_count) survives alongside the server-computed
+		// total_correct_answers, which always wins if the client happens to send
+		// that same key.
+		$client_attempt_info = isset( $params['attempt_info'] ) && is_array( $params['attempt_info'] ) ? $params['attempt_info'] : array();
+		$params['attempt_info'] = array_merge( $client_attempt_info, array(
 			'total_correct_answers' => Query::get_total_quiz_attempt_correct_answers( $params['attempt_id'] )
-		);
+		) );
 		$prepare_attempt = $this->prepare_item_for_database( $params );
 		$attempt_id = Query::quiz_attempt_insert( wp_unslash( (array) $prepare_attempt ) );
 		$attempt = Query::get_quiz_attempt( $attempt_id );
@@ -379,16 +412,16 @@ class QuizAttempts extends \WP_REST_Controller {
 		// Resolve the real owner from the attempt row rather than trusting the
 		// caller-supplied user_id/course_id. Authorization is then decided against
 		// the current user (owner, course instructor, or administrator).
-		$attempt = \AcademyQuizzes\Classes\Query::get_quiz_attempt( $attempt_id );
+		$attempt = Query::get_quiz_attempt( $attempt_id );
 
 		if ( ! empty( $attempt ) && $this->can_access_attempt( $attempt ) ) {
 			$student_id = (int) $attempt->user_id;
 			$prepare_response = [];
-			$attempt_details = \AcademyQuizzes\Classes\Query::get_quiz_attempt_details( $attempt_id, $student_id );
+			$attempt_details = Query::get_quiz_attempt_details( $attempt_id, $student_id );
 			$quiz_id = $attempt->quiz_id;
 			$is_enable_skip_question = get_post_meta( $quiz_id, 'academy_quiz_skip_question_showing', true );
 			if ( $is_enable_skip_question ) {
-				$skip_questions = \AcademyQuizzes\Classes\Query::get_quiz_attempt_skip_questions( $attempt_id, $student_id, $quiz_id );
+				$skip_questions = Query::get_quiz_attempt_skip_questions( $attempt_id, $student_id, $quiz_id );
 				$attempt_details = array_merge( $attempt_details, $skip_questions );
 			}
 			foreach ( $attempt_details as $attempt_item ) {
@@ -397,6 +430,7 @@ class QuizAttempts extends \WP_REST_Controller {
 				$attempt_item->correct_answer = \AcademyQuizzes\Helper::prepare_correct_answer( $attempt_item->question_type, $attempt_item );
 				$attempt_item->question_title = html_entity_decode( $attempt_item->question_title );
 				$attempt_item->question_image_url = ! empty( $attempt_item->question_image_id ) ? wp_get_attachment_url( $attempt_item->question_image_id ) : '';
+				$attempt_item->question_audio_url = ! empty( $attempt_item->question_audio_id ) ? wp_get_attachment_url( $attempt_item->question_audio_id ) : '';
 				$attempt_answer_id = $attempt_item->attempt_answer_id ? $attempt_item->attempt_answer_id : $attempt_item->question_id;
 				$attempt_item->is_skipped_question = (bool) $attempt_item->attempt_answer_id ? false : true;
 				$prepare_response[ $attempt_answer_id ] = $attempt_item;

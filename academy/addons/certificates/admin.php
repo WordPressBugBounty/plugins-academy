@@ -12,7 +12,7 @@ class Admin {
 		$self->dispatch_hooks();
 	}
 	public function dispatch_hooks() {
-		add_filter( 'admin_init', array( $this, 'redirect_academy_certificate' ) );
+		add_action( 'admin_init', array( $this, 'redirect_academy_certificate' ) );
 	}
 	public function redirect_academy_certificate() {
 		global $pagenow;

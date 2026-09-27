@@ -31,12 +31,21 @@ trait Lessons {
 		}
 	}
 	public static function get_lesson_slug( int $ID ) {
-		return LessonApi::get_lesson_slug( $ID );
+		$slug = LessonApi::get_lesson_slug( $ID );
+		if ( '' !== (string) $slug ) {
+			return $slug;
+		}
+
+		// A lesson still kept as a post: it has not been moved into Academy's
+		// lessons table yet, so its slug is the post's own.
+		$post = get_post( $ID );
+
+		return $post && 'academy_lessons' === $post->post_type ? $post->post_name : $slug;
 	}
 	public static function get_lesson_title( int $ID ) {
 		return LessonApi::get_lesson_title( $ID );
 	}
-	public static function get_lesson_meta_data( int $ID ) : array {
+	public static function get_lesson_meta_data( int $ID ): array {
 		return LessonApi::get_lesson_meta_data( $ID );
 	}
 	public static function get_lesson_meta( int $ID, string $meta_key ) {
@@ -62,11 +71,11 @@ trait Lessons {
 		return '';
 	}
 
-	public static function get_total_number_of_lessons_by_instructor( int $instructor_id ) : int {
+	public static function get_total_number_of_lessons_by_instructor( int $instructor_id ): int {
 		return (int) self::get_total_number_of_lessons( 'publish', $instructor_id );
 	}
 
-	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ) : int {
+	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ): int {
 		return LessonApi::get_total_number_of_lessons( $status, $user_id );
 	}
 
@@ -77,13 +86,13 @@ trait Lessons {
 
 		while ( self::is_lesson_slug_exists( $slug ) ) {
 			$slug = $original_slug . '-' . $suffix;
-			$suffix++;
+			++$suffix;
 		}
 
 		return $slug;
 	}
 
-	public static function is_lesson_slug_exists( string $slug, ?int $id = null ) : bool {
+	public static function is_lesson_slug_exists( string $slug, ?int $id = null ): bool {
 		try {
 			if ( ! empty( $id ) ) {
 				$lesson = LessonApi::get_by_id( $id );
@@ -103,7 +112,7 @@ trait Lessons {
 		return false;
 	}
 
-	public static function get_lesson_by_slug( string $slug ) : ?array {
+	public static function get_lesson_by_slug( string $slug ): ?array {
 		try {
 			$lesson = LessonApi::get_by_slug( $slug );
 			return $lesson->get_data();
@@ -113,7 +122,7 @@ trait Lessons {
 		return null;
 	}
 
-	public static function get_lesson_by_title( string $title ) : ?array {
+	public static function get_lesson_by_title( string $title ): ?array {
 		try {
 			$lesson = LessonApi::get_by_title( $title );
 			return $lesson->get_data();

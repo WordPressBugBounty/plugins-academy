@@ -1,0 +1,79 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/student-registration-form",
+	"title": "Academy Student Registration Form",
+	"category": "academy",
+	"description": "Sign-up form for new students. Replaced by the Registration Form block.",
+	"keywords": [
+		"register",
+		"sign up",
+		"student"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalDefaultControls": {
+				"padding": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true,
+			"__experimentalDefaultControls": {
+				"color": true,
+				"radius": true,
+				"width": true,
+				"style": true
+			}
+		},
+		"shadow": true,
+		"inserter": false
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "card",
+			"label": "Card"
+		},
+		{
+			"name": "minimal",
+			"label": "Minimal"
+		}
+	],
+	"style": "file:./style.css"
+}

@@ -14,13 +14,42 @@ class FileUpload {
 	 * Blocking these prevents an uploaded file (or a file inside an uploaded zip)
 	 * from being executed as a webshell.
 	 *
+	 * `htm`/`html` are blocked as single uploads (stored script), but allowed
+	 * inside an extracted zip — every SCORM package ships an HTML launch file (see
+	 * get_disallowed_zip_entry_extensions()). `.htaccess` and `.shtml` stay blocked
+	 * everywhere because they can change how the web server executes other files
+	 * in the directory (handlers, SSI).
+	 *
 	 * @return string[]
 	 */
 	protected function get_disallowed_extensions() {
 		return apply_filters( 'academy/upload_disallowed_extensions', array(
-			'php', 'php3', 'php4', 'php5', 'php7', 'php8', 'pht', 'phtml', 'phps', 'phar',
-			'shtml', 'cgi', 'pl', 'asp', 'aspx', 'jsp', 'jspx', 'htaccess', 'htm', 'html',
-			'exe', 'so', 'dll', 'sh', 'bat', 'com',
+			'php',
+			'php3',
+			'php4',
+			'php5',
+			'php7',
+			'php8',
+			'pht',
+			'phtml',
+			'phps',
+			'phar',
+			'shtml',
+			'cgi',
+			'pl',
+			'asp',
+			'aspx',
+			'jsp',
+			'jspx',
+			'htaccess',
+			'htm',
+			'html',
+			'exe',
+			'so',
+			'dll',
+			'sh',
+			'bat',
+			'com',
 		) );
 	}
 
@@ -32,12 +61,29 @@ class FileUpload {
 		return in_array( strtolower( (string) $ext ), $this->get_disallowed_extensions(), true );
 	}
 
+	/**
+	 * Extensions disallowed inside an extracted zip package (e.g. SCORM content).
+	 *
+	 * Content packages like SCORM legitimately contain .htm/.html launch pages,
+	 * so those are allowed here even though direct single-file uploads still
+	 * block them. Everything that can execute server-side, or reconfigure the
+	 * server (.htaccess), stays blocked.
+	 *
+	 * @return string[]
+	 */
+	protected function get_disallowed_zip_entry_extensions() {
+		return apply_filters(
+			'academy/zip_entry_disallowed_extensions',
+			array_diff( $this->get_disallowed_extensions(), array( 'htm', 'html' ) )
+		);
+	}
+
 	public function upload_file( $file, $supported_file_types = [] ) {
 		if ( ! empty( $file ) && ! empty( $file['name'] ) ) {
 			$filename = $file['name'];
 			do_action( 'academy/before_upload_file', $filename );
 		}
-		
+
 		$this->create_folder();
 
 		$results = array(
@@ -50,7 +96,8 @@ class FileUpload {
 		$path = ( isset( $file['name'] ) ) ? sanitize_text_field( $file['name'] ) : '';
 		$ext  = pathinfo( $path, PATHINFO_EXTENSION );
 
-		// Always reject executable extensions, even when no allowlist is supplied.
+		// Never write an executable file into the public uploads folder, even
+		// when the caller passes no allowlist.
 		if ( $this->is_disallowed_extension( $ext ) ) {
 			return apply_filters( 'academy/not_supported_upload_file_error_message', __( 'Invalid file extension', 'academy' ) );
 		}
@@ -59,16 +106,8 @@ class FileUpload {
 			return apply_filters( 'academy/not_supported_upload_file_error_message', __( 'Invalid file extension', 'academy' ) );
 		}
 
-		// No file actually arrived (empty file input, or the upload failed/was
-		// truncated) — bail out with the generic error instead of calling
-		// file_get_contents() on an empty tmp_name, which throws a ValueError.
-		if ( empty( $file['tmp_name'] ) || ( isset( $file['error'] ) && UPLOAD_ERR_OK !== $file['error'] ) ) {
-			return $results;
-		}
-
 		$filename    = md5( time() ) . basename( $path );
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$file        = file_get_contents( sanitize_text_field( $file['tmp_name'] ) );
+		$file        = ( isset( $file['tmp_name'] ) ) ? file_get_contents( sanitize_text_field( $file['tmp_name'] ) ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents, WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown -- local file, not a remote URL
 		$upload_file = wp_upload_bits( $filename, null, $file );
 
 		if ( $upload_file['error'] ) {
@@ -76,8 +115,9 @@ class FileUpload {
 			return $results;
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
-		rename( $upload_file['file'], $this->get_file_path( $filename ) );
+		// Both paths are inside the uploads dir (the one writable location, also on VIP),
+		// and WP_Filesystem may need FTP credentials here — so a plain rename.
+		rename( $upload_file['file'], $this->get_file_path( $filename ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_rename, WordPress.WP.AlternativeFunctions.rename_rename -- move within uploads, see above
 
 		$file_data  = $this->get_file_data( $filename );
 		$results['error'] = '';
@@ -95,7 +135,7 @@ class FileUpload {
 		if ( $zip->open( $zip_file ) === true ) {
 			// Refuse archives that contain executable files or path-traversal entries,
 			// so a malicious zip cannot drop a webshell into the public uploads dir.
-			for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+			for ( $i = 0; $i < $zip->count(); $i++ ) {
 				$entry_name = $zip->getNameIndex( $i );
 				if ( false === $entry_name ) {
 					continue;
@@ -105,7 +145,7 @@ class FileUpload {
 					wp_delete_file( $zip_file );
 					return false;
 				}
-				if ( $this->is_disallowed_extension( pathinfo( $entry_name, PATHINFO_EXTENSION ) ) ) {
+				if ( in_array( strtolower( pathinfo( $entry_name, PATHINFO_EXTENSION ) ), $this->get_disallowed_zip_entry_extensions(), true ) ) {
 					$zip->close();
 					wp_delete_file( $zip_file );
 					return false;
@@ -121,8 +161,7 @@ class FileUpload {
 
 			// Create the extracted folder if it doesn't exist
 			if ( ! is_dir( $extracted_folder ) ) {
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
-				mkdir( $extracted_folder, 0755, true );
+				wp_mkdir_p( $extracted_folder );
 			}
 
 			// Extract the files

@@ -1,0 +1,78 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "academy/password-reset-form",
+	"title": "Academy Password Reset Form",
+	"category": "academy",
+	"description": "Lets students reset a forgotten password.",
+	"keywords": [
+		"password",
+		"reset",
+		"forgot"
+	],
+	"textdomain": "academy",
+	"attributes": {
+		"usernameLabel": {
+			"type": "string"
+		},
+		"accentColor": {
+			"type": "string"
+		},
+		"accentSoftColor": {
+			"type": "string"
+		},
+		"surfaceColor": {
+			"type": "string"
+		},
+		"lineColor": {
+			"type": "string"
+		},
+		"formTitle": {
+			"type": "string"
+		},
+		"buttonLabel": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"shadow": true
+	},
+	"editorScript": "academy-blocks-editor",
+	"render": "file:./render.php",
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "card",
+			"label": "Card"
+		},
+		{
+			"name": "minimal",
+			"label": "Minimal"
+		}
+	],
+	"style": "file:./style.css"
+}

@@ -55,7 +55,11 @@ final class Quizzes implements AddonInterface {
 
 	public function addon_activation_hook() {
 		Database::init();
+		// Creates missing tables and adds any missing columns / keys right away
+		// (Database::sync_schema()), so the schema is correct the moment the
+		// addon comes back on — even if Academy was updated while it was off.
 		Installer::init();
+
 		\Academy\Helper::flush_rewrite_rules();
 	}
 

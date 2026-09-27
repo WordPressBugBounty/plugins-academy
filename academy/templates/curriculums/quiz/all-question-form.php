@@ -18,7 +18,7 @@ $layout = isset( $quiz['settings']['quiz_questions_layout'] ) ? $quiz['settings'
 			<?php
 				$question_count = 0;
 			foreach ( $questions_with_options as $question_with_option ) :
-				$question_count++;
+				++$question_count;
 				$question_type   = $question_with_option['question']->question_type;
 				$answer_settings = json_decode( $question_with_option['question']->question_settings );
 				$is_required = $answer_settings->answer_required;

@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="academy-single-course__content-item academy-single-course__content-item--description">
 	<h2 class="academy-single-course__content-item--description-title"><?php esc_html_e( 'Course Overview', 'academy' ); ?></h2>
 	<?php
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-		echo wp_kses_post( apply_filters( 'the_content', get_post_field( 'post_content', get_the_ID() ) ) );
+		echo apply_filters( 'the_content', get_post_field( 'post_content', get_the_ID() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core the_content output, as the_content() prints it.
 	?>
 </div>

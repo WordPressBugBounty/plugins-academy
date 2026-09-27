@@ -51,5 +51,4 @@ class Order {
 
 		return get_permalink( (int) $order_item->get_meta( '_academy_course_id' ) );
 	}
-
 }

@@ -56,7 +56,7 @@ class Migrator extends Db {
 		$this->lesson_class     = $this->setting[ $this->flow ]['lesson_class'];
 	}
 
-	protected function get_migrator_instance( Lesson $lesson ) : Migrator\Base\Migrator {
+	protected function get_migrator_instance( Lesson $lesson ): Migrator\Base\Migrator {
 		$class = $this->migrator_class;
 		return new $class( $lesson );
 	}
@@ -80,7 +80,6 @@ class Migrator extends Db {
                 LIMIT %d
             ";
 
-			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 			return $this->wpdb->get_results(
 				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql, 'lesson:migrate:id', $limit// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -109,7 +108,6 @@ class Migrator extends Db {
                 LIMIT %d
             ";
 
-			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 			return $this->wpdb->get_results(
 				$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql, 'academy_lessons', 'lesson:migrate:id', $limit// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -173,12 +171,13 @@ class Migrator extends Db {
                 )
             ";
 
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 			$left = (int) $wpdb->get_var(
 				$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql_left, 'lesson:migrate:id'// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				)
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			$sql_migrated = "
                 SELECT COUNT(*)
@@ -193,12 +192,13 @@ class Migrator extends Db {
                 )
             ";
 
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 			$migrated = (int) $wpdb->get_var(
 				$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql_migrated, 'lesson:migrate:id'// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				)
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			return [
 				'left'     => $left,
@@ -221,12 +221,13 @@ class Migrator extends Db {
                 )
             ";
 
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 			$left = (int) $wpdb->get_var(
 				$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$sql_left, 'academy_lessons', 'lesson:migrate:id'// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				)
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			$sql_migrated = "
                 SELECT COUNT(*)
@@ -242,12 +243,13 @@ class Migrator extends Db {
                 )
             ";
 
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration
 			$migrated = (int) $wpdb->get_var(
 				$wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					$sql_migrated, 'academy_lessons', 'lesson:migrate:id'// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				)
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			return [
 				'left'     => $left,
@@ -257,5 +259,4 @@ class Migrator extends Db {
 
 		return null;
 	}
-
 }

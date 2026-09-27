@@ -12,7 +12,7 @@ class NewInstructorRegistration implements ListenersInterface {
 	public static function dispatch( $deliver_callback, $webhook ) {
 		add_action(
 			'academy/api/auth/after_instructor_registration',
-			function( $instructor_id ) use ( $deliver_callback, $webhook ) {
+			function ( $instructor_id ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(
@@ -25,7 +25,7 @@ class NewInstructorRegistration implements ListenersInterface {
 
 		add_action(
 			'academy/admin/after_register_instructor',
-			function( $instructor_id ) use ( $deliver_callback, $webhook ) {
+			function ( $instructor_id ) use ( $deliver_callback, $webhook ) {
 				call_user_func_array(
 					$deliver_callback,
 					array(

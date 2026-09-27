@@ -17,6 +17,7 @@ if ( count( $categories ) ) :
 		foreach ( $categories as $parent_category ) :
 			?>
 		<label class="parent-term">
+			<img class="academy-archive-course-widget__category-thumb" src="<?php echo esc_url( \Academy\Helper::get_the_course_category_image_url( $parent_category->term_id ) ); ?>" alt="" />
 			<span><?php echo esc_html( $parent_category->name ); ?></span>
 			<input class="academy-archive-course-filter" type="checkbox" name="category"
 				value="<?php echo esc_attr( urldecode( $parent_category->slug ) ); ?>" <?php checked( urldecode( $parent_category->slug ), $selected_category, true ); ?> />
@@ -27,6 +28,7 @@ if ( count( $categories ) ) :
 				foreach ( $parent_category->children as $child_category ) :
 					?>
 					<label class="child-term">
+					<img class="academy-archive-course-widget__category-thumb" src="<?php echo esc_url( \Academy\Helper::get_the_course_category_image_url( $child_category->term_id ) ); ?>" alt="" />
 					<span><?php echo esc_html( $child_category->name ); ?></span>
 						<input class="academy-archive-course-filter" type="checkbox" name="category"
 							value="<?php echo esc_attr( urldecode( $child_category->slug ) ); ?>" <?php checked( urldecode( $child_category->slug ), $selected_category, true ); ?> />

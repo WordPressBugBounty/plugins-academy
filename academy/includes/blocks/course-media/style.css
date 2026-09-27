@@ -1,0 +1,22 @@
+/* Course Intro Media with a width set: left, centre or right of its row. */
+.wp-block-academy-course-media.is-justified-center {
+	margin-inline: auto;
+}
+
+.wp-block-academy-course-media.is-justified-right {
+	margin-inline-start: auto;
+	margin-inline-end: 0;
+}
+
+/* A featured image or video no longer fills the page at its natural size. */
+.wp-block-academy-course-media :is(img, video, iframe) {
+	max-width: 100%;
+}
+
+.wp-block-academy-course-media img {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 480px;
+	object-fit: cover;
+}

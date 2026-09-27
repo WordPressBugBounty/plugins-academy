@@ -1,0 +1,37 @@
+/* Style presets for the curriculum. */
+.wp-block-academy-course-curriculum.is-style-boxed .academy-accordion {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	border: 0;
+	box-shadow: none;
+}
+
+.wp-block-academy-course-curriculum.is-style-boxed .academy-accordion > li {
+	overflow: hidden;
+	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border-radius: 10px;
+	box-shadow: none;
+}
+
+.wp-block-academy-course-curriculum.is-style-boxed .academy-accordion__title {
+	background: var(--academy-gray-color, #f6f7f8);
+}
+
+.wp-block-academy-course-curriculum.is-style-minimal .academy-accordion,
+.wp-block-academy-course-curriculum.is-style-minimal .academy-accordion > li {
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.wp-block-academy-course-curriculum.is-style-minimal .academy-accordion > li {
+	border-bottom: 1px solid var(--academy-border-color, #e4e7ee);
+}
+
+.wp-block-academy-course-curriculum.is-style-minimal .academy-accordion__title,
+.wp-block-academy-course-curriculum.is-style-minimal .academy-lesson-list__item {
+	padding-inline: 0;
+	background: transparent;
+}

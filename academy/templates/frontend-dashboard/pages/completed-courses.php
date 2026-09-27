@@ -21,7 +21,7 @@ if ( ! empty( $pending_enrolled_courses ) ) :
 	?>
 	<div class="academy-dashboard-notice">
 		<?php
-			$course_links = array_map(function( $course_id ) {
+			$course_links = array_map(function ( $course_id ) {
 				return sprintf( '<a href="%s" target="_blank" rel="noreferrer">%s</a>', get_permalink( $course_id ), get_the_title( $course_id ) );
 			}, $pending_enrolled_courses);
 			$course_links_str = implode( ', ', $course_links );
@@ -42,6 +42,14 @@ if ( ! empty( $pending_enrolled_courses ) ) :
 				$course_title = get_the_title( $course_id );
 				$thumbnail_url = Academy\Helper::get_the_course_thumbnail_url_by_id( $course_id );
 				$course_permalink = get_permalink( $course_id );
+				$start_course_link_attributes = apply_filters(
+					'academy/templates/start_course_link_attributes',
+					array(
+						'class' => 'academy-btn academy-btn--bg-purple',
+						'href'  => $course_permalink,
+					),
+					$course_id
+				);
 				$rating                  = \Academy\Helper::get_course_rating( $course_id );
 				$total_topics           = \Academy\Helper::get_total_number_of_course_topics( $course_id );
 				$total_completed_topics = \Academy\Helper::get_total_number_of_completed_course_topics_by_course_and_student_id( $course_id );
@@ -76,10 +84,19 @@ if ( ! empty( $pending_enrolled_courses ) ) :
 								<div class="academy-progress-bar" style="width: <?php echo esc_attr( $percentage ) . '%'; ?>;">
 								</div>
 							</div>
-							<span class="academy-progress-wrap__percent"><?php echo esc_attr( $percentage ) . '%'; ?><?php echo esc_html__( 'Complete', 'academy' ); ?></span>
+							<span class="academy-progress-wrap__percent"><?php echo esc_html( $percentage ) . '%'; ?><?php echo esc_html__( 'Complete', 'academy' ); ?></span>
 						</div>
 						<div class="academy-widget-enroll__continue">
-						<a class="academy-btn academy-btn--bg-purple" href="<?php echo esc_url( $course_permalink ); ?>"><?php echo $total_completed_topics ? esc_html__( 'Continue Course', 'academy' ) : esc_html__( 'Start Course', 'academy' ); ?></a></div>
+						<a<?php foreach ( $start_course_link_attributes as $attribute_name => $attribute_value ) :
+							if ( '' === $attribute_value || null === $attribute_value || false === $attribute_value ) {
+								continue;
+							}
+							printf(
+								' %1$s="%2$s"',
+								esc_attr( $attribute_name ),
+								'href' === $attribute_name ? esc_url( $attribute_value ) : esc_attr( $attribute_value )
+							);
+						endforeach; ?>><?php echo $total_completed_topics ? esc_html__( 'Continue Course', 'academy' ) : esc_html__( 'Start Course', 'academy' ); ?></a></div>
 						<div class="academy-widget-enroll__view_details" data-id="<?php echo esc_attr( $course_id ); ?>">
 							<button class="academy-btn academy-btn--bg-purple">
 								<?php

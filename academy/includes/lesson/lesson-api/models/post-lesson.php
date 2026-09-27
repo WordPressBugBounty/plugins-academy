@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Exception;
 class PostLesson extends Base\Lesson {
 
-	protected function set_default() : void {
+	protected function set_default(): void {
 		$this->data = wp_parse_args( $this->data, [
 			'ID'                => $this->id,
 			'lesson_type'         => 'academy_lessons',
@@ -27,7 +27,7 @@ class PostLesson extends Base\Lesson {
 		] );
 	}
 
-	public function is_slug_available() : bool {
+	public function is_slug_available(): bool {
 		$slug = $this->data['post_name']
 			?? sanitize_title( $this->data['post_title'] ?? '' );
 
@@ -37,7 +37,6 @@ class PostLesson extends Base\Lesson {
 				WHERE post_name = %s
 				LIMIT 1";
 
-		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$found_id = (int) $this->wpdb->get_var(
 			$this->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$sql, $slug// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -47,7 +46,7 @@ class PostLesson extends Base\Lesson {
 		return ( 0 === $found_id || $found_id === (int) $this->id );
 	}
 
-	public static function by_id( int $id, bool $skip_meta = false, ?int $author = null, ?string $status = null ) : self {
+	public static function by_id( int $id, bool $skip_meta = false, ?int $author = null, ?string $status = null ): self {
 		if ( null !== $author ) {
 			$posts = get_posts( [
 				'post_type' => 'academy_lessons',
@@ -64,7 +63,7 @@ class PostLesson extends Base\Lesson {
 		return self::get_lesson( (array) $post, new self(), $skip_meta );
 	}
 
-	public static function by_slug( string $slug, bool $skip_meta = false, ?int $author = null ) : self {
+	public static function by_slug( string $slug, bool $skip_meta = false, ?int $author = null ): self {
 		if ( null !== $author ) {
 			$posts = get_posts( [
 				'post_type'   => 'academy_lessons',
@@ -80,7 +79,7 @@ class PostLesson extends Base\Lesson {
 
 		return self::get_lesson( (array) $post, new self(), $skip_meta );
 	}
-	public static function by_title( string $title, bool $skip_meta = false, ?int $author = null ) : self {
+	public static function by_title( string $title, bool $skip_meta = false, ?int $author = null ): self {
 		$ins = new self();
 
 		$sql = "SELECT * FROM {$ins->wpdb->posts} WHERE post_title = %s";
@@ -101,7 +100,7 @@ class PostLesson extends Base\Lesson {
 		);
 	}
 
-	public static function get_lesson( ?array $data, self $ins, bool $skip_meta = false ) : self {
+	public static function get_lesson( ?array $data, self $ins, bool $skip_meta = false ): self {
 		if ( is_array( $data ) && isset( $data['ID'] ) && 'academy_lessons' === $data['post_type'] ) {
 			$meta_data = $skip_meta ? [] : $ins->wpdb->get_results(
 				$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -117,7 +116,7 @@ class PostLesson extends Base\Lesson {
 		throw new Exception( esc_html__( 'Invalid Lesson ID.', 'academy' ) );
 	}
 
-	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ) : int {
+	public static function get_total_number_of_lessons( string $status = 'any', int $user_id = 0 ): int {
 		$ins = new self();
 		$query = $ins->wpdb->prepare( "SELECT COUNT(*) FROM {$ins->wpdb->posts} WHERE post_type = %s ", 'academy_lessons' );// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( 'any' !== $status ) {
@@ -129,7 +128,7 @@ class PostLesson extends Base\Lesson {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return (int) $ins->wpdb->get_var( $query );
 	}
-	public static function get_slug_by_id( int $id ) : ?string {
+	public static function get_slug_by_id( int $id ): ?string {
 		$ins = new self();
 		return $ins->wpdb->get_row(
 			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -139,7 +138,7 @@ class PostLesson extends Base\Lesson {
 			ARRAY_A
 		)['post_name'] ?? null;
 	}
-	public static function get_title_by_id( int $id ) : ?string {
+	public static function get_title_by_id( int $id ): ?string {
 		$ins = new self();
 		return $ins->wpdb->get_row(
 			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -149,7 +148,7 @@ class PostLesson extends Base\Lesson {
 			ARRAY_A
 		)['post_title'] ?? null;
 	}
-	public static function get_lesson_meta_data( int $id ) : array {
+	public static function get_lesson_meta_data( int $id ): array {
 		$ins = new self();
 		return $ins->set_meta_data( array_column( $ins->wpdb->get_results(
 			$ins->wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -158,17 +157,26 @@ class PostLesson extends Base\Lesson {
 			),
 			ARRAY_A
 		) ?? [], 'meta_value', 'meta_key' ) )->get_data()['meta'] ?? [];
-
 	}
 	public static function get_lesson_meta( int $id, string $key ) {
-		return get_post_meta( $id, $key, true );
+		$value = get_post_meta( $id, $key, true );
+		if ( '' === $value || null === $value ) {
+			return $value;
+		}
+
+		// Same shape as the lessons table gives: values kept as JSON come back
+		// as arrays, which is what the templates read.
+		$ins = new self();
+		$ins->set_meta_data( [ $key => $value ] );
+
+		return $ins->get_data()['meta'][ $key ] ?? $value;
 	}
 
-	protected function inspect_key( string $key, bool $is_meta = false ) : string {
+	protected function inspect_key( string $key, bool $is_meta = false ): string {
 		return $is_meta ? $key : preg_replace( '|^lesson_|i', 'post_', $key );
 	}
 
-	public function get_data() : array {
+	public function get_data(): array {
 		$output = parent::get_data();
 		foreach ( $output as $key => $value ) {
 			unset( $output[ $key ] );
@@ -177,7 +185,7 @@ class PostLesson extends Base\Lesson {
 		return $output;
 	}
 
-	public function save_data() : void {
+	public function save_data(): void {
 		if ( array_key_exists( 'ID', $this->data ) && absint( $this->data['ID'] ) === 0 ) {
 			unset( $this->data['ID'] );
 		}
@@ -204,7 +212,7 @@ class PostLesson extends Base\Lesson {
 		$this->id = $id;
 	}
 
-	public function save_meta_data() : void {
+	public function save_meta_data(): void {
 		$meta = apply_filters( 'academy/lesson/set_meta_data', [] );
 		if ( $this->is_insert && ! empty( $meta ) ) {
 			$this->set_meta_data( $meta );
@@ -213,13 +221,13 @@ class PostLesson extends Base\Lesson {
 			$this->update_meta();
 		}
 	}
-	public function delete() : void {
+	public function delete(): void {
 		if ( empty( wp_delete_post( $this->id, true ) ) ) {
 			throw new Exception( esc_html__( 'Lesson deletion failed. Please try again.', 'academy' ) );
 		}
 	}
 
-	public function update_meta() : void {
+	public function update_meta(): void {
 		global $wpdb;
 
 		$table = $wpdb->postmeta;
@@ -228,11 +236,12 @@ class PostLesson extends Base\Lesson {
 
 		$placeholders = implode( ',', array_fill( 0, count( $keys ), '%s' ) );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- custom query with no WP API equivalent
 		$existing_keys = $wpdb->get_col( $wpdb->prepare(// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			"SELECT meta_key FROM $table WHERE post_id = %d AND meta_key IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$this->id, ...$keys// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		foreach ( $this->meta as $key => $value ) {
 			if ( is_array( $value ) || is_object( $value ) ) {
@@ -240,28 +249,29 @@ class PostLesson extends Base\Lesson {
 			}
 			if ( in_array( $key, $existing_keys, true ) ) {
 				// Update
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- custom query with no WP API equivalent; meta/tax lookup the feature depends on; no cheaper equivalent
 				$wpdb->update(
 					$table,
-					[ 'meta_value' => $value ], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+					[ 'meta_value' => $value ],
 					[
 						'post_id' => $this->id,
-						'meta_key' => $key // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+						'meta_key' => $key
 					]
 				);
+				// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			} else {
 				// Insert
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- custom query with no WP API equivalent; meta/tax lookup the feature depends on; no cheaper equivalent
 				$wpdb->insert(
 					$table,
 					[
 						'post_id'    => $this->id,
-						'meta_key'   => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-						'meta_value' => $value // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+						'meta_key'   => $key,
+						'meta_value' => $value
 					]
 				);
+				// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			}//end if
 		}//end foreach
 	}
-
 }

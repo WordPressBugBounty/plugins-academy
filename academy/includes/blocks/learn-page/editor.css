@@ -1,0 +1,83 @@
+/* The learn page blocks in the block editor: the real parts, laid out like the page. */
+.editor-styles-wrapper .academy-learn.academy-learn-editor {
+	display: block;
+	min-height: 0;
+	padding: 0;
+	overflow: hidden;
+	border: 1px solid var(--academy-border-color, #e5e7eb);
+	border-radius: 10px;
+}
+
+.academy-learn-editor > .block-editor-inner-blocks > .block-editor-block-list__layout {
+	display: grid;
+	grid-template-columns: var(--academy-learn-sidebar, 340px) minmax(0, 1fr);
+	align-items: stretch;
+}
+
+.academy-learn-editor[data-sidebar="right"] > .block-editor-inner-blocks > .block-editor-block-list__layout {
+	grid-template-columns: minmax(0, 1fr) var(--academy-learn-sidebar, 340px);
+}
+
+.academy-learn-editor .block-list-appender,
+.academy-learn-editor-part.is-topbar,
+.academy-learn-editor-part.is-footer {
+	grid-column: 1 / -1;
+}
+
+.academy-learn-editor[data-sidebar="right"] .academy-learn-editor-part.is-curriculum {
+	grid-column: 2;
+	grid-row: 2;
+}
+
+.academy-learn-editor[data-sidebar="right"] .academy-learn-editor-part.is-content {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+.academy-learn-editor-part {
+	position: relative;
+	min-width: 0;
+	margin: 0 !important;
+}
+
+/* The parts are previews: nothing inside reacts to clicks. */
+.academy-learn-editor-part__render {
+	pointer-events: none;
+}
+
+.academy-learn-editor-part__loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 64px;
+}
+
+.academy-learn-editor .academy-learn-topbar,
+.academy-learn-editor .academy-learn-footer,
+.academy-learn-editor .academy-learn-curriculum {
+	position: static;
+}
+
+.academy-learn-editor .academy-learn-curriculum {
+	height: 100%;
+	min-height: 360px;
+	max-height: 520px;
+	visibility: visible;
+}
+
+.academy-learn-editor .academy-learn-content {
+	height: 100%;
+	max-height: 520px;
+	overflow: hidden;
+}
+
+.academy-learn-editor .academy-learn-section__topics {
+	display: block;
+}
+
+.academy-learn-editor-part.is-curriculum .academy-learn-editor-part__render,
+.academy-learn-editor-part.is-curriculum .academy-learn-editor-part__render > div,
+.academy-learn-editor-part.is-content .academy-learn-editor-part__render,
+.academy-learn-editor-part.is-content .academy-learn-editor-part__render > div {
+	height: 100%;
+}

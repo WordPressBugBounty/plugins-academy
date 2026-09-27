@@ -6,6 +6,10 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit8bce9730ac0013fc6bf1e517ee6064e6
 {
+    public static $files = array (
+        'f1ae818e1da44f578bbc5ae74a90afde' => __DIR__ . '/..' . '/storeengine/wordpress-sdk/init.php',
+    );
+
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );

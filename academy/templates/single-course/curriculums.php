@@ -8,7 +8,7 @@ if ( empty( $curriculums ) || empty( $course_id ) ) {
 } ?>
 <div class="academy-single-course__content-item academy-single-course__content-item--curriculum">
 	<div class="academy-course-curriculum-header">
-		<h4 class="academy-curriculum-title"><?php esc_html_e( 'Course Content', 'academy' ); ?></h4>
+		<h2 class="academy-curriculum-title"><?php esc_html_e( 'Course Content', 'academy' ); ?></h2>
 	</div>
 
 	<ul class="academy-accordion">

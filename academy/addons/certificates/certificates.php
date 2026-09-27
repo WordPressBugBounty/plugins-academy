@@ -54,6 +54,7 @@ final class Certificates implements AddonInterface {
 		Assets::init();
 		Frontend::init();
 		Api::init();
+		BuilderApi::init();
 	}
 
 	public function addon_activation_hook() {
@@ -66,4 +67,3 @@ final class Certificates implements AddonInterface {
 		\Academy\Helper::flush_rewrite_rules();
 	}
 }
-

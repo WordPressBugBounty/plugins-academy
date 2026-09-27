@@ -1,5 +1,5 @@
 <?php
-namespace  Academy\Frontend\Template;
+namespace Academy\Frontend\Template;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -16,6 +16,10 @@ class Loader {
 		} else {
 			add_filter( 'template_include', array( $self, 'template_loader' ) );
 			add_filter( 'body_class', array( $self, 'add_body_custom_class' ) );
+			// Classic themes can opt in to block templates for course pages;
+			// the choice is read per request, after the theme has loaded.
+			Block::init();
+			ClassicBlockTemplate::init();
 		}
 		add_filter( 'template_include', array( $self, 'load_course_curriculums_template' ), 99 );
 		add_filter( 'template_include', array( $self, 'load_author_profile_template' ) );
@@ -155,10 +159,12 @@ class Loader {
 				return trailingslashit( $dir ) . 'single-course-reviews.php';
 			}
 		}
+
+		return $template;
 	}
 
 	public function load_course_curriculums_template( $template ) {
-		if ( ( ! empty( get_query_var( 'name' ) ) && ! empty( get_query_var( 'curriculum_type' ) ) ) || get_query_var( 'post_type' ) === 'academy_courses' && ( 'curriculums' === get_query_var( 'source' ) || 'lessons' === get_query_var( 'source' ) ) ) {
+		if ( ( ! empty( get_query_var( 'name' ) ) && ! empty( get_query_var( 'curriculum_type' ) ) ) || ( get_query_var( 'post_type' ) === 'academy_courses' && ( 'curriculums' === get_query_var( 'source' ) || 'lessons' === get_query_var( 'source' ) ) ) ) {
 			return \Academy\Helper::plugin_path() . 'templates/single-course-curriculums.php';
 		}
 		return $template;

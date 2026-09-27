@@ -62,5 +62,4 @@ class Withdraw extends AbstractAjaxHandler {
 		wp_send_json_error( [ 'message' => esc_html__( 'Failed to update withdraw status', 'academy' ) ] );
 		wp_die();
 	}
-
 }
