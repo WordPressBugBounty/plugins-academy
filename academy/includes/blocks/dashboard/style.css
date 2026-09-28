@@ -217,15 +217,6 @@
 	white-space: nowrap;
 }
 
-.academy-dash-user__label {
-	padding: 6px 8px 2px;
-	font-size: 11px;
-	font-weight: 600;
-	letter-spacing: 0.05em;
-	text-transform: uppercase;
-	color: var(--academy-description-color);
-}
-
 .academy-dash-user__item {
 	display: flex;
 	align-items: center;
@@ -251,10 +242,6 @@
 .academy-dash-user__item i::before {
 	font-size: 16px;
 	color: currentColor;
-}
-
-.academy-dash-user__check {
-	margin-left: auto;
 }
 
 .academy-dash-user__menu hr {
@@ -290,6 +277,20 @@
 	justify-content: center;
 }
 
+/* The view tabs sit inside the frame's own padding. */
+.academy-dash-sidebar .academy-dashboard-view-tabs {
+	margin: 4px 12px 0;
+}
+
+.academy-dash.is-collapsed .academy-dash-sidebar .academy-dashboard-view-tabs {
+	flex-direction: column;
+	margin: 4px 8px 0;
+}
+
+.academy-dash.is-collapsed .academy-dashboard-view-tabs__label {
+	display: none;
+}
+
 .academy-dash.is-collapsed .academy-dash-user__toggle {
 	justify-content: center;
 }
@@ -316,10 +317,6 @@
 	align-items: center;
 	gap: 8px;
 	min-width: 0;
-}
-
-.academy-dash-topbar__end .academy-dashboard-theme-toggle {
-	margin: 0;
 }
 
 .academy-dash-topbar__title {

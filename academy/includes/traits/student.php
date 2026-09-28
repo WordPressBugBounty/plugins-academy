@@ -156,9 +156,15 @@ trait Student {
 							'status'               => $status,
 							'drip_content_enabled' => $course_data[ $cid ]['drip_content_enabled'],
 							'drip_content_type'    => $course_data[ $cid ]['drip_content_type'],
+							// See the matching comment in enrolled-courses.php —
+							// empty for a normal enrollment, filled in by
+							// academy-pro's WooCommerce Subscriptions addon for
+							// a subscription-linked course, so an admin managing
+							// this student's access can see it here too.
+							'access_note'          => apply_filters( 'academy/templates/frontend-dashboard/course_access_note', '', $cid, $student_id ),
 						];
 					}
-				}
+				}//end foreach
 			}//end if
 			$student->enrolled_courses = $enrolled_courses;
 

@@ -1,3 +1,30 @@
+/* The empty/login-required states reuse the [academy_enrolled_courses]
+ * shortcode's shared markup and CSS classes (.academy-empty-state__message,
+ * .academy-message), which set their own explicit text color for the plain
+ * shortcode context. A directly-targeted color rule always wins over an
+ * inherited value regardless of specificity, so the block's "Color" support
+ * (an inline style on the wrapper) never reached that text. Scoped to this
+ * block only, so the shortcode's own styling elsewhere is untouched.
+ */
+.wp-block-academy-enrolled-courses .academy-empty-state__message,
+.wp-block-academy-enrolled-courses .academy-message {
+	color: inherit;
+}
+
+/* CSS's own default: an element's border-color, when nothing sets it, is
+ * currentColor — i.e. it silently tracks whatever `color` (text color) ends
+ * up on the wrapper. The block's border supports (__experimentalBorder) let
+ * someone set width/radius/style without ever touching border color, so this
+ * default was the only thing painting the border — meaning picking a
+ * Typography text color visibly "recolored" the border as a side effect.
+ * Giving it its own explicit fallback breaks that accidental coupling; WP
+ * core's own border-color inline style (from the Border & Shadow panel) is
+ * more specific and still wins whenever someone actually sets one.
+ */
+.wp-block-academy-enrolled-courses {
+	border-color: var(--academy-border-color, #e3e6ee);
+}
+
 /* Enrolled Courses, "Progress" style: one card per course with how far along it is. */
 .wp-block-academy-enrolled-courses.is-style-progress {
 	--academy-enrolled-accent: var(--academy-primary-color, #7b68ee);

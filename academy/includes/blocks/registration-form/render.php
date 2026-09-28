@@ -50,7 +50,12 @@ $academy_submit = '' !== trim( (string) $attributes['submitLabel'] )
 	? $attributes['submitLabel']
 	: ( 'instructor' === $academy_role ? __( 'Register as Instructor', 'academy' ) : __( 'Register as Student', 'academy' ) );
 
-$academy_wrapper = get_block_wrapper_attributes( [ 'class' => 'academy-reg-block' ] );
+$academy_wrapper = get_block_wrapper_attributes(
+	[
+		'class' => 'academy-reg-block',
+		'style' => \Academy\Blocks::academy_colors_style( $attributes ),
+	]
+);
 ?>
 <div <?php echo $academy_wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php do_action( 'academy/templates/before_' . $academy_role . '_reg_form' ); ?>

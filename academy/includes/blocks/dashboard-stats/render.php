@@ -28,7 +28,7 @@ $academy_style   = in_array( $attributes['cardStyle'] ?? 'card', [ 'card', 'soft
 $academy_wrapper = get_block_wrapper_attributes(
 	[
 		'class' => 'academy-dash-stats is-style-' . $academy_style . ( empty( $attributes['showIcons'] ) ? ' has-no-icons' : '' ),
-		'style' => '--academy-dash-stats-columns:' . $academy_columns . ';',
+		'style' => '--academy-dash-stats-columns:' . $academy_columns . ';' . \Academy\Blocks::academy_colors_style( $attributes ),
 	]
 );
 ?>

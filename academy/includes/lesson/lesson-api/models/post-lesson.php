@@ -109,7 +109,7 @@ class PostLesson extends Base\Lesson {
 				),
 				ARRAY_A
 			);
-			$ins->set_data( array_intersect_key( $data, $ins->data ) );
+			$ins->load_stored_data( array_intersect_key( $data, $ins->data ) );
 			$ins->set_meta_data( is_array( $meta_data ) ? array_column( $meta_data, 'meta_value', 'meta_key' ) : [] );
 			return $ins;
 		}

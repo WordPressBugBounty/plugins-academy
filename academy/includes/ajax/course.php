@@ -584,8 +584,10 @@ class Course extends AbstractAjaxHandler {
 		], $payload_data );
 
 		$course_id = (int) $payload['course_id'];
-		// Only a published course takes enrollments from this endpoint.
-		if ( 'academy_courses' !== get_post_type( $course_id ) || 'publish' !== get_post_status( $course_id ) ) {
+		// Only a published course takes enrollments from this endpoint. Addons
+		// that enroll through it (e.g. free course bundles) add their post type.
+		$enrollable_post_types = apply_filters( 'academy/enroll_course_post_types', array( 'academy_courses' ) );
+		if ( ! in_array( get_post_type( $course_id ), $enrollable_post_types, true ) || 'publish' !== get_post_status( $course_id ) ) {
 			wp_send_json_error( __( 'This course is not available for enrollment.', 'academy' ) );
 		}
 		$course_type = \Academy\Helper::get_course_type( $course_id );
@@ -774,6 +776,10 @@ class Course extends AbstractAjaxHandler {
 			$analytics_data = \Academy\Helper::prepare_analytics_for_user( $student_id, $course_id );
 			$analytics_data['title'] = get_the_title( $course_id );
 			$analytics_data['course_link'] = get_post_permalink( $course_id );
+			// See the matching comment in enrolled-courses.php — empty for a
+			// normal enrollment, filled in by academy-pro's WooCommerce
+			// Subscriptions addon for a subscription-linked course.
+			$analytics_data['access_note'] = apply_filters( 'academy/templates/frontend-dashboard/course_access_note', '', $course_id, $student_id );
 			$response['enrolled_info'][] = $analytics_data;
 		}
 		wp_send_json_success(

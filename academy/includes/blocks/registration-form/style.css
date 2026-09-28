@@ -81,7 +81,10 @@
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 1.4;
-	color: var(--academy-heading-color, #101828);
+	/* --academy-text-color-black is only set (to currentColor) when this
+	   block's own Typography color is chosen; otherwise it's unset and falls
+	   through to the existing sitewide default, unchanged. */
+	color: var(--academy-text-color-black, var(--academy-heading-color, #101828));
 }
 
 .academy-reg-form__required {

@@ -36,7 +36,12 @@ $academy_classes  = 'academy-form-group academy-reg-form__field academy-reg-form
 $academy_group    = in_array( $academy_type, [ 'radio', 'checkbox' ], true ) && ( 'radio' === $academy_type || count( $academy_field['options'] ) > 0 );
 
 $academy_star     = $academy_required ? ' <span class="academy-reg-form__required" aria-hidden="true">*</span>' : '';
-$academy_wrapper  = get_block_wrapper_attributes( [ 'class' => $academy_classes ] );
+$academy_wrapper  = get_block_wrapper_attributes(
+	[
+		'class' => $academy_classes,
+		'style' => \Academy\Blocks::academy_colors_style( $attributes ),
+	]
+);
 ?>
 <div <?php echo $academy_wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php if ( $academy_group ) : ?>

@@ -284,38 +284,23 @@ class SeederData {
 				'correctAnswer' => 'img_ui',
 			],
 			[
-				'question'      => __( 'Match each language to where it runs.', 'academy' ),
-				'slug'          => 'matching',
+				'question'      => __( 'Which language usually runs on the server?', 'academy' ),
+				'slug'          => 'dropDown',
 				'options'       => [
-					[
-						'text' => __( 'JavaScript', 'academy' ),
-						'slug' => 'match_js'
-					],
 					[
 						'text' => __( 'PHP', 'academy' ),
-						'slug' => 'match_php'
+						'slug' => 'dd_php'
+					],
+					[
+						'text' => __( 'CSS', 'academy' ),
+						'slug' => 'dd_css'
+					],
+					[
+						'text' => __( 'HTML', 'academy' ),
+						'slug' => 'dd_html'
 					],
 				],
-				'correctAnswer' => [ 'match_js', 'match_php' ],
-			],
-			[
-				'question'      => __( 'Order the steps of a typical request lifecycle.', 'academy' ),
-				'slug'          => 'ordering',
-				'options'       => [
-					[
-						'text' => __( 'Browser sends request', 'academy' ),
-						'slug' => 'ord_1'
-					],
-					[
-						'text' => __( 'Server processes it', 'academy' ),
-						'slug' => 'ord_2'
-					],
-					[
-						'text' => __( 'Response is rendered', 'academy' ),
-						'slug' => 'ord_3'
-					],
-				],
-				'correctAnswer' => [ 'ord_1', 'ord_2', 'ord_3' ],
+				'correctAnswer' => 'dd_php',
 			],
 		];
 	}

@@ -78,6 +78,19 @@ if ( $course_expired_date ) {
 		'value' => $course_expired_date,
 	];
 }
+
+// See the matching comment in enrolled-courses.php — empty unless the
+// current viewer is enrolled via a WooCommerce Subscription (academy-pro).
+$access_note = get_current_user_id() && ! empty( $course_id )
+	? apply_filters( 'academy/templates/frontend-dashboard/course_access_note', '', $course_id, get_current_user_id() )
+	: '';
+if ( $access_note ) {
+	$items[] = [
+		'icon'  => 'academy-icon--clock',
+		'label' => __( 'Access', 'academy' ),
+		'value' => $access_note,
+	];
+}
 ?>
 
 <div class="academy-widget-enroll__content">

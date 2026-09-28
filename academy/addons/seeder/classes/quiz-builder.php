@@ -119,7 +119,8 @@ class QuizBuilder {
 			'question_content'        => '',
 			'question_explanation'    => '',
 			'question_status'         => 'publish',
-			'question_level'          => '',
+			// Cycle the levels so the "Question Level" dropdown has a real value.
+			'question_level'          => [ 'low', 'medium', 'high' ][ $order % 3 ],
 			'question_type'           => $type,
 			'question_score'          => 1.0,
 			'question_negative_score' => 0,

@@ -79,6 +79,16 @@ if ( ! empty( $pending_enrolled_courses ) ) :
 							<div class="academy-course__meta-item"> <?php echo esc_html__( 'Completed Topics:', 'academy' ); ?><span><?php echo esc_html( $total_completed_topics . '/' . $total_topics ); ?></span>
 							</div>
 						</div>
+						<?php
+						// See the matching comment in enrolled-courses.php.
+						$access_note = apply_filters( 'academy/templates/frontend-dashboard/course_access_note', '', $course_id, get_current_user_id() );
+						if ( $access_note ) :
+							?>
+							<div class="academy-course__access-note">
+								<i class="academy-icon academy-icon--clock" aria-hidden="true"></i>
+								<?php echo esc_html( $access_note ); ?>
+							</div>
+						<?php endif; ?>
 						<div class="academy-progress-wrap">
 							<div class="academy-progress">
 								<div class="academy-progress-bar" style="width: <?php echo esc_attr( $percentage ) . '%'; ?>;">

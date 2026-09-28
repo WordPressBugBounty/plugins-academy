@@ -27,6 +27,17 @@
 	font: inherit;
 }
 
+/* `color: inherit` above covers text actually typed into the field, but
+ * browsers give ::placeholder its own default muted-gray color regardless —
+ * it never picks up the input's own `color`. Without this, the block's
+ * Typography "Color" control had no visible effect on the placeholder text.
+ * Dimmed via opacity (not a fixed gray) so it still reads as a placeholder
+ * rather than looking like real entered text, whatever color is chosen. */
+.academy-course-search__input::placeholder {
+	color: inherit;
+	opacity: 0.6;
+}
+
 .academy-course-search__button {
 	flex: none;
 }

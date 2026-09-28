@@ -2,30 +2,21 @@
 # This file is distributed under the GPL-3.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Academy LMS 4.0.0\n"
+"Project-Id-Version: Academy LMS – AI Course Builder, Quizzes, Certificates & eLearning 4.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/academy\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-27T16:14:11+00:00\n"
+"POT-Creation-Date: 2026-09-28T14:43:36+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: academy\n"
 
 #. Plugin Name of the plugin
-#. Author of the plugin
 #: academy.php
-#: includes/admin/menu.php:128
-#: includes/blocks.php:140
-#: includes/blocks.php:474
-#: includes/customizer/register.php:10
-#: dev_academy/containers/About/Index.js:113
-#: dev_academy/containers/setup/SetupLayout.js:22
-#: dev_academy/containers/WhatsNew/Components/Header.js:25
-#: dev_academy/containers/WhatsNew/Components/Header.js:40
-msgid "Academy LMS"
+msgid "Academy LMS – AI Course Builder, Quizzes, Certificates & eLearning"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -37,6 +28,19 @@ msgstr ""
 #. Description of the plugin
 #: academy.php
 msgid "Share your knowledge by launching an online course."
+msgstr ""
+
+#. Author of the plugin
+#: academy.php
+#: includes/admin/menu.php:128
+#: includes/blocks.php:140
+#: includes/blocks.php:474
+#: includes/customizer/register.php:10
+#: dev_academy/containers/About/Index.js:113
+#: dev_academy/containers/setup/SetupLayout.js:22
+#: dev_academy/containers/WhatsNew/Components/Header.js:25
+#: dev_academy/containers/WhatsNew/Components/Header.js:40
+msgid "Academy LMS"
 msgstr ""
 
 #: addons/certificates/ajax/font-downloader.php:38
@@ -103,13 +107,13 @@ msgid "This course does not have a certificate enabled."
 msgstr ""
 
 #. translators: %d: preset number.
-#: addons/certificates/assets.php:152
+#: addons/certificates/assets.php:171
 #, php-format
 msgid "Landscape %d"
 msgstr ""
 
 #. translators: %d: preset number.
-#: addons/certificates/assets.php:152
+#: addons/certificates/assets.php:171
 #, php-format
 msgid "Portrait %d"
 msgstr ""
@@ -844,7 +848,7 @@ msgstr ""
 #: addons/quizzes/api/schema/quiz-question-schema.php:305
 #: includes/api/course.php:201
 #: includes/api/question-answer.php:144
-#: includes/api/schema/lesson-schema.php:268
+#: includes/api/schema/lesson-schema.php:284
 msgid "Current page of the collection."
 msgstr ""
 
@@ -853,7 +857,7 @@ msgstr ""
 #: addons/quizzes/api/schema/quiz-attempts-schema.php:165
 #: addons/quizzes/api/schema/quiz-question-schema.php:313
 #: includes/api/question-answer.php:152
-#: includes/api/schema/lesson-schema.php:276
+#: includes/api/schema/lesson-schema.php:292
 msgid "Maximum number of items to be returned in result set."
 msgstr ""
 
@@ -862,7 +866,7 @@ msgstr ""
 #: addons/quizzes/api/schema/quiz-attempts-schema.php:186
 #: addons/quizzes/api/schema/quiz-question-schema.php:322
 #: includes/api/question-answer.php:179
-#: includes/api/schema/lesson-schema.php:303
+#: includes/api/schema/lesson-schema.php:319
 msgid "Limit results to those matching a string."
 msgstr ""
 
@@ -909,7 +913,7 @@ msgid "Unique identifier for the quiz attempt."
 msgstr ""
 
 #: addons/quizzes/api/schema/quiz-attempts-schema.php:35
-#: includes/functions.php:1370
+#: includes/functions.php:1371
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/attempt-table.js:45
 #: dev_academy/containers/frontend-curriculums/QuizPressQuizContent/AttemptDetails.js:76
 msgid "Total Questions"
@@ -1209,12 +1213,11 @@ msgid "Which language runs in the browser?"
 msgstr ""
 
 #: addons/seeder/classes/seeder-data.php:216
-#: addons/seeder/classes/seeder-data.php:295
+#: addons/seeder/classes/seeder-data.php:291
 msgid "PHP"
 msgstr ""
 
 #: addons/seeder/classes/seeder-data.php:220
-#: addons/seeder/classes/seeder-data.php:291
 msgid "JavaScript"
 msgstr ""
 
@@ -1231,10 +1234,12 @@ msgid "Select all front-end technologies."
 msgstr ""
 
 #: addons/seeder/classes/seeder-data.php:239
+#: addons/seeder/classes/seeder-data.php:299
 msgid "HTML"
 msgstr ""
 
 #: addons/seeder/classes/seeder-data.php:243
+#: addons/seeder/classes/seeder-data.php:295
 msgid "CSS"
 msgstr ""
 
@@ -1267,26 +1272,10 @@ msgid "Database"
 msgstr ""
 
 #: addons/seeder/classes/seeder-data.php:287
-msgid "Match each language to where it runs."
+msgid "Which language usually runs on the server?"
 msgstr ""
 
-#: addons/seeder/classes/seeder-data.php:302
-msgid "Order the steps of a typical request lifecycle."
-msgstr ""
-
-#: addons/seeder/classes/seeder-data.php:306
-msgid "Browser sends request"
-msgstr ""
-
-#: addons/seeder/classes/seeder-data.php:310
-msgid "Server processes it"
-msgstr ""
-
-#: addons/seeder/classes/seeder-data.php:314
-msgid "Response is rendered"
-msgstr ""
-
-#: addons/seeder/classes/seeder-data.php:432
+#: addons/seeder/classes/seeder-data.php:417
 msgid "Sample Course Banner"
 msgstr ""
 
@@ -1317,23 +1306,23 @@ msgstr ""
 msgid " #%d"
 msgstr ""
 
-#: addons/seeder/providers/course-provider.php:272
+#: addons/seeder/providers/course-provider.php:291
 msgid "Source files, slides and cheat-sheets."
 msgstr ""
 
-#: addons/seeder/providers/course-provider.php:273
+#: addons/seeder/providers/course-provider.php:292
 msgid "Beginners who want a hands-on introduction."
 msgstr ""
 
-#: addons/seeder/providers/course-provider.php:274
+#: addons/seeder/providers/course-provider.php:293
 msgid "A computer and an internet connection."
 msgstr ""
 
-#: addons/seeder/providers/course-provider.php:275
+#: addons/seeder/providers/course-provider.php:294
 msgid "Build real projects from scratch and understand the fundamentals."
 msgstr ""
 
-#: addons/seeder/providers/course-provider.php:277
+#: addons/seeder/providers/course-provider.php:296
 msgid "English"
 msgstr ""
 
@@ -1536,13 +1525,13 @@ msgid "Rate the plugin."
 msgstr ""
 
 #: includes/admin.php:136
-#: includes/blocks/dashboard-sidebar/render.php:81
+#: includes/blocks/dashboard-sidebar/render.php:63
 #: includes/helper.php:316
 #: includes/helper.php:1799
 #: templates/frontend-dashboard/pages/withdrawal.php:27
-#: templates/frontend-dashboard/sidebar.php:70
-#: dev_academy/blocks/card-extras.js:36
-#: dev_academy/blocks/card-extras.js:65
+#: templates/frontend-dashboard/sidebar.php:46
+#: dev_academy/blocks/card-extras.js:35
+#: dev_academy/blocks/card-extras.js:64
 #: dev_academy/blocks/course-enroll-button.js:18
 #: dev_academy/blocks/course-instructors.js:16
 #: dev_academy/blocks/course-rating.js:28
@@ -1557,7 +1546,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/settings/index.js:1442
 #: dev_academy/containers/Courses/new-course/CourseFormInner.js:59
 #: dev_academy/containers/Courses/new-course/index.js:375
-#: dev_academy/containers/Quizzes/QuizForm/index.js:37
+#: dev_academy/containers/Quizzes/QuizForm/index.js:36
 #: dev_academy/containers/Quizzes/QuizForm/Steps.js:9
 msgid "Settings"
 msgstr ""
@@ -1581,7 +1570,7 @@ msgid "Sell courses with a full commerce engine — carts, checkout, orders and 
 msgstr ""
 
 #: includes/admin/integrations.php:52
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:222
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:227
 msgid "GameEngine"
 msgstr ""
 
@@ -1614,7 +1603,7 @@ msgid "Social login, reCAPTCHA and brute-force login protection for your site."
 msgstr ""
 
 #: includes/admin/integrations.php:99
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:57
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:58
 #: dev_academy/containers/frontend-curriculums/ContentTabs/ContentHeader.js:16
 msgid "QuizPress"
 msgstr ""
@@ -1894,14 +1883,14 @@ msgstr ""
 
 #: includes/admin/settings/form-builder.php:23
 #: includes/admin/settings/form-builder.php:64
-#: includes/functions.php:1504
+#: includes/functions.php:1505
 #: includes/migration.php:243
 #: includes/migration.php:284
 #: includes/registration-forms.php:457
 #: templates/single-course/review-form.php:35
 #: dev_academy/blocks/registration-form.js:42
 #: dev_academy/blocks/registration-form.js:57
-#: dev_academy/blocks/registration-form.js:490
+#: dev_academy/blocks/registration-form.js:502
 #: dev_academy/components/RegistrationForm/index.js:185
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/tableListTabs/Tables/NewRegisteredStudentTable.js:20
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/tableListTabs/Tables/NewRegisteredTeachersTable.js:20
@@ -1936,7 +1925,7 @@ msgstr ""
 #: includes/shortcode/academy-login.php:20
 #: templates/single-course/password-protected.php:24
 #: dev_academy/blocks/registration-form.js:58
-#: dev_academy/blocks/registration-form.js:492
+#: dev_academy/blocks/registration-form.js:504
 #: dev_academy/components/RegistrationForm/index.js:202
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/helper.js:49
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/helper.js:119
@@ -2067,16 +2056,16 @@ msgid "%  Complete"
 msgstr ""
 
 #: includes/ajax/course.php:384
-#: templates/frontend-dashboard/pages/active-courses.php:101
-#: templates/frontend-dashboard/pages/completed-courses.php:103
-#: templates/frontend-dashboard/pages/enrolled-courses.php:103
+#: templates/frontend-dashboard/pages/active-courses.php:111
+#: templates/frontend-dashboard/pages/completed-courses.php:113
+#: templates/frontend-dashboard/pages/enrolled-courses.php:117
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempts-table/AttemptsCards.js:147
 #: dev_academy/containers/frontend-curriculums/QuizPressQuizContent/AttemptsList.js:80
 msgid "View Details"
 msgstr ""
 
 #: includes/ajax/course.php:402
-#: templates/frontend-dashboard/pages/active-courses.php:110
+#: templates/frontend-dashboard/pages/active-courses.php:120
 msgid "You have no active courses."
 msgstr ""
 
@@ -2097,154 +2086,154 @@ msgstr ""
 msgid "Hi, Welcome back!"
 msgstr ""
 
-#: includes/ajax/course.php:589
+#: includes/ajax/course.php:591
 #: includes/api/course.php:789
 msgid "This course is not available for enrollment."
 msgstr ""
 
-#: includes/ajax/course.php:599
+#: includes/ajax/course.php:601
 #: includes/api/course.php:829
 msgid "Successfully Enrolled."
 msgstr ""
 
-#: includes/ajax/course.php:601
+#: includes/ajax/course.php:603
 msgid "Failed to enrolled course."
 msgstr ""
 
-#: includes/ajax/course.php:613
+#: includes/ajax/course.php:615
 #: includes/api/course.php:359
 msgid "This course is not available."
 msgstr ""
 
-#: includes/ajax/course.php:616
+#: includes/ajax/course.php:618
 #: includes/api/course.php:367
 msgid "You are not enrolled in this course."
 msgstr ""
 
-#: includes/ajax/course.php:644
+#: includes/ajax/course.php:646
 #: includes/api/course.php:864
 msgid "To complete this course, please make sure that you have finished all the topics."
 msgstr ""
 
-#: includes/ajax/course.php:661
+#: includes/ajax/course.php:663
 #: includes/api/course.php:887
 msgid "You have already completed this course."
 msgstr ""
 
-#: includes/ajax/course.php:697
+#: includes/ajax/course.php:699
 #: includes/api/course.php:936
 msgid "Successfully Completed."
 msgstr ""
 
-#: includes/ajax/course.php:699
+#: includes/ajax/course.php:701
 #: includes/api/course.php:928
 msgid "Failed, try again."
 msgstr ""
 
-#: includes/ajax/course.php:746
+#: includes/ajax/course.php:748
 msgid "Successfully Updated Review."
 msgstr ""
 
-#: includes/ajax/course.php:756
+#: includes/ajax/course.php:758
 msgid "Successfully Added Review."
 msgstr ""
 
-#: includes/ajax/course.php:760
+#: includes/ajax/course.php:762
 msgid "Sorry, Failed to add review."
 msgstr ""
 
-#: includes/ajax/course.php:795
+#: includes/ajax/course.php:801
 #: includes/ajax/lesson.php:54
 msgid "Upload File is empty."
 msgstr ""
 
-#: includes/ajax/course.php:800
+#: includes/ajax/course.php:806
 #: includes/ajax/lesson.php:61
 msgid "Wrong File Format! Please import csv file."
 msgstr ""
 
-#: includes/ajax/course.php:875
+#: includes/ajax/course.php:881
 msgid "Empty Course data"
 msgstr ""
 
-#: includes/ajax/course.php:885
+#: includes/ajax/course.php:891
 msgid "Failed, Already Inserted the Course"
 msgstr ""
 
-#: includes/ajax/course.php:890
+#: includes/ajax/course.php:896
 msgid "Successfully Inserted the Course - "
 msgstr ""
 
-#: includes/ajax/course.php:890
+#: includes/ajax/course.php:896
 msgid "Sorry, Failed to Inserted the Course - "
 msgstr ""
 
-#: includes/ajax/course.php:912
+#: includes/ajax/course.php:918
 msgid "Successfully Inserted the Lesson - "
 msgstr ""
 
-#: includes/ajax/course.php:912
+#: includes/ajax/course.php:918
 msgid "Sorry, Already have the Lesson - "
 msgstr ""
 
-#: includes/ajax/course.php:924
+#: includes/ajax/course.php:930
 msgid "Successfully Inserted the Quiz - "
 msgstr ""
 
-#: includes/ajax/course.php:924
+#: includes/ajax/course.php:930
 msgid "Sorry, Already have the Quiz - "
 msgstr ""
 
-#: includes/ajax/course.php:930
+#: includes/ajax/course.php:936
 msgid "Successfully Inserted the Question - "
 msgstr ""
 
-#: includes/ajax/course.php:930
+#: includes/ajax/course.php:936
 msgid "Sorry, Already have the Question - "
 msgstr ""
 
-#: includes/ajax/course.php:947
+#: includes/ajax/course.php:953
 msgid "Successfully Inserted the Assignment - "
 msgstr ""
 
-#: includes/ajax/course.php:947
+#: includes/ajax/course.php:953
 msgid "Sorry, Already have the Assignment - "
 msgstr ""
 
-#: includes/ajax/course.php:1253
+#: includes/ajax/course.php:1259
 msgid "YouTube API Key is required."
 msgstr ""
 
-#: includes/ajax/course.php:1260
+#: includes/ajax/course.php:1266
 msgid "Failed to validate API key. Please try again."
 msgstr ""
 
-#: includes/ajax/course.php:1266
+#: includes/ajax/course.php:1272
 msgid "Invalid YouTube API Key."
 msgstr ""
 
-#: includes/ajax/course.php:1274
+#: includes/ajax/course.php:1280
 msgid "Successfully save your YouTube API Key."
 msgstr ""
 
-#: includes/ajax/course.php:1278
+#: includes/ajax/course.php:1284
 msgid "Successfully update your YouTube API Key."
 msgstr ""
 
-#: includes/ajax/course.php:1290
+#: includes/ajax/course.php:1296
 msgid "Playlist url field is required."
 msgstr ""
 
-#: includes/ajax/course.php:1298
+#: includes/ajax/course.php:1304
 msgid "Youtube API key is missing."
 msgstr ""
 
-#: includes/ajax/course.php:1304
-#: includes/ajax/course.php:1321
+#: includes/ajax/course.php:1310
+#: includes/ajax/course.php:1327
 msgid "Not a valid playlist url."
 msgstr ""
 
-#: includes/ajax/course.php:1315
+#: includes/ajax/course.php:1321
 msgid "Course Created!"
 msgstr ""
 
@@ -2715,7 +2704,7 @@ msgid "Course id is missing"
 msgstr ""
 
 #: includes/api/question-answer.php:167
-#: includes/api/schema/lesson-schema.php:297
+#: includes/api/schema/lesson-schema.php:313
 msgid "Query by author id"
 msgstr ""
 
@@ -2796,11 +2785,11 @@ msgstr ""
 msgid "Lesson Meta."
 msgstr ""
 
-#: includes/api/schema/lesson-schema.php:285
+#: includes/api/schema/lesson-schema.php:301
 msgid "Get attempts by quiz_id"
 msgstr ""
 
-#: includes/api/schema/lesson-schema.php:291
+#: includes/api/schema/lesson-schema.php:307
 msgid "Current User already enrolled or not by course_id"
 msgstr ""
 
@@ -2952,8 +2941,8 @@ msgstr ""
 
 #: includes/blocks/course-badge/render.php:18
 #: templates/loop/header.php:18
-#: dev_academy/blocks/card-extras.js:41
-#: dev_academy/blocks/card-extras.js:48
+#: dev_academy/blocks/card-extras.js:40
+#: dev_academy/blocks/card-extras.js:47
 msgid "Featured"
 msgstr ""
 
@@ -2968,7 +2957,7 @@ msgstr[1] ""
 
 #: includes/blocks/course-data.php:330
 #: includes/blocks/course-filters.php:144
-#: includes/functions.php:921
+#: includes/functions.php:922
 #: templates/loop/price.php:14
 #: templates/shortcode/academy-enroll-form/paid-membership-pro.php:8
 #: templates/shortcode/academy-enroll-form/restrict-content-pro.php:7
@@ -2982,13 +2971,13 @@ msgstr ""
 #: templates/loop/price.php:16
 #: templates/single-course/enroll/continue.php:30
 #: templates/single-course/enroll/pricing.php:19
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:209
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:216
 msgid "Public"
 msgstr ""
 
 #: includes/blocks/course-data.php:334
 #: includes/blocks/course-filters.php:143
-#: includes/functions.php:920
+#: includes/functions.php:921
 #: templates/loop/price.php:18
 #: templates/single-course/enroll/continue.php:26
 #: templates/single-course/enroll/pricing.php:21
@@ -3008,7 +2997,7 @@ msgstr ""
 
 #: includes/blocks/course-enroll-button/render.php:89
 #: includes/blocks/enrolled-courses/render.php:116
-#: includes/frontend-dashboard/dashboard.php:597
+#: includes/frontend-dashboard/dashboard.php:550
 #: templates/loop/footer-form.php:80
 #: templates/shortcode/academy-enroll-form/start-course.php:49
 #: dev_academy/blocks/course-enroll-button.js:60
@@ -3065,16 +3054,16 @@ msgid "Custom order"
 msgstr ""
 
 #: includes/blocks/course-filters.php:126
-#: includes/functions.php:899
+#: includes/functions.php:900
 #: includes/traits/courses.php:1756
 #: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/General/index.js:26
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:592
-#: dev_academy/containers/Quizzes/QuizForm/QuestionReuse.js:83
+#: dev_academy/containers/Quizzes/QuizForm/QuestionReuse.js:97
 msgid "All Levels"
 msgstr ""
 
 #: includes/blocks/course-filters.php:127
-#: includes/functions.php:900
+#: includes/functions.php:901
 #: includes/traits/courses.php:1757
 #: dev_academy/blocks/shared/use-course.js:17
 #: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/General/index.js:30
@@ -3082,7 +3071,7 @@ msgid "Beginner"
 msgstr ""
 
 #: includes/blocks/course-filters.php:128
-#: includes/functions.php:901
+#: includes/functions.php:902
 #: includes/traits/courses.php:1758
 #: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/General/index.js:34
 msgid "Intermediate"
@@ -3139,7 +3128,7 @@ msgstr ""
 #: dev_academy/components/PaidProductSelect/storeProduct/Forms/CustomForm.js:55
 #: dev_academy/components/PaidProductSelect/storeProduct/Forms/CustomForm.js:61
 #: dev_academy/components/PaidProductSelect/storeProduct/Forms/PredefinedForm.js:13
-#: dev_academy/containers/Courses/CoursesTable.js:662
+#: dev_academy/containers/Courses/CoursesTable.js:663
 #: dev_academy/containers/Courses/new-course/Sections/CourseType/CourseTypeBox.js:157
 #: dev_academy/containers/Courses/new-course/Sections/CourseType/PriceSection.js:178
 msgid "Price"
@@ -3223,7 +3212,7 @@ msgstr ""
 
 #: includes/blocks/course-wishlist/render.php:21
 #: templates/single-course/enroll/wishlist-and-share.php:30
-#: dev_academy/blocks/card-extras.js:81
+#: dev_academy/blocks/card-extras.js:80
 msgid "WishList"
 msgstr ""
 
@@ -3232,7 +3221,7 @@ msgid "Remove from wishlist"
 msgstr ""
 
 #: includes/blocks/course-wishlist/render.php:27
-#: dev_academy/blocks/card-extras.js:76
+#: dev_academy/blocks/card-extras.js:75
 msgid "Add to wishlist"
 msgstr ""
 
@@ -3253,30 +3242,29 @@ msgid "Dashboard"
 msgstr ""
 
 #: includes/blocks/dashboard-sidebar/render.php:62
-#: templates/frontend-dashboard/sidebar.php:45
-#: dev_academy/containers/About/WhatsNew/sections/Dashboards.js:142
-msgid "Viewing as"
-msgstr ""
-
-#: includes/blocks/dashboard-sidebar/render.php:80
 #: templates/frontend-dashboard/pages/reset-password.php:7
 #: templates/frontend-dashboard/pages/settings.php:6
 #: templates/frontend-dashboard/pages/withdraw.php:9
-#: templates/frontend-dashboard/sidebar.php:64
+#: templates/frontend-dashboard/sidebar.php:40
 msgid "Profile"
 msgstr ""
 
-#: includes/blocks/dashboard-sidebar/render.php:82
+#: includes/blocks/dashboard-sidebar/render.php:64
 msgid "Log out"
 msgstr ""
 
-#: includes/blocks/dashboard-sidebar/render.php:92
-#: includes/blocks/dashboard-sidebar/render.php:93
+#: includes/blocks/dashboard-sidebar/render.php:74
+#: includes/blocks/dashboard-sidebar/render.php:75
 msgid "Collapse the menu"
 msgstr ""
 
-#: includes/blocks/dashboard-sidebar/render.php:97
+#: includes/blocks/dashboard-sidebar/render.php:79
 msgid "Close the menu"
+msgstr ""
+
+#: includes/blocks/dashboard-sidebar/render.php:85
+#: templates/frontend-dashboard/sidebar.php:68
+msgid "Dashboard view"
 msgstr ""
 
 #: includes/blocks/dashboard-topbar/render.php:34
@@ -3307,7 +3295,7 @@ msgstr ""
 #: includes/blocks/learn-footer/render.php:87
 #: includes/classes/student-progress-export.php:89
 #: includes/frontend-dashboard/settings.php:93
-#: includes/functions.php:1336
+#: includes/functions.php:1337
 #: includes/learn-page/state.php:110
 #: includes/learn-page/state.php:121
 #: templates/frontend-dashboard/pages/guardian.php:37
@@ -3369,24 +3357,24 @@ msgstr ""
 msgid "Enrolled %s"
 msgstr ""
 
-#: includes/blocks/form-field/render.php:92
-#: dev_academy/blocks/registration-form.js:281
+#: includes/blocks/form-field/render.php:97
+#: dev_academy/blocks/registration-form.js:293
 msgid "Choose…"
 msgstr ""
 
-#: includes/blocks/form-field/render.php:111
+#: includes/blocks/form-field/render.php:116
 msgid "Show password"
 msgstr ""
 
 #: includes/blocks/learn-content/render.php:25
 #: includes/database.php:529
 #: dev_academy/containers/AttachmentDownloads/DownloadsTable.js:50
-#: dev_academy/containers/Courses/CoursesTable.js:441
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:36
+#: dev_academy/containers/Courses/CoursesTable.js:442
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:37
 #: dev_academy/containers/frontend-curriculums/ContentTabs/ContentHeader.js:13
 #: dev_academy/containers/frontend-curriculums/TopicsSidebar/meta.js:44
 #: dev_academy/containers/frontend-curriculums/TopicsSidebar/meta.js:56
-#: dev_academy/containers/Lesson/LessonModal/index.js:182
+#: dev_academy/containers/Lesson/LessonModal/index.js:200
 msgid "Lesson"
 msgstr ""
 
@@ -3396,8 +3384,8 @@ msgstr ""
 #: templates/curriculums/quiz/quiz-start-before-attempt.php:20
 #: templates/frontend-dashboard/pages/grades.php:105
 #: dev_academy/containers/backend-dashboard/pages/academy/StudentDetailsModal/QuizAnswers/index.js:150
-#: dev_academy/containers/Courses/CoursesTable.js:455
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:44
+#: dev_academy/containers/Courses/CoursesTable.js:456
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:45
 #: dev_academy/containers/frontend-curriculums/ContentTabs/ContentHeader.js:14
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempts/index.js:44
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/QuizStart.js:28
@@ -3410,8 +3398,8 @@ msgstr ""
 
 #: includes/blocks/learn-content/render.php:28
 #: dev_academy/containers/AttachmentDownloads/DownloadsTable.js:51
-#: dev_academy/containers/Courses/CoursesTable.js:469
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:73
+#: dev_academy/containers/Courses/CoursesTable.js:470
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:74
 #: dev_academy/containers/frontend-curriculums/ContentTabs/ContentHeader.js:19
 #: dev_academy/containers/frontend-curriculums/TopicsSidebar/meta.js:50
 msgid "Assignment"
@@ -3425,8 +3413,8 @@ msgstr ""
 #: includes/blocks/learn-content/render.php:31
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:1352
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:1449
-#: dev_academy/containers/Courses/CoursesTable.js:497
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:99
+#: dev_academy/containers/Courses/CoursesTable.js:498
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:100
 #: dev_academy/containers/frontend-curriculums/TopicsSidebar/meta.js:54
 msgid "Booking"
 msgstr ""
@@ -3438,7 +3426,7 @@ msgid "%1$s %2$d of %3$d"
 msgstr ""
 
 #: includes/blocks/learn-content/render.php:66
-#: dev_academy/containers/Courses/CoursesTable.js:637
+#: dev_academy/containers/Courses/CoursesTable.js:638
 msgid "Topic"
 msgid_plural "Topics"
 msgstr[0] ""
@@ -3466,9 +3454,9 @@ msgstr ""
 
 #: includes/blocks/learn-content/render.php:90
 #: includes/blocks/learn-content/render.php:101
-#: includes/blocks/registration-form/render.php:82
+#: includes/blocks/registration-form/render.php:87
 #: templates/curriculums/content.php:19
-#: dev_academy/blocks/registration-form.js:209
+#: dev_academy/blocks/registration-form.js:221
 msgid "Log in"
 msgstr ""
 
@@ -3513,7 +3501,7 @@ msgstr ""
 #. translators: %d: percent of the course completed.
 #. translators: %d: course completion percentage
 #: includes/blocks/learn-curriculum/render.php:110
-#: includes/frontend-dashboard/dashboard.php:623
+#: includes/frontend-dashboard/dashboard.php:576
 #: includes/learn-page/state.php:84
 #: includes/learn-page/state.php:123
 #: templates/frontend-dashboard/pages/grades.php:59
@@ -3603,9 +3591,9 @@ msgstr ""
 #: templates/curriculums/course-learnpage.php:153
 #: templates/curriculums/topbar.php:52
 #: dev_academy/containers/Announcement/index.js:70
-#: dev_academy/containers/Announcement/index.js:87
-#: dev_academy/containers/Announcement/index.js:92
-#: dev_academy/containers/Announcement/index.js:95
+#: dev_academy/containers/Announcement/index.js:97
+#: dev_academy/containers/Announcement/index.js:102
+#: dev_academy/containers/Announcement/index.js:105
 #: dev_academy/containers/backend-dashboard/pages/design/learn.js:13
 #: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/General/index.js:70
 #: dev_academy/containers/frontend-curriculums/Topbar/index.js:284
@@ -3633,7 +3621,7 @@ msgstr ""
 #: dev_academy/containers/frontend-curriculums/LearnDrawer/index.js:90
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/ResumeAttempt/index.js:32
 #: dev_academy/containers/Quizzes/QuestionForm/index.js:162
-#: dev_academy/utils/helper.js:951
+#: dev_academy/utils/helper.js:964
 msgid "Close"
 msgstr ""
 
@@ -3684,8 +3672,6 @@ msgstr ""
 
 #: includes/blocks/learn-topbar/render.php:200
 #: includes/blocks/learn-topbar/render.php:201
-#: includes/frontend-dashboard/dashboard.php:450
-#: includes/frontend-dashboard/dashboard.php:451
 #: dev_academy/containers/About/Index.js:158
 #: dev_academy/containers/About/WhatsNew/sections/Dashboards.js:88
 msgid "Dark mode"
@@ -3734,8 +3720,8 @@ msgstr ""
 msgid "Browse all courses"
 msgstr ""
 
-#: includes/blocks/registration-form/render.php:81
-#: dev_academy/blocks/registration-form.js:209
+#: includes/blocks/registration-form/render.php:86
+#: dev_academy/blocks/registration-form.js:221
 msgid "Already have an account?"
 msgstr ""
 
@@ -3783,7 +3769,8 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/CourseInstructorsTable.js:41
 #: dev_academy/containers/backend-dashboard/pages/academy/DashboardTabs.js:22
 #: dev_academy/containers/backend-dashboard/pages/academy/StudentDetailsModal/index.js:20
-#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:59
+#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:86
+#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:87
 #: dev_academy/containers/Courses/CourseSubTopBar.js:155
 #: dev_academy/containers/frontend-dashboard/Students/StudentsTable.js:140
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/GroupCourses/index.js:80
@@ -3835,7 +3822,7 @@ msgstr ""
 
 #: includes/classes/registration.php:63
 #: includes/traits/instructor.php:254
-#: includes/traits/student.php:197
+#: includes/traits/student.php:203
 msgid "Email is missing or Invalid."
 msgstr ""
 
@@ -3900,7 +3887,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/settings/General/index.js:87
 #: dev_academy/containers/backend-dashboard/pages/settings/index.js:422
 #: dev_academy/containers/Courses/new-course/Sections/General/index.js:13
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:215
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:224
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/General/index.js:12
 #: dev_academy/containers/setup/setupForm/index.js:54
 #: dev_academy/containers/setup/SetupLayout.js:9
@@ -4482,7 +4469,7 @@ msgstr ""
 
 #: includes/customizer/section/single-booking.php:960
 #: includes/customizer/section/single-course.php:1393
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:187
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:207
 msgid "Review"
 msgstr ""
 
@@ -4666,7 +4653,7 @@ msgid "Description Icon Color"
 msgstr ""
 
 #: includes/customizer/section/single-course.php:584
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:226
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:235
 msgid "Additional Info"
 msgstr ""
 
@@ -4878,10 +4865,10 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/tools/pages/ExportImport.js:65
 #: dev_academy/containers/backend-dashboard/pages/tools/pages/ExportImport.js:233
 #: dev_academy/containers/Courses/new-course/index.js:564
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:267
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:280
 #: dev_academy/containers/Courses/new-course/QuizEditor.js:55
 #: dev_academy/containers/Courses/new-course/Sections/CoursesPrerequisite/index.js:17
-#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:185
+#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:200
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/Teams/Tables/TeamCourseTable.js:33
 #: dev_academy/containers/QA/QATable.js:161
 #: dev_academy/containers/quiz-attempts/index.js:221
@@ -4979,7 +4966,7 @@ msgstr ""
 #: includes/design/settings.php:51
 #: includes/helper.php:1839
 #: dev_academy/blocks/course-sections.js:519
-#: dev_academy/containers/Courses/CoursesTable.js:508
+#: dev_academy/containers/Courses/CoursesTable.js:509
 msgid "Categories"
 msgstr ""
 
@@ -5100,10 +5087,10 @@ msgstr ""
 #: dev_academy/containers/Announcement/AnnouncementModal/AnnouncementForm.js:23
 #: dev_academy/containers/Announcement/AnnouncementTable.js:347
 #: dev_academy/containers/Certificate/CertificateTable.js:366
-#: dev_academy/containers/Courses/CoursesTable.js:550
+#: dev_academy/containers/Courses/CoursesTable.js:551
 #: dev_academy/containers/frontend-curriculums/TutorBooking/BookedTable/index.js:189
-#: dev_academy/containers/Lesson/LessonsTable.js:300
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:343
+#: dev_academy/containers/Lesson/LessonsTable.js:301
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:344
 #: dev_academy/containers/Webhooks/HooksTable.js:167
 msgid "Title"
 msgstr ""
@@ -5133,8 +5120,8 @@ msgid "Rating"
 msgstr ""
 
 #: includes/design/settings.php:38
-#: dev_academy/blocks/registration-form.js:138
-#: dev_academy/blocks/registration-form.js:168
+#: dev_academy/blocks/registration-form.js:150
+#: dev_academy/blocks/registration-form.js:180
 msgid "Button"
 msgstr ""
 
@@ -5231,22 +5218,22 @@ msgstr ""
 msgid "Graphite"
 msgstr ""
 
-#: includes/frontend-dashboard/dashboard.php:223
+#: includes/frontend-dashboard/dashboard.php:222
 msgid "Choose a page for this menu item on Academy → Customize → Dashboard."
 msgstr ""
 
 #. translators: %s: the student's first name.
-#: includes/frontend-dashboard/dashboard.php:534
+#: includes/frontend-dashboard/dashboard.php:487
 #, php-format
 msgid "Welcome back, %s"
 msgstr ""
 
-#: includes/frontend-dashboard/dashboard.php:625
+#: includes/frontend-dashboard/dashboard.php:578
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/ResumeAttempt/index.js:62
 msgid "Continue"
 msgstr ""
 
-#: includes/frontend-dashboard/dashboard.php:625
+#: includes/frontend-dashboard/dashboard.php:578
 msgid "Start"
 msgstr ""
 
@@ -5287,7 +5274,7 @@ msgid "Total assignments"
 msgstr ""
 
 #: includes/frontend-dashboard/settings.php:91
-#: includes/functions.php:1322
+#: includes/functions.php:1323
 #: templates/frontend-dashboard/pages/guardian.php:29
 #: dev_academy/containers/About/WhatsNew/sections/Dashboards.js:54
 msgid "Children"
@@ -5466,9 +5453,9 @@ msgstr ""
 #: dev_academy/containers/Quizzes/AiQuizGeneration/index.js:227
 #: dev_academy/containers/Quizzes/QuestionBank/index.js:491
 #: dev_academy/containers/Quizzes/QuestionForm/index.js:161
-#: dev_academy/containers/Quizzes/QuizForm/index.js:522
+#: dev_academy/containers/Quizzes/QuizForm/index.js:538
 #: dev_academy/containers/Tag/index.js:170
-#: dev_academy/utils/helper.js:856
+#: dev_academy/utils/helper.js:869
 msgid "Cancel"
 msgstr ""
 
@@ -5476,11 +5463,11 @@ msgstr ""
 msgid "Invalid password"
 msgstr ""
 
-#: includes/functions.php:902
+#: includes/functions.php:903
 msgid "Expert"
 msgstr ""
 
-#: includes/functions.php:1102
+#: includes/functions.php:1103
 #: templates/frontend-dashboard/pages/announcements.php:13
 #: templates/frontend-dashboard/pages/courses.php:13
 #: templates/frontend-dashboard/pages/lessons.php:13
@@ -5490,7 +5477,7 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: includes/functions.php:1292
+#: includes/functions.php:1293
 #: includes/helper.php:1759
 #: includes/helper.php:1766
 #: includes/helper.php:1772
@@ -5502,48 +5489,48 @@ msgstr ""
 msgid "Enrolled Courses"
 msgstr ""
 
-#: includes/functions.php:1299
+#: includes/functions.php:1300
 msgid "Completed Courses"
 msgstr ""
 
-#: includes/functions.php:1329
+#: includes/functions.php:1330
 msgid "Their Courses"
 msgstr ""
 
-#: includes/functions.php:1349
+#: includes/functions.php:1350
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/components/AnalyticCards/index.js:72
 msgid "Total Students"
 msgstr ""
 
-#: includes/functions.php:1356
+#: includes/functions.php:1357
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/components/AnalyticCards/index.js:22
 #: dev_academy/containers/backend-dashboard/pages/Instructors/InstructorTable.js:312
 msgid "Total Courses"
 msgstr ""
 
-#: includes/functions.php:1363
+#: includes/functions.php:1364
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/components/AnalyticCards/index.js:40
 msgid "Total Lessons"
 msgstr ""
 
-#: includes/functions.php:1380
+#: includes/functions.php:1381
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/components/AnalyticCards/index.js:91
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/Cards.js:23
 msgid "Total Quizzes"
 msgstr ""
 
-#: includes/functions.php:1390
+#: includes/functions.php:1391
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/components/AnalyticCards/index.js:100
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/Cards.js:39
 msgid "Total Assignments"
 msgstr ""
 
-#: includes/functions.php:1488
+#: includes/functions.php:1489
 #: dev_academy/containers/backend-dashboard/pages/academy/Tabs/StudentsTab.js:68
 msgid "Registration Date"
 msgstr ""
 
-#: includes/functions.php:1492
+#: includes/functions.php:1493
 #: templates/frontend-dashboard/pages/settings.php:62
 #: dev_academy/components/RegistrationForm/index.js:133
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/helper.js:79
@@ -5552,7 +5539,7 @@ msgstr ""
 msgid "First Name"
 msgstr ""
 
-#: includes/functions.php:1496
+#: includes/functions.php:1497
 #: templates/frontend-dashboard/pages/settings.php:66
 #: dev_academy/components/RegistrationForm/index.js:150
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/helper.js:89
@@ -5561,70 +5548,70 @@ msgstr ""
 msgid "Last Name"
 msgstr ""
 
-#: includes/functions.php:1500
+#: includes/functions.php:1501
 #: dev_academy/components/RegistrationForm/index.js:168
 msgid "User Name"
 msgstr ""
 
-#: includes/functions.php:1508
+#: includes/functions.php:1509
 #: templates/frontend-dashboard/pages/settings.php:70
 msgid "Designation"
 msgstr ""
 
-#: includes/functions.php:1512
+#: includes/functions.php:1513
 #: templates/frontend-dashboard/pages/settings.php:74
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/helper.js:142
 msgid "Phone Number"
 msgstr ""
 
-#: includes/functions.php:1516
+#: includes/functions.php:1517
 #: templates/frontend-dashboard/pages/settings.php:78
 msgid "Bio"
 msgstr ""
 
-#: includes/functions.php:1520
+#: includes/functions.php:1521
 #: templates/frontend-dashboard/pages/settings.php:82
 msgid "Website URL"
 msgstr ""
 
-#: includes/functions.php:1524
+#: includes/functions.php:1525
 #: templates/frontend-dashboard/pages/settings.php:86
 msgid "Github URL"
 msgstr ""
 
-#: includes/functions.php:1528
+#: includes/functions.php:1529
 #: templates/frontend-dashboard/pages/settings.php:90
 msgid "Facebook URL"
 msgstr ""
 
-#: includes/functions.php:1532
+#: includes/functions.php:1533
 #: templates/frontend-dashboard/pages/settings.php:94
 msgid "Twitter / X URL"
 msgstr ""
 
-#: includes/functions.php:1536
+#: includes/functions.php:1537
 msgid "Linkedin URL"
 msgstr ""
 
 #. translators: %s: user display name
-#: includes/functions.php:1919
+#: includes/functions.php:1920
 #, php-format
 msgid "Hello %s,"
 msgstr ""
 
-#: includes/functions.php:1923
+#: includes/functions.php:1924
 msgid "Someone requested a password reset for your account."
 msgstr ""
 
-#: includes/functions.php:1925
+#: includes/functions.php:1926
 msgid "Click the link below to reset your password:"
 msgstr ""
 
-#: includes/functions.php:1929
+#: includes/functions.php:1930
 msgid "If you did not request this, you can safely ignore this email."
 msgstr ""
 
-#: includes/functions.php:1942
+#: includes/functions.php:1943
 msgid "Invalid request"
 msgstr ""
 
@@ -5720,7 +5707,7 @@ msgstr ""
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:637
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:643
 #: dev_academy/containers/Quizzes/QuestionsManager/QuestionEditor.js:52
-#: dev_academy/containers/Quizzes/QuizForm/index.js:36
+#: dev_academy/containers/Quizzes/QuizForm/index.js:35
 #: dev_academy/containers/Quizzes/QuizForm/Questions.js:525
 #: dev_academy/containers/Quizzes/QuizForm/Steps.js:8
 #: dev_academy/containers/Quizzes/QuizTabs.js:8
@@ -5732,8 +5719,8 @@ msgstr ""
 #: dev_academy/components/GlobalSearch/buildIndex.js:16
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/Cards.js:88
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:666
-#: dev_academy/containers/Courses/CoursesTable.js:483
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:87
+#: dev_academy/containers/Courses/CoursesTable.js:484
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:88
 msgid "Meeting"
 msgstr ""
 
@@ -5789,16 +5776,16 @@ msgstr ""
 #: includes/helper.php:211
 #: dev_academy/components/GlobalSearch/buildIndex.js:41
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:416
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:183
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:190
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:192
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:199
 msgid "Group Plus"
 msgstr ""
 
 #: includes/helper.php:218
 #: dev_academy/containers/About/WhatsNew/sections/Pro.js:61
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:1284
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:156
 #: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:165
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:174
 msgid "Course Active Timer"
 msgstr ""
 
@@ -5831,7 +5818,7 @@ msgstr ""
 #: includes/helper.php:269
 #: includes/helper.php:391
 #: dev_academy/blocks/course-sections.js:720
-#: dev_academy/blocks/registration-form.js:131
+#: dev_academy/blocks/registration-form.js:143
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/Cards.js:58
 #: dev_academy/containers/backend-dashboard/pages/Instructors/index.js:28
 msgid "Instructors"
@@ -5851,13 +5838,14 @@ msgstr ""
 #: templates/instructor/sidebar.php:38
 #: dev_academy/blocks/course-meta.js:14
 #: dev_academy/blocks/course-sections.js:719
-#: dev_academy/blocks/registration-form.js:130
+#: dev_academy/blocks/registration-form.js:142
 #: dev_academy/containers/About/WhatsNew/sections/Dashboards.js:32
 #: dev_academy/containers/About/WhatsNew/sections/Dashboards.js:37
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/Cards.js:118
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/CourseInstructorsTable.js:46
 #: dev_academy/containers/backend-dashboard/pages/academy/DashboardTabs.js:28
-#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:60
+#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:93
+#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:94
 #: dev_academy/containers/backend-dashboard/pages/students/index.js:67
 #: dev_academy/containers/frontend-dashboard/Students/index.js:14
 #: dev_academy/containers/QA/QATable.js:169
@@ -6363,7 +6351,7 @@ msgid "Back To Login"
 msgstr ""
 
 #: includes/shortcode/academy-search.php:47
-#: dev_academy/containers/Courses/CoursesTable.js:1019
+#: dev_academy/containers/Courses/CoursesTable.js:1030
 msgid "Search Course"
 msgstr ""
 
@@ -6411,11 +6399,11 @@ msgstr ""
 msgid "Invalid username provided or the username already registered."
 msgstr ""
 
-#: includes/traits/student.php:201
+#: includes/traits/student.php:207
 msgid "The provided email is already registered with another account. Please login or reset password or use another email."
 msgstr ""
 
-#: includes/traits/student.php:214
+#: includes/traits/student.php:220
 msgid "Invalid username provided or the username already registered as an academy student."
 msgstr ""
 
@@ -6437,10 +6425,10 @@ msgstr ""
 
 #: templates/archive/widgets/type.php:7
 #: templates/curriculums/quiz/attempts/attempt/answer-details.php:22
-#: dev_academy/blocks/registration-form.js:343
+#: dev_academy/blocks/registration-form.js:355
 #: dev_academy/components/PaidProductSelect/storeProduct/Forms/CustomForm.js:14
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/Teams/Tables/TeamCourseTable.js:37
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:68
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:88
 #: dev_academy/containers/Quizzes/QuestionBank/index.js:347
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:460
 msgid "Type"
@@ -6563,7 +6551,7 @@ msgstr ""
 #: dev_academy/containers/frontend-curriculums/TopicsTabsNavigation/frontendqa/index.js:417
 #: dev_academy/containers/frontend-curriculums/TopicsTabsNavigation/lessonComment/index.js:364
 #: dev_academy/containers/QA/AnswerFormModal.js:249
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:170
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:190
 #: dev_academy/containers/Quizzes/QuestionForm/Answer/FieldFillInTheBlanks.js:28
 msgid "Answer"
 msgstr ""
@@ -6594,7 +6582,7 @@ msgstr ""
 #: dev_academy/containers/frontend-curriculums/QuizPressQuizContent/AnswerDetails.js:19
 #: dev_academy/containers/frontend-curriculums/TopicsTabsNavigation/frontendqa/index.js:499
 #: dev_academy/containers/QA/QATable.js:140
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:73
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:93
 #: dev_academy/containers/Quizzes/QuestionBank/index.js:324
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:443
 msgid "Question"
@@ -6609,7 +6597,7 @@ msgstr ""
 #: dev_academy/components/EditorSubHeader/index.js:59
 #: dev_academy/components/Tour/index.js:299
 #: dev_academy/containers/Certificate/CertificateBuilder/CreateWizard.js:147
-#: dev_academy/containers/Quizzes/QuizForm/index.js:486
+#: dev_academy/containers/Quizzes/QuizForm/index.js:498
 #: dev_academy/containers/setup/pages/Instructor/index.js:155
 #: dev_academy/containers/setup/setupForm/Component/PluginInstall/index.js:197
 #: dev_academy/containers/setup/setupForm/index.js:125
@@ -6628,14 +6616,14 @@ msgstr ""
 #: templates/curriculums/quiz/attempts/attempt/answer-details.php:28
 #: dev_academy/containers/backend-dashboard/pages/academy/StudentDetailsModal/QuizAnswers/QuestionCard.js:94
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/answers-table.js:125
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:85
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:105
 msgid "Correct Answer"
 msgstr ""
 
 #: templates/curriculums/quiz/attempts/attempt/answer-details.php:31
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/answers-table.js:191
 #: dev_academy/containers/frontend-curriculums/QuizPressQuizContent/AnswerDetails.js:27
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:142
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:162
 msgid "Given Answer"
 msgstr ""
 
@@ -6644,7 +6632,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/academy/StudentDetailsModal/QuizAnswers/QuestionCard.js:49
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/answers-table.js:81
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempts-table/AttemptsCards.js:126
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:180
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:200
 #: dev_academy/containers/Quizzes/QuizForm/Questions.js:732
 msgid "Correct"
 msgstr ""
@@ -6660,14 +6648,14 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/academy/StudentDetailsModal/QuizAnswers/QuestionCard.js:50
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/answers-table.js:87
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempts-table/AttemptsCards.js:135
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:181
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:201
 msgid "Incorrect"
 msgstr ""
 
 #: templates/curriculums/quiz/attempts/attempt/answer-details.php:144
 #: dev_academy/containers/frontend-curriculums/AssignmentContent/Attempt/index.js:37
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/AttemptDetails.js:81
-#: dev_academy/containers/quiz-attempts/attempt-modal/index.js:102
+#: dev_academy/containers/quiz-attempts/attempt-modal/index.js:99
 msgid "Instructor Feedback"
 msgstr ""
 
@@ -6678,7 +6666,7 @@ msgstr ""
 #: templates/curriculums/quiz/attempts/attempt/overview.php:16
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/AttemptDetails.js:65
 #: dev_academy/containers/frontend-curriculums/QuizPressQuizContent/AttemptDetails.js:68
-#: dev_academy/containers/quiz-attempts/attempt-modal/index.js:81
+#: dev_academy/containers/quiz-attempts/attempt-modal/index.js:78
 msgid "Attempt Details"
 msgstr ""
 
@@ -6691,9 +6679,9 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/tableListTabs/Tables/RecentReviewsTable.js:21
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/helper.js:229
 #: dev_academy/containers/Certificate/CertificateTable.js:386
-#: dev_academy/containers/Courses/CoursesTable.js:682
+#: dev_academy/containers/Courses/CoursesTable.js:683
 #: dev_academy/containers/frontend-curriculums/AssignmentContent/Attempt/AttemptTable.js:46
-#: dev_academy/containers/Lesson/LessonsTable.js:316
+#: dev_academy/containers/Lesson/LessonsTable.js:317
 #: dev_academy/containers/QA/QATable.js:173
 #: dev_academy/containers/quiz-attempts/attempt-modal/attempt-table.js:44
 #: dev_academy/containers/Webhooks/HooksTable.js:228
@@ -6728,7 +6716,7 @@ msgstr ""
 #: templates/curriculums/quiz/attempts/attempt/overview.php:43
 #: dev_academy/containers/frontend-curriculums/AssignmentContent/Attempt/AttemptTable.js:13
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/attempt-table.js:121
-#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:157
+#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:172
 #: dev_academy/containers/quiz-attempts/attempt-modal/attempt-table.js:13
 msgid "Final Grade"
 msgstr ""
@@ -6866,21 +6854,21 @@ msgstr ""
 msgid "Complete Courses"
 msgstr ""
 
-#: templates/frontend-dashboard/pages/active-courses.php:85
-#: templates/frontend-dashboard/pages/completed-courses.php:87
+#: templates/frontend-dashboard/pages/active-courses.php:95
+#: templates/frontend-dashboard/pages/completed-courses.php:97
 #: templates/single-course/enroll/continue.php:69
 msgid "Complete"
 msgstr ""
 
-#: templates/frontend-dashboard/pages/active-courses.php:97
-#: templates/frontend-dashboard/pages/completed-courses.php:99
-#: templates/frontend-dashboard/pages/enrolled-courses.php:99
+#: templates/frontend-dashboard/pages/active-courses.php:107
+#: templates/frontend-dashboard/pages/completed-courses.php:109
+#: templates/frontend-dashboard/pages/enrolled-courses.php:113
 msgid "Continue Course"
 msgstr ""
 
-#: templates/frontend-dashboard/pages/active-courses.php:97
-#: templates/frontend-dashboard/pages/completed-courses.php:99
-#: templates/frontend-dashboard/pages/enrolled-courses.php:99
+#: templates/frontend-dashboard/pages/active-courses.php:107
+#: templates/frontend-dashboard/pages/completed-courses.php:109
+#: templates/frontend-dashboard/pages/enrolled-courses.php:113
 #: templates/loop/footer-form.php:57
 #: templates/loop/footer-form.php:80
 #: templates/shortcode/academy-enroll-form/start-course.php:34
@@ -6909,7 +6897,7 @@ msgstr ""
 msgid "Apply Now"
 msgstr ""
 
-#: templates/frontend-dashboard/pages/completed-courses.php:112
+#: templates/frontend-dashboard/pages/completed-courses.php:122
 msgid "You have not completed any course yet."
 msgstr ""
 
@@ -6918,11 +6906,11 @@ msgstr ""
 msgid "You have not yet completed a course that offers a downloadable certificate."
 msgstr ""
 
-#: templates/frontend-dashboard/pages/enrolled-courses.php:87
+#: templates/frontend-dashboard/pages/enrolled-courses.php:101
 msgid " Complete"
 msgstr ""
 
-#: templates/frontend-dashboard/pages/enrolled-courses.php:112
+#: templates/frontend-dashboard/pages/enrolled-courses.php:126
 msgid "You have not enrolled any course yet."
 msgstr ""
 
@@ -6980,17 +6968,17 @@ msgstr ""
 #: dev_academy/containers/Announcement/AnnouncementTable.js:422
 #: dev_academy/containers/backend-dashboard/pages/Instructors/InstructorTable.js:317
 #: dev_academy/containers/backend-dashboard/pages/settings/Licence/index.js:949
-#: dev_academy/containers/backend-dashboard/pages/students/ExtendEnrollmentDurationModal.js:114
+#: dev_academy/containers/backend-dashboard/pages/students/ExtendEnrollmentDurationModal.js:115
 #: dev_academy/containers/backend-dashboard/pages/tools/components/AcademyPageTable.js:36
 #: dev_academy/containers/backend-dashboard/pages/tools/index.js:116
 #: dev_academy/containers/backend-dashboard/pages/tools/pages/AcademyStatus.js:35
 #: dev_academy/containers/Certificate/CertificateTable.js:420
-#: dev_academy/containers/Courses/CoursesTable.js:698
+#: dev_academy/containers/Courses/CoursesTable.js:699
 #: dev_academy/containers/frontend-curriculums/TutorBooking/BookedTable/BookedDetailsModal.js:122
 #: dev_academy/containers/frontend-curriculums/TutorBooking/BookedTable/index.js:244
-#: dev_academy/containers/Lesson/LessonsTable.js:336
+#: dev_academy/containers/Lesson/LessonsTable.js:337
 #: dev_academy/containers/QA/QATable.js:186
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:387
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:388
 #: dev_academy/containers/Webhooks/HooksModal/HooksFormInner.js:340
 #: dev_academy/containers/Webhooks/HooksTable.js:241
 msgid "Status"
@@ -7078,7 +7066,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/tools/components/AcademyPageTable.js:7
 #: dev_academy/containers/backend-dashboard/pages/tools/pages/FakeOrders/index.js:93
 #: dev_academy/containers/backend-dashboard/pages/tools/pages/ResetCertificate.js:11
-#: dev_academy/containers/Courses/CoursesTable.js:622
+#: dev_academy/containers/Courses/CoursesTable.js:623
 #: dev_academy/containers/GroupPlus/GroupTable.js:304
 msgid "ID"
 msgstr ""
@@ -7264,13 +7252,13 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/CourseStudentsTable.js:206
 #: dev_academy/containers/backend-dashboard/pages/academy/StudentDetailsModal/StudentCoursesTable.js:212
 #: dev_academy/containers/backend-dashboard/pages/academy/Tabs/StudentsTab.js:131
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:234
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:259
 #: dev_academy/containers/quiz-attempts/attempt-modal/attempt-table.js:129
 #: dev_academy/containers/quiz-attempts/index.js:363
 msgid "Nothing to show yet."
 msgstr ""
 
-#: templates/frontend-dashboard/sidebar.php:76
+#: templates/frontend-dashboard/sidebar.php:52
 msgid "Logout"
 msgstr ""
 
@@ -7499,6 +7487,11 @@ msgstr ""
 msgid "Expire Duration"
 msgstr ""
 
+#: templates/single-course/enroll/content.php:90
+#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:161
+msgid "Access"
+msgstr ""
+
 #. translators: %s: Enrollment date
 #: templates/single-course/enroll/continue.php:43
 #, php-format
@@ -7620,23 +7613,23 @@ msgstr ""
 msgid "Enter your feedback"
 msgstr ""
 
-#: dev_academy/blocks/card-extras.js:30
+#: dev_academy/blocks/card-extras.js:29
 msgid "Shown only on featured courses."
 msgstr ""
 
-#: dev_academy/blocks/card-extras.js:40
+#: dev_academy/blocks/card-extras.js:39
 msgid "Badge text"
 msgstr ""
 
-#: dev_academy/blocks/card-extras.js:44
+#: dev_academy/blocks/card-extras.js:43
 msgid "The badge appears only on courses marked as featured."
 msgstr ""
 
-#: dev_academy/blocks/card-extras.js:69
+#: dev_academy/blocks/card-extras.js:68
 msgid "Show the “WishList” label"
 msgstr ""
 
-#: dev_academy/blocks/card-extras.js:70
+#: dev_academy/blocks/card-extras.js:69
 msgid "Shown when Course Wishlist is turned on in Academy LMS settings."
 msgstr ""
 
@@ -7664,7 +7657,7 @@ msgstr ""
 #: dev_academy/blocks/course-sections.js:318
 #: dev_academy/blocks/course-sections.js:578
 #: dev_academy/blocks/course-sections.js:661
-#: dev_academy/blocks/registration-form.js:375
+#: dev_academy/blocks/registration-form.js:387
 #: dev_academy/containers/backend-dashboard/pages/design/dashboard.js:413
 msgid "Width"
 msgstr ""
@@ -8166,7 +8159,7 @@ msgid "No course categories yet."
 msgstr ""
 
 #: dev_academy/blocks/course-sections.js:658
-#: dev_academy/blocks/registration-form.js:353
+#: dev_academy/blocks/registration-form.js:365
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/FieldDetailsModal/index.js:35
 msgid "Placeholder"
 msgstr ""
@@ -8250,7 +8243,7 @@ msgid "Show the account menu"
 msgstr ""
 
 #: dev_academy/blocks/dashboard.js:169
-msgid "Offer switching view"
+msgid "Show view tabs"
 msgstr ""
 
 #: dev_academy/blocks/dashboard.js:170
@@ -8382,7 +8375,7 @@ msgid "Show lesson length"
 msgstr ""
 
 #: dev_academy/blocks/registration-form.js:40
-#: dev_academy/blocks/registration-form.js:499
+#: dev_academy/blocks/registration-form.js:511
 #: dev_academy/containers/backend-dashboard/pages/design/index.js:662
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/helper.js:149
 #: dev_academy/containers/frontend-dashboard/MyNotes/index.js:117
@@ -8399,25 +8392,25 @@ msgid "Phone"
 msgstr ""
 
 #: dev_academy/blocks/registration-form.js:44
-#: dev_academy/blocks/registration-form.js:504
+#: dev_academy/blocks/registration-form.js:516
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/helper.js:159
 msgid "Number"
 msgstr ""
 
 #: dev_academy/blocks/registration-form.js:46
-#: dev_academy/blocks/registration-form.js:502
+#: dev_academy/blocks/registration-form.js:514
 msgid "Website"
 msgstr ""
 
 #: dev_academy/blocks/registration-form.js:47
 #: dev_academy/containers/Quizzes/helper.js:189
-#: dev_academy/utils/helper.js:804
+#: dev_academy/utils/helper.js:817
 msgid "Dropdown"
 msgstr ""
 
 #: dev_academy/blocks/registration-form.js:48
-#: dev_academy/blocks/registration-form.js:507
-#: dev_academy/blocks/registration-form.js:516
+#: dev_academy/blocks/registration-form.js:519
+#: dev_academy/blocks/registration-form.js:528
 msgid "Choose one"
 msgstr ""
 
@@ -8426,12 +8419,12 @@ msgid "Checkboxes"
 msgstr ""
 
 #: dev_academy/blocks/registration-form.js:55
-#: dev_academy/blocks/registration-form.js:488
+#: dev_academy/blocks/registration-form.js:500
 msgid "First name"
 msgstr ""
 
 #: dev_academy/blocks/registration-form.js:56
-#: dev_academy/blocks/registration-form.js:489
+#: dev_academy/blocks/registration-form.js:501
 msgid "Last name"
 msgstr ""
 
@@ -8440,201 +8433,201 @@ msgid "you@example.com"
 msgstr ""
 
 #: dev_academy/blocks/registration-form.js:59
-#: dev_academy/blocks/registration-form.js:493
-#: dev_academy/blocks/registration-form.js:496
+#: dev_academy/blocks/registration-form.js:505
+#: dev_academy/blocks/registration-form.js:508
 msgid "Confirm password"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:124
+#: dev_academy/blocks/registration-form.js:136
 msgid "Form"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:127
+#: dev_academy/blocks/registration-form.js:139
 msgid "Signs up"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:134
+#: dev_academy/blocks/registration-form.js:146
 msgid "New instructors wait for approval unless you approve them automatically in Settings."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:146
+#: dev_academy/blocks/registration-form.js:158
 msgid "After signing up, go to"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:147
+#: dev_academy/blocks/registration-form.js:159
 msgid "Empty: the dashboard."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:155
+#: dev_academy/blocks/registration-form.js:167
 msgid "Show a log in link"
 msgstr ""
 
 #. translators: %s: missing field names.
-#: dev_academy/blocks/registration-form.js:185
+#: dev_academy/blocks/registration-form.js:197
 #, js-format
 msgid "Add these fields, or no one can sign up: %s. Use the + inside the form."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:236
+#: dev_academy/blocks/registration-form.js:248
 msgid "Choice"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:248
-#: dev_academy/blocks/registration-form.js:386
+#: dev_academy/blocks/registration-form.js:260
+#: dev_academy/blocks/registration-form.js:398
 msgid "Saved as"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:254
+#: dev_academy/blocks/registration-form.js:266
 msgid "Remove choice"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:260
+#: dev_academy/blocks/registration-form.js:272
 msgid "Add a choice"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:288
+#: dev_academy/blocks/registration-form.js:300
 msgid "Add choices in the settings"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:339
+#: dev_academy/blocks/registration-form.js:351
 msgid "Field"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:349
-#: dev_academy/blocks/registration-form.js:427
+#: dev_academy/blocks/registration-form.js:361
+#: dev_academy/blocks/registration-form.js:439
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/FieldDetailsModal/index.js:24
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/FieldDetailsModal/OptionsFields.js:26
 msgid "Label"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:360
+#: dev_academy/blocks/registration-form.js:372
 msgid "Help text"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:367
+#: dev_academy/blocks/registration-form.js:379
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/FieldDetailsModal/index.js:76
 msgid "Required"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:368
+#: dev_academy/blocks/registration-form.js:380
 msgid "Every account needs this."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:378
+#: dev_academy/blocks/registration-form.js:390
 msgid "Full row"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:379
+#: dev_academy/blocks/registration-form.js:391
 msgid "Half row"
 msgstr ""
 
 #. translators: %s: user meta key.
-#: dev_academy/blocks/registration-form.js:389
+#: dev_academy/blocks/registration-form.js:401
 #, js-format
 msgid "Kept on the person’s profile as academy_%s."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:398
+#: dev_academy/blocks/registration-form.js:410
 msgid "Choices"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:401
+#: dev_academy/blocks/registration-form.js:413
 msgid "No choices: one checkbox, such as “I agree to the terms”."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:416
-#: dev_academy/blocks/registration-form.js:525
+#: dev_academy/blocks/registration-form.js:428
+#: dev_academy/blocks/registration-form.js:537
 msgid "I agree to the terms"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:437
+#: dev_academy/blocks/registration-form.js:449
 #: dev_academy/components/Button/index.js:138
 #: dev_academy/components/Button/index.js:179
 #: dev_academy/components/Formik/Checkbox/index.js:48
 #: dev_academy/components/ProTag/index.js:11
-#: dev_academy/containers/Courses/CoursesTable.js:766
-#: dev_academy/containers/Courses/CoursesTable.js:796
+#: dev_academy/containers/Courses/CoursesTable.js:770
+#: dev_academy/containers/Courses/CoursesTable.js:805
 #: dev_academy/containers/GroupPlus/GroupTable.js:397
-#: dev_academy/containers/Lesson/LessonsTable.js:525
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:517
+#: dev_academy/containers/Lesson/LessonsTable.js:529
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:521
 msgid "PRO"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:438
+#: dev_academy/blocks/registration-form.js:450
 msgid "Profile fields show with Academy Pro."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:443
+#: dev_academy/blocks/registration-form.js:455
 msgid "This “Saved as” is kept for Academy’s own settings, so the field is left out. Choose another in the settings."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:448
+#: dev_academy/blocks/registration-form.js:460
 msgid "Another field is saved the same way. Give each field its own “Saved as” in the settings."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:491
+#: dev_academy/blocks/registration-form.js:503
 msgid "Confirm email"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:499
+#: dev_academy/blocks/registration-form.js:511
 msgid "Text field"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:499
+#: dev_academy/blocks/registration-form.js:511
 msgid "A profile field, with Academy Pro."
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:500
+#: dev_academy/blocks/registration-form.js:512
 msgid "Paragraph field"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:500
+#: dev_academy/blocks/registration-form.js:512
 msgid "About you"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:501
+#: dev_academy/blocks/registration-form.js:513
 msgid "Phone field"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:501
+#: dev_academy/blocks/registration-form.js:513
 msgid "Phone number"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:502
+#: dev_academy/blocks/registration-form.js:514
 msgid "Website field"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:503
+#: dev_academy/blocks/registration-form.js:515
 msgid "Date field"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:503
+#: dev_academy/blocks/registration-form.js:515
 msgid "Date of birth"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:504
+#: dev_academy/blocks/registration-form.js:516
 msgid "Number field"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:505
+#: dev_academy/blocks/registration-form.js:517
 msgid "Dropdown field"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:510
-#: dev_academy/blocks/registration-form.js:519
+#: dev_academy/blocks/registration-form.js:522
+#: dev_academy/blocks/registration-form.js:531
 msgid "Option one"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:511
-#: dev_academy/blocks/registration-form.js:520
+#: dev_academy/blocks/registration-form.js:523
+#: dev_academy/blocks/registration-form.js:532
 msgid "Option two"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:514
+#: dev_academy/blocks/registration-form.js:526
 msgid "Choice field"
 msgstr ""
 
-#: dev_academy/blocks/registration-form.js:523
+#: dev_academy/blocks/registration-form.js:535
 msgid "Checkbox field"
 msgstr ""
 
@@ -8647,7 +8640,7 @@ msgstr ""
 msgid "Select…"
 msgstr ""
 
-#: dev_academy/components/AcademySelect/index.js:404
+#: dev_academy/components/AcademySelect/index.js:408
 msgid "Clear selection"
 msgstr ""
 
@@ -8661,7 +8654,7 @@ msgid "Use Uploaded Media"
 msgstr ""
 
 #: dev_academy/components/AiImageGenerator/helper.js:36
-#: dev_academy/utils/helper.js:533
+#: dev_academy/utils/helper.js:546
 #: dev_academy/utils/wpMediaUpload.js:27
 msgid "Use this media"
 msgstr ""
@@ -8758,6 +8751,7 @@ msgstr ""
 
 #: dev_academy/components/Attachment/index.js:144
 #: dev_academy/components/Attachment/MultiUploader.js:157
+#: dev_academy/components/ScormDropzone/index.js:83
 #: dev_academy/components/UploadImage/Dropzone.js:123
 #: dev_academy/components/UploadImage/index.js:113
 #: dev_academy/containers/backend-dashboard/pages/Instructors/InstructorTable.js:159
@@ -8811,11 +8805,11 @@ msgstr ""
 #: dev_academy/containers/Announcement/AnnouncementTable.js:525
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/sortableForm/SortableRowColumn/SortableColumn.js:162
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/sortableForm/SortableRowColumn/SortableColumn.js:209
-#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:368
+#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:376
 #: dev_academy/containers/backend-dashboard/pages/students/StudentsTable.js:520
 #: dev_academy/containers/Category/CategoryTable.js:260
 #: dev_academy/containers/Certificate/CertificateTable.js:514
-#: dev_academy/containers/Courses/CoursesTable.js:855
+#: dev_academy/containers/Courses/CoursesTable.js:866
 #: dev_academy/containers/Courses/new-course/builder/index.js:99
 #: dev_academy/containers/Courses/new-course/builder/subCurriculum/SubCurriculum.js:186
 #: dev_academy/containers/Courses/new-course/Sections/FeatureImageAndIntro/index.js:174
@@ -8829,7 +8823,7 @@ msgstr ""
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/Teams/Tables/TeamCourseTable.js:49
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/Teams/Tables/TeamLeadersTable.js:57
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/Teams/Tables/TeamMemberTable.js:57
-#: dev_academy/containers/Lesson/LessonsTable.js:440
+#: dev_academy/containers/Lesson/LessonsTable.js:441
 #: dev_academy/containers/QA/QATable.js:225
 #: dev_academy/containers/quiz-attempts/index.js:330
 #: dev_academy/containers/Quizzes/QuestionForm/Answer/FieldFillInTheBlanks.js:75
@@ -8839,7 +8833,7 @@ msgstr ""
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:519
 #: dev_academy/containers/Quizzes/QuizForm/Question.js:74
 #: dev_academy/containers/Quizzes/QuizForm/Questions.js:509
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:475
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:476
 #: dev_academy/containers/Tag/TagTable.js:190
 #: dev_academy/containers/Webhooks/HooksTable.js:288
 msgid "Delete"
@@ -8871,15 +8865,15 @@ msgstr ""
 msgid "Please select a file before import."
 msgstr ""
 
-#: dev_academy/components/BulkImportModal/index.js:120
+#: dev_academy/components/BulkImportModal/index.js:125
 msgid "Import Now"
 msgstr ""
 
-#: dev_academy/components/BulkImportModal/index.js:137
+#: dev_academy/components/BulkImportModal/index.js:142
 msgid "Support: CSV"
 msgstr ""
 
-#: dev_academy/components/BulkImportModal/index.js:147
+#: dev_academy/components/BulkImportModal/index.js:152
 #: dev_academy/containers/backend-dashboard/pages/tools/pages/ExportImport.js:313
 msgid "Imported Data List"
 msgstr ""
@@ -8936,10 +8930,10 @@ msgstr ""
 
 #: dev_academy/components/ContentDrip/index.js:285
 #: dev_academy/containers/Courses/new-course/builder/index.js:211
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:268
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:369
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:281
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:382
 #: dev_academy/containers/Courses/new-course/QuizEditor.js:56
-#: dev_academy/containers/Quizzes/QuizForm/index.js:705
+#: dev_academy/containers/Quizzes/QuizForm/index.js:725
 msgid "Course Builder"
 msgstr ""
 
@@ -8960,59 +8954,59 @@ msgstr ""
 
 #: dev_academy/components/CustomFieldsBox/index.js:66
 #: dev_academy/components/CustomFieldsBox/index.js:75
-#: dev_academy/components/CustomFieldsBox/index.js:114
+#: dev_academy/components/CustomFieldsBox/index.js:115
 #: dev_academy/containers/backend-dashboard/pages/settings/CustomFields/index.js:36
 #: dev_academy/containers/backend-dashboard/pages/settings/index.js:533
 msgid "Custom Fields"
 msgstr ""
 
-#: dev_academy/components/CustomFieldsBox/index.js:91
+#: dev_academy/components/CustomFieldsBox/index.js:92
 msgid "Easy Content Manager could not be installed."
 msgstr ""
 
 #. translators: %s: what is being edited, e.g. "announcements".
-#: dev_academy/components/CustomFieldsBox/index.js:99
+#: dev_academy/components/CustomFieldsBox/index.js:100
 #, js-format
 msgid "No custom fields for %s yet. Add a field group in Easy Content Manager and choose this as its location; its fields then show here."
 msgstr ""
 
-#: dev_academy/components/CustomFieldsBox/index.js:103
+#: dev_academy/components/CustomFieldsBox/index.js:104
 msgid "Easy Content Manager is installed and active. Save your changes, then reload this page to add fields."
 msgstr ""
 
 #. translators: %s: what is being edited, e.g. "announcements".
-#: dev_academy/components/CustomFieldsBox/index.js:107
+#: dev_academy/components/CustomFieldsBox/index.js:108
 #, js-format
 msgid "Add your own fields to %s, such as a date, a file or a link, with Easy Content Manager, our free fields plugin."
 msgstr ""
 
-#: dev_academy/components/CustomFieldsBox/index.js:126
+#: dev_academy/components/CustomFieldsBox/index.js:127
 msgid "Add fields"
 msgstr ""
 
-#: dev_academy/components/CustomFieldsBox/index.js:135
+#: dev_academy/components/CustomFieldsBox/index.js:136
 msgid "Install Easy Content Manager"
 msgstr ""
 
-#: dev_academy/components/CustomFieldsBox/index.js:139
+#: dev_academy/components/CustomFieldsBox/index.js:140
 msgid "How custom fields work"
 msgstr ""
 
-#: dev_academy/components/EcmPromo/index.js:57
+#: dev_academy/components/EcmPromo/index.js:62
 msgid "Custom Taxonomy"
 msgstr ""
 
 #. translators: %s: what custom taxonomies would be added to, e.g. "courses".
-#: dev_academy/components/EcmPromo/index.js:62
+#: dev_academy/components/EcmPromo/index.js:67
 #, js-format
 msgid "Install the free Easy Content Manager addon to add your own custom taxonomies to %s."
 msgstr ""
 
-#: dev_academy/components/EcmPromo/index.js:70
+#: dev_academy/components/EcmPromo/index.js:75
 msgid "Install ECM"
 msgstr ""
 
-#: dev_academy/components/EcmPromo/index.js:71
+#: dev_academy/components/EcmPromo/index.js:76
 #: dev_academy/containers/backend-dashboard/pages/addons/IntegrationCard.js:158
 #: dev_academy/containers/backend-dashboard/pages/settings/Licence/index.js:418
 #: dev_academy/containers/setup/setupForm/Component/PluginInstall/index.js:179
@@ -9190,7 +9184,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/settings/FormBuilder/sortableForm/SortableRowColumn/SortableColumn.js:144
 #: dev_academy/containers/Category/CategoryTable.js:242
 #: dev_academy/containers/Certificate/CertificateTable.js:535
-#: dev_academy/containers/Courses/CoursesTable.js:896
+#: dev_academy/containers/Courses/CoursesTable.js:907
 #: dev_academy/containers/Courses/new-course/builder/index.js:89
 #: dev_academy/containers/Courses/new-course/builder/subCurriculum/SubCurriculum.js:176
 #: dev_academy/containers/frontend-curriculums/AssignmentContent/Attempt/index.js:85
@@ -9200,7 +9194,7 @@ msgstr ""
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/GroupCourses/index.js:193
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/Teams/index.js:108
 #: dev_academy/containers/Lesson/LessonModal/LessonFormInner/index.js:199
-#: dev_academy/containers/Lesson/LessonsTable.js:503
+#: dev_academy/containers/Lesson/LessonsTable.js:504
 #: dev_academy/containers/Quizzes/QuestionForm/Answer/FieldFillInTheBlanks.js:67
 #: dev_academy/containers/Quizzes/QuestionForm/Answer/FieldImageAnswer.js:90
 #: dev_academy/containers/Quizzes/QuestionForm/Answer/FieldMultiChoose.js:155
@@ -9208,7 +9202,7 @@ msgstr ""
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:510
 #: dev_academy/containers/Quizzes/QuizForm/Question.js:64
 #: dev_academy/containers/Quizzes/QuizForm/Questions.js:461
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:496
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:497
 #: dev_academy/containers/Tag/TagTable.js:172
 #: dev_academy/containers/Webhooks/HooksTable.js:279
 msgid "Edit"
@@ -9256,7 +9250,7 @@ msgstr ""
 
 #: dev_academy/components/GetHelp/DoclistsArray.js:40
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:480
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:92
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:101
 msgid "Course Prerequisites"
 msgstr ""
 
@@ -10008,7 +10002,7 @@ msgstr ""
 #: dev_academy/containers/Courses/new-course/index.js:600
 #: dev_academy/containers/frontend-curriculums/Notes/index.js:287
 #: dev_academy/containers/frontend-dashboard/MyNotes/index.js:182
-#: dev_academy/containers/Quizzes/QuizForm/index.js:623
+#: dev_academy/containers/Quizzes/QuizForm/index.js:650
 msgid "Save"
 msgstr ""
 
@@ -10193,18 +10187,18 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/Withdraw/WithdrawTable.js:52
 #: dev_academy/containers/Certificate/CertificateTable.js:48
 #: dev_academy/containers/Certificate/CertificateTable.js:449
-#: dev_academy/containers/Courses/CoursesTable.js:55
-#: dev_academy/containers/Courses/CoursesTable.js:720
+#: dev_academy/containers/Courses/CoursesTable.js:56
+#: dev_academy/containers/Courses/CoursesTable.js:721
 #: dev_academy/containers/Courses/CourseSubTopBar.js:359
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/answers-table.js:93
 #: dev_academy/containers/frontend-dashboard/Students/StudentsTable.js:145
 #: dev_academy/containers/GroupPlus/GroupTable.js:44
-#: dev_academy/containers/Lesson/LessonsTable.js:50
-#: dev_academy/containers/Lesson/LessonsTable.js:361
+#: dev_academy/containers/Lesson/LessonsTable.js:51
+#: dev_academy/containers/Lesson/LessonsTable.js:362
 #: dev_academy/containers/QA/QATable.js:24
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:49
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:417
-#: dev_academy/utils/helper.js:850
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:50
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:418
+#: dev_academy/utils/helper.js:863
 msgid "Pending"
 msgstr ""
 
@@ -10895,34 +10889,34 @@ msgstr ""
 msgid "Cancel Download"
 msgstr ""
 
-#: dev_academy/components/ProTag/ProLockedContent.js:105
+#: dev_academy/components/ProTag/ProLockedContent.js:111
 #: dev_academy/containers/backend-dashboard/pages/addons/IntegrationCard.js:62
 msgid "Installation failed. Please install the plugin manually."
 msgstr ""
 
-#: dev_academy/components/ProTag/ProLockedContent.js:137
+#: dev_academy/components/ProTag/ProLockedContent.js:143
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/components/proOverlay.js:30
 msgid "This is a Pro Feature"
 msgstr ""
 
-#: dev_academy/components/ProTag/ProLockedContent.js:138
+#: dev_academy/components/ProTag/ProLockedContent.js:144
 msgid "This Addon is Off"
 msgstr ""
 
-#: dev_academy/components/ProTag/ProLockedContent.js:142
+#: dev_academy/components/ProTag/ProLockedContent.js:148
 msgid "Upgrade to Academy Pro to unlock this setting."
 msgstr ""
 
-#: dev_academy/components/ProTag/ProLockedContent.js:143
+#: dev_academy/components/ProTag/ProLockedContent.js:149
 msgid "Turn on the addon to use this."
 msgstr ""
 
-#: dev_academy/components/ProTag/ProLockedContent.js:157
+#: dev_academy/components/ProTag/ProLockedContent.js:171
 #: dev_academy/containers/backend-dashboard/pages/academy/AdvanceAnalytics/components/proOverlay.js:27
 msgid "Pro feature"
 msgstr ""
 
-#: dev_academy/components/ProTag/ProLockedContent.js:181
+#: dev_academy/components/ProTag/ProLockedContent.js:197
 #: dev_academy/components/UpgradeToPro/index.js:52
 #: dev_academy/components/UpgradeToPro/index.js:66
 #: dev_academy/containers/AttachmentDownloads/AssignmentDownloadsTeaser.js:43
@@ -10933,12 +10927,12 @@ msgstr ""
 msgid "Upgrade to Pro"
 msgstr ""
 
-#: dev_academy/components/ProTag/ProLockedContent.js:193
+#: dev_academy/components/ProTag/ProLockedContent.js:209
 #, js-format
 msgid "Install & Activate %s"
 msgstr ""
 
-#: dev_academy/components/ProTag/ProLockedContent.js:194
+#: dev_academy/components/ProTag/ProLockedContent.js:210
 #, js-format
 msgid "Turn on %s"
 msgstr ""
@@ -11019,6 +11013,23 @@ msgstr ""
 msgid "Enter your password"
 msgstr ""
 
+#: dev_academy/components/ScormDropzone/index.js:29
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:135
+msgid "SCORM Package"
+msgstr ""
+
+#: dev_academy/components/ScormDropzone/index.js:69
+msgid "Uploading SCORM package…"
+msgstr ""
+
+#: dev_academy/components/ScormDropzone/index.js:91
+msgid "ZIP only"
+msgstr ""
+
+#: dev_academy/components/ScormDropzone/index.js:92
+msgid "a SCORM package from your computer"
+msgstr ""
+
 #: dev_academy/components/Search/index.js:14
 msgid "Search…"
 msgstr ""
@@ -11030,11 +11041,11 @@ msgstr ""
 #: dev_academy/components/StatusBadge/index.js:10
 #: dev_academy/components/StatusOptions/index.js:29
 #: dev_academy/containers/Certificate/CertificateTable.js:441
-#: dev_academy/containers/Courses/CoursesTable.js:733
+#: dev_academy/containers/Courses/CoursesTable.js:734
 #: dev_academy/containers/Courses/CourseSubTopBar.js:348
-#: dev_academy/containers/Lesson/LessonsTable.js:353
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:409
-#: dev_academy/utils/helper.js:847
+#: dev_academy/containers/Lesson/LessonsTable.js:354
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:410
+#: dev_academy/utils/helper.js:860
 msgid "Published"
 msgstr ""
 
@@ -11047,16 +11058,16 @@ msgstr ""
 #: dev_academy/containers/Announcement/AnnouncementTable.js:448
 #: dev_academy/containers/Certificate/CertificateTable.js:44
 #: dev_academy/containers/Certificate/CertificateTable.js:445
-#: dev_academy/containers/Courses/CoursesTable.js:51
-#: dev_academy/containers/Courses/CoursesTable.js:716
+#: dev_academy/containers/Courses/CoursesTable.js:52
+#: dev_academy/containers/Courses/CoursesTable.js:717
 #: dev_academy/containers/Courses/CourseSubTopBar.js:355
 #: dev_academy/containers/GroupPlus/GroupTable.js:40
-#: dev_academy/containers/Lesson/LessonsTable.js:46
-#: dev_academy/containers/Lesson/LessonsTable.js:357
-#: dev_academy/containers/Quizzes/QuizForm/index.js:49
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:45
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:413
-#: dev_academy/utils/helper.js:851
+#: dev_academy/containers/Lesson/LessonsTable.js:47
+#: dev_academy/containers/Lesson/LessonsTable.js:358
+#: dev_academy/containers/Quizzes/QuizForm/index.js:48
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:46
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:414
+#: dev_academy/utils/helper.js:864
 msgid "Draft"
 msgstr ""
 
@@ -11064,14 +11075,14 @@ msgstr ""
 #: dev_academy/components/StatusOptions/index.js:38
 #: dev_academy/components/SubmitBox/index.js:38
 #: dev_academy/components/SubmitBox/StatusSelect.js:58
-#: dev_academy/containers/Courses/CoursesTable.js:59
-#: dev_academy/containers/Courses/CoursesTable.js:737
+#: dev_academy/containers/Courses/CoursesTable.js:60
+#: dev_academy/containers/Courses/CoursesTable.js:738
 #: dev_academy/containers/Courses/CourseSubTopBar.js:363
-#: dev_academy/containers/Quizzes/QuizForm/index.js:55
+#: dev_academy/containers/Quizzes/QuizForm/index.js:54
 #: dev_academy/containers/Webhooks/HooksModal/helper.js:10
 #: dev_academy/containers/Webhooks/HooksTable.js:29
 #: dev_academy/containers/Webhooks/HooksTable.js:259
-#: dev_academy/utils/helper.js:857
+#: dev_academy/utils/helper.js:870
 msgid "Private"
 msgstr ""
 
@@ -11079,7 +11090,7 @@ msgstr ""
 #: dev_academy/components/StatusOptions/index.js:39
 #: dev_academy/components/SubmitBox/StatusSelect.js:64
 #: dev_academy/containers/frontend-curriculums/TutorBooking/BookedTable/index.js:204
-#: dev_academy/utils/helper.js:848
+#: dev_academy/utils/helper.js:861
 msgid "Scheduled"
 msgstr ""
 
@@ -11092,22 +11103,22 @@ msgstr ""
 #: dev_academy/containers/Certificate/CertificateTable.js:124
 #: dev_academy/containers/Certificate/CertificateTable.js:453
 #: dev_academy/containers/Certificate/CertificateTable.js:472
-#: dev_academy/containers/Courses/CoursesTable.js:67
-#: dev_academy/containers/Courses/CoursesTable.js:177
-#: dev_academy/containers/Courses/CoursesTable.js:724
-#: dev_academy/containers/Courses/CoursesTable.js:818
+#: dev_academy/containers/Courses/CoursesTable.js:68
+#: dev_academy/containers/Courses/CoursesTable.js:178
+#: dev_academy/containers/Courses/CoursesTable.js:725
+#: dev_academy/containers/Courses/CoursesTable.js:829
 #: dev_academy/containers/GroupPlus/GroupTable.js:48
 #: dev_academy/containers/GroupPlus/GroupTable.js:131
 #: dev_academy/containers/GroupPlus/GroupTable.js:340
-#: dev_academy/containers/Lesson/LessonsTable.js:54
-#: dev_academy/containers/Lesson/LessonsTable.js:118
-#: dev_academy/containers/Lesson/LessonsTable.js:365
-#: dev_academy/containers/Lesson/LessonsTable.js:385
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:53
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:112
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:421
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:440
-#: dev_academy/utils/helper.js:852
+#: dev_academy/containers/Lesson/LessonsTable.js:55
+#: dev_academy/containers/Lesson/LessonsTable.js:119
+#: dev_academy/containers/Lesson/LessonsTable.js:366
+#: dev_academy/containers/Lesson/LessonsTable.js:386
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:54
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:113
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:422
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:441
+#: dev_academy/utils/helper.js:865
 msgid "Trash"
 msgstr ""
 
@@ -11119,12 +11130,12 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/students/StudentsTable.js:337
 #: dev_academy/containers/backend-dashboard/pages/Withdraw/WithdrawTable.js:21
 #: dev_academy/containers/frontend-dashboard/Students/StudentsTable.js:149
-#: dev_academy/utils/helper.js:853
+#: dev_academy/utils/helper.js:866
 msgid "Approved"
 msgstr ""
 
 #: dev_academy/components/StatusOptions/index.js:36
-#: dev_academy/utils/helper.js:855
+#: dev_academy/utils/helper.js:868
 msgid "Processing"
 msgstr ""
 
@@ -11146,12 +11157,12 @@ msgstr ""
 #: dev_academy/containers/Announcement/AnnouncementTable.js:35
 #: dev_academy/containers/Announcement/AnnouncementTable.js:444
 #: dev_academy/containers/Certificate/CertificateTable.js:40
-#: dev_academy/containers/Courses/CoursesTable.js:47
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:314
-#: dev_academy/containers/Lesson/LessonsTable.js:42
-#: dev_academy/containers/Quizzes/QuizForm/index.js:43
-#: dev_academy/containers/Quizzes/QuizForm/index.js:547
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:41
+#: dev_academy/containers/Courses/CoursesTable.js:48
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:327
+#: dev_academy/containers/Lesson/LessonsTable.js:43
+#: dev_academy/containers/Quizzes/QuizForm/index.js:42
+#: dev_academy/containers/Quizzes/QuizForm/index.js:568
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:42
 #: dev_academy/containers/Webhooks/HooksModal/helper.js:6
 #: dev_academy/containers/Webhooks/HooksTable.js:25
 #: dev_academy/containers/Webhooks/HooksTable.js:255
@@ -11178,7 +11189,7 @@ msgid "Not published yet"
 msgstr ""
 
 #: dev_academy/components/SubmitBox/StatusSelect.js:60
-#: dev_academy/containers/Quizzes/QuizForm/index.js:57
+#: dev_academy/containers/Quizzes/QuizForm/index.js:56
 msgid "Admins and editors only"
 msgstr ""
 
@@ -11438,7 +11449,8 @@ msgstr ""
 #: dev_academy/containers/About/WhatsNew/mocks/Builders.js:13
 #: dev_academy/containers/About/WhatsNew/sections/Courses.js:10
 #: dev_academy/containers/backend-dashboard/pages/academy/DashboardTabs.js:16
-#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:58
+#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:81
+#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:113
 #: dev_academy/containers/Courses/new-course/CourseFormInner.js:49
 #: dev_academy/containers/Courses/new-course/index.js:365
 #: dev_academy/containers/frontend-curriculums/ContentTabs/index.js:89
@@ -11471,7 +11483,7 @@ msgstr ""
 
 #: dev_academy/containers/About/WhatsNew/mocks/Builders.js:53
 #: dev_academy/containers/Courses/new-course/CourseFormInner.js:154
-#: dev_academy/containers/Quizzes/QuizForm/index.js:607
+#: dev_academy/containers/Quizzes/QuizForm/index.js:628
 msgid "Save & Continue"
 msgstr ""
 
@@ -12385,6 +12397,10 @@ msgstr ""
 msgid "The menu is grouped into Learning, Teaching and Family. Each area has its own landing page and its own numbers, instead of one long list for everyone."
 msgstr ""
 
+#: dev_academy/containers/About/WhatsNew/sections/Dashboards.js:142
+msgid "Viewing as"
+msgstr ""
+
 #: dev_academy/containers/About/WhatsNew/sections/Dashboards.js:143
 msgid "Switch areas from the account menu"
 msgstr ""
@@ -12676,7 +12692,7 @@ msgstr ""
 #: dev_academy/containers/About/WhatsNew/sections/LearnPage.js:14
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/CourseStudentsTable.js:189
 #: dev_academy/containers/backend-dashboard/pages/academy/StudentDetailsModal/StudentCoursesTable.js:192
-#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:204
+#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:220
 msgid "Progress"
 msgstr ""
 
@@ -12906,8 +12922,8 @@ msgstr ""
 
 #: dev_academy/containers/About/WhatsNew/sections/Pro.js:80
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:460
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:56
 #: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:65
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:74
 msgid "Content Drip"
 msgstr ""
 
@@ -13202,7 +13218,7 @@ msgstr ""
 #: dev_academy/containers/Announcement/AnnouncementModal/index.js:54
 #: dev_academy/containers/Category/index.js:57
 #: dev_academy/containers/Courses/new-course/LessonEditor.js:138
-#: dev_academy/containers/Lesson/LessonModal/index.js:56
+#: dev_academy/containers/Lesson/LessonModal/index.js:69
 #: dev_academy/containers/Tag/index.js:49
 msgid "Title Missing"
 msgstr ""
@@ -13277,24 +13293,24 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/Instructors/InstructorTable.js:32
 #: dev_academy/containers/backend-dashboard/pages/Withdraw/WithdrawTable.js:17
 #: dev_academy/containers/Certificate/CertificateTable.js:36
-#: dev_academy/containers/Courses/CoursesTable.js:43
+#: dev_academy/containers/Courses/CoursesTable.js:44
 #: dev_academy/containers/Discover/Index.js:326
 #: dev_academy/containers/frontend-dashboard/MyNotes/index.js:116
 #: dev_academy/containers/GroupPlus/GroupTable.js:32
-#: dev_academy/containers/Lesson/LessonsTable.js:38
+#: dev_academy/containers/Lesson/LessonsTable.js:39
 #: dev_academy/containers/QA/QATable.js:22
 #: dev_academy/containers/Quizzes/QuizForm/Step/ThirdStep.js:88
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:37
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:38
 #: dev_academy/containers/Webhooks/HooksTable.js:21
 msgid "All"
 msgstr ""
 
 #: dev_academy/containers/Announcement/AnnouncementTable.js:128
 #: dev_academy/containers/Certificate/CertificateTable.js:134
-#: dev_academy/containers/Courses/CoursesTable.js:185
+#: dev_academy/containers/Courses/CoursesTable.js:186
 #: dev_academy/containers/GroupPlus/GroupTable.js:135
-#: dev_academy/containers/Lesson/LessonsTable.js:131
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:120
+#: dev_academy/containers/Lesson/LessonsTable.js:132
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:121
 msgid "Are you sure, you want to move these item to trash!"
 msgstr ""
 
@@ -13302,23 +13318,23 @@ msgstr ""
 #: dev_academy/containers/Announcement/AnnouncementTable.js:511
 #: dev_academy/containers/Certificate/CertificateTable.js:147
 #: dev_academy/containers/Certificate/CertificateTable.js:493
-#: dev_academy/containers/Courses/CoursesTable.js:198
-#: dev_academy/containers/Courses/CoursesTable.js:840
+#: dev_academy/containers/Courses/CoursesTable.js:199
+#: dev_academy/containers/Courses/CoursesTable.js:851
 #: dev_academy/containers/GroupPlus/GroupTable.js:148
 #: dev_academy/containers/GroupPlus/GroupTable.js:356
-#: dev_academy/containers/Lesson/LessonsTable.js:144
-#: dev_academy/containers/Lesson/LessonsTable.js:417
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:133
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:460
+#: dev_academy/containers/Lesson/LessonsTable.js:145
+#: dev_academy/containers/Lesson/LessonsTable.js:418
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:134
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:461
 msgid "Restore"
 msgstr ""
 
 #: dev_academy/containers/Announcement/AnnouncementTable.js:152
 #: dev_academy/containers/Certificate/CertificateTable.js:157
-#: dev_academy/containers/Courses/CoursesTable.js:206
+#: dev_academy/containers/Courses/CoursesTable.js:207
 #: dev_academy/containers/GroupPlus/GroupTable.js:152
-#: dev_academy/containers/Lesson/LessonsTable.js:152
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:141
+#: dev_academy/containers/Lesson/LessonsTable.js:153
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:142
 msgid "Are you sure, you want to restore these items?"
 msgstr ""
 
@@ -13326,13 +13342,13 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/students/StudentsTable.js:121
 #: dev_academy/containers/Category/CategoryTable.js:54
 #: dev_academy/containers/Certificate/CertificateTable.js:165
-#: dev_academy/containers/Courses/CoursesTable.js:214
+#: dev_academy/containers/Courses/CoursesTable.js:215
 #: dev_academy/containers/GroupPlus/GroupTable.js:160
-#: dev_academy/containers/Lesson/LessonsTable.js:160
+#: dev_academy/containers/Lesson/LessonsTable.js:161
 #: dev_academy/containers/QA/QATable.js:44
 #: dev_academy/containers/quiz-attempts/index.js:49
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:238
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:149
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:150
 #: dev_academy/containers/Tag/TagTable.js:38
 #: dev_academy/containers/Webhooks/HooksTable.js:83
 msgid "Delete Permanently"
@@ -13342,12 +13358,12 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/students/StudentsTable.js:131
 #: dev_academy/containers/Category/CategoryTable.js:58
 #: dev_academy/containers/Certificate/CertificateTable.js:175
-#: dev_academy/containers/Courses/CoursesTable.js:222
+#: dev_academy/containers/Courses/CoursesTable.js:223
 #: dev_academy/containers/GroupPlus/GroupTable.js:164
-#: dev_academy/containers/Lesson/LessonsTable.js:168
+#: dev_academy/containers/Lesson/LessonsTable.js:169
 #: dev_academy/containers/QA/QATable.js:48
 #: dev_academy/containers/quiz-attempts/index.js:53
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:157
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:158
 #: dev_academy/containers/Tag/TagTable.js:42
 #: dev_academy/containers/Webhooks/HooksTable.js:87
 msgid "Are you sure, you want to delete these items?"
@@ -13370,7 +13386,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/Withdraw/WithdrawTable.js:265
 #: dev_academy/containers/Category/CategoryTable.js:235
 #: dev_academy/containers/Certificate/CertificateTable.js:465
-#: dev_academy/containers/Courses/CoursesTable.js:754
+#: dev_academy/containers/Courses/CoursesTable.js:755
 #: dev_academy/containers/frontend-curriculums/TutorBooking/BookedTable/index.js:311
 #: dev_academy/containers/frontend-dashboard/Students/StudentsTable.js:95
 #: dev_academy/containers/GroupPlus/GroupTable.js:332
@@ -13380,10 +13396,10 @@ msgstr ""
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/Teams/Tables/TeamCourseTable.js:41
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/Teams/Tables/TeamLeadersTable.js:49
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/Teams/Tables/TeamMemberTable.js:49
-#: dev_academy/containers/Lesson/LessonsTable.js:377
+#: dev_academy/containers/Lesson/LessonsTable.js:378
 #: dev_academy/containers/QA/QATable.js:198
 #: dev_academy/containers/quiz-attempts/index.js:313
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:432
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:433
 #: dev_academy/containers/Tag/TagTable.js:164
 #: dev_academy/containers/Webhooks/HooksTable.js:270
 msgid "Action"
@@ -13397,18 +13413,18 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/Instructors/InstructorTable.js:92
 #: dev_academy/containers/backend-dashboard/pages/students/StudentsTable.js:80
 #: dev_academy/containers/Category/CategoryTable.js:318
-#: dev_academy/containers/Courses/CoursesTable.js:139
+#: dev_academy/containers/Courses/CoursesTable.js:140
 #: dev_academy/containers/frontend-dashboard/Students/StudentsTable.js:37
 #: dev_academy/containers/GroupPlus/GroupTable.js:220
-#: dev_academy/containers/Lesson/LessonsTable.js:623
+#: dev_academy/containers/Lesson/LessonsTable.js:629
 #: dev_academy/containers/QA/QATable.js:286
 #: dev_academy/containers/Quizzes/QuestionBank/index.js:437
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:553
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:559
 #: dev_academy/containers/Tag/TagTable.js:242
 msgid "No matching results found. Please try a different search."
 msgstr ""
 
-#: dev_academy/containers/Announcement/index.js:121
+#: dev_academy/containers/Announcement/index.js:131
 msgid "Add New Announcement"
 msgstr ""
 
@@ -13637,7 +13653,7 @@ msgstr ""
 
 #: dev_academy/containers/backend-dashboard/pages/academy/CourseDetailsModal/CourseStudentsTable.js:157
 #: dev_academy/containers/backend-dashboard/pages/academy/StudentDetailsModal/StudentCoursesTable.js:157
-#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:196
+#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:211
 msgid "Enroll Date"
 msgstr ""
 
@@ -13767,11 +13783,22 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:16
+#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:25
+#: dev_academy/containers/backend-dashboard/pages/settings/General/index.js:18
+#: dev_academy/containers/backend-dashboard/pages/settings/index.js:72
+#: dev_academy/containers/backend-dashboard/pages/settings/index.js:315
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/NewTabContent.js:171
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:150
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:31
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:89
+msgid "Off"
+msgstr ""
+
+#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:35
 msgid "Export Courses"
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:20
+#: dev_academy/containers/backend-dashboard/pages/academy/Tabs/index.js:39
 msgid "Export Students"
 msgstr ""
 
@@ -13815,7 +13842,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/settings/Licence/index.js:595
 #: dev_academy/containers/GroupPlus/GroupTable.js:36
 #: dev_academy/containers/Webhooks/HooksModal/helper.js:21
-#: dev_academy/utils/helper.js:862
+#: dev_academy/utils/helper.js:875
 msgid "Active"
 msgstr ""
 
@@ -14186,7 +14213,7 @@ msgid "Control account usage by limiting multiple logins sessions for security a
 msgstr ""
 
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:999
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:106
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:115
 msgid "BuddyPress"
 msgstr ""
 
@@ -14195,7 +14222,7 @@ msgid " Enable seamless social networking for learners with BuddyPress"
 msgstr ""
 
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:1025
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:119
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:128
 msgid "BuddyBoss"
 msgstr ""
 
@@ -14275,7 +14302,7 @@ msgstr ""
 
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:1234
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:1245
-#: dev_academy/containers/Courses/new-course/Sections/Attachment/Attachment.js:42
+#: dev_academy/containers/Courses/new-course/Sections/Attachment/Attachment.js:52
 msgid "Multimedia Attachment"
 msgstr ""
 
@@ -14293,7 +14320,7 @@ msgid "Embed and stream videos effortlessly with Gumlet — fast, secure, and op
 msgstr ""
 
 #: dev_academy/containers/backend-dashboard/pages/addons/index.js:1270
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:75
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:76
 msgid "Gumlet"
 msgstr ""
 
@@ -14712,7 +14739,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/design/dashboard.js:515
 #: dev_academy/containers/backend-dashboard/pages/design/index.js:456
 #: dev_academy/containers/Category/CategoryTable.js:250
-#: dev_academy/containers/Courses/CoursesTable.js:919
+#: dev_academy/containers/Courses/CoursesTable.js:930
 #: dev_academy/containers/GroupPlus/GroupTable.js:418
 #: dev_academy/containers/Tag/TagTable.js:180
 msgid "View"
@@ -15383,7 +15410,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/Instructors/InstructorTable.js:404
 #: dev_academy/containers/backend-dashboard/pages/Withdraw/WithdrawTable.js:64
 #: dev_academy/containers/backend-dashboard/pages/Withdraw/WithdrawTable.js:277
-#: dev_academy/utils/helper.js:854
+#: dev_academy/utils/helper.js:867
 msgid "Approve"
 msgstr ""
 
@@ -15977,16 +16004,6 @@ msgstr ""
 msgid "Student Form Builder"
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/settings/General/index.js:18
-#: dev_academy/containers/backend-dashboard/pages/settings/index.js:72
-#: dev_academy/containers/backend-dashboard/pages/settings/index.js:315
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/NewTabContent.js:164
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:149
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:31
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:88
-msgid "Off"
-msgstr ""
-
 #: dev_academy/containers/backend-dashboard/pages/settings/General/index.js:19
 msgid "Full site (course archive, single courses, learn page)"
 msgstr ""
@@ -16030,7 +16047,7 @@ msgstr ""
 #: dev_academy/containers/backend-dashboard/pages/settings/General/index.js:137
 #: dev_academy/containers/backend-dashboard/pages/settings/General/index.js:143
 #: dev_academy/containers/backend-dashboard/pages/settings/General/index.js:287
-#: dev_academy/containers/backend-dashboard/pages/students/enrollModal/SelectCourses.js:51
+#: dev_academy/containers/backend-dashboard/pages/students/enrollModal/SelectCourses.js:56
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/GroupCourses/CourseSelectForminner.js:20
 msgid "Select Courses"
 msgstr ""
@@ -17278,20 +17295,20 @@ msgstr ""
 msgid "No courses enrolled."
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:290
+#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:298
 msgid "Extend Enrollment"
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:326
+#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:334
 #: dev_academy/containers/backend-dashboard/pages/students/ExtendModuleAccessModal.js:85
 msgid "Extend Module Access"
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:339
+#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:347
 msgid "Enable the Content Drip addon to extend module access."
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:344
+#: dev_academy/containers/backend-dashboard/pages/students/EnrolledManageModal.js:352
 msgid "Only available for courses set to \"Schedule by Module\" content drip."
 msgstr ""
 
@@ -17304,7 +17321,7 @@ msgstr ""
 msgid "Bulk Enroll"
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/students/enrollModal/SelectCourses.js:61
+#: dev_academy/containers/backend-dashboard/pages/students/enrollModal/SelectCourses.js:66
 msgid "Select Single or Multiple Courses"
 msgstr ""
 
@@ -17340,11 +17357,15 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/students/ExtendEnrollmentDurationModal.js:126
+#: dev_academy/containers/backend-dashboard/pages/students/ExtendEnrollmentDurationModal.js:128
+msgid "Subscription Access"
+msgstr ""
+
+#: dev_academy/containers/backend-dashboard/pages/students/ExtendEnrollmentDurationModal.js:139
 msgid "Enrollment Duration"
 msgstr ""
 
-#: dev_academy/containers/backend-dashboard/pages/students/ExtendEnrollmentDurationModal.js:138
+#: dev_academy/containers/backend-dashboard/pages/students/ExtendEnrollmentDurationModal.js:151
 msgid "Extend Duration"
 msgstr ""
 
@@ -17964,13 +17985,13 @@ msgstr ""
 
 #: dev_academy/containers/backend-dashboard/pages/tools/pages/ShortCode.js:72
 #: dev_academy/containers/Courses/new-course/Sections/FeatureImageAndIntro/Intro.js:18
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:69
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:70
 msgid "Shortcode"
 msgstr ""
 
 #: dev_academy/containers/backend-dashboard/pages/Withdraw/WithdrawTable.js:29
 #: dev_academy/containers/backend-dashboard/pages/Withdraw/WithdrawTable.js:283
-#: dev_academy/utils/helper.js:865
+#: dev_academy/utils/helper.js:878
 msgid "Rejected"
 msgstr ""
 
@@ -18249,60 +18270,70 @@ msgstr ""
 msgid "Portrait"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:85
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:86
 msgid "Select certificate background"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:105
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:106
 msgid "No background"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:116
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:117
 msgid "Replace image"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:117
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:118
 msgid "Upload image"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:126
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:127
 msgid "Remove background"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:130
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:131
 msgid "Use an image at the page ratio for a full-bleed background."
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:141
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:142
 msgid "Or pick a bundled design"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:183
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:184
 msgid "Page size"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:196
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:202
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:197
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:203
 msgid "Page background colour"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:223
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:224
 msgid "Default font"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:225
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:228
+msgid "This font is not downloaded yet, so it will not show in the preview or PDF. Download fonts from the Certificates page."
+msgstr ""
+
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:232
 msgid "Only fonts Academy can embed in the PDF are listed."
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:242
+#. translators: %s: font name.
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:246
+#, js-format
+msgid "%s (not downloaded)"
+msgstr ""
+
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:256
 msgid "Orientation"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:249
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:263
 msgid "Background image"
 msgstr ""
 
-#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:255
+#: dev_academy/containers/Certificate/CertificateBuilder/PageSetupFields.js:269
 msgid "Background fit"
 msgstr ""
 
@@ -18319,19 +18350,19 @@ msgid "Search certificates"
 msgstr ""
 
 #: dev_academy/containers/Certificate/CertificateTable.js:399
-#: dev_academy/containers/Courses/CoursesTable.js:694
+#: dev_academy/containers/Courses/CoursesTable.js:695
 #: dev_academy/containers/GroupPlus/GroupTable.js:328
-#: dev_academy/containers/Lesson/LessonsTable.js:331
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:382
+#: dev_academy/containers/Lesson/LessonsTable.js:332
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:383
 msgid "Author"
 msgstr ""
 
 #: dev_academy/containers/Certificate/CertificateTable.js:551
-#: dev_academy/containers/Courses/CoursesTable.js:763
+#: dev_academy/containers/Courses/CoursesTable.js:767
 #: dev_academy/containers/GroupPlus/GroupTable.js:394
-#: dev_academy/containers/Lesson/LessonsTable.js:521
+#: dev_academy/containers/Lesson/LessonsTable.js:525
 #: dev_academy/containers/Quizzes/QuizForm/Questions.js:471
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:513
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:517
 msgid "Duplicate"
 msgstr ""
 
@@ -18398,38 +18429,38 @@ msgstr ""
 msgid "Students won’t get a certificate until one is marked Primary. Open a certificate’s ⋯ menu and choose “Make Primary”."
 msgstr ""
 
-#: dev_academy/containers/Courses/CoursesTable.js:63
+#: dev_academy/containers/Courses/CoursesTable.js:64
 #: dev_academy/utils/statusLabel.js:15
 msgid "Schedule"
 msgstr ""
 
-#: dev_academy/containers/Courses/CoursesTable.js:146
+#: dev_academy/containers/Courses/CoursesTable.js:147
 msgid "No courses with this status yet."
 msgstr ""
 
-#: dev_academy/containers/Courses/CoursesTable.js:147
+#: dev_academy/containers/Courses/CoursesTable.js:148
 msgid "Your courses will show here."
 msgstr ""
 
-#: dev_academy/containers/Courses/CoursesTable.js:346
+#: dev_academy/containers/Courses/CoursesTable.js:347
 #: dev_academy/containers/GroupPlus/GroupTable.js:241
 msgid "Are you sure you want to permanently delete this item?"
 msgstr ""
 
-#: dev_academy/containers/Courses/CoursesTable.js:428
+#: dev_academy/containers/Courses/CoursesTable.js:429
 msgid "Sub Curriculum"
 msgstr ""
 
-#: dev_academy/containers/Courses/CoursesTable.js:575
+#: dev_academy/containers/Courses/CoursesTable.js:576
 msgid "Live"
 msgstr ""
 
-#: dev_academy/containers/Courses/CoursesTable.js:790
+#: dev_academy/containers/Courses/CoursesTable.js:799
 msgid "Duplicate with Curriculum"
 msgstr ""
 
-#: dev_academy/containers/Courses/CoursesTable.js:928
-#: dev_academy/containers/Lesson/LessonsTable.js:459
+#: dev_academy/containers/Courses/CoursesTable.js:939
+#: dev_academy/containers/Lesson/LessonsTable.js:460
 msgid "WordPress Editor"
 msgstr ""
 
@@ -18653,7 +18684,7 @@ msgid "Create New Lesson"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/builder/topics-select-modal/Lesson/index.js:142
-#: dev_academy/containers/Lesson/LessonsTable.js:607
+#: dev_academy/containers/Lesson/LessonsTable.js:613
 msgid "Search Lesson"
 msgstr ""
 
@@ -18690,7 +18721,7 @@ msgid "Create New Quiz"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/builder/topics-select-modal/quiz/index.js:133
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:310
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:311
 msgid "Search Quiz"
 msgstr ""
 
@@ -18711,19 +18742,19 @@ msgid "No QuizPress Quiz Found!"
 msgstr ""
 
 #. translators: %s: addon name, e.g. "Quiz" or "QuizPress Quiz"
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:170
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:171
 #, js-format
 msgid "%s Addon is Off"
 msgstr ""
 
 #. translators: %s: plugin name, e.g. "QuizPress"
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:183
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:184
 #, js-format
 msgid "Install and activate %s to browse and reuse existing content."
 msgstr ""
 
 #. translators: %s: addon name, e.g. "Quiz" or "QuizPress Quiz"
-#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:188
+#: dev_academy/containers/Courses/new-course/builder/topics-select-modal/ReuseContent.js:189
 #, js-format
 msgid "Turn on the %s addon to browse and reuse existing content."
 msgstr ""
@@ -18734,7 +18765,7 @@ msgid "Publishing is disabled for instructors by the site admin."
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/CourseFormInner.js:170
-#: dev_academy/containers/Quizzes/QuizForm/index.js:624
+#: dev_academy/containers/Quizzes/QuizForm/index.js:651
 msgid "Save without leaving this step"
 msgstr ""
 
@@ -18751,59 +18782,59 @@ msgid "Create course"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/LessonEditor.js:147
-#: dev_academy/containers/Lesson/LessonModal/index.js:69
+#: dev_academy/containers/Lesson/LessonModal/index.js:82
 msgid "Duration field can not be empty!"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/LessonEditor.js:157
-#: dev_academy/containers/Lesson/LessonModal/index.js:82
+#: dev_academy/containers/Lesson/LessonModal/index.js:95
 msgid "Drip content field value required"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:209
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:215
 #: dev_academy/redux/Slices/lessonSlice/lessonSlice.js:105
 msgid "Lesson Updated"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:251
-#: dev_academy/containers/Lesson/LessonModal/index.js:145
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:264
+#: dev_academy/containers/Lesson/LessonModal/index.js:163
 msgid "Lesson Created"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:272
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:285
 msgid "Edit Lesson"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:273
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:286
 msgid "New Lesson"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:304
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:317
 #: dev_academy/utils/statusLabel.js:20
 msgid "Save Draft"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:306
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:319
 #: dev_academy/utils/statusLabel.js:17
 msgid "Save Private"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:308
-#: dev_academy/containers/Lesson/LessonModal/index.js:187
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:321
+#: dev_academy/containers/Lesson/LessonModal/index.js:205
 msgid "Update Lesson"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:309
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:322
 msgid "Publish Lesson"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:315
-#: dev_academy/containers/Quizzes/QuizForm/index.js:551
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:328
+#: dev_academy/containers/Quizzes/QuizForm/index.js:572
 msgid "Save as Draft"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/LessonEditor.js:316
-#: dev_academy/containers/Quizzes/QuizForm/index.js:558
+#: dev_academy/containers/Courses/new-course/LessonEditor.js:329
+#: dev_academy/containers/Quizzes/QuizForm/index.js:579
 msgid "Save as Private"
 msgstr ""
 
@@ -18815,27 +18846,25 @@ msgstr ""
 msgid "New Quiz"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/ScormUpload.js:65
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:88
-msgid "No files yet"
+#: dev_academy/containers/Courses/new-course/ScormUpload.js:18
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:106
+msgid "Please upload a SCORM package (.zip)."
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/ScormUpload.js:80
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:98
-msgid "Upload Completed"
+#: dev_academy/containers/Courses/new-course/ScormUpload.js:40
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:35
+msgid "SCORM upload failed."
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/ScormUpload.js:95
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:110
+#: dev_academy/containers/Courses/new-course/ScormUpload.js:66
 msgid "Upload SCORM Package"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/ScormUpload.js:98
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:113
-msgid "Support: Zip only"
+#: dev_academy/containers/Courses/new-course/ScormUpload.js:67
+msgid "Uploading a package replaces this course’s curriculum."
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Attachment/Attachment.js:31
+#: dev_academy/containers/Courses/new-course/Sections/Attachment/Attachment.js:41
 #: dev_academy/containers/frontend-curriculums/AssignmentContent/Assignment/index.js:26
 #: dev_academy/containers/frontend-curriculums/LessonContent/TextContent/Attachment.js:24
 #: dev_academy/containers/Lesson/LessonModal/LessonFormInner/index.js:326
@@ -19065,55 +19094,55 @@ msgstr ""
 msgid "Require ALL rules (AND) instead of ANY (OR)"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:89
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:90
 msgid "Automatic “almost there” nudge emails need GameEngine Pro."
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:111
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:112
 msgid "GameEngine Unlock"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:119
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:120
 msgid "Also let students unlock this course with GameEngine points — either by purchasing it above, or by meeting the point rule(s) below, whichever happens first."
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:166
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:170
 msgid "Nudge students as they get close to unlocking"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:173
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:178
 msgid "Notify at"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:198
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:203
 msgid "% of the requirement"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:221
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/GameEngineSection.js:226
 msgid "GameEngine Addon is Off"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:171
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:172
 msgid "RCP"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:182
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:183
 msgid "MMP"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:293
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:305
 msgid "Unlock Pricing By Activating Woo-Commerce"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:300
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:313
 msgid "Unlock Pricing By Activating StoreEngine"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:306
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:319
 msgid "Course Type"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:308
+#: dev_academy/containers/Courses/new-course/Sections/CourseType/index.js:321
 msgid "A course can be Public or restricted (RCP/MemberPress), or priced normally — unlockable with GameEngine points instead of money, or both at once."
 msgstr ""
 
@@ -19221,27 +19250,27 @@ msgid "Video: YouTube, Vimeo, MP4 and more"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/Sections/FeatureImageAndIntro/Intro.js:13
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:49
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:50
 msgid "Youtube"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/Sections/FeatureImageAndIntro/Intro.js:14
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:53
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:54
 msgid "Vimeo"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/Sections/FeatureImageAndIntro/Intro.js:15
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:57
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:58
 msgid "External URL"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/Sections/FeatureImageAndIntro/Intro.js:16
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:61
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:62
 msgid "Embedded"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/Sections/FeatureImageAndIntro/Intro.js:17
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:65
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:66
 msgid "HTML 5 (mp4)"
 msgstr ""
 
@@ -19293,15 +19322,15 @@ msgstr ""
 msgid "Generate Course Description"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:83
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:92
 msgid "Prerequisite"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:136
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:145
 msgid "Fluent Community"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:204
+#: dev_academy/containers/Courses/new-course/Sections/Settings/index.js:213
 msgid "Course Settings"
 msgstr ""
 
@@ -19353,89 +19382,89 @@ msgid ""
 "Slides and course notes (PDF)"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:54
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:61
 msgid "BuddyBoss is not active"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:55
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:62
 msgid "Activate the BuddyBoss Platform plugin to attach groups and an activity feed to this course."
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:64
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:71
 msgid "BuddyBoss \"Groups\" component is disabled"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:70
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:74
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:77
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:81
 msgid "No groups can be listed here until the Groups component is enabled. "
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:75
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:99
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:82
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:106
 msgid "Enable it under BuddyBoss → Settings → Components"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:80
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:84
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:87
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:91
 msgid ", then reload this page."
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:88
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:95
 msgid "BuddyBoss \"Activity Streams\" component is disabled"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:94
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:98
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:101
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:105
 msgid "Groups can be selected below, but the course activity feed needs the Activity Streams component too. "
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:113
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:120
 msgid "Active BuddyBoss"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:116
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:123
 msgid "Enable BuddyBoss group activity feeds"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:132
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:139
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:139
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:146
 msgid "Search Groups"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:135
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddyboss.js:142
 msgid "BuddyBoss Groups"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:58
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:65
 msgid "BuddyPress is not active"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:59
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:66
 msgid "Activate the BuddyPress plugin to attach groups and an activity feed to this course."
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:68
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:75
 msgid "BuddyPress \"Groups\" component is disabled"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:79
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:103
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:86
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:110
 msgid "Enable it under BuddyPress → Settings → Components"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:92
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:99
 msgid "BuddyPress \"Activity Streams\" component is disabled"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:117
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:124
 msgid "Active BuddyPress"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:120
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:127
 msgid "Enable BuddyPress group activity feeds"
 msgstr ""
 
-#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:142
+#: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/Buddypress.js:149
 msgid "BuddyPress Groups"
 msgstr ""
 
@@ -19584,17 +19613,17 @@ msgid "Set the expected time duration for this course "
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/General/index.js:124
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:310
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:315
 msgid "Hrs"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/General/index.js:144
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:311
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:316
 msgid "Min"
 msgstr ""
 
 #: dev_academy/containers/Courses/new-course/Sections/Settings/Tabs/General/index.js:164
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:312
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:317
 msgid "Sec"
 msgstr ""
 
@@ -19824,11 +19853,11 @@ msgid "No lime limit"
 msgstr ""
 
 #: dev_academy/containers/frontend-curriculums/AssignmentContent/Assignment/DeadlineCountDown.js:33
-#: dev_academy/containers/frontend-curriculums/QuizContent/component/QuizTimer.js:199
+#: dev_academy/containers/frontend-curriculums/QuizContent/component/QuizTimer.js:204
 #: dev_academy/containers/frontend-curriculums/TopicsSidebar/Topics.js:181
 #: dev_academy/containers/frontend-curriculums/TopicsSidebar/Topics.js:414
 #: dev_academy/containers/GroupPlus/NewGroup/Sections/GroupCourses/index.js:162
-#: dev_academy/utils/helper.js:863
+#: dev_academy/utils/helper.js:876
 msgid "Expired"
 msgstr ""
 
@@ -19946,6 +19975,10 @@ msgstr ""
 #: dev_academy/containers/frontend-curriculums/ContentTabs/ContentHeader.js:101
 #, js-format
 msgid "Lesson %1$s of %2$s"
+msgstr ""
+
+#: dev_academy/containers/frontend-curriculums/index.js:124
+msgid "This content has expired."
 msgstr ""
 
 #: dev_academy/containers/frontend-curriculums/LessonContent/AutoLoaderVideo.js:51
@@ -20190,9 +20223,9 @@ msgstr ""
 
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/answers-table.js:142
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/answers-table.js:167
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:103
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:127
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:155
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:123
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:147
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:175
 msgid "correct answer image"
 msgstr ""
 
@@ -20236,7 +20269,7 @@ msgstr ""
 #: dev_academy/containers/frontend-curriculums/QuizPressQuizContent/AttemptDetails.js:84
 #: dev_academy/containers/frontend-curriculums/TopicsTabsNavigation/frontendqa/index.js:254
 #: dev_academy/containers/QA/QATable.js:23
-#: dev_academy/utils/helper.js:861
+#: dev_academy/utils/helper.js:874
 msgid "Answered"
 msgstr ""
 
@@ -20247,7 +20280,7 @@ msgstr ""
 
 #: dev_academy/containers/frontend-curriculums/QuizContent/component/attempt-modal/AttemptDetails.js:71
 #: dev_academy/containers/frontend-curriculums/QuizPressQuizContent/AttemptDetails.js:149
-#: dev_academy/containers/quiz-attempts/attempt-modal/index.js:90
+#: dev_academy/containers/quiz-attempts/attempt-modal/index.js:87
 msgid "Attempt Answers Details"
 msgstr ""
 
@@ -20345,7 +20378,7 @@ msgstr ""
 msgid "Reattempt"
 msgstr ""
 
-#: dev_academy/containers/frontend-curriculums/QuizContent/component/QuizTimer.js:196
+#: dev_academy/containers/frontend-curriculums/QuizContent/component/QuizTimer.js:201
 msgid "Time remaining:"
 msgstr ""
 
@@ -20806,7 +20839,7 @@ msgstr ""
 msgid "Zoom Meetings"
 msgstr ""
 
-#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:227
+#: dev_academy/containers/frontend-modal/CourseDetailsModal/CourseDetailsTable.js:243
 msgid "Overall Feedback"
 msgstr ""
 
@@ -21098,7 +21131,7 @@ msgstr ""
 msgid "Add New Lesson"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/index.js:188
+#: dev_academy/containers/Lesson/LessonModal/index.js:206
 msgid "Add lesson"
 msgstr ""
 
@@ -21142,85 +21175,101 @@ msgstr ""
 msgid "A file students can download from the lesson."
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:100
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:101
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:104
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:105
 msgid "Online"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:106
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:107
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:110
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:111
 msgid "Offline"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:115
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:120
 msgid "Lesson Settings"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:121
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:126
 msgid "Preview Lesson"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:122
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:127
 msgid "If the preview lesson is marked on, then students can view course content without enrolling in the course."
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:134
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:139
 msgid "Video Source"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:137
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:142
 msgid "Select your preferred video type."
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:154
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:159
 msgid "Select Video Source"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:216
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:221
 msgid "Gumlet Asset ID (e.g. 64a1b2c3d4e5f6789)"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:229
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:234
 msgid "If the field is empty it will work as Offline Class Address."
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:238
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:243
 msgid "Go to Settings page"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:252
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:257
 msgid "Auto-complete and auto-load next lesson features will not work for lessons with external links."
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:261
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:266
 msgid "Enter your Gumlet Video Asset ID above. Secure playback requires Gumlet to be configured under Settings → Learn Page."
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:274
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:279
 msgid "Attendance Required"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:277
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:282
 msgid "This lesson requires student's attendance."
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:299
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:304
 msgid "Video Playback Time"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:302
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonMeta.js:307
 msgid "Set the expected time duration for this lesson"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonsTable.js:266
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:63
+msgid "SCORM package uploaded"
+msgstr ""
+
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:116
+msgid "Add a lesson title first."
+msgstr ""
+
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:136
+msgid "Upload a SCORM (.zip) package to use as this lesson’s content."
+msgstr ""
+
+#: dev_academy/containers/Lesson/LessonModal/LessonFormInner/LessonScromUpload.js:143
+msgid "SCORM package"
+msgstr ""
+
+#: dev_academy/containers/Lesson/LessonsTable.js:267
 msgid "Lesson Duplicated"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonsTable.js:288
+#: dev_academy/containers/Lesson/LessonsTable.js:289
 msgid "Are you sure you want to permanently delete selected lessons?"
 msgstr ""
 
-#: dev_academy/containers/Lesson/LessonsTable.js:619
+#: dev_academy/containers/Lesson/LessonsTable.js:625
 msgid "Your lessons will show here."
 msgstr ""
 
@@ -21252,8 +21301,12 @@ msgstr ""
 msgid "Your questions will show here."
 msgstr ""
 
-#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:57
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:68
 msgid "Answer Reviewed"
+msgstr ""
+
+#: dev_academy/containers/quiz-attempts/attempt-modal/answers-table.js:77
+msgid "Failed to review the answer."
 msgstr ""
 
 #: dev_academy/containers/quiz-attempts/attempt-modal/attempt-table.js:100
@@ -21266,7 +21319,7 @@ msgstr ""
 msgid "Incorrect:"
 msgstr ""
 
-#: dev_academy/containers/quiz-attempts/attempt-modal/index.js:71
+#: dev_academy/containers/quiz-attempts/attempt-modal/index.js:68
 msgid "Attempt Results"
 msgstr ""
 
@@ -21287,7 +21340,7 @@ msgid "Are you sure you want to permanently delete selected Qizzes?"
 msgstr ""
 
 #: dev_academy/containers/quiz-attempts/index.js:197
-#: dev_academy/containers/Quizzes/QuizForm/index.js:35
+#: dev_academy/containers/Quizzes/QuizForm/index.js:34
 #: dev_academy/containers/Quizzes/QuizForm/Steps.js:7
 msgid "Quiz Info"
 msgstr ""
@@ -21314,12 +21367,12 @@ msgid "Quiz Content"
 msgstr ""
 
 #: dev_academy/containers/Quizzes/helper.js:175
-#: dev_academy/utils/helper.js:792
+#: dev_academy/utils/helper.js:805
 msgid "True/False"
 msgstr ""
 
 #: dev_academy/containers/Quizzes/helper.js:179
-#: dev_academy/utils/helper.js:796
+#: dev_academy/utils/helper.js:809
 msgid "Single Choice"
 msgstr ""
 
@@ -21336,7 +21389,7 @@ msgid "Short Answer [PRO]"
 msgstr ""
 
 #: dev_academy/containers/Quizzes/helper.js:196
-#: dev_academy/utils/helper.js:811
+#: dev_academy/utils/helper.js:824
 msgid "Short Answer"
 msgstr ""
 
@@ -21345,7 +21398,7 @@ msgid "Image Answer [PRO]"
 msgstr ""
 
 #: dev_academy/containers/Quizzes/helper.js:203
-#: dev_academy/utils/helper.js:807
+#: dev_academy/utils/helper.js:820
 msgid "Image Answer"
 msgstr ""
 
@@ -21354,7 +21407,7 @@ msgid "Fill In The Blanks [PRO]"
 msgstr ""
 
 #: dev_academy/containers/Quizzes/helper.js:210
-#: dev_academy/utils/helper.js:815
+#: dev_academy/utils/helper.js:828
 msgid "Fill In The Blanks"
 msgstr ""
 
@@ -21445,7 +21498,7 @@ msgstr ""
 
 #: dev_academy/containers/Quizzes/QuestionBank/index.js:371
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:568
-#: dev_academy/containers/Quizzes/QuizForm/QuestionReuse.js:76
+#: dev_academy/containers/Quizzes/QuizForm/QuestionReuse.js:90
 msgid "Search questions…"
 msgstr ""
 
@@ -21792,7 +21845,7 @@ msgid "Quiz #%d"
 msgstr ""
 
 #: dev_academy/containers/Quizzes/QuestionsManager/index.js:453
-#: dev_academy/containers/Quizzes/QuizForm/QuestionReuse.js:116
+#: dev_academy/containers/Quizzes/QuizForm/QuestionReuse.js:136
 #: dev_academy/containers/Quizzes/QuizForm/Questions.js:406
 #: dev_academy/containers/Quizzes/QuizForm/Questions.js:595
 #: dev_academy/containers/Quizzes/QuizForm/Questions.js:702
@@ -21835,35 +21888,35 @@ msgstr ""
 msgid "New Question"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizForm/index.js:45
+#: dev_academy/containers/Quizzes/QuizForm/index.js:44
 msgid "Available to enrolled students"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizForm/index.js:51
+#: dev_academy/containers/Quizzes/QuizForm/index.js:50
 msgid "Hidden until published"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizForm/index.js:211
-#: dev_academy/containers/Quizzes/QuizForm/index.js:330
+#: dev_academy/containers/Quizzes/QuizForm/index.js:205
+#: dev_academy/containers/Quizzes/QuizForm/index.js:342
 msgid "Title is required"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizForm/index.js:261
-#: dev_academy/containers/Quizzes/QuizForm/index.js:293
-#: dev_academy/containers/Quizzes/QuizForm/index.js:361
-#: dev_academy/containers/Quizzes/QuizForm/index.js:387
+#: dev_academy/containers/Quizzes/QuizForm/index.js:262
+#: dev_academy/containers/Quizzes/QuizForm/index.js:305
+#: dev_academy/containers/Quizzes/QuizForm/index.js:373
+#: dev_academy/containers/Quizzes/QuizForm/index.js:399
 msgid "Successfully Saved!"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizForm/index.js:281
+#: dev_academy/containers/Quizzes/QuizForm/index.js:282
 msgid "Empty Questions!!"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizForm/index.js:571
+#: dev_academy/containers/Quizzes/QuizForm/index.js:592
 msgid "Save and keep editing."
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizForm/QuestionReuse.js:153
+#: dev_academy/containers/Quizzes/QuizForm/QuestionReuse.js:169
 msgid "No questions found!"
 msgstr ""
 
@@ -22071,23 +22124,23 @@ msgstr ""
 msgid "Specify the number of questions you would like to display on the learning page. 0 for no limit."
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:255
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:256
 msgid "Quiz Duplicated"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:331
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:332
 msgid "Are you sure you want to permanently delete selected courses?"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:362
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:363
 msgid "Questions Count"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:369
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:370
 msgid "Created"
 msgstr ""
 
-#: dev_academy/containers/Quizzes/QuizzesListTable.js:549
+#: dev_academy/containers/Quizzes/QuizzesListTable.js:555
 msgid "Your quizzes will show here."
 msgstr ""
 
@@ -23605,66 +23658,66 @@ msgstr ""
 msgid "Could not resend the code."
 msgstr ""
 
-#: dev_academy/utils/helper.js:138
+#: dev_academy/utils/helper.js:151
 msgid "You don't have permission to perform this action. Please contact your site administrator if you need access."
 msgstr ""
 
-#: dev_academy/utils/helper.js:144
+#: dev_academy/utils/helper.js:157
 msgid "create"
 msgstr ""
 
-#: dev_academy/utils/helper.js:145
+#: dev_academy/utils/helper.js:158
 msgid "update"
 msgstr ""
 
-#: dev_academy/utils/helper.js:146
+#: dev_academy/utils/helper.js:159
 msgid "delete"
 msgstr ""
 
-#: dev_academy/utils/helper.js:148
+#: dev_academy/utils/helper.js:161
 msgid "manage"
 msgstr ""
 
 #. translators: 1: action verb (create/update/delete/manage). 2: resource name (courses, lessons, ...).
-#: dev_academy/utils/helper.js:152
+#: dev_academy/utils/helper.js:165
 #, js-format
 msgid "You don't have permission to %1$s %2$s. Please contact your site administrator to request access."
 msgstr ""
 
-#: dev_academy/utils/helper.js:531
+#: dev_academy/utils/helper.js:544
 #: dev_academy/utils/wpMediaUpload.js:26
 msgid "Select or Upload Media"
 msgstr ""
 
-#: dev_academy/utils/helper.js:800
+#: dev_academy/utils/helper.js:813
 msgid "Multiple Choice "
 msgstr ""
 
-#: dev_academy/utils/helper.js:849
+#: dev_academy/utils/helper.js:862
 msgid "Submitted"
 msgstr ""
 
-#: dev_academy/utils/helper.js:858
+#: dev_academy/utils/helper.js:871
 msgid "Pass"
 msgstr ""
 
-#: dev_academy/utils/helper.js:859
+#: dev_academy/utils/helper.js:872
 msgid "Passed"
 msgstr ""
 
-#: dev_academy/utils/helper.js:860
+#: dev_academy/utils/helper.js:873
 msgid "Success"
 msgstr ""
 
-#: dev_academy/utils/helper.js:864
+#: dev_academy/utils/helper.js:877
 msgid "Running"
 msgstr ""
 
-#: dev_academy/utils/helper.js:866
+#: dev_academy/utils/helper.js:879
 msgid "Failed"
 msgstr ""
 
-#: dev_academy/utils/helper.js:867
+#: dev_academy/utils/helper.js:880
 msgid "Time Expired"
 msgstr ""
 

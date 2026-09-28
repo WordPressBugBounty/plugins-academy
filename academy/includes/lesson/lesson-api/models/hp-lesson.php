@@ -116,7 +116,7 @@ class HpLesson extends Base\Lesson {
 				),
 				ARRAY_A
 			);
-			$ins->set_data( $data );
+			$ins->load_stored_data( $data );
 			$ins->set_meta_data( is_array( $meta_data ) ? array_column( $meta_data, 'meta_value', 'meta_key' ) : [] );
 			return $ins;
 		}

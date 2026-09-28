@@ -126,6 +126,22 @@ trait LessonSchema {
 				'type'   => 'string',
 				'sanitize_callback' => function ( $content ) {
 					$content = ColorConverter::rgb_to_hex( $content );
+
+					// Matches core's own content_save_pre gate (wp_filter_post_kses
+					// only runs for users who lack 'unfiltered_html' — Administrators
+					// have it by default on a single site). Without this check, a
+					// lesson author who pastes a full HTML document — a <style> block,
+					// say — loses it on every save even though the exact same paste,
+					// by the exact same user, into WordPress's own Classic Editor
+					// would be kept as-is.
+					if ( current_user_can( 'unfiltered_html' ) ) {
+						return str_replace(
+							array( '–', '—', '\\' ),
+							array( '-', '-', '\\\\' ),
+							$content
+						);
+					}
+
 					$allowed_tags = wp_kses_allowed_html( 'post' );
 					$allowed_tags['input'] = array(
 						'type'              => true,

@@ -166,4 +166,4 @@ add_action( 'user_register', 'academy_auto_enroll_after_registration', 20 );
 add_action( 'academy/admin/update_instructor_status', 'academy_auto_enroll_after_registration', 20 );
 
 add_action( 'academy_loco_translate_sync', 'academy_loco_translate_sync' );
-add_filter( 'academy/allowed_learnpage_content_tags', 'academy_allowed_learnpage_content_tags', 10, 1 );
+add_filter( 'academy/allowed_learnpage_content_tags', 'academy_allowed_learnpage_content_tags', 10, 2 );

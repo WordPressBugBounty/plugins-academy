@@ -11,6 +11,7 @@ class Integration {
 		$self = new self();
 		$self->add_cache_plugin_integration();
 		$self->add_security_plugin_integration();
+		$self->add_theme_integration();
 	}
 
 	public function add_cache_plugin_integration() {
@@ -27,5 +28,9 @@ class Integration {
 
 	public function add_security_plugin_integration() {
 		Integration\GemSecurity::init();
+	}
+
+	public function add_theme_integration() {
+		Integration\ThemeCompat::init();
 	}
 }

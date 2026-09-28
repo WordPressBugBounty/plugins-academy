@@ -121,7 +121,7 @@ class CanvasRenderer extends Renderer {
 	}
 
 	/**
-	 * Layout rules every block gets — position/size/rotation/layer.
+	 * Layout rules every block gets — position/size/layer.
 	 *
 	 * No `opacity` here on purpose: mPDF has no general CSS opacity support
 	 * outside a few specific object types (images, backgrounds, borders) — a
@@ -133,10 +133,9 @@ class CanvasRenderer extends Renderer {
 	 * can actually render), so the attribute is intentionally ignored here —
 	 * the editor UI is dropping the opacity control to match.
 	 *
-	 * `rotation` still emits `transform: rotate()` here even though mPDF
-	 * also ignores that on a plain `<div>` — real rotation support (an
-	 * SVG-rendered `<img>`, the one block shape mPDF's CSS engine does
-	 * rotate) is a separate, not-yet-finished piece of work.
+	 * Blocks are never rotated: the builder has no rotate control, and a
+	 * `rotation` left in older saved certificates is ignored so they render
+	 * straight, the same as the canvas.
 	 *
 	 * @param array $a Block attributes.
 	 */
@@ -148,10 +147,6 @@ class CanvasRenderer extends Renderer {
 			'width'    => self::px( $a['w'] ?? 0 ),
 			'height'   => self::px( $a['h'] ?? 0 ),
 		);
-		$rotation = floatval( $a['rotation'] ?? 0 );
-		if ( $rotation ) {
-			$rules['transform'] = 'rotate(' . self::num_str( $rotation ) . 'deg)';
-		}
 		if ( isset( $a['zIndex'] ) ) {
 			$rules['z-index'] = (string) intval( $a['zIndex'] );
 		}

@@ -10,7 +10,10 @@ trait Sanitizer {
 		return absint( $id );
 	}
 	public function sanitize_lesson_content( $content ) {
-		return apply_filters( 'academy/allowed_learnpage_content_tags', $content );
+		// Null while saving (the current user's capabilities decide); the
+		// lesson author's ID while loading a stored row.
+		$author_id = property_exists( $this, 'stored_content_author' ) ? $this->stored_content_author : null;
+		return apply_filters( 'academy/allowed_learnpage_content_tags', $content, $author_id );
 	}
 	public function sanitize_post_content( $content ) {
 		return $this->sanitize_lesson_content( $content );

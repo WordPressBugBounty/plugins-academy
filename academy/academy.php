@@ -1,9 +1,9 @@
 <?php
 /*
- * Plugin Name:     Academy LMS
+ * Plugin Name:     Academy LMS – AI Course Builder, Quizzes, Certificates & eLearning
  * Plugin URI:      http://academylms.net
  * Description:     Share your knowledge by launching an online course.
- * Version:         4.0.0
+ * Version:         4.0.1
  * Author:          Academy LMS
  * Author URI:      http://academylms.net
  * License:         GPL-3.0+
@@ -45,7 +45,7 @@ final class Academy {
 		/**
 		 * Defines CONSTANTS for Whole plugins.
 		 */
-		define( 'ACADEMY_VERSION', '4.0.0' );
+		define( 'ACADEMY_VERSION', '4.0.1' );
 		define( 'ACADEMY_DB_VERSION', '1.1' );
 		define( 'ACADEMY_SETTINGS_NAME', 'academy_settings' );
 		define( 'ACADEMY_ADDONS_SETTINGS_NAME', 'academy_addons' );

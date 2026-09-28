@@ -55,6 +55,23 @@ class Assets {
 		wp_add_inline_style( 'academy-certificate-fonts', $css );
 	}
 
+	/**
+	 * Builder fonts whose TTF file has been downloaded.
+	 *
+	 * @return string[]
+	 */
+	protected function available_fonts() {
+		$upload = wp_upload_dir();
+		$dir    = trailingslashit( $upload['basedir'] ) . 'academy_uploads/mpdf/ttfonts/';
+		$found  = array();
+		foreach ( self::BUILDER_FONTS as $family => $file ) {
+			if ( file_exists( $dir . $file ) ) {
+				$found[] = $family;
+			}
+		}
+		return $found;
+	}
+
 	/** Build @font-face rules for the downloaded TTFs that exist on disk. */
 	protected function builder_fontface_css() {
 		$upload  = wp_upload_dir();
@@ -111,6 +128,8 @@ class Assets {
 				'presets'          => $this->get_presets(),
 				// The builder's font picker offers exactly what the PDF can embed.
 				'fonts'            => array_keys( self::BUILDER_FONTS ),
+				// Only the fonts whose TTF is on disk can render on the canvas / in the PDF.
+				'fonts_available'  => $this->available_fonts(),
 			],
 		] );
 	}

@@ -58,24 +58,6 @@ $academy_wrapper = get_block_wrapper_attributes(
 				</button>
 				<div class="academy-dash-user__menu" role="menu">
 					<div class="academy-dash-user__email"><?php echo esc_html( $academy_user->user_email ); ?></div>
-					<?php if ( ! empty( $attributes['showViewSwitch'] ) && count( $academy_areas ) > 1 ) : ?>
-						<span class="academy-dash-user__label"><?php esc_html_e( 'Viewing as', 'academy' ); ?></span>
-						<?php foreach ( $academy_areas as $academy_key => $academy_area ) : ?>
-							<a
-								role="menuitemradio"
-								aria-checked="<?php echo $academy_key === $academy_view ? 'true' : 'false'; ?>"
-								class="academy-dash-user__item<?php echo $academy_key === $academy_view ? ' is-current' : ''; ?>"
-								href="<?php echo esc_url( add_query_arg( 'view', $academy_key, Helper::get_frontend_dashboard_endpoint_url( 'index' ) ) ); ?>"
-							>
-								<i class="<?php echo esc_attr( $academy_area['icon'] ); ?>" aria-hidden="true"></i>
-								<?php echo esc_html( $academy_area['label'] ); ?>
-								<?php if ( $academy_key === $academy_view ) : ?>
-									<i class="academy-icon academy-icon--check academy-dash-user__check" aria-hidden="true"></i>
-								<?php endif; ?>
-							</a>
-						<?php endforeach; ?>
-						<hr />
-					<?php endif; ?>
 					<?php do_action( 'academy/templates/frontend_dashboard/user_popover_menu_item_before_profile_menu' ); ?>
 					<a role="menuitem" class="academy-dash-user__item" href="<?php echo esc_url( Helper::get_frontend_dashboard_endpoint_url( 'profile' ) ); ?>"><i class="academy-icon academy-icon--profile" aria-hidden="true"></i><?php esc_html_e( 'Profile', 'academy' ); ?></a>
 					<a role="menuitem" class="academy-dash-user__item" href="<?php echo esc_url( Helper::get_frontend_dashboard_endpoint_url( 'settings' ) ); ?>"><i class="academy-icon academy-icon--settings" aria-hidden="true"></i><?php esc_html_e( 'Settings', 'academy' ); ?></a>
@@ -98,6 +80,23 @@ $academy_wrapper = get_block_wrapper_attributes(
 			<span class="academy-icon academy-icon--close" aria-hidden="true"></span>
 		</button>
 	</div>
+
+	<?php if ( ! empty( $attributes['showViewSwitch'] ) && count( $academy_areas ) > 1 ) : ?>
+		<nav class="academy-dashboard-view-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Dashboard view', 'academy' ); ?>">
+			<?php foreach ( $academy_areas as $academy_key => $academy_area ) : ?>
+				<a
+					role="tab"
+					aria-selected="<?php echo $academy_key === $academy_view ? 'true' : 'false'; ?>"
+					class="academy-dashboard-view-tabs__tab<?php echo $academy_key === $academy_view ? ' is-current' : ''; ?>"
+					href="<?php echo esc_url( add_query_arg( 'view', $academy_key, Helper::get_frontend_dashboard_endpoint_url( 'index' ) ) ); ?>"
+					title="<?php echo esc_attr( $academy_area['label'] ); ?>"
+				>
+					<i class="<?php echo esc_attr( $academy_area['icon'] ); ?>" aria-hidden="true"></i>
+					<span class="academy-dashboard-view-tabs__label"><?php echo esc_html( $academy_area['label'] ); ?></span>
+				</a>
+			<?php endforeach; ?>
+		</nav>
+	<?php endif; ?>
 
 	<ul class="academy-dashboard-menu academy-dash-menu">
 		<?php academy_frontend_dashboard_menu(); ?>

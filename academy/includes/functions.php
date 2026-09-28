@@ -642,6 +642,7 @@ if ( ! function_exists( 'academy_single_course_enroll_content' ) ) {
 					'max_students'   => $max_students,
 					'last_update'    => $last_update,
 					'course_expired_date' => $course_expired_date,
+					'course_id'      => $course_id,
 				),
 				$course_id
 			)
@@ -2029,8 +2030,27 @@ if ( ! function_exists( 'academy_loco_translate_sync' ) ) {
 }
 
 if ( ! function_exists( 'academy_allowed_learnpage_content_tags' ) ) {
-	function academy_allowed_learnpage_content_tags( $content ) {
+	function academy_allowed_learnpage_content_tags( $content, $author_id = null ) {
 		$content = \Academy\Classes\ColorConverter::rgb_to_hex( $content );
+
+		// Matches core's own content_save_pre gate (wp_filter_post_kses only
+		// runs for users who lack 'unfiltered_html' — Administrators have it
+		// by default on a single site). Without this, a lesson author who
+		// pastes a full HTML document — a <style> block, say — loses it here
+		// even when the REST layer above (lesson-schema.php) already decided
+		// to keep it for this same user.
+		//
+		// On save ($author_id null) the current user decides. On load the
+		// lesson author does, so what a viewer sees never depends on the
+		// viewer's own role: an admin opening an instructor's lesson still
+		// gets it filtered, and students see an admin's raw HTML intact.
+		$trusted = null === $author_id
+			? current_user_can( 'unfiltered_html' )
+			: ( $author_id > 0 && user_can( $author_id, 'unfiltered_html' ) );
+		if ( $trusted ) {
+			return $content;
+		}
+
 		$allowed_tags = wp_kses_allowed_html( 'post' );
 		$allowed_tags['input'] = array(
 			'type'              => true,

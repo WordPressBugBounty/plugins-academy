@@ -14,6 +14,13 @@ abstract class Lesson extends Db {
 	public bool $ignore_slug_check = false;
 	protected array $data = [];
 	protected array $meta = [];
+	/**
+	 * Author of the row being loaded from the database, or null while the
+	 * data comes from the current request (see load_stored_data()).
+	 *
+	 * @var int|null
+	 */
+	protected ?int $stored_content_author = null;
 	public function __construct( array $lesson = [], array $meta = [], bool $ignore_slug_check = false ) {
 		parent::__construct();
 		$this->id = $lesson['ID'] ?? null;
@@ -48,6 +55,24 @@ abstract class Lesson extends Db {
 	public function set_data( array $data ): self {
 		$this->data = array_merge( $this->data, $this->sanitize_data( $data ) );
 		$this->id = $this->data['ID'] ?? null;
+		return $this;
+	}
+
+	/**
+	 * Load a row read from the database. Its content is trusted according to
+	 * the lesson author's capabilities, not the viewer's, so raw HTML is kept
+	 * only when the author was allowed to save it.
+	 *
+	 * @param array $data Stored lesson row.
+	 * @return self
+	 */
+	protected function load_stored_data( array $data ): self {
+		$this->stored_content_author = (int) ( $data['lesson_author'] ?? $data['post_author'] ?? 0 );
+		try {
+			$this->set_data( $data );
+		} finally {
+			$this->stored_content_author = null;
+		}
 		return $this;
 	}
 

@@ -123,7 +123,22 @@ class CourseProvider extends AbstractSeederProvider {
 			$title .= sprintf( __( ' #%d', 'academy' ), $index + 1 );
 		}
 
+		// The course author is its (default) instructor. Without the
+		// `academy_instructor_course_id` link the course shows no instructor.
+		$author_id = get_current_user_id();
+		if ( ! $author_id ) {
+			$admins    = get_users(
+				[
+					'role'   => 'administrator',
+					'number' => 1,
+					'fields' => 'ID',
+				]
+			);
+			$author_id = (int) ( $admins[0] ?? 0 );
+		}
+
 		$course_id = wp_insert_post( [
+			'post_author'  => $author_id,
 			'post_title'   => $title,
 			'post_type'    => 'academy_courses',
 			'post_content' => SeederData::course_description(),
@@ -136,6 +151,10 @@ class CourseProvider extends AbstractSeederProvider {
 
 		update_post_meta( $course_id, Manager::MARKER_META, 1 );
 		$context->record( 'course', $course_id );
+
+		if ( $author_id && ! AcademyHelper::has_user_meta_exists( $author_id, 'academy_instructor_course_id', $course_id ) ) {
+			add_user_meta( $author_id, 'academy_instructor_course_id', $course_id );
+		}
 
 		if ( $thumbnail_id ) {
 			set_post_thumbnail( $course_id, $thumbnail_id );

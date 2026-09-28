@@ -277,6 +277,8 @@ class Manager {
 
 		switch ( $type ) {
 			case 'course':
+				// Drop the instructor links the seeder added for this course.
+				delete_metadata( 'user', 0, 'academy_instructor_course_id', $id, true );
 				return (bool) wp_delete_post( $id, true );
 
 			case 'quiz':

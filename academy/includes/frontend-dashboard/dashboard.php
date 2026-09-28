@@ -38,7 +38,6 @@ class Dashboard {
 		add_action( 'wp_body_open', [ __CLASS__, 'print_theme_script' ], 1 );
 		add_action( 'academy/templates/frontend_dashboard/before_analytics_cards', [ __CLASS__, 'welcome' ] );
 		add_action( 'academy/templates/frontend_dashboard/after_analytics_cards', [ __CLASS__, 'continue_learning' ], 5 );
-		add_action( 'academy/frontend_dashboard_topbar_right_content', [ __CLASS__, 'theme_toggle' ] );
 		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_block_assets' ] );
 	}
 
@@ -430,52 +429,6 @@ class Dashboard {
 					document.body.setAttribute( 'data-academy-user-theme', theme );
 				} catch ( e ) {}
 			} )();
-		</script>
-		<?php
-	}
-
-	/**
-	 * A dark mode switch in the dashboard's top bar.
-	 *
-	 * @return void
-	 */
-	public static function theme_toggle() {
-		if ( ! Settings::get()['learnerTheme'] ) {
-			return;
-		}
-		?>
-		<button
-			type="button"
-			class="academy-dashboard-theme-toggle"
-			aria-label="<?php esc_attr_e( 'Dark mode', 'academy' ); ?>"
-			title="<?php esc_attr_e( 'Dark mode', 'academy' ); ?>"
-		>
-			<svg class="academy-dashboard-theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
-			<svg class="academy-dashboard-theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
-		</button>
-		<?php
-		// One listener for every switch on the page; an inline onclick would
-		// trip up block scripts that take over the markup around it.
-		static $academy_listening = false;
-		if ( $academy_listening ) {
-			return;
-		}
-		$academy_listening = true;
-		?>
-		<script>
-			document.addEventListener( 'click', function ( event ) {
-				var button = event.target.closest && event.target.closest( '.academy-dashboard-theme-toggle' );
-				if ( ! button ) {
-					return;
-				}
-				var body = document.body;
-				var next = 'dark' === body.getAttribute( 'data-academy-user-theme' ) ? 'light' : 'dark';
-				body.setAttribute( 'data-academy-user-theme', next );
-				button.setAttribute( 'aria-pressed', 'dark' === next ? 'true' : 'false' );
-				try {
-					window.localStorage.setItem( 'academy_theme', next );
-				} catch ( e ) {}
-			} );
 		</script>
 		<?php
 	}
