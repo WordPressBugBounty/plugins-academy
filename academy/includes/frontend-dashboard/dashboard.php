@@ -376,6 +376,12 @@ class Dashboard {
 		$settings = Settings::get();
 		$css      = sprintf( 'body.academy-dashboard-body{--academy-dashboard-sidebar-width:%dpx;}', $settings['sidebarWidth'] );
 
+		// Dark mode reaches the page around the dashboard too. On the "theme"
+		// layout that's only the `.academy-frontend-dashboard` wrapper, or text
+		// outside the cards (the welcome line) turns light on the theme's light
+		// page. Printed before the Customize colours so a set one still wins.
+		$css .= 'body.academy-dashboard-body[data-academy-user-theme="dark"] .academy-canvas,body.academy-dashboard-body--bare[data-academy-user-theme="dark"],body.academy-dashboard-body[data-academy-user-theme="dark"] .academy-frontend-dashboard{background:var(--academy-body-background-color);color:var(--academy-text-color)}';
+
 		// Only hex colours get here (Settings::colors()).
 		foreach ( [ 'light', 'dark' ] as $mode ) {
 			$scope  = 'dark' === $mode ? 'body.academy-dashboard-body[data-academy-user-theme="dark"]' : 'body.academy-dashboard-body';
@@ -399,9 +405,6 @@ class Dashboard {
 				}
 			}
 		}//end foreach
-
-		// Dark mode reaches the dashboard's own page background too.
-		$css .= 'body.academy-dashboard-body[data-academy-user-theme="dark"] .academy-canvas,body.academy-dashboard-body--bare[data-academy-user-theme="dark"]{background:var(--academy-body-background-color);color:var(--academy-text-color)}';
 
 		printf( "<style id=\"academy-dashboard-customize\">%s</style>\n", $css ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}

@@ -18,7 +18,13 @@ class Register {
 				'description'    => sprintf(
 					/* translators: %s: link to the Design screen. */
 					__( 'Colours, course cards and course pages are set on %s.', 'academy' ),
-					'<a href="' . esc_url( admin_url( 'admin.php?page=academy-design' ) ) . '">' . esc_html__( 'Academy LMS → Customize', 'academy' ) . '</a>'
+					'<a href="' . esc_url( admin_url( 'admin.php?page=academy-design' ) ) . '">' . esc_html(
+						sprintf(
+							/* translators: %s: plugin title (white-label aware). */
+							__( '%s → Customize', 'academy' ),
+							$panel_title
+						)
+					) . '</a>'
 				),
 			)
 		);

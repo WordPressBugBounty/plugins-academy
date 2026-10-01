@@ -31,6 +31,7 @@ class ScriptsBase {
 			'menu'                  => wp_json_encode( Helper::get_admin_menu_list() ),
 			'native_submenu_items'  => wp_json_encode( $this->get_native_submenu_items() ),
 			'woocommerce_is_active' => Helper::is_active_woocommerce(),
+			'edd_is_active'         => Helper::is_active_easy_digital_downloads(),
 			'ecm_is_active'         => ( Helper::is_active_ecm() ),
 			'current_user_id'       => get_current_user_id(),
 			'is_rtl'                => is_rtl(),

@@ -20,9 +20,9 @@ class GlobalCss {
 	public function get_global_css() {
 		$primary_color = Helper::get_settings( 'primary_color', '#7b68ee' );
 		$secondary_color = Helper::get_settings( 'secondary_color', '#f2f0fd' );
-		$text_color = Helper::get_settings( 'text_color', '#131d2b' );
-		$border_color = Helper::get_settings( 'border_color', '#e5e7eb' );
-		$gray_color = Helper::get_settings( 'gray_color', '#f6f7f8' );
+		$text_color = Helper::get_settings( 'text_color', '#1d2939' );
+		$border_color = Helper::get_settings( 'border_color', '#e4e7ec' );
+		$gray_color = Helper::get_settings( 'gray_color', '#f2f4f7' );
 		$surface_color = Helper::get_settings( 'surface_color', '#ffffff' );
 
 		// Dark mode palette — only ever applied inside `.academy-lessons[data-academy-theme="dark"]`
@@ -84,8 +84,9 @@ class GlobalCss {
                      * contrast to do it than on a white background.
                      */
                     --academy-drawer-shadow-color: rgba(0, 0, 0, 0.55);
-                    --academy-shadow-soft: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-                    --academy-shadow-hard: 0 4px 8px 0 rgba(0, 0, 0, 0.45);
+                    --academy-shadow-soft: none;
+                    --academy-shadow-hard: none;
+                    --academy-shadow-overlay: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
                     --academy-success-color: #34d399;
                     --academy-danger-color: #f87171;
                     --academy-warning-color: #fbbf24;

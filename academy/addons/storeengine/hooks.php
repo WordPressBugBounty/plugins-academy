@@ -8,5 +8,6 @@ class Hooks {
 		Hooks\Assets::init();
 		Hooks\Cart::init();
 		Hooks\Order::init();
+		Hooks\Membership::init();
 	}
 }

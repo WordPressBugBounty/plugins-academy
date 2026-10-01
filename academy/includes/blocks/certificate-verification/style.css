@@ -3,10 +3,10 @@
 	max-width: 560px;
 	margin-inline: auto;
 	padding: 2rem;
-	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border: 1px solid var(--academy-border-color, #e4e7ec);
 	border-radius: 12px;
 	background: var(--academy-surface-color, #fff);
-	box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+	box-shadow: none;
 }
 
 /* Compact: no illustration, a smaller heading, the form in one line of focus. */

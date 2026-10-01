@@ -102,6 +102,8 @@ if ( $has_video ) {
 			// "Auto Play (HTML5 Videos)" — scoped to self-hosted media, matching
 			// the setting's own wording; embeds keep their click-to-start.
 			'autoplay'  => ( 'html5' === $academy_provider && \Academy\Helper::get_settings( 'lesson_self_hosted_video_autoplay', true ) ),
+			// Subtitle file (.vtt) the player shows as captions.
+			'subtitle'  => \Academy\Helper::get_video_subtitle_url( $lesson_meta['video_source'] ),
 		];
 	}//end if
 

@@ -42,9 +42,9 @@ class Palette {
 	 */
 	const PREVIOUS_DEFAULTS = [
 		'secondary_color'      => [ [ '#eae8fa' ], '#f2f0fd' ],
-		'text_color'           => [ [ '#111' ], '#131d2b' ],
-		'border_color'         => [ [ '#e5e4e6' ], '#e5e7eb' ],
-		'gray_color'           => [ [ '#f6f7f9' ], '#f6f7f8' ],
+		'text_color'           => [ [ '#111', '#131d2b' ], '#1d2939' ],
+		'border_color'         => [ [ '#e5e4e6', '#e5e7eb' ], '#e4e7ec' ],
+		'gray_color'           => [ [ '#f6f7f9', '#f6f7f8' ], '#f2f4f7' ],
 		'dark_primary_color'   => [ [ '#9b8bf4', '#8b7bf2' ], '#7b68ee' ],
 		'dark_secondary_color' => [ [ '#2a2740' ], '#252140' ],
 		'dark_text_color'      => [ [ '#e8e6f0' ], '#e6e9ef' ],
@@ -56,7 +56,7 @@ class Palette {
 	/**
 	 * Bumped whenever the default colours change, so the refresh runs again.
 	 */
-	const PALETTE_VERSION = 3;
+	const PALETTE_VERSION = 4;
 
 	/**
 	 * Register hooks.

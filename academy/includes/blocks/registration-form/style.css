@@ -16,10 +16,10 @@
    settings win (they are inline). "Plain" drops the box. */
 .academy-reg-block:not(.is-style-plain) {
 	padding: 32px;
-	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border: 1px solid var(--academy-border-color, #e4e7ec);
 	border-radius: 14px;
 	background: var(--academy-surface-color, #fff);
-	box-shadow: 0 12px 32px rgba(16, 24, 40, 0.08);
+	box-shadow: none;
 }
 
 /* Card: the same box, narrower and centred. */
@@ -96,7 +96,7 @@
 	min-height: 44px;
 	margin: 0;
 	padding: 10px 14px;
-	border: 1px solid var(--academy-border-color, #d0d5dd);
+	border: 1px solid var(--academy-border-color, #e4e7ec);
 	border-radius: 8px;
 	background: var(--academy-surface-color, #fff);
 	color: var(--academy-heading-color, #101828);
@@ -144,7 +144,7 @@ select.academy-form-control {
 	border: 0;
 	border-radius: 6px;
 	background: transparent;
-	color: var(--academy-description-color, #667085);
+	color: var(--academy-description-color, #475467);
 	cursor: pointer;
 	transform: translateY(-50%);
 }
@@ -174,7 +174,7 @@ select.academy-form-control {
 	gap: 8px;
 	margin: 0;
 	font-size: 14px;
-	color: var(--academy-text-color, #344054);
+	color: var(--academy-text-color, #1d2939);
 	cursor: pointer;
 }
 
@@ -189,7 +189,7 @@ select.academy-form-control {
 	margin: 0;
 	font-size: 13px;
 	line-height: 1.45;
-	color: var(--academy-description-color, #667085);
+	color: var(--academy-description-color, #475467);
 }
 
 .academy-reg-form__footer {

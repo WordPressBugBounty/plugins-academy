@@ -20,7 +20,7 @@
 	flex: 1 1 auto;
 	min-width: 0;
 	padding: 0.6em 0.8em;
-	border: 1px solid var(--academy-border-color, #d8dbe2);
+	border: 1px solid var(--academy-border-color, #e4e7ec);
 	border-radius: 6px;
 	background: var(--academy-surface-color, #fff);
 	color: inherit;

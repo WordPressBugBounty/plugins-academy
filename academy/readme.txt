@@ -5,7 +5,7 @@ Tags: lms, learning-management-system, online-courses, elearning, course-builder
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.0.1
+Stable tag: 4.0.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,6 +284,22 @@ Use the WordPress.org support forum, read the [documentation](https://academylms
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 4.0.2 - 01/10/2026 =
+* Added - Lesson subtitles: attach a .vtt file to a lesson video and the Kodezen Player shows it as captions.
+* Added - StoreEngine memberships now enroll members in the courses their membership grants, and cancel those enrollments when they leave (progress is kept if they rejoin).
+* Updated - Kodezen Player to 1.0.4.
+* Improved - Course Player and other React screens are translated from the site's Academy .mo file, with no hand-made JSON files needed. Editor toolbars (rich text, mail builder, certificate builder) are translatable too.
+* Improved - Add-ons that need another plugin are switched off when that plugin is deactivated, and switched back on when it is reactivated.
+* Improved - White Label: the brand name replaces "Academy" in Customize, Settings, Add-ons and Tools; the logo switches correctly and the Guide section is hidden.
+* Improved - Astra theme compatibility for Academy buttons, icons, dropdowns and learn page controls.
+* Fixed - Security: hardened block template loading against path traversal.
+* Fixed - Quizzes imported from another LMS could not be saved because of an invalid question layout value.
+* Fixed - WooCommerce: the price entered for a new course's auto-created product was lost on the first save.
+* Fixed - Earning and Withdrawal settings now show only when the selected payment engine's add-on and plugin are both active.
+* Fixed - Dark mode text colours on the frontend dashboard and list tables.
+* Fixed - Oversized close button on the login modal.
+* Fixed - StoreEngine membership content rules saved in the wrong format, which broke StoreEngine's access group editor.
 
 = 4.0.1 - 28/09/2026 =
 * Updated - StoreEngine SDK to 1.6.1 (products sharing the SDK no longer overwrite each other's stored data).
@@ -595,6 +611,9 @@ Use the WordPress.org support forum, read the [documentation](https://academylms
 Looking for older releases? See the [full changelog](https://academylms.net/changelog/).
 
 == Upgrade Notice ==
+
+= 4.0.2 =
+Maintenance release with a security fix and fixes for 4.0.1. If you are updating from 3.x, back up your site first: 4.0 migrates existing data.
 
 = 4.0.1 =
 Maintenance release with fixes for 4.0.0. If you are updating from 3.x, back up your site first: 4.0 migrates existing data.

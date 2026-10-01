@@ -40,6 +40,14 @@ class Block {
 			return $template;
 		}
 
+		// Template slugs are always flat filenames (see generate_template_slug_from_path()).
+		// Reject anything containing directory separators or "../" traversal before it is
+		// concatenated into a filesystem path, so the attacker-controlled $id can't be used
+		// to read arbitrary files via the REST templates route.
+		if ( 0 !== validate_file( $template_slug ) ) {
+			return $template;
+		}
+
 		// If we don't have a template let Gutenberg do its thing.
 		if ( ! $this->block_template_is_available( $template_slug, $template_type ) ) {
 			return $template;
@@ -48,6 +56,14 @@ class Block {
 		$directory = self::templates_dir();
 
 		$template_file_path = $directory . '/' . $template_slug . '.html';
+
+		// Defence in depth: make sure the resolved path really sits inside the templates
+		// directory before it is read.
+		$real_base = realpath( $directory );
+		$real_file = realpath( $template_file_path );
+		if ( false === $real_base || false === $real_file || 0 !== strpos( $real_file, $real_base . DIRECTORY_SEPARATOR ) ) {
+			return $template;
+		}
 
 		$template_object = $this->create_new_block_template_object( $template_file_path, $template_type, $template_slug );
 
@@ -63,6 +79,10 @@ class Block {
 
 	public function block_template_is_available( $template_name, $template_type = 'wp_template' ) {
 		if ( ! $template_name ) {
+			return false;
+		}
+		// Never let a traversal sequence reach is_readable() - slugs are flat filenames.
+		if ( 0 !== validate_file( $template_name ) ) {
 			return false;
 		}
 		$directory = self::templates_dir() . $template_name . '.html';

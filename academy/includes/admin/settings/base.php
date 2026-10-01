@@ -18,9 +18,9 @@ class Base {
 			// global style
 			'primary_color' => '#7b68ee',
 			'secondary_color' => '#f2f0fd',
-			'text_color' => '#131d2b',
-			'border_color' => '#e5e7eb',
-			'gray_color' => '#f6f7f8',
+			'text_color' => '#1d2939',
+			'border_color' => '#e4e7ec',
+			'gray_color' => '#f2f4f7',
 			'surface_color' => '#ffffff',
 			// global style — dark mode palette
 			'dark_primary_color' => '#7b68ee',

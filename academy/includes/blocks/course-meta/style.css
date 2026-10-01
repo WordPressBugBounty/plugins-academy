@@ -32,7 +32,7 @@
 .wp-block-academy-course-meta.is-style-chips .academy-course-meta__item {
 	padding: 0.2em 0.65em;
 	border-radius: 999px;
-	background: var(--academy-gray-color, #f6f7f8);
+	background: var(--academy-gray-color, #f2f4f7);
 	line-height: 1.5;
 }
 

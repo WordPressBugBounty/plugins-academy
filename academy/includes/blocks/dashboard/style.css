@@ -201,7 +201,7 @@
 	border: 1px solid var(--academy-border-color);
 	border-radius: 10px;
 	background: var(--academy-surface-color);
-	box-shadow: var(--academy-shadow-hard);
+	box-shadow: var(--academy-shadow-overlay);
 }
 
 .academy-dash-user.is-open .academy-dash-user__menu {

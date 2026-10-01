@@ -278,6 +278,8 @@ class Lesson extends AbstractAjaxHandler {
 						$video['type'] = 'external';
 						$video['url'] = $video['url'];
 					}//end if
+					// Subtitle file (.vtt) the custom player shows as captions.
+					$video['subtitle_url']          = \Academy\Helper::get_video_subtitle_url( $video );
 					$lesson['meta']['video_source'] = $video;
 
 					// Custom player: saved resume position + completion-gate config.

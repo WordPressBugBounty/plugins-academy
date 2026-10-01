@@ -23,7 +23,7 @@
 /* Style presets. */
 .wp-block-academy-course-wishlist.is-style-outline {
 	padding-inline: 0.6em;
-	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border: 1px solid var(--academy-border-color, #e4e7ec);
 }
 
 .wp-block-academy-course-wishlist.is-style-soft {

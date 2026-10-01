@@ -9,13 +9,13 @@
 
 .wp-block-academy-course-curriculum.is-style-boxed .academy-accordion > li {
 	overflow: hidden;
-	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border: 1px solid var(--academy-border-color, #e4e7ec);
 	border-radius: 10px;
 	box-shadow: none;
 }
 
 .wp-block-academy-course-curriculum.is-style-boxed .academy-accordion__title {
-	background: var(--academy-gray-color, #f6f7f8);
+	background: var(--academy-gray-color, #f2f4f7);
 }
 
 .wp-block-academy-course-curriculum.is-style-minimal .academy-accordion,
@@ -27,7 +27,7 @@
 }
 
 .wp-block-academy-course-curriculum.is-style-minimal .academy-accordion > li {
-	border-bottom: 1px solid var(--academy-border-color, #e4e7ee);
+	border-bottom: 1px solid var(--academy-border-color, #e4e7ec);
 }
 
 .wp-block-academy-course-curriculum.is-style-minimal .academy-accordion__title,

@@ -129,12 +129,31 @@ class Menu {
 	}
 	public function get_toplevel_menu_icon_url() {
 		// phpcs:disable
-		if ( isset( $_GET['page'] ) && 'academy' === $_GET['page'] ) {
+		if ( $this->is_academy_admin_page() ) {
 			$icon_url = 'data:image/svg+xml;base64, ' . base64_encode( file_get_contents( ACADEMY_ASSETS_DIR_PATH . 'images/logo-white.svg' ) );
 			return apply_filters( 'academy/admin/toplevel_active_menu_icon', $icon_url );
 		}
 		$icon_url = 'data:image/svg+xml;base64, ' . base64_encode( file_get_contents( ACADEMY_ASSETS_DIR_PATH . 'images/admin-logo.svg' ) );
 		return apply_filters( 'academy/admin/toplevel_inactive_menu_icon', $icon_url );
+	}
+
+	/**
+	 * Whether the current admin page lives under the Academy top-level menu
+	 * (Dashboard, Courses, Settings, …), i.e. when that menu shows as open and
+	 * needs its "active" icon — not only the bare `?page=academy` dashboard.
+	 *
+	 * @return bool
+	 */
+	private function is_academy_admin_page() {
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+		if ( '' === $page ) {
+			return false;
+		}
+		if ( ACADEMY_PLUGIN_SLUG . '-about' === $page ) {
+			return true;
+		}
+		$menu = Helper::get_admin_menu_list();
+		return isset( $menu[ $page ] ) && ACADEMY_PLUGIN_SLUG === $menu[ $page ]['parent_slug'];
 	}
 	public function get_logo_url(){
 		return apply_filters( 'academy/admin/logo_url',  ACADEMY_ASSETS_URI . 'images/logo.svg' );

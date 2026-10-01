@@ -1,6 +1,6 @@
 /* Course Categories: one list, drawn in the layout chosen in the block settings. */
 ul.wp-block-academy-course-categories {
-	--academy-cat-line: var(--academy-border-color, #e4e7ee);
+	--academy-cat-line: var(--academy-border-color, #e4e7ec);
 	--academy-cat-accent: var(--academy-primary-color, #6c5ce7);
 	--academy-cat-soft: color-mix(in srgb, var(--academy-cat-accent) 10%, transparent);
 	--academy-cat-gap: var(--wp--style--block-gap, 1rem);
@@ -128,7 +128,7 @@ ul.wp-block-academy-course-categories {
 
 /* Cards: an icon on a soft square, the name and count below. */
 .academy-categories--cards .academy-course-categories__link:hover {
-	box-shadow: 0 10px 24px -14px rgba(16, 24, 40, 0.3);
+	box-shadow: none;
 	transform: translateY(-2px);
 }
 
@@ -198,7 +198,7 @@ ul.wp-block-academy-course-categories {
 
 .academy-categories--image-cards .academy-course-categories__link:hover,
 .academy-categories--carousel .academy-course-categories__link:hover {
-	box-shadow: 0 12px 28px -16px rgba(16, 24, 40, 0.35);
+	box-shadow: none;
 }
 
 .academy-categories--image-cards .academy-course-categories__link:hover .academy-course-categories__image,

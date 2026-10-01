@@ -316,11 +316,15 @@ class Helper {
 			'title'       => __( 'Settings', 'academy' ),
 			'capability'  => 'manage_options',
 		];
-		$menu[ ACADEMY_PLUGIN_SLUG . '-discover' ]    = [
-			'parent_slug' => ACADEMY_PLUGIN_SLUG,
-			'title'       => __( 'Discover', 'academy' ),
-			'capability'  => 'manage_options',
-		];
+		// Discover promotes Kodezen's other plugins, so a white-labelled
+		// dashboard leaves it out (and its page unregistered).
+		if ( ! ( self::is_active_academy_pro() && self::get_addon_active_status( 'white-label' ) ) ) {
+			$menu[ ACADEMY_PLUGIN_SLUG . '-discover' ] = [
+				'parent_slug' => ACADEMY_PLUGIN_SLUG,
+				'title'       => __( 'Discover', 'academy' ),
+				'capability'  => 'manage_options',
+			];
+		}
 
 		// Check Pro active or not
 		if ( ! self::is_active_academy_pro() ) {
@@ -1027,6 +1031,23 @@ class Helper {
 	 */
 	public static function native_player_provider_types() {
 		return [ 'html5', 'youtube', 'vimeo' ];
+	}
+
+	/**
+	 * URL of the WebVTT subtitle file attached to a lesson's video source
+	 * (`video_source.subtitle`, an attachment ID), or '' when there is none or
+	 * the attachment isn't a .vtt file. KodezenPlayer renders it as captions
+	 * for any native provider type.
+	 *
+	 * @param array|mixed $video The stored video_source array.
+	 * @return string
+	 */
+	public static function get_video_subtitle_url( $video ) {
+		$attachment_id = is_array( $video ) ? absint( $video['subtitle'] ?? 0 ) : 0;
+		if ( ! $attachment_id || 'text/vtt' !== get_post_mime_type( $attachment_id ) ) {
+			return '';
+		}
+		return (string) wp_get_attachment_url( $attachment_id );
 	}
 
 	/**

@@ -329,17 +329,38 @@ class Database {
 			'post',
 			'academy_quiz_questions_layout',
 			array(
-				'object_subtype' => 'academy_quiz',
-				'type'           => 'string',
-				'single'         => true,
-				'show_in_rest'   => array(
+				'object_subtype'    => 'academy_quiz',
+				'type'              => 'string',
+				'single'            => true,
+				'default'           => 'single',
+				// Coerce any value outside the allowed set back to 'single'. Imported/
+				// migrated quizzes can carry a layout value the source LMS used (or an
+				// empty string), and a strict `enum` schema would make WP null it out on
+				// read and then reject the whole quiz save with
+				// "...has an invalid stored value, and cannot be updated to null." Keep
+				// the schema a plain string and normalise the value here instead so bad
+				// data self-heals on the next save rather than bricking it.
+				'sanitize_callback' => array( __CLASS__, 'sanitize_questions_layout' ),
+				'show_in_rest'      => array(
 					'schema' => array(
 						'type' => 'string',
-						'enum' => [ 'single', 'all' ],
 					),
 				),
 			)
 		);
+	}
+
+	/**
+	 * Keep academy_quiz_questions_layout within its allowed set.
+	 *
+	 * Anything other than 'all' falls back to the 'single' default, so legacy or
+	 * imported values never persist as an invalid stored value.
+	 *
+	 * @param mixed $value Raw meta value.
+	 * @return string
+	 */
+	public static function sanitize_questions_layout( $value ) {
+		return 'all' === $value ? 'all' : 'single';
 	}
 
 	public static function create_initial_custom_table() {

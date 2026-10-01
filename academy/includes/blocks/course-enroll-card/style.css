@@ -2,10 +2,10 @@
 .wp-block-academy-course-enroll-card.is-style-card .academy-widget-enroll {
 	overflow: hidden;
 	padding-bottom: 12px;
-	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border: 1px solid var(--academy-border-color, #e4e7ec);
 	border-radius: 14px;
 	background: var(--academy-surface-color, #fff);
-	box-shadow: 0 12px 32px rgba(16, 24, 40, 0.1);
+	box-shadow: none;
 }
 
 .wp-block-academy-course-enroll-card.is-style-soft .academy-widget-enroll {

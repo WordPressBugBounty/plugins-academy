@@ -1,7 +1,7 @@
 /* Course Benefits & Requirements: Tabs and Accordion layouts. */
 .academy-info {
 	--academy-info-accent: var(--academy-primary-color, #6c5ce7);
-	--academy-info-line: var(--academy-border-color, #e4e7ee);
+	--academy-info-line: var(--academy-border-color, #e4e7ec);
 	--academy-info-surface: var(--academy-surface-color, #fff);
 }
 

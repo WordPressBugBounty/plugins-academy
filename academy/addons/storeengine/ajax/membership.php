@@ -44,7 +44,7 @@ class Membership extends AbstractAjaxHandler {
 
 		$current_rule = 'post-' . $args['course_id'] . '-|';
 
-		if ( ! in_array( $current_rule, (array) $group_content['specifics'], true ) ) {
+		if ( ! in_array( $current_rule, $this->specific_values( $group_content['specifics'] ?? [] ), true ) ) {
 			wp_send_json_error( array(
 				'message' => esc_html__( 'No integration rules found.', 'academy' ),
 			) );
@@ -118,7 +118,13 @@ class Membership extends AbstractAjaxHandler {
 			] );
 		}
 
-		$group_content['specifics'][] = 'post-' . $args['course_id'] . '-|';
+		// Store the same shape StoreEngine itself uses for a specific content
+		// rule ( { value, label } ); a bare string breaks StoreEngine's access
+		// group editor and this addon's own duplicate/remove matching.
+		$group_content['specifics'][] = [
+			'value' => 'post-' . $args['course_id'] . '-|',
+			'label' => get_the_title( $args['course_id'] ) . ' - ' . str_replace( '_', ' ', get_post_type( $args['course_id'] ) ),
+		];
 
 		update_post_meta( $access_group->value, '_storeengine_membership_content_protect_types', $group_content );
 
@@ -159,8 +165,11 @@ class Membership extends AbstractAjaxHandler {
 	public function handle_specifics_duplicate( $course_id, $specifics, $is_remove = false ) {
 		$current_membership = 'post-' . $course_id . '-|';
 
-		foreach ( $specifics as $key => $specific ) {
-			if ( $specific['value'] === $current_membership ) {
+		foreach ( (array) $specifics as $key => $specific ) {
+			// Tolerate both shapes: the { value, label } StoreEngine stores and
+			// any bare-string entry an older build of this addon may have left.
+			$value = is_array( $specific ) ? ( $specific['value'] ?? '' ) : $specific;
+			if ( $value === $current_membership ) {
 				if ( $is_remove ) {
 					unset( $specifics[ $key ] );
 				} else {
@@ -169,6 +178,23 @@ class Membership extends AbstractAjaxHandler {
 			}
 		}
 
-		return $specifics;
+		return $is_remove ? array_values( $specifics ) : $specifics;
+	}
+
+	/**
+	 * Flatten a specifics list to its rule values, tolerating both the
+	 * { value, label } shape StoreEngine stores and any legacy bare strings.
+	 *
+	 * @param mixed $specifics
+	 *
+	 * @return string[]
+	 */
+	protected function specific_values( $specifics ): array {
+		return array_map(
+			static function ( $specific ) {
+				return is_array( $specific ) ? ( $specific['value'] ?? '' ) : $specific;
+			},
+			(array) $specifics
+		);
 	}
 }

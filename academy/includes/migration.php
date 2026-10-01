@@ -51,6 +51,13 @@ class Migration {
 		// Add-ons that start switched on.
 		$this->enable_default_addons();
 
+		// Add-ons are now switched off when a plugin they need is
+		// deactivated; this catches the ones left on from before that, once.
+		if ( ! Options::get( Options::MIGRATIONS, 'addons_missing_plugins_off' ) ) {
+			\Academy\Addons::switch_off_addons_missing_plugins();
+			Options::set( Options::MIGRATIONS, 'addons_missing_plugins_off', true );
+		}
+
 		// Save version number, flash role, and permalinks
 		if ( ACADEMY_VERSION !== $academy_version ) {
 			Settings::save_settings();

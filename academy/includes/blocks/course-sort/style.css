@@ -42,7 +42,7 @@
 
 .academy-course-sort__select {
 	padding: 0.5em 2em 0.5em 0.75em;
-	border: 1px solid var(--academy-border-color, #d8dbe2);
+	border: 1px solid var(--academy-border-color, #e4e7ec);
 	border-radius: 6px;
 	background-color: var(--academy-surface-color, #fff);
 	color: inherit;

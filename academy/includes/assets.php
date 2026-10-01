@@ -13,6 +13,9 @@ class Assets extends ScriptsBase {
 		$self = new self();
 		add_action( 'admin_enqueue_scripts', [ $self, 'backend_scripts' ], defined( 'ACADEMY_BACKEND_SCRIPTS_PRIORITY' ) ? ACADEMY_BACKEND_SCRIPTS_PRIORITY : 10 );
 		add_action( 'wp_enqueue_scripts', [ $self, 'frontend_scripts' ], defined( 'ACADEMY_FRONTEND_SCRIPTS_PRIORITY' ) ? ACADEMY_FRONTEND_SCRIPTS_PRIORITY : 10 );
+		// Runs after the theme has enqueued its own styles (default priority 10)
+		// so there is something to strip back off the standalone learn page.
+		add_action( 'wp_enqueue_scripts', [ $self, 'maybe_dequeue_theme_styles_on_learn_page' ], 100 );
 	}
 
 	/**
@@ -222,5 +225,80 @@ class Assets extends ScriptsBase {
 		// No web font is loaded and no font family is set: text follows the
 		// theme on the front end and WordPress in wp-admin.
 		wp_enqueue_style( 'academy-icon', ACADEMY_ASSETS_URI . 'lib/css/academy-icon.css', array(), filemtime( ACADEMY_ASSETS_DIR_PATH . 'lib/css/academy-icon.css' ), 'all' );
+	}
+
+	/**
+	 * Strip the active theme's stylesheets from the standalone learn page.
+	 *
+	 * The React ("js-render") and PHP ("php-render") learn pages render as a
+	 * full custom document -- single-course-curriculums.php prints its own
+	 * <!doctype> + wp_head() when the theme header/footer is off -- so the
+	 * theme's CSS never styles a theme-owned layout there, it only bleeds into
+	 * Academy's own UI. The most visible breakage is themes that restyle every
+	 * `input[type="range"]`: they hijack the lesson player's scrubber and
+	 * volume sliders and stack a second, broken-looking control on ours.
+	 *
+	 * Two learn pages are deliberately left with the theme's CSS intact:
+	 *  - the block ("blocks-render") learn page, which is built from blocks
+	 *    inside the theme and is meant to inherit it; and
+	 *  - any learn page the site has opted to wrap in the theme header/footer
+	 *    (`is_enabled_lessons_theme_header_footer`), which then needs it.
+	 *
+	 * @return void
+	 */
+	public function maybe_dequeue_theme_styles_on_learn_page() {
+		// Block-based learn page is theme-integrated -- keep the theme's CSS.
+		if ( \Academy\LearnPage::is_request() ) {
+			return;
+		}
+
+		$is_learn_page = $this->is_course_lesson_page() || $this->is_course_php_render_lesson_page();
+		if ( ! $is_learn_page ) {
+			return;
+		}
+
+		// The page is wrapped in the theme's own header/footer -- it needs the
+		// theme's CSS, so leave every stylesheet in place.
+		if ( \Academy\Helper::get_settings( 'is_enabled_lessons_theme_header_footer', false ) ) {
+			return;
+		}
+
+		$this->dequeue_active_theme_styles();
+	}
+
+	/**
+	 * Dequeue every enqueued stylesheet served from the active theme's own
+	 * directory (parent or child). Brand-agnostic: it keys off the active
+	 * theme's URL, so it works for whichever theme is running rather than a
+	 * single named one. Google Fonts and other off-theme-domain styles a theme
+	 * registers are untouched.
+	 *
+	 * @return void
+	 */
+	protected function dequeue_active_theme_styles() {
+		$styles = wp_styles();
+		if ( ! $styles instanceof \WP_Styles ) {
+			return;
+		}
+
+		$theme_uris = array_unique( array_filter( array(
+			get_template_directory_uri(),
+			get_stylesheet_directory_uri(),
+		) ) );
+		if ( empty( $theme_uris ) ) {
+			return;
+		}
+
+		foreach ( $styles->registered as $handle => $style ) {
+			if ( empty( $style->src ) || ! is_string( $style->src ) ) {
+				continue;
+			}
+			foreach ( $theme_uris as $theme_uri ) {
+				if ( false !== strpos( $style->src, $theme_uri ) ) {
+					wp_dequeue_style( $handle );
+					break;
+				}
+			}
+		}
 	}
 }

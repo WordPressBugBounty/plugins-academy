@@ -45,13 +45,13 @@
 .wp-block-academy-course-announcements:not([class*="is-style-"]) .academy-course-announcements__item + .academy-course-announcements__item,
 .wp-block-academy-course-announcements.is-style-list .academy-course-announcements__item + .academy-course-announcements__item {
 	padding-top: 1rem;
-	border-top: 1px solid var(--academy-border-color, #e4e7ee);
+	border-top: 1px solid var(--academy-border-color, #e4e7ec);
 }
 
 /* Cards: each announcement on its own surface. */
 .wp-block-academy-course-announcements.is-style-cards .academy-course-announcements__item {
 	padding: 1rem 1.25rem;
-	border: 1px solid var(--academy-border-color, #e4e7ee);
+	border: 1px solid var(--academy-border-color, #e4e7ec);
 	border-radius: 10px;
 	background: var(--academy-surface-color, #fff);
 }
@@ -61,7 +61,7 @@
 .wp-block-academy-course-announcements.is-style-timeline:not(:has(> .wp-block-academy-course-announcements)) {
 	gap: 1.5rem;
 	padding-inline-start: 1.5rem;
-	border-inline-start: 2px solid var(--academy-border-color, #e4e7ee);
+	border-inline-start: 2px solid var(--academy-border-color, #e4e7ec);
 }
 
 .wp-block-academy-course-announcements.is-style-timeline .academy-course-announcements__item {

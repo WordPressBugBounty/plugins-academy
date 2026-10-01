@@ -14,6 +14,7 @@
  * @var string $poster    lesson thumbnail, shown before playback
  * @var string $title     lesson title
  * @var bool   $autoplay  start playing as soon as the media is ready
+ * @var string $subtitle  WebVTT subtitle file URL, shown as captions ('' for none)
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -38,5 +39,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 		data-autonext="<?php echo \Academy\Helper::is_auto_load_next_lesson() ? '1' : '0'; ?>"
 		data-autocomplete="<?php echo \Academy\Helper::is_auto_complete_topic() ? '1' : '0'; ?>"
 		data-autoplay="<?php echo $autoplay ? '1' : '0'; ?>"
+		data-subtitle="<?php echo esc_url( $subtitle ?? '' ); ?>"
 	></div>
 </div>
