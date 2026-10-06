@@ -5,7 +5,7 @@ Tags: lms, learning-management-system, online-courses, elearning, course-builder
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.0.2
+Stable tag: 4.0.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,6 +284,17 @@ Use the WordPress.org support forum, read the [documentation](https://academylms
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 4.0.3 - 06/10/2026 =
+* Improved: StoreEngine SDK licensing system to v1.6.2
+* Improved: Course pricing integration with StoreEngine
+* Fixed - Course builder description form value undefined
+* Fixed - Lesson player sliders breaking on the Learn page due to theme CSS conflicts
+* Fixed - Gradebook pagination not updating the current page number
+* Fixed - Quiz attempt answer deduplication to avoid slow self-join deletes
+* Fixed - An Astra theme conflict with course CSS
+* Added - Enroll and Wishlist blocks to course bundle data on the course archive page
+* Added - A closing comment for the deduplication while loop to satisfy PHPCS
 
 = 4.0.2 - 01/10/2026 =
 * Added - Lesson subtitles: attach a .vtt file to a lesson video and the Kodezen Player shows it as captions.

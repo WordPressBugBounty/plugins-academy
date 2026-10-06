@@ -318,9 +318,11 @@ if ( ! function_exists( 'academy_course_loop_footer_inner_price' ) ) {
 					}
 				}
 			}
-			// No WooCommerce/EDD product price found (StoreEngine, or no
-			// engine configured at all) — fall back to the plain
-			// `academy_course_price` meta the course builder writes
+			if ( $is_paid && empty( $price ) && 'storeengine' === Academy\Helper::monetization_engine() ) {
+				$price = Academy\Helper::get_storeengine_price_html( $course_id, 'storeengine/academylms' );
+			}
+			// No WooCommerce/StoreEngine product price found — fall back to
+			// the plain `academy_course_price` meta the course builder writes
 			// directly in that case, so a paid course still shows an
 			// actual amount instead of just the generic "Paid" text.
 			if ( $is_paid && empty( $price ) ) {

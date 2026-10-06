@@ -94,7 +94,9 @@ switch ( $academy_mode ) {
 		$academy_url  = $academy_course['continue_url'];
 		break;
 	default:
-		$academy_text = ! empty( $attributes['text'] ) ? $attributes['text'] : __( 'View course', 'academy' );
+		$academy_text = ! empty( $attributes['text'] )
+			? $attributes['text']
+			: ( 'bundle' === $academy_course['type'] ? __( 'View bundle', 'academy' ) : __( 'View course', 'academy' ) );
 		$academy_url  = $academy_course['url'];
 }
 

@@ -696,6 +696,31 @@ trait Courses {
 		);
 	}
 
+	/**
+	 * Formatted price (regular/sale HTML, same shape as
+	 * WC_Product::get_price_html()) for a course or bundle sold through
+	 * StoreEngine. StoreEngine courses/bundles aren't tied to a
+	 * WooCommerce-style product post — their price lives in StoreEngine's own
+	 * integration/price tables, looked up by provider + item ID (the same
+	 * repository the admin pricing UI reads/writes).
+	 *
+	 * @param int    $item_id  Course or bundle ID.
+	 * @param string $provider StoreEngine integration provider, e.g.
+	 *                         'storeengine/academylms' for courses or
+	 *                         'storeengine/course-bundle' for bundles.
+	 * @return string Price HTML, or '' if StoreEngine has no price for it.
+	 */
+	public static function get_storeengine_price_html( $item_id, $provider = 'storeengine/academylms' ) {
+		if ( ! self::is_plugin_active( 'storeengine/storeengine.php' ) || ! class_exists( \StoreEngine::class ) ) {
+			return '';
+		}
+
+		$integrations = \StoreEngine\Utils\Helper::get_integration_repository_by_id( $provider, $item_id );
+		$integration  = current( $integrations );
+
+		return $integration ? $integration->price->get_price_html() : '';
+	}
+
 	public static function get_course_type( $course_id ) {
 		$course_type = get_post_meta( $course_id, 'academy_course_type', true );
 		return apply_filters( 'academy/course/get_course_type', $course_type, $course_id );

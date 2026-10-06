@@ -20,7 +20,7 @@ class CourseData {
 	/**
 	 * Bump to discard cached facts after their shape changes.
 	 */
-	const CACHE_VERSION = 2;
+	const CACHE_VERSION = 3;
 
 	/**
 	 * Object cache group.
@@ -177,7 +177,11 @@ class CourseData {
 		if ( $is_bundle ) {
 			$lessons  = (int) \AcademyProCourseBundle\Helper::get_bundle_lessons( $course_id );
 			$duration = self::format_clock_duration( (string) \AcademyProCourseBundle\Helper::get_bundle_duration( $course_id ) );
-			$level    = '';
+			// Bundles have no difficulty level — the card shows how many
+			// courses it bundles in that slot instead.
+			$courses_count = count( (array) \AcademyProCourseBundle\Helper::get_bundle_courses_id( $course_id ) );
+			/* translators: %s: number of courses. */
+			$level    = $courses_count > 0 ? sprintf( _n( '%s course', '%s courses', $courses_count, 'academy' ), number_format_i18n( $courses_count ) ) : '';
 			$enrolled = (int) \AcademyProCourseBundle\Helper::get_bundle_enrolled( $course_id );
 		} else {
 			$lessons  = self::lesson_count( $course_id );
@@ -319,6 +323,10 @@ class CourseData {
 			if ( $product ) {
 				$price = $product->get_price_html();
 			}
+		}
+		if ( $is_paid && empty( $price ) && 'storeengine' === Helper::monetization_engine() ) {
+			$provider = 'alms_course_bundle' === get_post_type( $course_id ) ? 'storeengine/course-bundle' : 'storeengine/academylms';
+			$price    = Helper::get_storeengine_price_html( $course_id, $provider );
 		}
 		if ( $is_paid && empty( $price ) && 'alms_course_bundle' !== get_post_type( $course_id ) ) {
 			$price = Helper::get_plain_course_price_html( $course_id );

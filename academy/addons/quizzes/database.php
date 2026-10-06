@@ -174,13 +174,42 @@ class Database {
 		if ( $has_key ) {
 			return true;
 		}
-		$wpdb->query(
-			"DELETE t1 FROM `{$table_name}` t1
-			INNER JOIN `{$table_name}` t2
-				ON t1.attempt_id = t2.attempt_id
-				AND t1.question_id = t2.question_id
-				AND t1.attempt_answer_id < t2.attempt_answer_id"
-		);
+		// Single pass over the primary key, newest first, in chunks. The first row seen for an
+		// attempt + question is the newest one, so any later hit is a duplicate to delete. No
+		// self-join, so it stays linear without needing an index on attempt_id / question_id.
+		$chunk_size = 2000;
+		$cursor     = (int) $wpdb->get_var( "SELECT MAX(attempt_answer_id) + 1 FROM `{$table_name}`" );
+		$seen       = [];
+		while ( $cursor > 0 ) {
+			$rows = $wpdb->get_results(
+				"SELECT attempt_answer_id, attempt_id, question_id FROM `{$table_name}`
+				WHERE attempt_answer_id < {$cursor}
+				ORDER BY attempt_answer_id DESC
+				LIMIT {$chunk_size}"
+			);
+			if ( empty( $rows ) ) {
+				break;
+			}
+
+			$delete_ids = [];
+			foreach ( $rows as $row ) {
+				$cursor = (int) $row->attempt_answer_id;
+				if ( null === $row->attempt_id || null === $row->question_id ) {
+					continue;
+				}
+				$key = $row->attempt_id . ':' . $row->question_id;
+				if ( isset( $seen[ $key ] ) ) {
+					$delete_ids[] = (int) $row->attempt_answer_id;
+				} else {
+					$seen[ $key ] = true;
+				}
+			}
+
+			if ( $delete_ids ) {
+				$wpdb->query( "DELETE FROM `{$table_name}` WHERE attempt_answer_id IN (" . implode( ',', $delete_ids ) . ')' );
+			}
+		}//end while
+		unset( $seen );
 		$result = $wpdb->query( "ALTER TABLE `{$table_name}` ADD UNIQUE KEY attempt_question (attempt_id, question_id)" );
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		return false !== $result;

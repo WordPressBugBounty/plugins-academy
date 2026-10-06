@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $academy_course_id = isset( $block->context['postId'] ) ? (int) $block->context['postId'] : (int) get_the_ID();
-if ( 'academy_courses' !== get_post_type( $academy_course_id ) || ! \Academy\Helper::get_settings( 'is_enabled_course_wishlist', true ) ) {
+if ( ! \Academy\Blocks\CourseData::is_course( $academy_course_id ) || ! \Academy\Helper::get_settings( 'is_enabled_course_wishlist', true ) ) {
 	return;
 }
 
