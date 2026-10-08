@@ -1992,6 +1992,22 @@ trait Courses {
 		return $prepare_curriculum;
 	}
 
+	/**
+	 * Whether $lesson_id is a lesson listed in the curriculum of $course_id.
+	 */
+	public static function is_lesson_in_course( $lesson_id, $course_id ) {
+		$lesson_id = (int) $lesson_id;
+		if ( ! $lesson_id || ! $course_id ) {
+			return false;
+		}
+		foreach ( self::get_course_curriculums( $course_id ) as $topic ) {
+			if ( isset( $topic['id'], $topic['type'] ) && 'lesson' === $topic['type'] && (int) $topic['id'] === $lesson_id ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static function get_course_download_id( $course_id ) {
 		$download_id = (int) get_post_meta( $course_id, 'academy_course_download_id', true );
 		return apply_filters( 'academy/course/get_course_download_id', $download_id, $course_id );

@@ -3,7 +3,7 @@
         'name' => 'academylms/academylmsplugin',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '603035728ec39f47babc29e1ece83f12afae6a56',
+        'reference' => 'e7e75809fbe724d2dff289b9a6847d42ddd670a8',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'academylms/academylmsplugin' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '603035728ec39f47babc29e1ece83f12afae6a56',
+            'reference' => 'e7e75809fbe724d2dff289b9a6847d42ddd670a8',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

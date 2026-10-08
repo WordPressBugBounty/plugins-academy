@@ -347,7 +347,7 @@ class QuestionAnswer extends \WP_REST_Controller {
 		check_ajax_referer( 'academy_nonce', 'security' );
 		$comment_ID = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
 		if ( $this->current_user_can_manage_qa( $comment_ID ) ) {
-			$force = isset( $_POST['force'] ) ? sanitize_text_field( wp_unslash( $_POST['force'] ) ) : '';
+			$force = isset( $_POST['force'] ) && filter_var( sanitize_text_field( wp_unslash( $_POST['force'] ) ), FILTER_VALIDATE_BOOLEAN );
 			$comment = $this->prepare_comment_for_response( get_comment( $comment_ID ) );
 			$is_delete = wp_delete_comment( $comment_ID, $force );
 			wp_send_json_success([

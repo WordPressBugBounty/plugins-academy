@@ -43,6 +43,11 @@ class Store {
 			return new \WP_Error( 'invalid_user', __( 'Guardian or learner not found.', 'academy' ) );
 		}
 
+		// An administrator can never be a ward.
+		if ( user_can( $student_id, 'manage_options' ) ) {
+			return new \WP_Error( 'invalid_link', __( 'A valid guardian and learner are required.', 'academy' ) );
+		}
+
 		// Ensure the guardian carries the guardian role/capability.
 		$guardian_user = get_user_by( 'id', $guardian_id );
 		if ( $guardian_user && ! in_array( 'academy_guardian', (array) $guardian_user->roles, true ) ) {

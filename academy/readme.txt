@@ -5,7 +5,7 @@ Tags: lms, learning-management-system, online-courses, elearning, course-builder
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.0.3
+Stable tag: 4.0.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,6 +284,10 @@ Use the WordPress.org support forum, read the [documentation](https://academylms
 7. Instructor Public Profile Page
 
 == Changelog ==
+
+= 4.0.4 - 08/10/2026 =
+* Fixed - Security issue
+* Fixed - Quiz attempt warring issue
 
 = 4.0.3 - 06/10/2026 =
 * Improved: StoreEngine SDK licensing system to v1.6.2

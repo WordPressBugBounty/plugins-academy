@@ -300,7 +300,8 @@ class Miscellaneous extends AbstractAjaxHandler {
 
 		$comment = get_comment( $comment_id );
 
-		if ( ! $comment || get_current_user_id() !== (int) $comment->user_id ) {
+		// Only the user's own course review may be edited here.
+		if ( ! $comment || 'academy_courses' !== $comment->comment_type || get_current_user_id() !== (int) $comment->user_id ) {
 			wp_send_json_error( __( 'Permission denied', 'academy' ) );
 		}
 
@@ -431,6 +432,23 @@ class Miscellaneous extends AbstractAjaxHandler {
 		$lesson_id = isset( $payload['lesson_id'] ) ? $payload['lesson_id'] : 0;
 		$current_user = wp_get_current_user();
 		if ( current_user_can( 'manage_options' ) || \Academy\Helper::is_instructor_of_this_course( $current_user->ID, $course_id ) || \Academy\Helper::is_enrolled( $course_id, $current_user->ID ) || \Academy\Helper::is_public_course( $course_id ) ) {
+			// The lesson must belong to this course, and a reply must answer a
+			// lesson comment on the same lesson and course.
+			if ( ! \Academy\Helper::is_lesson_in_course( $lesson_id, $course_id ) ) {
+				wp_send_json_error( 'Invalid lesson.', 400 );
+			}
+			$parent_id = (int) ( $payload['parent'] ?? 0 );
+			if ( $parent_id > 0 ) {
+				$parent_comment = get_comment( $parent_id );
+				if (
+					! $parent_comment
+					|| 'Academy' !== $parent_comment->comment_agent
+					|| (int) $parent_comment->comment_post_ID !== (int) $lesson_id
+					|| (int) get_comment_meta( $parent_id, 'academy_comment_course_id', true ) !== (int) $course_id
+				) {
+					wp_send_json_error( 'Invalid parent comment.', 400 );
+				}
+			}
 			$comment_data = array(
 				'comment_post_ID'      => $lesson_id,
 				'comment_parent'       => $payload['parent'] ?? 0,
@@ -463,7 +481,6 @@ class Miscellaneous extends AbstractAjaxHandler {
 	public function delete_lesson_comment( $payload_data ) {
 		$payload = Sanitizer::sanitize_payload([
 			'comment_id' => 'integer',
-			'course_id'  => 'integer',
 		], $payload_data );
 
 		$comment_id = $payload['comment_id'] ?? 0;
@@ -474,7 +491,8 @@ class Miscellaneous extends AbstractAjaxHandler {
 			wp_send_json_error( 'Comment not found.', 404 );
 		}
 
-		$course_id = $payload['course_id'] ? $payload['course_id'] : (int) get_comment_meta( $comment_id, 'academy_comment_course_id', true );
+		// The course comes from the stored comment, never from the request.
+		$course_id    = (int) get_comment_meta( $comment_id, 'academy_comment_course_id', true );
 		$current_user = wp_get_current_user();
 
 		$can_delete = current_user_can( 'manage_options' )
@@ -519,6 +537,9 @@ class Miscellaneous extends AbstractAjaxHandler {
 			\Academy\Helper::is_enrolled( $course_id, $current_user->ID ) ||
 			\Academy\Helper::is_public_course( $course_id )
 		) {
+			if ( ! \Academy\Helper::is_lesson_in_course( $lesson_id, $course_id ) ) {
+				wp_send_json_success( [] );
+			}
 			// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- meta/tax lookup the feature depends on; no cheaper equivalent
 			$comment_args = array(
 				'status'  => 'approve',

@@ -9,7 +9,10 @@ class Helper {
 	public static function prepare_given_answer( $question_type, $attempt_item ) {
 		if ( 'imageAnswer' === $question_type ) {
 			$response = array();
-			$answers = json_decode( $attempt_item->given_answer, true );
+			$answers = json_decode( $attempt_item->given_answer ?? '', true );
+			if ( ! is_array( $answers ) ) {
+				return $response;
+			}
 			foreach ( $answers as $id => $answer ) {
 				$quiz_answer = Classes\Query::get_quiz_answer( $id );
 				$image = wp_get_attachment_image_src( $quiz_answer->image_id );

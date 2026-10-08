@@ -142,9 +142,13 @@ class RestApi {
 			return new WP_Error( 'invalid_email', __( 'A valid learner email is required.', 'academy' ), array( 'status' => 400 ) );
 		}
 
+		$not_linkable = new WP_Error( 'invalid_link', __( 'This learner cannot be added.', 'academy' ), array( 'status' => 400 ) );
+		$is_new_user  = false;
+
 		$student_id = email_exists( $email );
 		if ( ! $student_id ) {
-			$student_id = wp_insert_user( array(
+			$is_new_user = true;
+			$student_id  = wp_insert_user( array(
 				'user_login'   => $email,
 				'user_email'   => $email,
 				'display_name' => $name ? $name : $email,
@@ -155,9 +159,17 @@ class RestApi {
 				return $student_id;
 			}
 		} else {
+			// An existing account is only linked, never given a role: it must
+			// already be a plain student, not the guardian and not staff.
 			$student = get_user_by( 'id', $student_id );
-			if ( $student && ! in_array( 'academy_student', (array) $student->roles, true ) ) {
-				$student->add_role( 'academy_student' );
+			if (
+				(int) $student_id === (int) $guardian_id
+				|| ! $student
+				|| ! in_array( 'academy_student', (array) $student->roles, true )
+				|| user_can( $student, 'manage_options' )
+				|| user_can( $student, 'manage_academy_instructor' )
+			) {
+				return $not_linkable;
 			}
 		}
 
@@ -166,6 +178,11 @@ class RestApi {
 			'is_primary'   => (bool) $request->get_param( 'is_primary' ),
 		) );
 		if ( is_wp_error( $linked ) ) {
+			// Do not leave an orphan account behind.
+			if ( $is_new_user ) {
+				require_once ABSPATH . 'wp-admin/includes/user.php';
+				wp_delete_user( (int) $student_id );
+			}
 			return $linked;
 		}
 

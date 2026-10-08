@@ -714,6 +714,21 @@ class Course extends AbstractAjaxHandler {
 		$rating = (int) $payload['rating'];
 		$review = $payload['review'];
 
+		// Same rules as the REST review route: a real course, reviews enabled,
+		// a valid rating, and an enrolled user who completed it (or an admin).
+		if ( ! $current_user || ! $course_id || 'academy_courses' !== get_post_type( $course_id ) ) {
+			wp_send_json_error( __( 'Course not found.', 'academy' ), 404 );
+		}
+		if ( $rating < 1 || $rating > 5 ) {
+			wp_send_json_error( __( 'Rating must be between 1 and 5.', 'academy' ), 400 );
+		}
+		if ( ! (bool) \Academy\Helper::get_settings( 'is_enabled_course_review', true ) || (bool) get_post_meta( $course_id, 'academy_is_disabled_course_review', true ) ) {
+			wp_send_json_error( __( 'Course reviews are disabled.', 'academy' ), 403 );
+		}
+		if ( ! current_user_can( 'manage_options' ) && ! ( \Academy\Helper::is_enrolled( $course_id, $user_id ) && \Academy\Helper::is_completed_course( $course_id, $user_id ) ) ) {
+			wp_send_json_error( __( 'You must enroll in and complete this course before submitting a review.', 'academy' ), 403 );
+		}
+
 		$data = array(
 			'comment_post_ID'       => $course_id,
 			'comment_content'       => $review,

@@ -410,15 +410,46 @@ class Query {
 
 	public static function get_total_questions_marks_by_attempt_id( $ID ) {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$questions_marks = $wpdb->get_results(
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$answered = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT sum(question_mark) as total_marks FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE attempt_id=%d;",
+				"SELECT COALESCE(SUM(question_mark), 0) AS marks, COUNT(*) AS cnt FROM {$wpdb->prefix}academy_quiz_attempt_answers WHERE attempt_id=%d;",
 				$ID
-			),
-			OBJECT
+			)
 		);
-		return (float) current( $questions_marks )->total_marks;
+		$attempt  = self::get_quiz_attempt( $ID );
+		$answered_marks = (float) ( $answered->marks ?? 0 );
+		if ( empty( $attempt->quiz_id ) ) {
+			return $answered_marks;
+		}
+
+		// Skipped questions have no attempt-answer row, so they must be added
+		// from the question bank; otherwise skipping lowers the total and
+		// inflates the percentage (1 of 4 answered correctly => 100%).
+		$unanswered = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT COALESCE(SUM(q.question_score), 0) AS marks, COUNT(*) AS cnt
+				FROM {$wpdb->prefix}academy_quiz_questions q
+				LEFT JOIN {$wpdb->prefix}academy_quiz_attempt_answers aa
+					ON aa.question_id = q.question_id AND aa.attempt_id = %d
+				WHERE q.quiz_id = %d AND aa.attempt_answer_id IS NULL",
+				$ID,
+				$attempt->quiz_id
+			)
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$unanswered_marks = (float) ( $unanswered->marks ?? 0 );
+		$unanswered_count = (int) ( $unanswered->cnt ?? 0 );
+
+		// A quiz limited to N random questions only served N of the pool, so
+		// count just the missing slots at the pool's average score.
+		$limit = (int) get_post_meta( $attempt->quiz_id, 'academy_quiz_max_questions_for_answer', true );
+		if ( $limit > 0 ) {
+			$missing = max( 0, $limit - (int) ( $answered->cnt ?? 0 ) );
+			$unanswered_marks = $unanswered_count > 0 ? ( $unanswered_marks / $unanswered_count ) * min( $missing, $unanswered_count ) : 0;
+		}
+
+		return $answered_marks + $unanswered_marks;
 	}
 
 	public static function quiz_attempt_insert( $postarr ) {
